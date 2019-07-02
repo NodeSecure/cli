@@ -13,5 +13,15 @@ $ npm ci
 $ npm link
 ```
 
+## Usage example
+
+```bash
+$ nsecure mocha
+# or
+$ nsecure
+```
+
+> If no package is provided, it will try to read the package.json at the current working dir.
+
 ## License
 MIT
