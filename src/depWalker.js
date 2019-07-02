@@ -8,20 +8,27 @@ const TYPES = ["dependencies"];
 const MAX_DEPTH = 2;
 
 /**
+ * @typedef {Object} mergedDep
+ * @property {String[]} dependencies
+ * @property {Map<String, String>} customResolvers
+ */
+
+/**
  * @func mergeDependencies
  * @desc Merge all kinds (dep, devDep etc..) of dependencies section of npm Manifest (package.json)
  * @param {!Object} manifest manifest
- * @returns {String[]}
+ * @returns {mergedDep}
  */
 function mergeDependencies(manifest) {
     const ret = new Set();
+    const customResolvers = new Map();
+
     for (const fieldName of TYPES) {
         const dep = manifest[fieldName] || Object.create(null);
         for (const [name, version] of Object.entries(dep)) {
-            // TODO: still have to detect local file & git+
-            // Version can be file: or github: (etc...)
-            if (/^[a-zA-Z]+:/.test(version)) {
-                // TODO: flag these dependencies ?
+            // Version can be file:, github:, git+, ./...
+            if (/^([a-zA-Z]+:|git\+|\.\\)/.test(version)) {
+                customResolvers.set(name, version);
                 continue;
             }
 
@@ -30,7 +37,7 @@ function mergeDependencies(manifest) {
         }
     }
 
-    return [...ret];
+    return { dependencies: [...ret], customResolvers };
 }
 
 /**
@@ -38,29 +45,46 @@ function mergeDependencies(manifest) {
  * @generator
  * @func searchDeepDependencies
  * @param {!String} packageName packageName (and version)
- * @param {Set<String>} exclude packages that are excluded (avoid infinite recursion).
- * @param {Number} [currDepth=0] current depth
+ * @param {Object=} [options={}] options
+ * @param {Set<String>} [options.exclude] packages that are excluded (avoid infinite recursion).
+ * @param {Number} [options.currDepth=0] current depth
+ * @param {String} [options.parent] parent dependency
  * @returns {Promise<any>}
  */
-async function searchDeepDependencies(packageName, exclude = new Set(), currDepth = 0) {
+async function searchDeepDependencies(packageName, options = {}) {
+    const { exclude = new Set(), currDepth = 0, parent = null } = options;
     const { name, version, ...pkg } = await pacote.manifest(packageName);
 
-    const dependencies = mergeDependencies(pkg);
-    const ret = [{ name, version }];
+    const { dependencies, customResolvers } = mergeDependencies(pkg);
+    if (dependencies.length > 0 && parent !== null) {
+        parent.flags.hasIndirectDependencies = true;
+    }
 
+    const current = {
+        name, version,
+        parent: parent === null ? null : { name: parent.name, version: parent.version },
+        flags: {
+            hasIndirectDependencies: false,
+            hasCustomResolver: customResolvers.size > 0,
+            hasDependencies: dependencies.length > 0
+        }
+    };
+
+    const ret = [current];
     if (dependencies.length === 0 || currDepth === MAX_DEPTH) {
         return ret;
     }
 
     const _p = [];
+    const opt = { exclude, currDepth: currDepth + 1, parent: current };
     for (const depName of dependencies) {
         if (exclude.has(depName)) {
             continue;
         }
 
         exclude.add(depName);
-        _p.push(searchDeepDependencies(depName, exclude, currDepth + 1)
-            .catch(() => console.error(red().bold(`failed on ${depName}`))));
+        _p.push(searchDeepDependencies(depName, opt)
+            .catch(() => console.error(red().bold(`failed to fetch '${depName}'`))));
     }
     const subDependencies = await Promise.all(_p);
     ret.push(...subDependencies.flat());
@@ -70,21 +94,22 @@ async function searchDeepDependencies(packageName, exclude = new Set(), currDept
 
 async function depWalker(manifest) {
     pacote.clearMemoized();
-    const dependencies = mergeDependencies(manifest);
+    const { dependencies } = mergeDependencies(manifest);
     if (dependencies.length === 0) {
         return Object.create(null);
     }
 
-    // TODO: get tree of dependencies
-    // TODO: get tarballs
-
     const exclude = new Set();
     const result = await Promise.all(
-        dependencies.map((name) => searchDeepDependencies(name, exclude))
+        dependencies.map((name) => searchDeepDependencies(name, { exclude }))
     );
     const allDependencies = result.flat(MAX_DEPTH);
-    // console.log(JSON.stringify(allDependencies, null, 4));
-    console.log(allDependencies.length);
+
+    // TODO: link and flag data for direct/indirect
+    console.log(allDependencies);
+    console.log(`Number of dependencies: ${allDependencies.length}`);
+
+    // TODO: extract all tarball
 
     return {};
 }
