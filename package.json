@@ -1,0 +1,37 @@
+{
+  "name": "node-secure",
+  "version": "0.1.0",
+  "description": "Node.js security CLI",
+  "main": "./bin/index.js",
+  "scripts": {
+    "prepublishOnly": "pkg-ok",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ES-Community/node-secure.git"
+  },
+  "keywords": [],
+  "author": "ES Community",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ES-Community/node-secure/issues"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "homepage": "https://github.com/ES-Community/node-secure#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^8.0.0",
+    "@commitlint/config-conventional": "^8.0.0",
+    "@slimio/eslint-config": "^2.0.4",
+    "eslint": "^6.0.1",
+    "husky": "^3.0.0",
+    "pkg-ok": "^2.3.1"
+  },
+  "dependencies": {
+    "pacote": "^9.5.1"
+  }
+}
