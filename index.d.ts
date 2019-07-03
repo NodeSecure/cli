@@ -6,14 +6,6 @@ declare namespace NodeSecure {
             name: string;
             version: string;
         } | null;
-        bundlephobia?: {
-            gzip: number;
-            size: number;
-            hasJSModule: boolean;
-            hasJSNext: boolean;
-            hasSideEffects: boolean;
-            scoped: boolean;
-        };
         flags: {
             hasIndirectDependencies: boolean;
             hasCustomResolver: boolean;
