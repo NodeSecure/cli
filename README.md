@@ -4,7 +4,7 @@ Node.js security CLI. The goal of the project is to a design a CLI that will all
 - [Google Drive Documentation](https://docs.google.com/document/d/1853Uwup9mityAYqAOnen1KSqSA6hlBgpKU0u0ygGY4Y/edit?usp=sharing)
 
 ## Requirements
-- [Node.js](https://nodejs.org/en/) version 10 or higher
+- [Node.js](https://nodejs.org/en/) version 12 or higher
 
 ## Getting Started
 
