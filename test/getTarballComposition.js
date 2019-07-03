@@ -13,7 +13,7 @@ test("should return the composition of a directory", async() => {
     const composition = await getTarballComposition(FIXTURE_PATH);
     expect(composition).toMatchObject({
         ext: new Set(["", ".js", ".json", ".txt"]),
-        size: 50
+        size: 52
     });
     expect(composition.files).toHaveLength(4);
     expect(composition.files[0]).toMatch(/one(\/|\\)README/);
