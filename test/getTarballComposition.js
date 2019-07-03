@@ -1,13 +1,16 @@
 "use strict";
 
-const path = require("path");
+// Require Node.js Dependencies
+const { join } = require("path");
 
+// Require Internal Dependencies
 const { getTarballComposition } = require("../src/utils");
 
-const fixture = path.join(__dirname, "fixtures/getTarballComposition");
+// CONSTANTS
+const FIXTURE_PATH = join(__dirname, "fixtures/getTarballComposition");
 
 test("should return the composition of a directory", async() => {
-    const composition = await getTarballComposition(fixture);
+    const composition = await getTarballComposition(FIXTURE_PATH);
     expect(composition).toMatchObject({
         ext: new Set(["", ".js", ".json", ".txt"]),
         size: 50
