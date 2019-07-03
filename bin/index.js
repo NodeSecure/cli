@@ -11,7 +11,7 @@ const { performance } = require("perf_hooks");
 // Require Third-party Dependencies
 const sade = require("sade");
 const pacote = require("pacote");
-const { white, cyan, red, yellow } = require("kleur");
+const { red, yellow, grey } = require("kleur");
 const ora = require("ora");
 
 // Require Internal Dependencies
@@ -27,7 +27,7 @@ sade("nsecure [package]", true)
 
 async function main(packageName, opts) {
     const CWD = process.cwd();
-    console.log(white().bold(`\n > Executing node-secure at: ${cyan().bold(CWD)}\n`));
+    console.log(grey().bold(`\n > Executing node-secure at: ${yellow().bold(CWD)}`));
 
     let manifest = null;
 

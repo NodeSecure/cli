@@ -5,7 +5,7 @@ const { performance } = require("perf_hooks");
 
 // Require Third-party Dependencies
 const pacote = require("pacote");
-const { red } = require("kleur");
+const { red, white, yellow, cyan, green, grey } = require("kleur");
 const premove = require("premove");
 const Lock = require("@slimio/lock");
 const ora = require("ora");
@@ -171,11 +171,13 @@ async function extractTarball(name, version, ref) {
  * @returns {Promise<null | NodeSecure.Dependency[]>}
  */
 async function getRootDependencies(manifest) {
-    const spinner = ora({ spinner: "dots" }).start("Fetch all dependencies...");
+    const spinner = ora({ spinner: "dots" }).start(white().bold("Fetch all dependencies..."));
     try {
         const start = performance.now();
         const { dependencies } = mergeDependencies(manifest);
         if (dependencies.length === 0) {
+            spinner.succeed(yellow().bold("No dependencies to fetch..."));
+
             return null;
         }
         const exclude = new Set();
@@ -183,13 +185,13 @@ async function getRootDependencies(manifest) {
         const result = (await Promise.all(
             dependencies.map((name) => searchDeepDependencies(name, { exclude }))
         )).flat();
-        const execTime = (performance.now() - start).toFixed(2);
-        spinner.succeed(`Successfully retrieved ${result.length} dependencies in ${execTime} ms`);
+        const execTime = cyan().bold((performance.now() - start).toFixed(2));
+        spinner.succeed(white().bold(`Successfully fetched ${green().bold(result.length)} dependencies in ${execTime} ms`));
 
         return result;
     }
     catch (err) {
-        spinner.fail(err.message);
+        spinner.fail(red().bold(err.message));
 
         return null;
     }
@@ -212,6 +214,7 @@ async function depWalker(manifest) {
     // Create TMP directory
     try {
         await mkdir(TMP);
+        console.log(grey().bold(`\n > ${yellow().bold(TMP)} directory created!\n`));
     }
     catch (err) {
         if (err.code !== "EEXIST") {
@@ -245,13 +248,15 @@ async function depWalker(manifest) {
     }
 
     // Wait for all extraction to be done!
-    const spinner = ora({ spinner: "dots" }).start("Fetching all packages tarballs !");
+    const spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all packages tarballs ..."));
     try {
+        const start = performance.now();
         await Promise.all(tarballsPromises);
-        spinner.succeed("Succesfully fetched and handled all tarballs...");
+        const execTime = cyan().bold((performance.now() - start).toFixed(2));
+        spinner.succeed(white().bold(`Successfully fetched and processed all tarballs in ${execTime} ms`));
     }
     catch (err) {
-        spinner.fail(err.message);
+        spinner.fail(red().bold(err.message));
 
         return null;
     }
@@ -259,7 +264,13 @@ async function depWalker(manifest) {
     // TODO: search for vulnerabilities?
 
     // Cleanup TMP dir
-    await premove(TMP);
+    try {
+        await premove(TMP);
+    }
+    catch (err) {
+        console.log(red().bold(`Failed to remove directory ${yellow().bold(TMP)}`));
+    }
+    console.log("");
 
     return flattenedDeps;
 }
