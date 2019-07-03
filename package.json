@@ -35,10 +35,17 @@
     }
   },
   "jest": {
-    "collectCoverageFrom": ["**/src/**/*.js"],
+    "collectCoverageFrom": [
+      "**/src/**/*.js"
+    ],
     "testEnvironment": "node",
-    "testMatch": ["**/test/**/*.js"],
-    "testPathIgnorePatterns": ["/node_modules/", "/test\/fixtures/"]
+    "testMatch": [
+      "**/test/**/*.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/test/fixtures/"
+    ]
   },
   "homepage": "https://github.com/ES-Community/node-secure#readme",
   "devDependencies": {
@@ -47,6 +54,7 @@
     "@slimio/eslint-config": "^2.0.4",
     "@types/node": "^12.0.10",
     "eslint": "^6.0.1",
+    "get-folder-size": "^2.0.1",
     "husky": "^3.0.0",
     "jest": "^24.8.0",
     "pkg-ok": "^2.3.1"
