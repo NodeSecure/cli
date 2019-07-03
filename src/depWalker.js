@@ -1,6 +1,6 @@
 // Require Node.js Dependencies
 const { join } = require("path");
-const { mkdir } = require("fs").promises;
+const { mkdir, readFile } = require("fs").promises;
 const { performance } = require("perf_hooks");
 
 // Require Third-party Dependencies
@@ -10,6 +10,9 @@ const premove = require("premove");
 const Lock = require("@slimio/lock");
 const ora = require("ora");
 
+// Require Internal Dependencies
+const { getTarballComposition } = require("./utils");
+
 // CONSTANTS
 // const TYPES = ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"];
 const TYPES = ["dependencies"];
@@ -17,7 +20,7 @@ const MAX_DEPTH = 2;
 const TMP = join(__dirname, "..", "tmp");
 
 // Vars
-const tarballLocker = new Lock({ max: 5 });
+const tarballLocker = new Lock({ max: 25 });
 
 /**
  * @typedef {Object} mergedDep
@@ -65,7 +68,7 @@ function mergeDependencies(manifest) {
  */
 async function searchDeepDependencies(packageName, options = {}) {
     const { exclude = new Set(), currDepth = 0, parent = null } = options;
-    const { name, version, ...pkg } = await pacote.manifest(packageName);
+    const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName);
 
     const { dependencies, customResolvers } = mergeDependencies(pkg);
     if (dependencies.length > 0 && parent !== null) {
@@ -76,6 +79,9 @@ async function searchDeepDependencies(packageName, options = {}) {
         name, version,
         parent: parent === null ? null : { name: parent.name, version: parent.version },
         flags: {
+            hasManifest: true,
+            isDeprecated: deprecated === true,
+            hasLicense: false,
             hasIndirectDependencies: false,
             hasCustomResolver: customResolvers.size > 0,
             hasDependencies: dependencies.length > 0
@@ -120,17 +126,38 @@ async function extractTarball(name, version, ref) {
     try {
         await pacote.extract(fullName, dest);
 
-        // TODO:
-        // - files composition (get all extension).
-        // - files size
+        // TODO: (in a worker thread with ework)
         // - dependencies executed at runtime
         // - uglified/minified code (is-minified-code lib)
-        // - license ?
 
-        await premove(dest);
+        try {
+            const packageStr = await readFile(join(dest, "package.json"), "utf-8");
+            const { description = "", author = {} } = JSON.parse(packageStr);
+            ref.description = description;
+            ref.author = author;
+        }
+        catch (err) {
+            ref.flags.hasManifest = false;
+            ref.description = "";
+            ref.author = "N/A";
+        }
+
+        const { ext, files, size } = await getTarballComposition(dest);
+        ref.size = size;
+        ref.composition = { extensions: [...ext], files };
+
+        const hasLicense = files.find((value) => value.toLowerCase().includes("license"));
+        if (typeof hasLicense !== "undefined") {
+            ref.flags.hasLicense = true;
+            // TODO: detect the kind of the license
+        }
+
+        // wait for to the next iteration (avoid lock).
+        await new Promise((resolve) => setImmediate(resolve));
     }
     catch (err) {
-        console.log(red().bold(`Failed to extract tarball for package ${fullName}`));
+        console.log(err);
+        // console.log(red().bold(`Failed to extract tarball for package ${fullName}`));
     }
     finally {
         free();
@@ -192,7 +219,7 @@ async function depWalker(manifest) {
         }
     }
 
-    /** @type {Map<String, NodeSecure.Dependency>} */
+    /** @type {Map<String, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
     const tarballsPromises = [];
     for (const { name, version, parent, flags } of allDependencies) {
@@ -202,7 +229,7 @@ async function depWalker(manifest) {
                 flags
             }
         };
-        tarballsPromises.push(extractTarball(name, version, current));
+        tarballsPromises.push(extractTarball(name, version, current[version]));
 
         if (flattenedDeps.has(name)) {
             const dep = flattenedDeps.get(name);

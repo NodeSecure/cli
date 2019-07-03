@@ -4,7 +4,7 @@
 
 // Require Node.js Dependencies
 const { readdir, stat } = require("fs").promises;
-const { extname, join } = require("path");
+const { extname, join, relative } = require("path");
 
 // CONSTANTS
 const EXCLUDE_DIRS = new Set(["node_modules", ".vscode", ".git"]);
@@ -60,14 +60,16 @@ async function getTarballComposition(tarballDir) {
     /** @type {Number} */
     let size = 0;
     try {
-        const sizeAll = await Promise.all(files.map((file) => stat(file)));
+        const sizeAll = await Promise.all(
+            files.map((file) => stat(file))
+        );
         size = sizeAll.reduce((prev, curr) => prev + curr.size, 0);
     }
     catch (err) {
         // ignore
     }
 
-    return { ext, size, files };
+    return { ext, size, files: files.map((path) => relative(tarballDir, path)) };
 }
 
 module.exports = { getTarballComposition };

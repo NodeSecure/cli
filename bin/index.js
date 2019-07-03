@@ -4,7 +4,7 @@ require("make-promises-safe");
 require("dotenv").config();
 
 // Require Node.js Dependencies
-const { readFileSync, accessSync } = require("fs");
+const { readFileSync, accessSync, writeFileSync } = require("fs");
 const { join } = require("path");
 const { performance } = require("perf_hooks");
 
@@ -71,6 +71,7 @@ async function main(packageName, opts) {
         return;
     }
 
-    console.log(JSON.stringify(Object.fromEntries(dependencies), null, 2));
+    const ret = JSON.stringify(Object.fromEntries(dependencies), null, 2);
     console.log(`Number of dependencies: ${dependencies.size}`);
+    writeFileSync(join(__dirname, "..", "result.json"), ret);
 }
