@@ -11,7 +11,7 @@ const FIXTURE_PATH = join(__dirname, "fixtures/searchRuntimeDependencies");
 
 test("should return runtime dependencies for one.js", async() => {
     const files = await searchRuntimeDependencies(join(FIXTURE_PATH, "one.js"));
-    expect(files).toMatchObject(
+    expect(files).toStrictEqual(
         new Set(["http", "net", "fs", "assert", "timers", "./aFile.js", "path"])
     );
 });
