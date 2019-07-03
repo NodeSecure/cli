@@ -10,6 +10,8 @@ const { extname, join, relative } = require("path");
 
 // CONSTANTS
 const EXCLUDE_DIRS = new Set(["node_modules", ".vscode", ".git"]);
+const SYM_FILE = Symbol("FILE");
+const SYM_DIR = Symbol("DIR");
 
 /**
 * @async
@@ -28,10 +30,12 @@ async function* getFilesRecursive(dir) {
         }
 
         if (dirent.isFile()) {
-            yield join(dir, dirent.name);
+            yield [SYM_FILE, join(dir, dirent.name)];
         }
         else if (dirent.isDirectory()) {
-            yield* getFilesRecursive(join(dir, dirent.name));
+            const fullPath = join(dir, dirent.name);
+            yield [SYM_DIR, fullPath];
+            yield* getFilesRecursive(fullPath);
         }
     }
 }
@@ -53,19 +57,27 @@ async function* getFilesRecursive(dir) {
 async function getTarballComposition(tarballDir) {
     const ext = new Set();
     const files = [];
+    const dirs = [];
+    let size = (await stat(tarballDir)).size;
 
-    for await (const file of getFilesRecursive(tarballDir)) {
-        ext.add(extname(file));
-        files.push(file);
+    for await (const [kind, file] of getFilesRecursive(tarballDir)) {
+        switch (kind) {
+            case SYM_FILE:
+                ext.add(extname(file));
+                files.push(file);
+                break;
+            case SYM_DIR:
+                dirs.push(file);
+                break;
+        }
     }
 
-    /** @type {Number} */
-    let size = 0;
     try {
-        const sizeAll = await Promise.all(
-            files.map((file) => stat(file))
-        );
-        size = sizeAll.reduce((prev, curr) => prev + curr.size, 0);
+        const sizeAll = await Promise.all([
+            ...files.map((file) => stat(file)),
+            ...dirs.map((file) => stat(file))
+        ]);
+        size += sizeAll.reduce((prev, curr) => prev + curr.size, 0);
     }
     catch (err) {
         // ignore
