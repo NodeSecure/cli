@@ -35,11 +35,18 @@ async function* getFilesRecursive(dir) {
 }
 
 /**
+ * @typedef {Object} tarballComposition
+ * @property {Set<String>} ext all files extension
+ * @property {Number} size size in bytes
+ * @property {String[]} files complete list of files retrieved in the tarball
+ */
+
+/**
  * @async
  * @func getTarballComposition
  * @memberof Utils#
  * @param {!String} tarballDir tarball dir
- * @returns {Promise<any>}
+ * @returns {Promise<tarballComposition>}
  */
 async function getTarballComposition(tarballDir) {
     const ext = new Set();
@@ -60,7 +67,7 @@ async function getTarballComposition(tarballDir) {
         // ignore
     }
 
-    return { ext, size };
+    return { ext, size, files };
 }
 
 module.exports = { getTarballComposition };
