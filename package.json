@@ -7,6 +7,11 @@
     "prepublishOnly": "pkg-ok",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "files": [
+    "bin",
+    "src",
+    "index.d.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ES-Community/node-secure.git"
