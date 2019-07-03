@@ -1,3 +1,5 @@
+"use strict";
+
 // Require Node.js Dependencies
 const { join } = require("path");
 const { mkdir, readFile } = require("fs").promises;

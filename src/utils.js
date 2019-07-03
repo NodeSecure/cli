@@ -2,6 +2,8 @@
  * @namespace Utils
  */
 
+"use strict";
+
 // Require Node.js Dependencies
 const { readdir, stat } = require("fs").promises;
 const { extname, join, relative } = require("path");

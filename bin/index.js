@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+"use strict";
+
 require("make-promises-safe");
 require("dotenv").config();
 

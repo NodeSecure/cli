@@ -1,3 +1,5 @@
+"use strict";
+
 // Require Node.js Dependencies
 const { readFile } = require("fs").promises;
 

@@ -1,3 +1,6 @@
 {
-    "extends": "@slimio/eslint-config"
+    "extends": "@slimio/eslint-config",
+    "parserOptions": {
+        "sourceType": "script"
+    }
 }
