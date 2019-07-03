@@ -37,11 +37,15 @@
     "pkg-ok": "^2.3.1"
   },
   "dependencies": {
+    "@slimio/lock": "^0.1.0",
     "dotenv": "^8.0.0",
+    "httpie": "^1.1.2",
+    "is-minified-code": "^2.0.0",
     "kleur": "^3.0.3",
     "make-promises-safe": "^5.0.0",
     "ora": "^3.4.0",
     "pacote": "^9.5.1",
+    "premove": "^1.0.0",
     "sade": "^1.6.0",
     "semver": "^6.2.0"
   }

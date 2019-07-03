@@ -64,5 +64,13 @@ async function main(packageName, opts) {
         return;
     }
     console.log("");
-    await depWalker(manifest);
+    const dependencies = await depWalker(manifest);
+    if (dependencies === null) {
+        console.log("No dependencies to proceed !");
+
+        return;
+    }
+
+    console.log(JSON.stringify(Object.fromEntries(dependencies), null, 2));
+    console.log(`Number of dependencies: ${dependencies.size}`);
 }
