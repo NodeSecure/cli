@@ -35,6 +35,6 @@ $ nsecure
 MIT
 
 [travis-image]: https://img.shields.io/travis/ES-Community/node-secure/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/ES-Community/node-secure
+[travis-url]: https://travis-ci.com/ES-Community/node-secure
 [codecov-image]: https://img.shields.io/codecov/c/github/ES-Community/node-secure.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/ES-Community/node-secure
