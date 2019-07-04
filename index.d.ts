@@ -45,5 +45,7 @@ declare namespace NodeSecure {
     }
 }
 
+declare function NodeSecure(cwd?: string): Promise<NodeSecure.Payload>;
+
 export = NodeSecure;
 export as namespace NodeSecure;

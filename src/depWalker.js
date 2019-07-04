@@ -194,15 +194,21 @@ async function extractTarball(name, version, ref) {
  * @async
  * @func getRootDependencies
  * @param {any} manifest package manifest
+ * @param {Boolean} [verbose=true] enable verbose mode
  * @returns {Promise<null | NodeSecure.Dependency[]>}
  */
-async function getRootDependencies(manifest) {
-    const spinner = ora({ spinner: "dots" }).start(white().bold("Fetch all dependencies..."));
+async function getRootDependencies(manifest, verbose = true) {
+    let spinner;
+    if (verbose) {
+        spinner = ora({ spinner: "dots" }).start(white().bold("Fetch all dependencies..."));
+    }
     try {
         const start = performance.now();
         const { dependencies } = mergeDependencies(manifest);
         if (dependencies.length === 0) {
-            spinner.succeed(yellow().bold("No dependencies to fetch..."));
+            if (verbose) {
+                spinner.succeed(yellow().bold("No dependencies to fetch..."));
+            }
 
             return null;
         }
@@ -212,12 +218,16 @@ async function getRootDependencies(manifest) {
             dependencies.map((name) => searchDeepDependencies(name, { exclude }))
         )).flat();
         const execTime = cyan().bold((performance.now() - start).toFixed(2));
-        spinner.succeed(white().bold(`Successfully fetched ${green().bold(result.length)} dependencies in ${execTime} ms`));
+        if (verbose) {
+            spinner.succeed(white().bold(`Successfully fetched ${green().bold(result.length)} dependencies in ${execTime} ms`));
+        }
 
         return result;
     }
     catch (err) {
-        spinner.fail(red().bold(err.message));
+        if (verbose) {
+            spinner.fail(red().bold(err.message));
+        }
 
         return null;
     }
@@ -227,12 +237,15 @@ async function getRootDependencies(manifest) {
  * @async
  * @func depWalker
  * @param {Object} manifest manifest (package.json)
+ * @param {Object} options options
+ * @param {Boolean} [options.verbose=true] enable verbose mode
  * @returns {Promise<null | Map<String, NodeSecure.Dependency>>}
  */
-async function depWalker(manifest) {
+async function depWalker(manifest, options = Object.create(null)) {
+    const { verbose = true } = options;
     pacote.clearMemoized();
 
-    const allDependencies = await getRootDependencies(manifest);
+    const allDependencies = await getRootDependencies(manifest, verbose);
     if (allDependencies === null) {
         return null;
     }
@@ -240,7 +253,9 @@ async function depWalker(manifest) {
     // Create TMP directory
     try {
         await mkdir(TMP);
-        console.log(grey().bold(`\n > ${yellow().bold(TMP)} directory created!\n`));
+        if (verbose) {
+            console.log(grey().bold(`\n > ${yellow().bold(TMP)} directory created!\n`));
+        }
     }
     catch (err) {
         if (err.code !== "EEXIST") {
@@ -274,15 +289,22 @@ async function depWalker(manifest) {
     }
 
     // Wait for all extraction to be done!
-    const spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all packages tarballs ..."));
+    let spinner;
+    if (verbose) {
+        spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all packages tarballs ..."));
+    }
     try {
         const start = performance.now();
         await Promise.all(tarballsPromises);
         const execTime = cyan().bold((performance.now() - start).toFixed(2));
-        spinner.succeed(white().bold(`Successfully fetched and processed all tarballs in ${execTime} ms`));
+        if (verbose) {
+            spinner.succeed(white().bold(`Successfully fetched and processed all tarballs in ${execTime} ms`));
+        }
     }
     catch (err) {
-        spinner.fail(red().bold(err.message));
+        if (verbose) {
+            spinner.fail(red().bold(err.message));
+        }
 
         return null;
     }
