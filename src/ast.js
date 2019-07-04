@@ -1,8 +1,5 @@
 "use strict";
 
-// Require Node.js Dependencies
-const { readFile } = require("fs").promises;
-
 // Require Third-party Dependencies
 const { walk } = require("estree-walker");
 const cherow = require("cherow");
@@ -27,18 +24,17 @@ function isVariableDeclarator(node) {
 }
 
 /**
- * @async
  * @func searchRuntimeDependencies
  * @desc Parse a script, get an AST and search for require occurence!
- * @param {!String} file file location
+ * @param {!String} str file content (encoded as utf-8)
  * @returns {Set<String>}
  */
-async function searchRuntimeDependencies(file) {
+function searchRuntimeDependencies(str) {
     const identifiers = new Map();
     const runtimeDep = new Set();
 
-    let str = await readFile(file, { encoding: "utf8" });
     if (str.charAt(0) === "#") {
+        // eslint-disable-next-line
         str = str.slice(str.indexOf("\n"));
     }
     const { body } = cherow.parseScript(str, { next: true });

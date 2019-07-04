@@ -8,6 +8,7 @@ declare namespace NodeSecure {
         hasManifest: boolean;
         isDeprecated: boolean;
         hasLicense: boolean;
+        hasMinifiedCode: boolean;
         hasIndirectDependencies: boolean;
         hasCustomResolver: boolean;
         hasDependencies: boolean;
@@ -31,6 +32,9 @@ declare namespace NodeSecure {
             composition: {
                 extensions: string[];
                 files: string[];
+                minified: string[];
+                required: string[];
+                required_builtin: string[];
             };
             license?: {
                 name: string;

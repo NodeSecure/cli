@@ -1,9 +1,10 @@
 "use strict";
 
 // Require Node.js Dependencies
-const { join } = require("path");
+const { join, extname } = require("path");
 const { mkdir, readFile } = require("fs").promises;
 const { performance } = require("perf_hooks");
+const repl = require("repl");
 
 // Require Third-party Dependencies
 const pacote = require("pacote");
@@ -11,13 +12,17 @@ const { red, white, yellow, cyan, green, grey } = require("kleur");
 const premove = require("premove");
 const Lock = require("@slimio/lock");
 const ora = require("ora");
+const isMinified = require("is-minified-code");
 
 // Require Internal Dependencies
 const { getTarballComposition } = require("./utils");
+const { searchRuntimeDependencies } = require("./ast");
 
 // CONSTANTS
 // const TYPES = ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"];
 const TYPES = ["dependencies"];
+const JS_EXTENSIONS = new Set([".js", ".mjs"]);
+const NODE_CORE_LIBS = new Set([...repl._builtinLibs]);
 const MAX_DEPTH = 2;
 const TMP = join(__dirname, "..", "tmp");
 
@@ -85,6 +90,7 @@ async function searchDeepDependencies(packageName, options = {}) {
             isDeprecated: deprecated === true,
             hasLicense: false,
             hasIndirectDependencies: false,
+            hasMinifiedCode: false,
             hasCustomResolver: customResolvers.size > 0,
             hasDependencies: dependencies.length > 0
         }
@@ -128,10 +134,6 @@ async function extractTarball(name, version, ref) {
     try {
         await pacote.extract(fullName, dest);
 
-        // TODO: (in a worker thread with ework)
-        // - dependencies executed at runtime
-        // - uglified/minified code (is-minified-code lib)
-
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
             const { description = "", author = {} } = JSON.parse(packageStr);
@@ -154,12 +156,34 @@ async function extractTarball(name, version, ref) {
             // TODO: detect the kind of the license
         }
 
+        // Search for minified and runtime dependencies
+        const jsFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));
+        const dependencies = [];
+        ref.composition.minified = [];
+        for (const file of jsFiles) {
+            try {
+                const str = await readFile(join(dest, file), "utf-8");
+                if (!file.includes(".min") && isMinified(str)) {
+                    ref.composition.minified.push(file);
+                }
+
+                const deps = searchRuntimeDependencies(str);
+                dependencies.push(...deps);
+            }
+            catch (err) {
+                // Ignore
+            }
+        }
+        const required = [...new Set(dependencies)];
+        ref.composition.required = required;
+        ref.composition.required_builtin = required.filter((name) => NODE_CORE_LIBS.has(name));
+        ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
+
         // wait for to the next iteration (avoid lock).
         await new Promise((resolve) => setImmediate(resolve));
     }
     catch (err) {
-        console.log(err);
-        // console.log(red().bold(`Failed to extract tarball for package ${fullName}`));
+        // Ignore
     }
     finally {
         free();
