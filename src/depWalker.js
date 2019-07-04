@@ -13,6 +13,7 @@ const premove = require("premove");
 const Lock = require("@slimio/lock");
 const ora = require("ora");
 const isMinified = require("is-minified-code");
+const Registry = require("@slimio/npm-registry");
 
 // Require Internal Dependencies
 const { getTarballComposition } = require("./utils");
@@ -28,6 +29,7 @@ const TMP = join(__dirname, "..", "tmp");
 
 // Vars
 const tarballLocker = new Lock({ max: 25 });
+const npmReg = new Registry();
 
 /**
  * @typedef {Object} mergedDep
@@ -245,6 +247,56 @@ async function getRootDependencies(manifest, verbose = true) {
 
 /**
  * @async
+ * @func searchPackageAuthors
+ * @param {!String} name package name
+ * @param {*} ref ref
+ * @returns {Promise<void>}
+ */
+async function searchPackageAuthors(name, ref) {
+    try {
+        const pkg = await npmReg.package(name);
+        ref.publishedCount = pkg.versions.length;
+        ref.lastUpdateAt = pkg.publishedAt(pkg.lastVersion);
+        ref.lastVersion = pkg.lastVersion;
+        ref.hasChangedAuthor = false;
+
+        if (typeof pkg.author === "undefined") {
+            ref.author = "N/A";
+
+            return;
+        }
+        ref.author = pkg.author.name || pkg.author;
+
+        const authors = [];
+        for (const verStr of pkg.versions) {
+            const version = pkg.version(verStr);
+            if (typeof version.author === "undefined" || version.author.name === ref.author) {
+                continue;
+            }
+            const name = version.author.name || version.author;
+            if (typeof name !== "string") {
+                continue;
+            }
+
+            ref.hasChangedAuthor = true;
+            authors.push({
+                name,
+                at: pkg.publishedAt(verStr),
+                version: verStr
+            });
+        }
+
+        if (authors.length > 0) {
+            ref.authors = authors;
+        }
+    }
+    catch (err) {
+        console.error(err);
+    }
+}
+
+/**
+ * @async
  * @func depWalker
  * @param {Object} manifest manifest (package.json)
  * @param {Object} options options
@@ -275,7 +327,8 @@ async function depWalker(manifest, options = Object.create(null)) {
 
     /** @type {Map<String, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
-    const tarballsPromises = [];
+    const promisesToWait = [];
+
     for (const { name, version, parent, flags } of allDependencies) {
         const current = {
             [version]: {
@@ -283,7 +336,10 @@ async function depWalker(manifest, options = Object.create(null)) {
                 flags
             }
         };
-        tarballsPromises.push(extractTarball(name, version, current[version]));
+        promisesToWait.push(
+            searchPackageAuthors(name, current),
+            extractTarball(name, version, current[version])
+        );
 
         if (flattenedDeps.has(name)) {
             const dep = flattenedDeps.get(name);
@@ -301,14 +357,14 @@ async function depWalker(manifest, options = Object.create(null)) {
     // Wait for all extraction to be done!
     let spinner;
     if (verbose) {
-        spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all packages tarballs ..."));
+        spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all packages stats ..."));
     }
     try {
         const start = performance.now();
-        await Promise.all(tarballsPromises);
+        await Promise.all(promisesToWait);
         const execTime = cyan().bold((performance.now() - start).toFixed(2));
         if (verbose) {
-            spinner.succeed(white().bold(`Successfully fetched and processed all tarballs in ${execTime} ms`));
+            spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime} ms`));
         }
     }
     catch (err) {
