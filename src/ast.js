@@ -4,6 +4,9 @@
 const { walk } = require("estree-walker");
 const cherow = require("cherow");
 
+// CONSTANTS
+const BINARY_EXPR_TYPES = new Set(["Literal", "BinaryExpression", "Identifier"]);
+
 function isRequireStatment(node) {
     if (node.type !== "CallExpression" || node.callee.name !== "require") {
         return false;
@@ -23,6 +26,36 @@ function isVariableDeclarator(node) {
     return true;
 }
 
+function concatBinaryExpr(node, identifiers) {
+    const { left, right } = node;
+    if (!BINARY_EXPR_TYPES.has(left.type) || !BINARY_EXPR_TYPES.has(right.type)) {
+        return null;
+    }
+    let str = "";
+
+    for (const childNode of [left, right]) {
+        switch (childNode.type) {
+            case "BinaryExpression": {
+                const value = concatBinaryExpr(childNode, identifiers);
+                if (value !== null) {
+                    str += value;
+                }
+                break;
+            }
+            case "Literal":
+                str += childNode.value;
+                break;
+            case "Identifier":
+                if (identifiers.has(childNode.name)) {
+                    str += identifiers.get(childNode.name);
+                }
+                break;
+        }
+    }
+
+    return str;
+}
+
 /**
  * @func searchRuntimeDependencies
  * @desc Parse a script, get an AST and search for require occurence!
@@ -39,9 +72,10 @@ function searchRuntimeDependencies(str) {
     }
     const { body } = cherow.parseScript(str, { next: true });
 
-    // TODO: improve non-literal tracking
     walk(body, {
         enter(node) {
+            // console.log(JSON.stringify(node, null, 2));
+            // console.log("-------------------------");
             try {
                 if (isRequireStatment(node)) {
                     const arg = node.arguments[0];
@@ -52,6 +86,12 @@ function searchRuntimeDependencies(str) {
                     }
                     else if (arg.type === "Literal") {
                         runtimeDep.add(arg.value);
+                    }
+                    else if (arg.type === "BinaryExpression" && arg.operator === "+") {
+                        const value = concatBinaryExpr(arg, identifiers);
+                        if (value !== null) {
+                            runtimeDep.add(value);
+                        }
                     }
                 }
                 else if (isVariableDeclarator(node)) {
