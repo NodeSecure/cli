@@ -88,6 +88,7 @@ async function searchDeepDependencies(packageName, options = {}) {
         flags: {
             hasManifest: true,
             isDeprecated: deprecated === true,
+            hasSuspectImport: false,
             hasLicense: false,
             hasIndirectDependencies: false,
             hasMinifiedCode: false,
@@ -159,7 +160,9 @@ async function extractTarball(name, version, ref) {
         // Search for minified and runtime dependencies
         const jsFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));
         const dependencies = [];
+        const suspectFiles = [];
         ref.composition.minified = [];
+
         for (const file of jsFiles) {
             try {
                 const str = await readFile(join(dest, file), "utf-8");
@@ -167,8 +170,12 @@ async function extractTarball(name, version, ref) {
                     ref.composition.minified.push(file);
                 }
 
-                const deps = searchRuntimeDependencies(str);
+                const { dependencies: deps, isSuspect } = searchRuntimeDependencies(str);
                 dependencies.push(...deps);
+                if (isSuspect) {
+                    suspectFiles.push(file);
+                    ref.flags.hasSuspectImport = isSuspect;
+                }
             }
             catch (err) {
                 // Ignore
@@ -178,6 +185,9 @@ async function extractTarball(name, version, ref) {
         ref.composition.required = required;
         ref.composition.required_builtin = required.filter((name) => NODE_CORE_LIBS.has(name));
         ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
+        if (ref.flags.hasSuspectImport) {
+            ref.composition.suspectFiles = suspectFiles;
+        }
 
         // wait for to the next iteration (avoid lock).
         await new Promise((resolve) => setImmediate(resolve));

@@ -57,14 +57,21 @@ function concatBinaryExpr(node, identifiers) {
 }
 
 /**
+ * @typedef {Object} ASTSummary
+ * @property {Set<String>} dependencies
+ * @property {Boolean} isSuspect
+ */
+
+/**
  * @func searchRuntimeDependencies
  * @desc Parse a script, get an AST and search for require occurence!
  * @param {!String} str file content (encoded as utf-8)
- * @returns {Set<String>}
+ * @returns {ASTSummary}
  */
 function searchRuntimeDependencies(str) {
     const identifiers = new Map();
-    const runtimeDep = new Set();
+    const dependencies = new Set();
+    let isSuspect = false;
 
     if (str.charAt(0) === "#") {
         // eslint-disable-next-line
@@ -81,17 +88,23 @@ function searchRuntimeDependencies(str) {
                     const arg = node.arguments[0];
                     if (arg.type === "Identifier") {
                         if (identifiers.has(arg.name)) {
-                            runtimeDep.add(identifiers.get(arg.name));
+                            dependencies.add(identifiers.get(arg.name));
                         }
                     }
                     else if (arg.type === "Literal") {
-                        runtimeDep.add(arg.value);
+                        dependencies.add(arg.value);
                     }
                     else if (arg.type === "BinaryExpression" && arg.operator === "+") {
                         const value = concatBinaryExpr(arg, identifiers);
-                        if (value !== null) {
-                            runtimeDep.add(value);
+                        if (value === null) {
+                            isSuspect = true;
                         }
+                        else {
+                            dependencies.add(value);
+                        }
+                    }
+                    else {
+                        isSuspect = true;
                     }
                 }
                 else if (isVariableDeclarator(node)) {
@@ -104,7 +117,7 @@ function searchRuntimeDependencies(str) {
         }
     });
 
-    return runtimeDep;
+    return { dependencies, isSuspect };
 }
 
 module.exports = { searchRuntimeDependencies };

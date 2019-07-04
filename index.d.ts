@@ -7,6 +7,7 @@ declare namespace NodeSecure {
     interface Flags {
         hasManifest: boolean;
         isDeprecated: boolean;
+        hasSuspectImport: boolean;
         hasLicense: boolean;
         hasMinifiedCode: boolean;
         hasIndirectDependencies: boolean;
@@ -35,6 +36,7 @@ declare namespace NodeSecure {
                 minified: string[];
                 required: string[];
                 required_builtin: string[];
+                suspectFiles?: string[];
             };
             license?: {
                 name: string;
