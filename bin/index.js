@@ -39,15 +39,20 @@ function logAndWrite(payload) {
 prog
     .command("cwd")
     .describe("Run on the current working dir")
-    .action(async function cwd() {
-        const payload = await nodeSecure(void 0, { verbose: true });
+    .option("-d, --depth", "maximum dependencies deepth", 2)
+    .action(async function cwd(opts) {
+        const { depth = 2 } = opts;
+
+        const payload = await nodeSecure(void 0, { verbose: true, maxDepth: depth });
         logAndWrite(payload);
     });
 
 prog
     .command("from <package>")
-    .describe("Run on the current working dir")
-    .action(async function from(packageName) {
+    .describe("Run on a given package from npm registry")
+    .option("-d, --depth", "maximum dependencies deepth", 2)
+    .action(async function from(packageName, opts) {
+        const { depth = 2 } = opts;
         let manifest = null;
 
         const spinner = ora(`Searching for '${yellow().bold(packageName)}' manifest in npm registry!`).start();
@@ -65,7 +70,7 @@ prog
             return;
         }
 
-        const payload = await depWalker(manifest);
+        const payload = await depWalker(manifest, { verbose: true, maxDepth: depth });
         logAndWrite(payload);
     });
 
