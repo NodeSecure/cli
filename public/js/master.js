@@ -1,24 +1,23 @@
 "use strict";
 
 // CONSTANTS (for nodes colors)
-const C_EXT = "#673AB7";
-const C_INT = "#E65100";
+const C_INT = "#FFCA28";
 const C_OFF = "#607D8B";
 const C_TRS = "rgba(200, 200, 200, 0.05)";
 
 const networkGraphOptions = {
     nodes: {
-        mass: 1.5,
-        shape: "box",
+        mass: 3,
+        shape: "text",
         size: 24,
         font: {
             face: "Roboto",
-            vadjust: 0.5,
-            size: 22,
+            vadjust: 1,
+            size: 34,
             color: "#ECEFF1",
-            bold: "22px"
+            bold: "24px"
         },
-        margin: 7.5,
+        margin: 10,
         shadow: {
             enabled: true,
             color: "rgba(20, 20, 20, 0.2)"
@@ -47,14 +46,24 @@ const networkGraphOptions = {
 document.addEventListener("DOMContentLoaded", async() => {
     // Find elements and declare top vars
     const networkElement = document.getElementById("network-graph");
-    let id = 0;
 
     // Hydrate nodes & edges with the data
     const nodesDataArr = [];
     const edgesDataArr = [];
     const data = await request("/data");
-    for (const [label, desc] of Object.entries(data)) {
-        nodesDataArr.push({ id: id++, label, color: C_INT });
+    for (const [packageName, descriptor] of Object.entries(data)) {
+        const { metadata, ...versions } = descriptor;
+
+        for (const [currVersion, opt] of Object.entries(versions)) {
+            const { id, usedBy } = opt;
+            const label = `${packageName}@${currVersion}`;
+
+            nodesDataArr.push({ id, label, color: C_INT });
+
+            for (const [name, version] of Object.entries(usedBy)) {
+                edgesDataArr.push({ from: id, to: data[name][version].id });
+            }
+        }
     }
 
     // Create required DataSet for the Network Graph
@@ -67,7 +76,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     // Create custom methods for interaction
     function neighbourHighlight(params) {
-        const allNodes = nodesDataset.get({ returnType: "Object" });
+        const allNodes = nodes.get({ returnType: "Object" });
         console.log(allNodes);
     }
 });

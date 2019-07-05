@@ -314,16 +314,19 @@ async function depWalker(manifest, options = Object.create(null)) {
     /** @type {Map<String, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
     const promisesToWait = [];
+    let id = 0;
 
     for (const { name, version, parent, flags } of allDependencies) {
         const current = {
             [version]: {
+                id: id++,
                 usedBy: parent === null ? {} : { [parent.name]: parent.version },
                 flags
-            }
+            },
+            metadata: {}
         };
         promisesToWait.push(
-            searchPackageAuthors(name, current),
+            searchPackageAuthors(name, current.metadata),
             processPackageTarball(name, version, current[version])
         );
 

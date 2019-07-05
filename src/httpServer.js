@@ -1,7 +1,7 @@
 "use strict";
 
 // Require Node.js Dependencies
-const { readFile } = require("fs").promises;
+const { createReadStream } = require("fs");
 const { join } = require("path");
 
 // Require Third-party Dependencies
@@ -19,8 +19,10 @@ httpServer.use(sirv(PUBLIC, { dev: true }));
 
 httpServer.get("/", async(req, res) => {
     try {
-        const HTMLContent = await readFile(join(VIEWS, "index.html"), "utf-8");
-        send(res, 200, HTMLContent, { "Content-Type": "text/html" });
+        res.writeHead(200, {
+            "Content-Type": "text/html"
+        });
+        createReadStream(join(VIEWS, "index.html")).pipe(res);
     }
     catch (err) {
         send(res, 500, err.message);

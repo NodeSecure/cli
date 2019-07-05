@@ -23,16 +23,19 @@ declare namespace NodeSecure {
     }
 
     interface VersionDescriptor {
-        publishedCount: number;
-        lastUpdateAt: number;
-        lastVersion: number;
-        hasChangedAuthor: boolean;
-        author: string;
-        authors?: string[];
-        hasManyPublishers: boolean;
-        publishers: string[];
+        metadata: {
+            publishedCount: number;
+            lastUpdateAt: number;
+            lastVersion: number;
+            hasChangedAuthor: boolean;
+            author: string;
+            authors?: string[];
+            hasManyPublishers: boolean;
+            publishers: string[];
+        };
         [version: string]: {
-            userBy: {
+            id: number;
+            usedBy: {
                 [packageName: string]: string;
             };
             size: number;
@@ -46,10 +49,8 @@ declare namespace NodeSecure {
                 required_builtin: string[];
                 suspectFiles?: string[];
             };
-            license?: {
-                name: string;
-                url?: string;
-            };
+            license: string;
+            licenseFrom: string;
             flags: Flags;
         };
     }
