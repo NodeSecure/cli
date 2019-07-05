@@ -1,0 +1,34 @@
+{
+    "name": "@slimio/is",
+    "version": "1.5.1",
+    "description": "SlimIO is (JavaScript Primitives &amp; Objects type checker)",
+    "main": "index.js",
+    "engines": {
+      "node": ">=10"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/SlimIO/is.git"
+    },
+    "author": "SlimIO",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/SlimIO/is/issues"
+    },
+    "homepage": "https://github.com/SlimIO/is#readme",
+    "devDependencies": {
+      "@commitlint/cli": "^8.0.0",
+      "@commitlint/config-conventional": "^8.0.0",
+      "@escommunity/minami": "^1.0.0",
+      "@slimio/eslint-config": "^2.0.4",
+      "@slimio/psp": "^0.4.0",
+      "ava": "^2.1.0",
+      "cross-env": "^5.2.0",
+      "eslint": "^5.13.0",
+      "husky": "^2.4.0",
+      "jsdoc": "^3.6.2",
+      "nyc": "^14.1.1",
+      "pkg-ok": "^2.3.1"
+    },
+    "dependencies": {}
+  }
