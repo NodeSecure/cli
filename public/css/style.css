@@ -1,7 +1,22 @@
-body {
-    background: red;
+body, html {
+    height: 100%;
+    font-family: "Roboto", sans-serif;
+    font-size: 16px;
+    background: rgb(39,50,56);
+    background: -moz-radial-gradient(center, ellipse cover, rgba(39,50,56,1) 1%, rgba(22,30,33,1) 100%);
+    background: -webkit-radial-gradient(center, ellipse cover, rgba(39,50,56,1) 1%,rgba(22,30,33,1) 100%);
+    background: radial-gradient(ellipse at center, rgba(39,50,56,1) 1%,rgba(22,30,33,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#273238', endColorstr='#161e21',GradientType=1 );
 }
 
-h1 {
-    color: blue;
+body {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    position: relative;
+}
+
+main#network-graph {
+    flex-grow: 1;
+    height: 100vh;
 }

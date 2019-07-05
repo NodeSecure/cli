@@ -6,7 +6,7 @@ require("make-promises-safe");
 require("dotenv").config();
 
 // Require Node.js Dependencies
-const { writeFileSync } = require("fs");
+const { writeFileSync, accessSync, createReadStream, constants: { R_OK, W_OK } } = require("fs");
 const { join } = require("path");
 const { performance } = require("perf_hooks");
 
@@ -85,11 +85,20 @@ prog
     .describe("Run an HTTP Server with a given analysis .JSON")
     .option("-p, --port", "http server port", 1338)
     .action((json, opts) => {
-        // console.log(json);
+        const dataFilePath = join(process.cwd(), json);
+        accessSync(dataFilePath, R_OK | W_OK);
 
         // TODO: replace require with lazy-import (when available in Node.js).
         // eslint-disable-next-line
         const httpServer = require(join(SRC_PATH, "httpServer.js"));
+
+        httpServer.get("/data", (req, res) => {
+            res.writeHead(200, {
+                "Content-Type": "application/json"
+            });
+
+            createReadStream(dataFilePath).pipe(res);
+        });
 
         httpServer.listen(opts.port, () => {
             console.log(green().bold("HTTP Server started: "), cyan().bold(`http://localhost:${opts.port}`));
