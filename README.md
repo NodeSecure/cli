@@ -32,8 +32,6 @@ $ nsecure from @sindresorhus/is
 ## Roadmap
 
 - Retrieve vulnerabilities for a given package using the Snyk API.
-- Find a way to identify the license.
-- Add CLI options for MAX_DEPTH and to choose whatever we want to execute the package on -P or -D (or all).
 - Improve AST analysis to counter malicious code as possible.
 - Improve the performance.
 - Improve tests.
