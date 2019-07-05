@@ -8,7 +8,7 @@ const repl = require("repl");
 
 // Require Third-party Dependencies
 const pacote = require("pacote");
-const { red, white, yellow, cyan, green, grey } = require("kleur");
+const { red, white, yellow, cyan, green } = require("kleur");
 const premove = require("premove");
 const Lock = require("@slimio/lock");
 const ora = require("ora");
@@ -22,7 +22,6 @@ const { searchRuntimeDependencies } = require("./ast");
 // CONSTANTS
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
 const NODE_CORE_LIBS = new Set([...repl._builtinLibs]);
-const MAX_DEPTH = 2;
 const TMP = join(__dirname, "..", "tmp");
 
 // Vars
@@ -38,10 +37,11 @@ const npmReg = new Registry();
  * @param {Set<String>} [options.exclude] packages that are excluded (avoid infinite recursion).
  * @param {Number} [options.currDepth=0] current depth
  * @param {String} [options.parent] parent dependency
+ * @param {Number} [options.maxDepth=2] max depth
  * @returns {Promise<NodeSecure.Dependency[]>}
  */
 async function searchDeepDependencies(packageName, options = {}) {
-    const { exclude = new Set(), currDepth = 0, parent = null } = options;
+    const { exclude = new Set(), currDepth = 0, parent = null, maxDepth = 2 } = options;
     const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName);
 
     const { dependencies, customResolvers } = mergeDependencies(pkg);
@@ -65,12 +65,12 @@ async function searchDeepDependencies(packageName, options = {}) {
     };
 
     const ret = [current];
-    if (dependencies.length === 0 || currDepth === MAX_DEPTH) {
+    if (dependencies.length === 0 || currDepth === maxDepth) {
         return ret;
     }
 
     const _p = [];
-    const opt = { exclude, currDepth: currDepth + 1, parent: current };
+    const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
     for (const depName of dependencies) {
         if (exclude.has(depName)) {
             continue;
@@ -81,7 +81,7 @@ async function searchDeepDependencies(packageName, options = {}) {
             .catch(() => console.error(red().bold(`failed to fetch '${depName}'`))));
     }
     const subDependencies = await Promise.all(_p);
-    ret.push(...subDependencies.flat(MAX_DEPTH));
+    ret.push(...subDependencies.flat(maxDepth));
 
     return ret;
 }
@@ -171,10 +171,14 @@ async function processPackageTarball(name, version, ref) {
  * @async
  * @func getRootDependencies
  * @param {any} manifest package manifest
- * @param {Boolean} [verbose=true] enable verbose mode
+ * @param {Object} options options
+ * @param {Boolean} [options.verbose=true] enable verbose mode
+ * @param {Number} [options.maxDepth=2] max depth
  * @returns {Promise<null | NodeSecure.Dependency[]>}
  */
-async function getRootDependencies(manifest, verbose = true) {
+async function getRootDependencies(manifest, options) {
+    const { verbose = true, maxDepth = 2 } = options;
+
     let spinner;
     if (verbose) {
         spinner = ora({ spinner: "dots" }).start(white().bold("Fetch all dependencies..."));
@@ -192,7 +196,7 @@ async function getRootDependencies(manifest, verbose = true) {
         const exclude = new Set();
 
         const result = (await Promise.all(
-            dependencies.map((name) => searchDeepDependencies(name, { exclude }))
+            dependencies.map((name) => searchDeepDependencies(name, { exclude, maxDepth }))
         )).flat();
         const execTime = cyan().bold((performance.now() - start).toFixed(2));
         if (verbose) {
@@ -282,13 +286,13 @@ async function searchPackageAuthors(name, ref) {
  * @param {Object} manifest manifest (package.json)
  * @param {Object} options options
  * @param {Boolean} [options.verbose=true] enable verbose mode
+ * @param {Number} [options.maxDepth=2] max depth
  * @returns {Promise<null | Map<String, NodeSecure.Dependency>>}
  */
 async function depWalker(manifest, options = Object.create(null)) {
-    const { verbose = true } = options;
     pacote.clearMemoized();
 
-    const allDependencies = await getRootDependencies(manifest, verbose);
+    const allDependencies = await getRootDependencies(manifest, options);
     if (allDependencies === null) {
         return null;
     }
@@ -326,6 +330,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     // Wait for all extraction to be done!
+    const { verbose = true } = options;
     let spinner;
     if (verbose) {
         spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all packages stats ..."));
