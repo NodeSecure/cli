@@ -268,8 +268,23 @@ async function searchPackageAuthors(name, ref) {
         ref.author = pkg.author.name || pkg.author;
 
         const authors = [];
+        ref.publishers = [];
+        const publishers = new Set();
+
         for (const verStr of pkg.versions) {
             const version = pkg.version(verStr);
+            if (typeof version.npmUser !== "undefined") {
+                const npmUser = version.npmUser.name || version.npmUser;
+                if (!publishers.has(npmUser)) {
+                    publishers.add(npmUser);
+                    ref.publishers.push({
+                        name: npmUser,
+                        version: verStr,
+                        firstPublishAt: pkg.publishedAt(verStr)
+                    });
+                }
+            }
+
             if (typeof version.author === "undefined" || version.author.name === ref.author) {
                 continue;
             }
@@ -289,6 +304,7 @@ async function searchPackageAuthors(name, ref) {
         if (authors.length > 0) {
             ref.authors = authors;
         }
+        ref.hasManyPublishers = publishers.size > 1;
     }
     catch (err) {
         console.error(err);

@@ -22,7 +22,15 @@ declare namespace NodeSecure {
         flags: Flags;
     }
 
-    interface Payload {
+    interface VersionDescriptor {
+        publishedCount: number;
+        lastUpdateAt: number;
+        lastVersion: number;
+        hasChangedAuthor: boolean;
+        author: string;
+        authors?: string[];
+        hasManyPublishers: boolean;
+        publishers: string[];
         [version: string]: {
             userBy: {
                 [packageName: string]: string;
@@ -43,7 +51,11 @@ declare namespace NodeSecure {
                 url?: string;
             };
             flags: Flags;
-        }
+        };
+    }
+
+    interface Payload {
+        [packageName: string]: VersionDescriptor;
     }
 }
 
