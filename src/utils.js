@@ -13,6 +13,19 @@ const EXCLUDE_DIRS = new Set(["node_modules", ".vscode", ".git"]);
 const SYM_FILE = Symbol("FILE");
 const SYM_DIR = Symbol("DIR");
 const DEFAULT_TYPES = ["dependencies"];
+const LICENSES = new Map([
+    ["MIT", "MIT"],
+    ["BSD", "BSD"],
+    ["ISC", "ISC"],
+    ["Apache License", "Apache"],
+    ["Mozilla", "Mozilla"],
+    ["LGPL", "LGPL"],
+    ["Affero", "GPL"],
+    ["GPL", "GPL"],
+    ["Eclipse", "Eclipse"],
+    ["Artistic", "Artistic"],
+    ["DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE", "WTF"]
+]);
 
 // TYPEDEF
 
@@ -125,7 +138,24 @@ function mergeDependencies(manifest, types = DEFAULT_TYPES) {
     return { dependencies: [...ret], customResolvers };
 }
 
+/**
+ * @func getLicenseFromString
+ * @memberof Utils#
+ * @param {!String} str license file content
+ * @returns {String}
+ */
+function getLicenseFromString(str) {
+    for (const [name, licenseName] of LICENSES.entries()) {
+        if (str.indexOf(name) > -1) {
+            return licenseName;
+        }
+    }
+
+    return "N/A";
+}
+
 module.exports = Object.freeze({
     getTarballComposition,
-    mergeDependencies
+    mergeDependencies,
+    getLicenseFromString
 });

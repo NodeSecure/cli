@@ -16,7 +16,7 @@ const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 
 // Require Internal Dependencies
-const { getTarballComposition, mergeDependencies } = require("./utils");
+const { getTarballComposition, mergeDependencies, getLicenseFromString } = require("./utils");
 const { searchRuntimeDependencies } = require("./ast");
 
 // CONSTANTS
@@ -119,9 +119,13 @@ async function processPackageTarball(name, version, ref) {
         ref.composition = { extensions: [...ext], files };
 
         const hasLicense = files.find((value) => value.toLowerCase().includes("license"));
-        if (typeof hasLicense !== "undefined") {
+        if (typeof hasLicense === "undefined") {
+            ref.flags.hasLicense = false;
+        }
+        else {
             ref.flags.hasLicense = true;
-            // TODO: detect the kind of the license
+            const str = await readFile(join(dest, hasLicense), "utf-8");
+            ref.license = getLicenseFromString(str);
         }
 
         // Search for minified and runtime dependencies
