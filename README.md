@@ -1,5 +1,4 @@
 # node-secure
-
 [![build status][travis-image]][travis-url]
 [![Test coverage][codecov-image]][codecov-url]
 
@@ -23,12 +22,12 @@ $ npm link
 ## Usage example
 
 ```bash
-$ nsecure mocha
-# or
-$ nsecure
-```
+# Run analysis on the current working dir
+$ nsecure cwd
 
-> If no package is provided, it will try to read the package.json at the current working dir.
+# Run analysis for a given 'npm' package (must be in the registry).
+$ nsecure from @sindresorhus/is
+```
 
 ## Roadmap
 
@@ -40,7 +39,6 @@ $ nsecure
 - Improve tests.
 
 ## License
-
 MIT
 
 [travis-image]: https://img.shields.io/travis/com/ES-Community/node-secure/master.svg?style=flat-square
