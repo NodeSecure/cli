@@ -60,6 +60,7 @@
     "pkg-ok": "^2.3.1"
   },
   "dependencies": {
+    "@polka/send-type": "^0.5.2",
     "@slimio/is": "^1.5.1",
     "@slimio/lock": "^0.1.0",
     "@slimio/npm-registry": "^0.5.0",
@@ -72,8 +73,10 @@
     "make-promises-safe": "^5.0.0",
     "ora": "^3.4.0",
     "pacote": "^9.5.1",
+    "polka": "^0.5.2",
     "premove": "^1.0.0",
     "sade": "^1.6.0",
-    "semver": "^6.2.0"
+    "semver": "^6.2.0",
+    "sirv": "^0.4.2"
   }
 }

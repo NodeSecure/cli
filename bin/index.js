@@ -13,12 +13,15 @@ const { performance } = require("perf_hooks");
 // Require Third-party Dependencies
 const sade = require("sade");
 const pacote = require("pacote");
-const { yellow, grey, white, green } = require("kleur");
+const { yellow, grey, white, green, cyan } = require("kleur");
 const ora = require("ora");
 
 // Require Internal Dependencies
 const { depWalker } = require("../src/depWalker");
 const nodeSecure = require("../index");
+
+// CONSTANTS
+const SRC_PATH = join(__dirname, "..", "src");
 
 // Process script arguments
 const prog = sade("nsecure").version("0.1.0");
@@ -75,6 +78,22 @@ prog
 
         const payload = await depWalker(manifest, { verbose: true, maxDepth: depth });
         logAndWrite(payload, output);
+    });
+
+prog
+    .command("http <json>")
+    .describe("Run an HTTP Server with a given analysis .JSON")
+    .option("-p, --port", "http server port", 1338)
+    .action((json, opts) => {
+        // console.log(json);
+
+        // TODO: replace require with lazy-import (when available in Node.js).
+        // eslint-disable-next-line
+        const httpServer = require(join(SRC_PATH, "httpServer.js"));
+
+        httpServer.listen(opts.port, () => {
+            console.log(green().bold("HTTP Server started: "), cyan().bold(`http://localhost:${opts.port}`));
+        });
     });
 
 prog.parse(process.argv);
