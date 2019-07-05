@@ -102,11 +102,14 @@ async function processPackageTarball(name, version, ref) {
     try {
         await pacote.extract(fullName, dest);
 
+        /** @type {String} */
+        let license;
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
-            const { description = "", author = {} } = JSON.parse(packageStr);
+            const { description = "", author = {}, ...others } = JSON.parse(packageStr);
             ref.description = description;
             ref.author = author;
+            license = others.license || "N/A";
         }
         catch (err) {
             ref.flags.hasManifest = false;
@@ -117,16 +120,20 @@ async function processPackageTarball(name, version, ref) {
         const { ext, files, size } = await getTarballComposition(dest);
         ref.size = size;
         ref.composition = { extensions: [...ext], files };
+        ref.licenseFrom = "package.json";
 
-        const hasLicense = files.find((value) => value.toLowerCase().includes("license"));
-        if (typeof hasLicense === "undefined") {
-            ref.flags.hasLicense = false;
+        const licenseFile = files.find((value) => value.toLowerCase().includes("license"));
+        if (typeof licenseFile !== "undefined") {
+            const str = await readFile(join(dest, licenseFile), "utf-8");
+            const licenseName = getLicenseFromString(str);
+            if (licenseName !== "Unknown License") {
+                license = licenseName;
+                ref.licenseFrom = licenseFile;
+            }
         }
-        else {
-            ref.flags.hasLicense = true;
-            const str = await readFile(join(dest, hasLicense), "utf-8");
-            ref.license = getLicenseFromString(str);
-        }
+
+        ref.flags.hasLicense = typeof licenseFile !== "undefined" || license !== "N/A";
+        ref.license = license;
 
         // Search for minified and runtime dependencies
         const jsFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));

@@ -16,7 +16,7 @@ const DEFAULT_TYPES = ["dependencies"];
 const LICENSES = new Map([
     ["MIT", "MIT"],
     ["BSD", "BSD"],
-    ["ISC", "ISC"],
+    ["ISC ", "ISC"],
     ["Apache License", "Apache"],
     ["Mozilla", "Mozilla"],
     ["LGPL", "LGPL"],
@@ -151,7 +151,7 @@ function getLicenseFromString(str) {
         }
     }
 
-    return "N/A";
+    return "Unknown License";
 }
 
 module.exports = Object.freeze({
