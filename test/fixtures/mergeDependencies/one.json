@@ -1,0 +1,9 @@
+{
+    "dependencies": {
+        "semver": "^0.1.0",
+        "test": "~0.5.0"
+    },
+    "devDependencies": {
+        "ava": "^1.0.0"
+    }
+}

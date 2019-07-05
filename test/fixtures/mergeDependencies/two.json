@@ -1,0 +1,9 @@
+{
+    "dependencies": {
+        "@slimio/is": "^1.4.0",
+        "custom": "file:\\file.js"
+    },
+    "devDependencies": {
+        "japa": "~0.1.0"
+    }
+}

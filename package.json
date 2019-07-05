@@ -60,6 +60,7 @@
     "pkg-ok": "^2.3.1"
   },
   "dependencies": {
+    "@slimio/is": "^1.5.1",
     "@slimio/lock": "^0.1.0",
     "@slimio/npm-registry": "^0.5.0",
     "cherow": "^1.6.9",
