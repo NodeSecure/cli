@@ -294,17 +294,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     // Create TMP directory
-    try {
-        await mkdir(TMP);
-        if (verbose) {
-            console.log(grey().bold(`\n > ${yellow().bold(TMP)} directory created!\n`));
-        }
-    }
-    catch (err) {
-        if (err.code !== "EEXIST") {
-            throw err;
-        }
-    }
+    await mkdir(TMP, { recursive: true });
 
     /** @type {Map<String, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
