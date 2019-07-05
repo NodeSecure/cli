@@ -88,13 +88,13 @@ async function searchDeepDependencies(packageName, options = {}) {
 
 /**
  * @async
- * @func extractTarball
+ * @func processPackageTarball
  * @param {!String} name package name
  * @param {!String} version package version
  * @param {*} ref version ref
  * @returns {Promise<void>}
  */
-async function extractTarball(name, version, ref) {
+async function processPackageTarball(name, version, ref) {
     const fullName = `${name}@${version}`;
     const dest = join(TMP, fullName);
     const free = await tarballLocker.lock();
@@ -319,7 +319,7 @@ async function depWalker(manifest, options = Object.create(null)) {
         };
         promisesToWait.push(
             searchPackageAuthors(name, current),
-            extractTarball(name, version, current[version])
+            processPackageTarball(name, version, current[version])
         );
 
         if (flattenedDeps.has(name)) {
