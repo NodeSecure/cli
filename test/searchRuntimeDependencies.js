@@ -18,3 +18,12 @@ test("should return runtime dependencies for one.js", async() => {
         new Set(["http", "net", "fs", "assert", "timers", "./aFile.js", "path"])
     );
 });
+
+test("should return runtime dependencies for two.js", async() => {
+    const str = await readFile(join(FIXTURE_PATH, "two.js"), "utf-8");
+    const { dependencies, isSuspect } = searchRuntimeDependencies(str);
+    expect(isSuspect).toStrictEqual(false);
+    expect(dependencies).toStrictEqual(
+        new Set(["http", "events"])
+    );
+});

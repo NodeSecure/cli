@@ -1,2 +1,3 @@
-var common = require('../common');
-var retry = require(common.dir.lib + '/retry');
+const myVar = "ht";
+require(myVar + "tp");
+require("eve" + "nt" + "s");
