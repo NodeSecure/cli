@@ -12,6 +12,22 @@ const { extname, join, relative } = require("path");
 const EXCLUDE_DIRS = new Set(["node_modules", ".vscode", ".git"]);
 const SYM_FILE = Symbol("FILE");
 const SYM_DIR = Symbol("DIR");
+const DEFAULT_TYPES = ["dependencies"];
+
+// TYPEDEF
+
+/**
+ * @typedef {Object} mergedDep
+ * @property {String[]} dependencies
+ * @property {Map<String, String>} customResolvers
+ */
+
+/**
+ * @typedef {Object} tarballComposition
+ * @property {Set<String>} ext all files extension
+ * @property {Number} size size in bytes
+ * @property {String[]} files complete list of files retrieved in the tarball
+ */
 
 /**
 * @async
@@ -41,15 +57,9 @@ async function* getFilesRecursive(dir) {
 }
 
 /**
- * @typedef {Object} tarballComposition
- * @property {Set<String>} ext all files extension
- * @property {Number} size size in bytes
- * @property {String[]} files complete list of files retrieved in the tarball
- */
-
-/**
  * @async
  * @func getTarballComposition
+ * @desc Get the size and the file(s) and directorie(s) composition of a given extracted npm tarball
  * @memberof Utils#
  * @param {!String} tarballDir tarball dir
  * @returns {Promise<tarballComposition>}
@@ -86,4 +96,36 @@ async function getTarballComposition(tarballDir) {
     return { ext, size, files: files.map((path) => relative(tarballDir, path)) };
 }
 
-module.exports = { getTarballComposition };
+/**
+ * @func mergeDependencies
+ * @desc Merge all kinds (dep, devDep etc..) of dependencies section of npm Manifest (package.json)
+ * @memberof Utils#
+ * @param {!Object} manifest manifest
+ * @param {String[]} [types] dependencies types to merge
+ * @returns {mergedDep}
+ */
+function mergeDependencies(manifest, types = DEFAULT_TYPES) {
+    const ret = new Set();
+    const customResolvers = new Map();
+
+    for (const fieldName of types) {
+        const dep = manifest[fieldName] || Object.create(null);
+        for (const [name, version] of Object.entries(dep)) {
+            // Version can be file:, github:, git+, ./...
+            if (/^([a-zA-Z]+:|git\+|\.\\)/.test(version)) {
+                customResolvers.set(name, version);
+                continue;
+            }
+
+            // Do we have to handle by version?
+            ret.add(`${name}@${version}`);
+        }
+    }
+
+    return { dependencies: [...ret], customResolvers };
+}
+
+module.exports = Object.freeze({
+    getTarballComposition,
+    mergeDependencies
+});

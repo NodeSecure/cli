@@ -16,12 +16,10 @@ const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 
 // Require Internal Dependencies
-const { getTarballComposition } = require("./utils");
+const { getTarballComposition, mergeDependencies } = require("./utils");
 const { searchRuntimeDependencies } = require("./ast");
 
 // CONSTANTS
-// const TYPES = ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"];
-const TYPES = ["dependencies"];
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
 const NODE_CORE_LIBS = new Set([...repl._builtinLibs]);
 const MAX_DEPTH = 2;
@@ -30,39 +28,6 @@ const TMP = join(__dirname, "..", "tmp");
 // Vars
 const tarballLocker = new Lock({ max: 25 });
 const npmReg = new Registry();
-
-/**
- * @typedef {Object} mergedDep
- * @property {String[]} dependencies
- * @property {Map<String, String>} customResolvers
- */
-
-/**
- * @func mergeDependencies
- * @desc Merge all kinds (dep, devDep etc..) of dependencies section of npm Manifest (package.json)
- * @param {!Object} manifest manifest
- * @returns {mergedDep}
- */
-function mergeDependencies(manifest) {
-    const ret = new Set();
-    const customResolvers = new Map();
-
-    for (const fieldName of TYPES) {
-        const dep = manifest[fieldName] || Object.create(null);
-        for (const [name, version] of Object.entries(dep)) {
-            // Version can be file:, github:, git+, ./...
-            if (/^([a-zA-Z]+:|git\+|\.\\)/.test(version)) {
-                customResolvers.set(name, version);
-                continue;
-            }
-
-            // Do we have to handle by version?
-            ret.add(`${name}@${version}`);
-        }
-    }
-
-    return { dependencies: [...ret], customResolvers };
-}
 
 /**
  * @async
