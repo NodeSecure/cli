@@ -57,9 +57,14 @@ declare namespace NodeSecure {
     interface Payload {
         [packageName: string]: VersionDescriptor;
     }
+
+    interface Options {
+        verbose?: boolean;
+        maxDepth?: number;
+    }
 }
 
-declare function NodeSecure(cwd?: string): Promise<NodeSecure.Payload>;
+declare function NodeSecure(cwd?: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
 
 export = NodeSecure;
 export as namespace NodeSecure;

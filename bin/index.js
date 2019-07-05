@@ -40,7 +40,7 @@ prog
     .command("cwd")
     .describe("Run on the current working dir")
     .action(async function cwd() {
-        const payload = await nodeSecure(void 0, true);
+        const payload = await nodeSecure(void 0, { verbose: true });
         logAndWrite(payload);
     });
 
