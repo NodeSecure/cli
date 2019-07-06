@@ -8,11 +8,12 @@
 const { readdir, stat } = require("fs").promises;
 const { extname, join, relative } = require("path");
 
+// SYMBOLS
+const SYM_FILE = Symbol("symTypeFile");
+const SYM_DIR = Symbol("symTypeDir");
+
 // CONSTANTS
 const EXCLUDE_DIRS = new Set(["node_modules", ".vscode", ".git"]);
-const SYM_FILE = Symbol("FILE");
-const SYM_DIR = Symbol("DIR");
-const DEFAULT_TYPES = ["dependencies"];
 const LICENSES = new Map([
     ["MIT", "MIT"],
     ["BSD", "BSD"],
@@ -117,7 +118,7 @@ async function getTarballComposition(tarballDir) {
  * @param {String[]} [types] dependencies types to merge
  * @returns {mergedDep}
  */
-function mergeDependencies(manifest, types = DEFAULT_TYPES) {
+function mergeDependencies(manifest, types = ["dependencies"]) {
     const ret = new Set();
     const customResolvers = new Map();
 
@@ -155,6 +156,7 @@ function getLicenseFromString(str) {
 }
 
 module.exports = Object.freeze({
+    getFilesRecursive,
     getTarballComposition,
     mergeDependencies,
     getLicenseFromString
