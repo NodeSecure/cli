@@ -17,7 +17,7 @@ const Registry = require("@slimio/npm-registry");
 const is = require("@slimio/is");
 
 // Require Internal Dependencies
-const { getTarballComposition, mergeDependencies, getLicenseFromString } = require("./utils");
+const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange } = require("./utils");
 const { searchRuntimeDependencies } = require("./ast");
 const Dependency = require("./dependency.class");
 
@@ -36,36 +36,40 @@ const npmReg = new Registry();
  * @func searchDeepDependencies
  * @param {!String} packageName packageName (and version)
  * @param {Object} [options={}] options
- * @param {Set<String>} [options.exclude] packages that are excluded (avoid infinite recursion).
+ * @param {Map<String, String[]>} [options.exclude] packages that are excluded (avoid infinite recursion).
  * @param {Number} [options.currDepth=0] current depth
  * @param {Dependency} [options.parent] parent dependency
  * @param {Number} [options.maxDepth=2] max depth
  * @returns {Promise<NodeSecure.Dependency[]>}
  */
 async function searchDeepDependencies(packageName, options = {}) {
-    const { exclude = new Set(), currDepth = 0, parent, maxDepth = 2 } = options;
+    const { exclude = new Map(), currDepth = 0, parent, maxDepth = 2 } = options;
 
     const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName);
     const { dependencies, customResolvers } = mergeDependencies(pkg);
-    if (dependencies.length > 0 && parent instanceof Dependency) {
+    if (dependencies.size > 0 && parent instanceof Dependency) {
         parent.hasIndirectDependencies = true;
     }
 
     const current = new Dependency(name, version, parent);
     current.isDeprecated = deprecated === true;
     current.hasCustomResolver = customResolvers.size > 0;
-    current.hasDependencies = dependencies.length > 0;
+    current.hasDependencies = dependencies.size > 0;
 
-    if (dependencies.length === 0 || currDepth === maxDepth) {
+    if (dependencies.size === 0 || currDepth === maxDepth) {
         return [current];
     }
 
     const _p = [];
     const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
-    for (const depName of dependencies) {
-        if (!exclude.has(depName)) {
-            exclude.add(depName);
-            _p.push(searchDeepDependencies(depName, opt).catch(() => void 0));
+    for (const [depName, range] of dependencies.entries()) {
+        const cleanName = `${depName}@${cleanRange(range)}`;
+        if (exclude.has(cleanName)) {
+            exclude.get(cleanName).add(`${name} ${version}`);
+        }
+        else {
+            exclude.set(cleanName, new Set());
+            _p.push(searchDeepDependencies(`${depName}@${range}`, opt).catch(() => void 0));
         }
     }
 
@@ -171,7 +175,7 @@ async function processPackageTarball(name, version, ref) {
  * @param {Object} options options
  * @param {Boolean} [options.verbose=true] enable verbose mode
  * @param {Number} [options.maxDepth=2] max depth
- * @returns {Promise<Dependency[]>}
+ * @returns {Promise<[Dependency[], Map<String, Object>]>}
  */
 async function getRootDependencies(manifest, options) {
     const { verbose = true, maxDepth = 2 } = options;
@@ -183,27 +187,37 @@ async function getRootDependencies(manifest, options) {
     try {
         const start = performance.now();
         const { dependencies } = mergeDependencies(manifest);
-        if (dependencies.length === 0) {
+        if (dependencies.size === 0) {
             if (verbose) {
                 spinner.succeed(yellow().bold("No dependencies to fetch..."));
             }
 
             return null;
         }
-        const exclude = new Set();
+
+        const exclude = new Map();
         const parent = new Dependency(manifest.name, manifest.version);
         parent.hasDependencies = true;
 
-        const result = (await Promise.all(
-            dependencies.map((name) => searchDeepDependencies(name, { exclude, maxDepth, parent }))
-        )).flat();
+        const _p = [...dependencies.entries()]
+            .map(([name, ver]) => searchDeepDependencies(`${name}@${ver}`, { exclude, maxDepth, parent }));
+        const result = (await Promise.all(_p)).flat();
         const execTime = cyan().bold((performance.now() - start).toFixed(2));
         if (verbose) {
             spinner.succeed(white().bold(`Successfully fetched ${green().bold(result.length)} dependencies in ${execTime} ms`));
         }
         result.unshift(parent);
 
-        return result;
+        // Re-insert root project dependencies
+        const fullName = `${manifest.name} ${manifest.version}`;
+        for (const [name, version] of dependencies.entries()) {
+            const fullRange = `${name}@${cleanRange(version)}`;
+            if (exclude.has(fullRange)) {
+                exclude.get(fullRange).add(fullName);
+            }
+        }
+
+        return [result, exclude];
     }
     catch (err) {
         if (verbose) {
@@ -293,10 +307,12 @@ async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true } = options;
     pacote.clearMemoized();
 
-    const dependencies = await getRootDependencies(manifest, options);
-    if (is.nullOrUndefined(dependencies)) {
+    const rootResult = await getRootDependencies(manifest, options);
+    if (is.nullOrUndefined(rootResult)) {
         return null;
     }
+    const [dependencies, exclude] = rootResult;
+    // console.log(exclude);
 
     // Create TMP directory
     await mkdir(TMP, { recursive: true });
@@ -344,6 +360,26 @@ async function depWalker(manifest, options = Object.create(null)) {
         }
 
         return null;
+    }
+
+    // Handle excluded dependencies
+    for (const [packageName, descriptor] of flattenedDeps) {
+        const { metadata, ...versions } = descriptor;
+
+        for (const verStr of Object.keys(versions)) {
+            const fullName = `${packageName}@${verStr}`;
+            const usedDeps = exclude.get(fullName) || new Set();
+            if (usedDeps.size === 0) {
+                continue;
+            }
+
+            const usedBy = {};
+            for (const dep of usedDeps) {
+                const [name, version] = dep.split(" ");
+                usedBy[name] = version;
+            }
+            Object.assign(versions[verStr].usedBy, usedBy);
+        }
     }
 
     // Cleanup TMP dir

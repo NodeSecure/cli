@@ -21,7 +21,10 @@ test("should return the one.json field 'dependencies' merged", () => {
     const result = mergeDependencies(one);
 
     expect(is.plainObject(result)).toStrictEqual(true);
-    expect(result.dependencies).toStrictEqual(["semver@^0.1.0", "test@~0.5.0"]);
+    expect(result.dependencies).toMatchObject(new Map([
+        ["semver", "^0.1.0"],
+        ["test", "~0.5.0"]
+    ]));
     expect(result.customResolvers).toMatchObject(new Map());
 });
 
@@ -29,7 +32,11 @@ test("should return the one.json field 'dependencies' & 'devDependencies' merged
     const result = mergeDependencies(one, ["dependencies", "devDependencies"]);
 
     expect(is.plainObject(result)).toStrictEqual(true);
-    expect(result.dependencies).toStrictEqual(["semver@^0.1.0", "test@~0.5.0", "ava@^1.0.0"]);
+    expect(result.dependencies).toMatchObject(new Map([
+        ["semver", "^0.1.0"],
+        ["test", "~0.5.0"],
+        ["ava", "^1.0.0"]
+    ]));
     expect(result.customResolvers).toMatchObject(new Map());
 });
 
@@ -40,6 +47,9 @@ test("should return two.json 'dependencies' & 'devDependencies' merged (with a c
     ]);
 
     expect(is.plainObject(result)).toStrictEqual(true);
-    expect(result.dependencies).toStrictEqual(["@slimio/is@^1.4.0", "japa@~0.1.0"]);
+    expect(result.dependencies).toMatchObject(new Map([
+        ["@slimio/is", "^1.4.0"],
+        ["japa", "~0.1.0"]
+    ]));
     expect(result.customResolvers).toMatchObject(resolvers);
 });

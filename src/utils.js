@@ -32,7 +32,7 @@ const LICENSES = new Map([
 
 /**
  * @typedef {Object} mergedDep
- * @property {String[]} dependencies
+ * @property {Map<String, String>} dependencies
  * @property {Map<String, String>} customResolvers
  */
 
@@ -119,7 +119,7 @@ async function getTarballComposition(tarballDir) {
  * @returns {mergedDep}
  */
 function mergeDependencies(manifest, types = ["dependencies"]) {
-    const ret = new Set();
+    const dependencies = new Map();
     const customResolvers = new Map();
 
     for (const fieldName of types) {
@@ -131,12 +131,11 @@ function mergeDependencies(manifest, types = ["dependencies"]) {
                 continue;
             }
 
-            // Do we have to handle by version?
-            ret.add(`${name}@${version}`);
+            dependencies.set(name, version);
         }
     }
 
-    return { dependencies: [...ret], customResolvers };
+    return { dependencies, customResolvers };
 }
 
 /**
@@ -155,11 +154,37 @@ function getLicenseFromString(str) {
     return "Unknown License";
 }
 
+/**
+ * @func cleanRange
+ * @desc Clean up range (as possible).
+ * @memberof Utils#
+ * @param {!String} version version
+ * @returns {String}
+ *
+ * @example
+ * const assert = require("assert").strict;
+ *
+ * const ret = cleanRange("^1.0.0");
+ * assert.equal(ret, "1.0.0");
+ *
+ * @see https://github.com/npm/node-semver#ranges
+ */
+function cleanRange(version) {
+    // TODO: how do we handle complicated range like pkg-name@1 || 2 or pkg-name@2.1.2 < 3
+    const firstChar = version.charAt(0);
+    if (firstChar === "^" || firstChar === "<" || firstChar === ">" || firstChar === "=" || firstChar === "~") {
+        return version.slice(version.charAt(1) === "=" ? 2 : 1);
+    }
+
+    return version;
+}
+
 module.exports = Object.freeze({
     getFilesRecursive,
     getTarballComposition,
     mergeDependencies,
     getLicenseFromString,
+    cleanRange,
     constants: Object.freeze({
         FILE: SYM_FILE,
         DIRECTORY: SYM_DIR
