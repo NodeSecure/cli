@@ -159,5 +159,9 @@ module.exports = Object.freeze({
     getFilesRecursive,
     getTarballComposition,
     mergeDependencies,
-    getLicenseFromString
+    getLicenseFromString,
+    constants: Object.freeze({
+        FILE: SYM_FILE,
+        DIRECTORY: SYM_DIR
+    })
 });
