@@ -1,5 +1,5 @@
 {
-  "name": "node-secure",
+  "name": "nsecure",
   "version": "0.1.0",
   "description": "Node.js security CLI",
   "main": "./index.js",

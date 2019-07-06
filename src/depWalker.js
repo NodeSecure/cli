@@ -191,14 +191,17 @@ async function getRootDependencies(manifest, options) {
             return null;
         }
         const exclude = new Set();
+        const parent = new Dependency(manifest.name, manifest.version);
+        parent.hasDependencies = true;
 
         const result = (await Promise.all(
-            dependencies.map((name) => searchDeepDependencies(name, { exclude, maxDepth }))
+            dependencies.map((name) => searchDeepDependencies(name, { exclude, maxDepth, parent }))
         )).flat();
         const execTime = cyan().bold((performance.now() - start).toFixed(2));
         if (verbose) {
             spinner.succeed(white().bold(`Successfully fetched ${green().bold(result.length)} dependencies in ${execTime} ms`));
         }
+        result.unshift(parent);
 
         return result;
     }
@@ -273,7 +276,7 @@ async function searchPackageAuthors(name, ref) {
         ref.hasManyPublishers = publishers.size > 1;
     }
     catch (err) {
-        console.error(err);
+        // Ignore
     }
 }
 
