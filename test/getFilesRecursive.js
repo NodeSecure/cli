@@ -1,7 +1,7 @@
 "use strict";
 
 // Require Node.js Dependencies
-const { join, relative } = require("path");
+const { join, relative, normalize } = require("path");
 
 // Require Internal Dependencies
 const { getFilesRecursive, constants } = require("../src/utils");
@@ -18,11 +18,11 @@ test("should return all files contained in the project", async() => {
     }
 
     const expected = [
-        "bin\\index.js",
-        "src\\ast.js",
-        "src\\depWalker.js",
-        "src\\httpServer.js",
-        "src\\utils.js"
-    ];
+        "bin/index.js",
+        "src/ast.js",
+        "src/depWalker.js",
+        "src/httpServer.js",
+        "src/utils.js"
+    ].map((path) => normalize(path));
     expect(files).toEqual(expect.arrayContaining(expected));
 });
