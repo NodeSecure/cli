@@ -14,10 +14,12 @@ const Lock = require("@slimio/lock");
 const ora = require("ora");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
+const is = require("@slimio/is");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, getLicenseFromString } = require("./utils");
 const { searchRuntimeDependencies } = require("./ast");
+const Dependency = require("./dependency.class");
 
 // CONSTANTS
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
@@ -33,57 +35,41 @@ const npmReg = new Registry();
  * @generator
  * @func searchDeepDependencies
  * @param {!String} packageName packageName (and version)
- * @param {Object=} [options={}] options
+ * @param {Object} [options={}] options
  * @param {Set<String>} [options.exclude] packages that are excluded (avoid infinite recursion).
  * @param {Number} [options.currDepth=0] current depth
- * @param {String} [options.parent] parent dependency
+ * @param {Dependency} [options.parent] parent dependency
  * @param {Number} [options.maxDepth=2] max depth
  * @returns {Promise<NodeSecure.Dependency[]>}
  */
 async function searchDeepDependencies(packageName, options = {}) {
-    const { exclude = new Set(), currDepth = 0, parent = null, maxDepth = 2 } = options;
-    const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName);
+    const { exclude = new Set(), currDepth = 0, parent, maxDepth = 2 } = options;
 
+    const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName);
     const { dependencies, customResolvers } = mergeDependencies(pkg);
-    if (dependencies.length > 0 && parent !== null) {
-        parent.flags.hasIndirectDependencies = true;
+    if (dependencies.length > 0 && parent instanceof Dependency) {
+        parent.hasIndirectDependencies = true;
     }
 
-    const current = {
-        name, version,
-        parent: parent === null ? null : { name: parent.name, version: parent.version },
-        flags: {
-            hasManifest: true,
-            isDeprecated: deprecated === true,
-            hasSuspectImport: false,
-            hasLicense: false,
-            hasIndirectDependencies: false,
-            hasMinifiedCode: false,
-            hasCustomResolver: customResolvers.size > 0,
-            hasDependencies: dependencies.length > 0
-        }
-    };
+    const current = new Dependency(name, version, parent);
+    current.isDeprecated = deprecated === true;
+    current.hasCustomResolver = customResolvers.size > 0;
+    current.hasDependencies = dependencies.length > 0;
 
-    const ret = [current];
     if (dependencies.length === 0 || currDepth === maxDepth) {
-        return ret;
+        return [current];
     }
 
     const _p = [];
     const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
     for (const depName of dependencies) {
-        if (exclude.has(depName)) {
-            continue;
+        if (!exclude.has(depName)) {
+            exclude.add(depName);
+            _p.push(searchDeepDependencies(depName, opt).catch(() => void 0));
         }
-
-        exclude.add(depName);
-        _p.push(searchDeepDependencies(depName, opt)
-            .catch(() => console.error(red().bold(`failed to fetch '${depName}'`))));
     }
-    const subDependencies = await Promise.all(_p);
-    ret.push(...subDependencies.flat(maxDepth));
 
-    return ret;
+    return [current, ...(await Promise.all(_p)).flat(maxDepth)];
 }
 
 /**
@@ -185,7 +171,7 @@ async function processPackageTarball(name, version, ref) {
  * @param {Object} options options
  * @param {Boolean} [options.verbose=true] enable verbose mode
  * @param {Number} [options.maxDepth=2] max depth
- * @returns {Promise<null | NodeSecure.Dependency[]>}
+ * @returns {Promise<Dependency[]>}
  */
 async function getRootDependencies(manifest, options) {
     const { verbose = true, maxDepth = 2 } = options;
@@ -301,10 +287,11 @@ async function searchPackageAuthors(name, ref) {
  * @returns {Promise<null | Map<String, NodeSecure.Dependency>>}
  */
 async function depWalker(manifest, options = Object.create(null)) {
+    const { verbose = true } = options;
     pacote.clearMemoized();
 
-    const allDependencies = await getRootDependencies(manifest, options);
-    if (allDependencies === null) {
+    const dependencies = await getRootDependencies(manifest, options);
+    if (is.nullOrUndefined(dependencies)) {
         return null;
     }
 
@@ -314,37 +301,28 @@ async function depWalker(manifest, options = Object.create(null)) {
     /** @type {Map<String, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
     const promisesToWait = [];
-    let id = 0;
+    for (const currentDep of dependencies) {
+        const { name, version } = currentDep;
+        const current = currentDep.flatten();
 
-    for (const { name, version, parent, flags } of allDependencies) {
-        const current = {
-            [version]: {
-                id: id++,
-                usedBy: parent === null ? {} : { [parent.name]: parent.version },
-                flags
-            },
-            metadata: {}
-        };
-        promisesToWait.push(
-            searchPackageAuthors(name, current.metadata),
-            processPackageTarball(name, version, current[version])
-        );
+        promisesToWait.push(searchPackageAuthors(name, current.metadata));
+        promisesToWait.push(processPackageTarball(name, version, current[version]));
 
-        if (flattenedDeps.has(name)) {
-            const dep = flattenedDeps.get(name);
-            const hasIndirectDependencies = Reflect.has(dep, version) ? dep[version].flags.hasIndirectDependencies : false;
-            const ref = Object.assign(dep, current);
-            if (hasIndirectDependencies) {
-                ref[version].flags.hasIndirectDependencies = true;
-            }
-        }
-        else {
+        if (!flattenedDeps.has(name)) {
             flattenedDeps.set(name, current);
+            continue;
+        }
+
+        // Merge all versions, and always force hasIndirectDependencies to true
+        const dep = flattenedDeps.get(name);
+        const hasIndirectDependencies = Reflect.has(dep, version) ? dep[version].flags.hasIndirectDependencies : false;
+        const ref = Object.assign(dep, current);
+        if (hasIndirectDependencies) {
+            ref[version].flags.hasIndirectDependencies = true;
         }
     }
 
     // Wait for all extraction to be done!
-    const { verbose = true } = options;
     let spinner;
     if (verbose) {
         spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all packages stats ..."));
@@ -364,8 +342,6 @@ async function depWalker(manifest, options = Object.create(null)) {
 
         return null;
     }
-
-    // TODO: search for vulnerabilities?
 
     // Cleanup TMP dir
     try {
