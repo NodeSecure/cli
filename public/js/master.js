@@ -1,23 +1,24 @@
 "use strict";
 
 // CONSTANTS (for nodes colors)
-const C_INT = "#FFCA28";
-const C_OFF = "#607D8B";
-const C_TRS = "rgba(200, 200, 200, 0.05)";
+const C_MAIN = "#01579B";
+const C_INDIRECT = "rgba(100, 200, 200, 0.30)";
+const C_WARN = "rgba(210, 115, 115, 0.30)";
+const C_TRS = "rgba(150, 200, 200, 0.10)";
 
 const networkGraphOptions = {
     nodes: {
-        mass: 3,
-        shape: "text",
-        size: 24,
+        mass: 6,
+        shape: "box",
+        size: 5,
         font: {
             face: "Roboto",
             vadjust: 1,
             size: 34,
             color: "#ECEFF1",
-            bold: "24px"
+            bold: "32px"
         },
-        margin: 10,
+        margin: 12,
         shadow: {
             enabled: true,
             color: "rgba(20, 20, 20, 0.2)"
@@ -25,9 +26,9 @@ const networkGraphOptions = {
     },
     edges: {
         arrows: "from",
-        hoverWidth: 2,
-        selectionWidth: 2,
-        width: 1.2
+        hoverWidth: 3,
+        selectionWidth: 3,
+        width: 2
     },
     physics: {
         forceAtlas2Based: {
@@ -55,10 +56,43 @@ document.addEventListener("DOMContentLoaded", async() => {
         const { metadata, ...versions } = descriptor;
 
         for (const [currVersion, opt] of Object.entries(versions)) {
-            const { id, usedBy } = opt;
-            const label = `${packageName}@${currVersion}`;
+            const { id, usedBy, flags } = opt;
+            let flagStr = "";
+            if (flags.hasIndirectDependencies) {
+                flagStr += " 🌍";
+            }
+            if (flags.hasSuspectImport) {
+                flagStr += " ⚠️";
+            }
+            if (flags.hasCustomResolver) {
+                flagStr += " 🔆";
+            }
+            if (flags.hasLicense === false) {
+                flagStr += " 📜";
+            }
+            if (flags.hasMinifiedCode) {
+                flagStr += " 🔬";
+            }
+            if (flags.isDeprecated) {
+                flagStr += " ⛔️";
+            }
 
-            nodesDataArr.push({ id, label, color: C_INT });
+            const label = `${packageName}@${currVersion}${flagStr}`;
+            let color;
+            if (id === 0) {
+                color = C_MAIN;
+            }
+            else if (flags.hasSuspectImport || flags.hasMinifiedCode) {
+                color = C_WARN;
+            }
+            else if (flags.hasIndirectDependencies) {
+                color = C_INDIRECT;
+            }
+            else {
+                color = C_TRS;
+            }
+
+            nodesDataArr.push({ id, label, color });
 
             for (const [name, version] of Object.entries(usedBy)) {
                 edgesDataArr.push({ from: id, to: data[name][version].id });
