@@ -4,7 +4,9 @@
 const C_MAIN = "#01579B";
 const C_INDIRECT = "rgba(100, 200, 200, 0.30)";
 const C_WARN = "rgba(210, 115, 115, 0.30)";
-const C_TRS = "rgba(150, 200, 200, 0.10)";
+const C_NORMAL = "rgba(150, 200, 200, 0.15)";
+const C_SELECTED = "rgba(170, 100, 200, 0.50)";
+const C_TRS = "rgba(150, 150, 150, 0.02)";
 
 const networkGraphOptions = {
     nodes: {
@@ -44,19 +46,38 @@ const networkGraphOptions = {
     }
 };
 
+function getColor(id, flags) {
+    if (id === 0) {
+        return C_MAIN;
+    }
+    else if (flags.hasSuspectImport || flags.hasMinifiedCode) {
+        return C_WARN;
+    }
+    else if (flags.hasIndirectDependencies) {
+        return C_INDIRECT;
+    }
+
+    return C_NORMAL;
+}
+
 document.addEventListener("DOMContentLoaded", async() => {
     // Find elements and declare top vars
     const networkElement = document.getElementById("network-graph");
+    let highlightActive = false;
+    let activeNode = null;
 
     // Hydrate nodes & edges with the data
     const nodesDataArr = [];
     const edgesDataArr = [];
+    const linker = new Map();
+
     const data = await request("/data");
     for (const [packageName, descriptor] of Object.entries(data)) {
         const { metadata, ...versions } = descriptor;
 
         for (const [currVersion, opt] of Object.entries(versions)) {
             const { id, usedBy, flags } = opt;
+
             let flagStr = "";
             if (flags.hasIndirectDependencies) {
                 flagStr += " 🌍";
@@ -78,20 +99,9 @@ document.addEventListener("DOMContentLoaded", async() => {
             }
 
             const label = `${packageName}@${currVersion}${flagStr}`;
-            let color;
-            if (id === 0) {
-                color = C_MAIN;
-            }
-            else if (flags.hasSuspectImport || flags.hasMinifiedCode) {
-                color = C_WARN;
-            }
-            else if (flags.hasIndirectDependencies) {
-                color = C_INDIRECT;
-            }
-            else {
-                color = C_TRS;
-            }
+            const color = getColor(id, flags);
 
+            linker.set(Number(id), opt);
             nodesDataArr.push({ id, label, color });
 
             for (const [name, version] of Object.entries(usedBy)) {
@@ -107,10 +117,62 @@ document.addEventListener("DOMContentLoaded", async() => {
     // Initialize vis Network
     const network = new vis.Network(networkElement, { nodes, edges }, networkGraphOptions);
     network.on("click", neighbourHighlight);
+    network.on("click", updateMenu);
 
-    // Create custom methods for interaction
+    function updateMenu(params) {
+        const selectProjectElem = document.querySelector(".select-project");
+
+        if (params.nodes.length > 0) {
+            selectProjectElem.classList.add("hide");
+        }
+        else {
+            selectProjectElem.classList.remove("hide");
+            activeNode = null;
+        }
+    }
+
     function neighbourHighlight(params) {
         const allNodes = nodes.get({ returnType: "Object" });
-        console.log(allNodes);
+
+        // if something is selected:
+        if (params.nodes.length > 0) {
+            highlightActive = true;
+            const selectedNode = params.nodes[0];
+
+            // mark all nodes as hard to read.
+            for (const node of Object.values(allNodes)) {
+                node.color = C_TRS;
+            }
+
+            // get the second degree nodes
+            const connectedNodes = network.getConnectedNodes(selectedNode);
+            const allConnectedNodes = [];
+            for (let id = 0; id < connectedNodes.length; id++) {
+                allConnectedNodes.push(...network.getConnectedNodes(connectedNodes[id]));
+            }
+
+            // all second degree nodes get a different color and their label back
+            for (let id = 0; id < allConnectedNodes.length; id++) {
+                allNodes[allConnectedNodes[id]].color = C_NORMAL;
+            }
+
+            // all first degree nodes get their own color and their label back
+            for (let id = 0; id < connectedNodes.length; id++) {
+                allNodes[connectedNodes[id]].color = C_SELECTED;
+            }
+
+            // the main node gets its own color and its label back.
+            allNodes[selectedNode].color = C_MAIN;
+        }
+        else if (highlightActive) {
+            highlightActive = false;
+            for (const node of Object.values(allNodes)) {
+                const { id, flags } = linker.get(Number(node.id));
+                node.color = getColor(id, flags);
+            }
+        }
+
+        // transform the object into an array
+        nodes.update(Object.values(allNodes));
     }
 });

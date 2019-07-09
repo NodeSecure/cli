@@ -16,6 +16,33 @@ body {
     position: relative;
 }
 
+section#show-info {
+    width: 350px;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    background: #37474F;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
+    border-right: 2px solid rgba(200, 200, 200, 0.1);
+    border-bottom: 2px solid rgba(200, 200, 200, 0.1);
+}
+
+div.select-project {
+    text-align: center;
+    color: #FFF;
+    font-size: 16px;
+    font-variant: small-caps;
+    text-shadow: 1px 1px 10px yellow;
+}
+    div.select-project.hide {
+        display: none;
+    }
+
 main#network-graph {
     flex-grow: 1;
     height: 100vh;
