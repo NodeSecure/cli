@@ -7,7 +7,7 @@ require("dotenv").config();
 
 // Require Node.js Dependencies
 const { writeFileSync, accessSync, createReadStream, constants: { R_OK, W_OK } } = require("fs");
-const { join } = require("path");
+const { join, extname } = require("path");
 const { performance } = require("perf_hooks");
 
 // Require Third-party Dependencies
@@ -15,6 +15,7 @@ const sade = require("sade");
 const pacote = require("pacote");
 const { yellow, grey, white, green, cyan } = require("kleur");
 const ora = require("ora");
+const opn = require("opn");
 
 // Require Internal Dependencies
 const { depWalker } = require("../src/depWalker");
@@ -35,7 +36,7 @@ function logAndWrite(payload, output = "result") {
     }
 
     const ret = JSON.stringify(Object.fromEntries(payload), null, 2);
-    const filePath = join(process.cwd(), `${output}.json`);
+    const filePath = join(process.cwd(), extname(output) === ".json" ? output : `${output}.json`);
     writeFileSync(filePath, ret);
     console.log(white().bold(`Sucessfully result .json file at: ${green().bold(filePath)}`));
 }
@@ -61,12 +62,12 @@ prog
         const { depth = 2, output } = opts;
         let manifest = null;
 
-        const spinner = ora(`Searching for '${yellow().bold(packageName)}' manifest in npm registry!`).start();
+        const spinner = ora(white().bold(`Searching for '${yellow().bold(packageName)}' manifest in npm registry!`)).start();
         try {
             const start = performance.now();
             manifest = await pacote.manifest(packageName);
             const time = (performance.now() - start).toFixed(2);
-            spinner.succeed(`Succeed in ${time} ms`);
+            spinner.succeed(white().bold(`Fetched '${yellow().bold(packageName)}' manifest in ${cyan(time)} ms`));
         }
         catch (err) {
             spinner.fail(err.message);
@@ -81,10 +82,10 @@ prog
     });
 
 prog
-    .command("http <json>")
+    .command("http [json]")
     .describe("Run an HTTP Server with a given analysis .JSON")
     .option("-p, --port", "http server port", 1338)
-    .action((json, opts) => {
+    .action((json = "result.json", opts) => {
         const dataFilePath = join(process.cwd(), json);
         accessSync(dataFilePath, R_OK | W_OK);
 
@@ -101,7 +102,9 @@ prog
         });
 
         httpServer.listen(opts.port, () => {
-            console.log(green().bold("HTTP Server started: "), cyan().bold(`http://localhost:${opts.port}`));
+            const link = `http://localhost:${opts.port}`;
+            console.log(green().bold("HTTP Server started: "), cyan().bold(link));
+            opn(link);
         });
     });
 
