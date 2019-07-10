@@ -12,6 +12,19 @@ function formatBytes(bytes, decimals) {
     return parseFloat((bytes / Math.pow(1024, id)).toFixed(dm)) + ' ' + sizes[id];
 }
 
+function createLiField(title, value) {
+    const liElement = document.createElement("li");
+    const bElement = document.createElement("b");
+    bElement.appendChild(document.createTextNode(title));
+    const pElement = document.createElement("p");
+    pElement.appendChild(document.createTextNode(value));
+
+    liElement.appendChild(bElement);
+    liElement.appendChild(pElement);
+
+    return liElement;
+}
+
 async function request(path, customHeaders = Object.create(null)) {
     const headers = {
         Accept: "application/json"

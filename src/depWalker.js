@@ -242,6 +242,7 @@ async function searchPackageAuthors(name, ref) {
         ref.lastUpdateAt = pkg.publishedAt(pkg.lastVersion);
         ref.lastVersion = pkg.lastVersion;
         ref.hasChangedAuthor = false;
+        ref.homepage = pkg.homepage || "";
 
         if (typeof pkg.author === "undefined") {
             ref.author = "N/A";

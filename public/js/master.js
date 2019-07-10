@@ -18,9 +18,12 @@ const networkGraphOptions = {
             vadjust: 1,
             size: 34,
             color: "#ECEFF1",
-            bold: "32px"
+            bold: {
+                face: "Roboto",
+                color: "#F9FBE7"
+            }
         },
-        margin: 12,
+        margin: 14,
         shadow: {
             enabled: true,
             color: "rgba(20, 20, 20, 0.2)"
@@ -64,7 +67,6 @@ document.addEventListener("DOMContentLoaded", async() => {
     // Find elements and declare top vars
     const networkElement = document.getElementById("network-graph");
     let highlightActive = false;
-    let activeNode = null;
 
     // Hydrate nodes & edges with the data
     const nodesDataArr = [];
@@ -76,7 +78,9 @@ document.addEventListener("DOMContentLoaded", async() => {
         const { metadata, ...versions } = descriptor;
 
         for (const [currVersion, opt] of Object.entries(versions)) {
-            const { id, usedBy, flags } = opt;
+            const { id, usedBy, flags, size } = opt;
+            opt.name = packageName;
+            opt.version = currVersion;
 
             let flagStr = "";
             if (flags.hasIndirectDependencies) {
@@ -98,11 +102,11 @@ document.addEventListener("DOMContentLoaded", async() => {
                 flagStr += " ⛔️";
             }
 
-            const label = `${packageName}@${currVersion}${flagStr}`;
+            const label = `${packageName}@${currVersion}${flagStr}\n<b>[${formatBytes(size)}]</b>`;
             const color = getColor(id, flags);
 
             linker.set(Number(id), opt);
-            nodesDataArr.push({ id, label, color });
+            nodesDataArr.push({ id, label, color, font: { multi: "html" } });
 
             for (const [name, version] of Object.entries(usedBy)) {
                 edgesDataArr.push({ from: id, to: data[name][version].id });
@@ -120,14 +124,34 @@ document.addEventListener("DOMContentLoaded", async() => {
     network.on("click", updateMenu);
 
     function updateMenu(params) {
-        const selectProjectElem = document.querySelector(".select-project");
+        const showInfoElem = document.getElementById("show-info");
+        const packageInfoTemplate = document.getElementById("package-info");
 
         if (params.nodes.length > 0) {
-            selectProjectElem.classList.add("hide");
+            showInfoElem.innerHTML = "";
+
+            const clone = document.importNode(packageInfoTemplate.content, true);
+            const currentNode = params.nodes[0];
+            const selectedNode = linker.get(Number(currentNode));
+
+            clone.querySelector(".name").textContent = selectedNode.name;
+            clone.querySelector(".version").textContent = selectedNode.version;
+            clone.querySelector(".desc").textContent = selectedNode.description;
+
+            const author = typeof selectedNode.author === "string" ? selectedNode.author : selectedNode.author.name;
+
+            const fields = clone.querySelector(".fields");
+            const fieldsFragment = document.createDocumentFragment();
+            fieldsFragment.appendChild(
+                createLiField("Author", author.length > 26 ? `${author.slice(0, 26)}...` : author));
+            fieldsFragment.appendChild(createLiField("License", selectedNode.license));
+            fieldsFragment.appendChild(createLiField("Size", formatBytes(selectedNode.size)));
+            fields.appendChild(fieldsFragment);
+
+            showInfoElem.appendChild(clone);
         }
         else {
-            selectProjectElem.classList.remove("hide");
-            activeNode = null;
+            showInfoElem.innerHTML = "<div class=\"select-project\"><p>SELECT A PROJECT!</p></div>";
         }
     }
 
