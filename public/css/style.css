@@ -18,7 +18,7 @@ body {
 }
 
 section#show-info {
-    width: 350px;
+    width: 370px;
     position: absolute;
     left: 10px;
     top: 10px;
@@ -115,7 +115,6 @@ section#show-info {
             }
             section#show-info > div.bundlephobia > div > span {
                 font-size: 13px;
-                font-style: italic;
             }
 
 div.select-project {

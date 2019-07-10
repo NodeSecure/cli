@@ -12,15 +12,26 @@ function formatBytes(bytes, decimals) {
     return parseFloat((bytes / Math.pow(1024, id)).toFixed(dm)) + ' ' + sizes[id];
 }
 
-function createLiField(title, value) {
+function createLiField(title, value, isLink = false) {
     const liElement = document.createElement("li");
     const bElement = document.createElement("b");
     bElement.appendChild(document.createTextNode(title));
-    const pElement = document.createElement("p");
-    pElement.appendChild(document.createTextNode(value));
+
 
     liElement.appendChild(bElement);
-    liElement.appendChild(pElement);
+    if (isLink) {
+        const aElement = document.createElement("a");
+        aElement.href = value;
+
+        const textValue = value.length > 26 ? `${value.slice(0, 26)}...` : value;
+        aElement.appendChild(document.createTextNode(textValue));
+        liElement.appendChild(aElement);
+    }
+    else {
+        const pElement = document.createElement("p");
+        pElement.appendChild(document.createTextNode(value));
+        liElement.appendChild(pElement);
+    }
 
     return liElement;
 }

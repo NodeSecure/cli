@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 flagStr += " ⚠️";
             }
             if (flags.hasCustomResolver) {
-                flagStr += " 🔆";
+                flagStr += " 💎";
             }
             if (flags.hasLicense === false) {
                 flagStr += " 📜";
@@ -100,6 +100,12 @@ document.addEventListener("DOMContentLoaded", async() => {
             }
             if (flags.isDeprecated) {
                 flagStr += " ⛔️";
+            }
+            if (metadata.hasManyPublishers) {
+                flagStr += " 💕";
+            }
+            if (metadata.hasChangedAuthor) {
+                flagStr += " 👥";
             }
 
             const label = `${packageName}@${currVersion}${flagStr}\n<b>[${formatBytes(size)}]</b>`;
@@ -123,7 +129,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     network.on("click", neighbourHighlight);
     network.on("click", updateMenu);
 
-    function updateMenu(params) {
+    async function updateMenu(params) {
         const showInfoElem = document.getElementById("show-info");
         const packageInfoTemplate = document.getElementById("package-info");
 
@@ -133,20 +139,52 @@ document.addEventListener("DOMContentLoaded", async() => {
             const clone = document.importNode(packageInfoTemplate.content, true);
             const currentNode = params.nodes[0];
             const selectedNode = linker.get(Number(currentNode));
+            const { name, version, author } = selectedNode;
+            const metadata = data[name].metadata;
+            console.log(metadata);
 
-            clone.querySelector(".name").textContent = selectedNode.name;
-            clone.querySelector(".version").textContent = selectedNode.version;
+            clone.querySelector(".name").textContent = name;
+            clone.querySelector(".version").textContent = version;
             clone.querySelector(".desc").textContent = selectedNode.description;
 
-            const author = typeof selectedNode.author === "string" ? selectedNode.author : selectedNode.author.name;
+            // eslint-disable-next-line
+            let fAuthor = typeof author === "string" ? author : (author.name || "Unknown");
+            fAuthor = fAuthor.length > 26 ? `${fAuthor.slice(0, 26)}...` : fAuthor;
+
+            // eslint-disable-next-line
+            const lastUpdate = Intl.DateTimeFormat("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric"
+            }).format(new Date(metadata.lastUpdateAt));
 
             const fields = clone.querySelector(".fields");
             const fieldsFragment = document.createDocumentFragment();
-            fieldsFragment.appendChild(
-                createLiField("Author", author.length > 26 ? `${author.slice(0, 26)}...` : author));
-            fieldsFragment.appendChild(createLiField("License", selectedNode.license));
-            fieldsFragment.appendChild(createLiField("Size", formatBytes(selectedNode.size)));
+            fieldsFragment.appendChild(createLiField("Author", fAuthor));
+            fieldsFragment.appendChild(createLiField(`License (${selectedNode.licenseFrom})`, selectedNode.license));
+            fieldsFragment.appendChild(createLiField("Size on system", formatBytes(selectedNode.size)));
+            fieldsFragment.appendChild(createLiField("Home", metadata.homepage || "N/A", true));
+            fieldsFragment.appendChild(createLiField("Last release", metadata.lastVersion));
+            fieldsFragment.appendChild(createLiField("Last release (date)", lastUpdate));
+            fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
             fields.appendChild(fieldsFragment);
+
+            try {
+                const {
+                    gzip, size, dependencySizes
+                } = await request(`https://bundlephobia.com/api/size?package=${name}@${version}`);
+                const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
+
+                clone.querySelector(".size-gzip").textContent = formatBytes(gzip);
+                clone.querySelector(".size-min").textContent = formatBytes(size);
+                clone.querySelector(".size-full").textContent = formatBytes(fullSize);
+            }
+            catch (err) {
+                // ignore
+            }
 
             showInfoElem.appendChild(clone);
         }
