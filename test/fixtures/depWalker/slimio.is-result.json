@@ -1,0 +1,63 @@
+{
+    "@slimio/is": {
+      "1.5.1": {
+        "id": 0,
+        "usedBy": {},
+        "flags": {
+          "hasManifest": true,
+          "isDeprecated": false,
+          "hasSuspectImport": false,
+          "hasLicense": true,
+          "hasIndirectDependencies": false,
+          "hasMinifiedCode": false,
+          "hasCustomResolver": false,
+          "hasDependencies": true
+        },
+        "description": "SlimIO is (JavaScript Primitives &amp; Objects type checker)",
+        "author": "SlimIO",
+        "size": 15816,
+        "composition": {
+          "extensions": [
+            ".ts",
+            ".js",
+            "",
+            ".json",
+            ".md",
+            ".toml"
+          ],
+          "files": [
+            "index.d.ts",
+            "index.js",
+            "LICENSE",
+            "package.json",
+            "README.md",
+            "slimio.toml",
+            "src\\utils.js"
+          ],
+          "minified": [],
+          "required": [
+            "./src/utils"
+          ],
+          "required_builtin": []
+        },
+        "licenseFrom": "LICENSE",
+        "license": "MIT"
+      },
+      "metadata": {
+        "publishedCount": 7,
+        "lastUpdateAt": "2019-06-11T06:41:41.590Z",
+        "lastVersion": "1.5.1",
+        "hasChangedAuthor": false,
+        "homepage": "https://github.com/SlimIO/is#readme",
+        "author": "SlimIO",
+        "publishers": [
+          {
+            "name": "fraxken",
+            "version": "1.0.0",
+            "firstPublishAt": "2018-09-22T20:36:27.523Z"
+          }
+        ],
+        "hasManyPublishers": false
+      }
+    }
+  }
