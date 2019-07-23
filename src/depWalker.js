@@ -8,13 +8,13 @@ const repl = require("repl");
 
 // Require Third-party Dependencies
 const pacote = require("pacote");
-const { red, white, yellow, cyan, green } = require("kleur");
+const { red, white, yellow, cyan } = require("kleur");
 const premove = require("premove");
 const Lock = require("@slimio/lock");
 const ora = require("ora");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
-const is = require("@slimio/is");
+const combineAsyncIterators = require("combine-async-iterators");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange } = require("./utils");
@@ -40,9 +40,9 @@ const npmReg = new Registry();
  * @param {Number} [options.currDepth=0] current depth
  * @param {Dependency} [options.parent] parent dependency
  * @param {Number} [options.maxDepth=2] max depth
- * @returns {Promise<NodeSecure.Dependency[]>}
+ * @returns {AsyncIterableIterator<NodeSecure.Dependency[]>}
  */
-async function searchDeepDependencies(packageName, options = {}) {
+async function* searchDeepDependencies(packageName, options = {}) {
     const { exclude = new Map(), currDepth = 0, parent, maxDepth = 2 } = options;
 
     const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName);
@@ -55,12 +55,12 @@ async function searchDeepDependencies(packageName, options = {}) {
     current.isDeprecated = deprecated === true;
     current.hasCustomResolver = customResolvers.size > 0;
     current.hasDependencies = dependencies.size > 0;
+    yield current;
 
     if (dependencies.size === 0 || currDepth === maxDepth) {
-        return [current];
+        return;
     }
 
-    const _p = [];
     const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
     for (const [depName, range] of dependencies.entries()) {
         const cleanName = `${depName}@${cleanRange(range)}`;
@@ -69,11 +69,9 @@ async function searchDeepDependencies(packageName, options = {}) {
         }
         else {
             exclude.set(cleanName, new Set());
-            _p.push(searchDeepDependencies(`${depName}@${range}`, opt).catch(() => void 0));
+            yield* searchDeepDependencies(`${depName}@${range}`, opt);
         }
     }
-
-    return [current, ...(await Promise.all(_p)).flat(maxDepth)];
 }
 
 /**
@@ -173,58 +171,31 @@ async function processPackageTarball(name, version, ref) {
  * @func getRootDependencies
  * @param {any} manifest package manifest
  * @param {Object} options options
- * @param {Boolean} [options.verbose=true] enable verbose mode
  * @param {Number} [options.maxDepth=2] max depth
- * @returns {Promise<[Dependency[], Map<String, Object>]>}
+ * @param {Map<any, any>} [options.exclude] exclude
+ * @returns {AsyncIterableIterator<Dependency>}
  */
-async function getRootDependencies(manifest, options) {
-    const { verbose = true, maxDepth = 2 } = options;
+async function* getRootDependencies(manifest, options) {
+    const { maxDepth = 2, exclude } = options;
 
-    let spinner;
-    if (verbose) {
-        spinner = ora({ spinner: "dots" }).start(white().bold("Fetch all dependencies..."));
+    const { dependencies } = mergeDependencies(manifest);
+    const parent = new Dependency(manifest.name, manifest.version);
+    parent.hasDependencies = true;
+    yield parent;
+
+    const iterators = [...dependencies.entries()]
+        .map(([name, ver]) => searchDeepDependencies(`${name}@${ver}`, { exclude, maxDepth, parent }));
+    for await (const dep of combineAsyncIterators(...iterators)) {
+        yield dep;
     }
-    try {
-        const start = performance.now();
-        const { dependencies } = mergeDependencies(manifest);
-        if (dependencies.size === 0) {
-            if (verbose) {
-                spinner.succeed(yellow().bold("No dependencies to fetch..."));
-            }
 
-            return null;
+    // Re-insert root project dependencies
+    const fullName = `${manifest.name} ${manifest.version}`;
+    for (const [name, version] of dependencies.entries()) {
+        const fullRange = `${name}@${cleanRange(version)}`;
+        if (exclude.has(fullRange)) {
+            exclude.get(fullRange).add(fullName);
         }
-
-        const exclude = new Map();
-        const parent = new Dependency(manifest.name, manifest.version);
-        parent.hasDependencies = true;
-
-        const _p = [...dependencies.entries()]
-            .map(([name, ver]) => searchDeepDependencies(`${name}@${ver}`, { exclude, maxDepth, parent }));
-        const result = (await Promise.all(_p)).flat();
-        const execTime = cyan().bold((performance.now() - start).toFixed(2));
-        if (verbose) {
-            spinner.succeed(white().bold(`Successfully fetched ${green().bold(result.length)} dependencies in ${execTime} ms`));
-        }
-        result.unshift(parent);
-
-        // Re-insert root project dependencies
-        const fullName = `${manifest.name} ${manifest.version}`;
-        for (const [name, version] of dependencies.entries()) {
-            const fullRange = `${name}@${cleanRange(version)}`;
-            if (exclude.has(fullRange)) {
-                exclude.get(fullRange).add(fullName);
-            }
-        }
-
-        return [result, exclude];
-    }
-    catch (err) {
-        if (verbose) {
-            spinner.fail(red().bold(err.message));
-        }
-
-        return null;
     }
 }
 
@@ -308,20 +279,21 @@ async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true } = options;
     pacote.clearMemoized();
 
-    const rootResult = await getRootDependencies(manifest, options);
-    if (is.nullOrUndefined(rootResult)) {
-        return null;
-    }
-    const [dependencies, exclude] = rootResult;
-    // console.log(exclude);
-
     // Create TMP directory
     await mkdir(TMP, { recursive: true });
+
+    let spinner;
+    const start = performance.now();
+    if (verbose) {
+        spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all dependencies ..."));
+    }
 
     /** @type {Map<String, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
     const promisesToWait = [];
-    for (const currentDep of dependencies) {
+    const exclude = new Map();
+
+    for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude })) {
         const { name, version } = currentDep;
         const current = currentDep.flatten();
 
@@ -343,12 +315,10 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     // Wait for all extraction to be done!
-    let spinner;
     if (verbose) {
-        spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all packages stats ..."));
+        spinner.text = white().bold("Waiting to fetch all packages stats...");
     }
     try {
-        const start = performance.now();
         await Promise.all(promisesToWait);
         const execTime = cyan().bold((performance.now() - start).toFixed(2));
         if (verbose) {

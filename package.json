@@ -66,6 +66,7 @@
     "@slimio/lock": "^0.1.0",
     "@slimio/npm-registry": "^0.5.0",
     "cherow": "^1.6.9",
+    "combine-async-iterators": "^1.1.0",
     "dotenv": "^8.0.0",
     "estree-walker": "^0.6.1",
     "httpie": "^1.1.2",
