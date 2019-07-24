@@ -300,17 +300,19 @@ async function depWalker(manifest, options = Object.create(null)) {
         promisesToWait.push(searchPackageAuthors(name, current.metadata));
         promisesToWait.push(processPackageTarball(name, version, current[version]));
 
-        if (!flattenedDeps.has(name)) {
-            flattenedDeps.set(name, current);
-            continue;
-        }
+        if (flattenedDeps.has(name)) {
+            // Merge all versions, and always force hasIndirectDependencies to true
+            const dep = flattenedDeps.get(name);
+            const hasIndirectDependencies = Reflect.has(dep, version) ? dep[version].flags.hasIndirectDependencies : false;
 
-        // Merge all versions, and always force hasIndirectDependencies to true
-        const dep = flattenedDeps.get(name);
-        const hasIndirectDependencies = Reflect.has(dep, version) ? dep[version].flags.hasIndirectDependencies : false;
-        const ref = Object.assign(dep, current);
-        if (hasIndirectDependencies) {
-            ref[version].flags.hasIndirectDependencies = true;
+            // Note: here we get "ref" for hasIndirectDependencies (but Object.assign still need to be executed outside of the if).
+            const ref = Object.assign(dep, current);
+            if (hasIndirectDependencies) {
+                ref[version].flags.hasIndirectDependencies = true;
+            }
+        }
+        else {
+            flattenedDeps.set(name, current);
         }
     }
 
