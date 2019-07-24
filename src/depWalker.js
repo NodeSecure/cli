@@ -59,6 +59,7 @@ async function* searchDeepDependencies(packageName, options = {}) {
     if (dependencies.size !== 0 && currDepth !== maxDepth) {
         const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
         for (const [depName, range] of dependencies.entries()) {
+            // Note: cleanRange is not working perfectly (complicated range will fail...). We may want to review this later !
             const cleanName = `${depName}@${cleanRange(range)}`;
             if (exclude.has(cleanName)) {
                 exclude.get(cleanName).add(`${name} ${version}`);
@@ -297,6 +298,7 @@ async function depWalker(manifest, options = Object.create(null)) {
         const { name, version } = currentDep;
         const current = currentDep.flatten();
 
+        // Note: These are not very well handled in my opinion (not so much lazy ...).
         promisesToWait.push(searchPackageAuthors(name, current.metadata));
         promisesToWait.push(processPackageTarball(name, version, current[version]));
 
@@ -330,6 +332,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     // Handle excluded dependencies
+    // Note: We do this because it "seem" (to me) impossible to link all dependencies in the first walk.
     for (const [packageName, descriptor] of flattenedDeps) {
         const { metadata, ...versions } = descriptor;
 
