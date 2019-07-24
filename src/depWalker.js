@@ -180,13 +180,14 @@ async function* getRootDependencies(manifest, options) {
     const { dependencies } = mergeDependencies(manifest);
     const parent = new Dependency(manifest.name, manifest.version);
     parent.hasDependencies = true;
-    yield parent;
 
     const iterators = [...dependencies.entries()]
         .map(([name, ver]) => searchDeepDependencies(`${name}@${ver}`, { exclude, maxDepth, parent }));
     for await (const dep of combineAsyncIterators(...iterators)) {
         yield dep;
     }
+
+    yield parent;
 
     // Re-insert root project dependencies
     const fullName = `${manifest.name} ${manifest.version}`;
