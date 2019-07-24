@@ -168,40 +168,6 @@ async function processPackageTarball(name, version, ref) {
 
 /**
  * @async
- * @func getRootDependencies
- * @param {any} manifest package manifest
- * @param {Object} options options
- * @param {Number} [options.maxDepth=2] max depth
- * @param {Map<any, any>} [options.exclude] exclude
- * @returns {AsyncIterableIterator<Dependency>}
- */
-async function* getRootDependencies(manifest, options) {
-    const { maxDepth = 2, exclude } = options;
-
-    const { dependencies } = mergeDependencies(manifest);
-    const parent = new Dependency(manifest.name, manifest.version);
-    parent.hasDependencies = true;
-
-    const iterators = [...dependencies.entries()]
-        .map(([name, ver]) => searchDeepDependencies(`${name}@${ver}`, { exclude, maxDepth, parent }));
-    for await (const dep of combineAsyncIterators(...iterators)) {
-        yield dep;
-    }
-
-    yield parent;
-
-    // Re-insert root project dependencies
-    const fullName = `${manifest.name} ${manifest.version}`;
-    for (const [name, version] of dependencies.entries()) {
-        const fullRange = `${name}@${cleanRange(version)}`;
-        if (exclude.has(fullRange)) {
-            exclude.get(fullRange).add(fullName);
-        }
-    }
-}
-
-/**
- * @async
  * @func searchPackageAuthors
  * @param {!String} name package name
  * @param {*} ref ref
@@ -264,6 +230,40 @@ async function searchPackageAuthors(name, ref) {
     }
     catch (err) {
         // Ignore
+    }
+}
+
+/**
+ * @async
+ * @func getRootDependencies
+ * @param {any} manifest package manifest
+ * @param {Object} options options
+ * @param {Number} [options.maxDepth=2] max depth
+ * @param {Map<any, any>} [options.exclude] exclude
+ * @returns {AsyncIterableIterator<Dependency>}
+ */
+async function* getRootDependencies(manifest, options) {
+    const { maxDepth = 2, exclude } = options;
+
+    const { dependencies } = mergeDependencies(manifest, void 0);
+    const parent = new Dependency(manifest.name, manifest.version);
+    parent.hasDependencies = true;
+
+    const iterators = [...dependencies.entries()]
+        .map(([name, ver]) => searchDeepDependencies(`${name}@${ver}`, { exclude, maxDepth, parent }));
+    for await (const dep of combineAsyncIterators(...iterators)) {
+        yield dep;
+    }
+
+    yield parent;
+
+    // Re-insert root project dependencies
+    const fullName = `${manifest.name} ${manifest.version}`;
+    for (const [name, version] of dependencies.entries()) {
+        const fullRange = `${name}@${cleanRange(version)}`;
+        if (exclude.has(fullRange)) {
+            exclude.get(fullRange).add(fullName);
+        }
     }
 }
 
