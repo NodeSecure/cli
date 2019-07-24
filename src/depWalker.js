@@ -11,7 +11,7 @@ const pacote = require("pacote");
 const { red, white, yellow, cyan } = require("kleur");
 const premove = require("premove");
 const Lock = require("@slimio/lock");
-const ora = require("ora");
+const Spinner = require("@slimio/async-cli-spinner");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
@@ -282,11 +282,11 @@ async function depWalker(manifest, options = Object.create(null)) {
     // Create TMP directory
     await mkdir(TMP, { recursive: true });
 
-    let spinner;
     const start = performance.now();
-    if (verbose) {
-        spinner = ora({ spinner: "dots" }).start(white().bold("Fetching all dependencies ..."));
-    }
+    const spinner = new Spinner({
+        spinner: "dots",
+        verbose
+    }).start(white().bold("Fetching all dependencies ..."));
 
     /** @type {Map<String, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
@@ -315,20 +315,14 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     // Wait for all extraction to be done!
-    if (verbose) {
-        spinner.text = white().bold("Waiting to fetch all packages stats...");
-    }
+    spinner.text = white().bold("Waiting to fetch all packages stats...");
     try {
         await Promise.all(promisesToWait);
         const execTime = cyan().bold((performance.now() - start).toFixed(2));
-        if (verbose) {
-            spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime} ms`));
-        }
+        spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime} ms`));
     }
     catch (err) {
-        if (verbose) {
-            spinner.fail(red().bold(err.message));
-        }
+        spinner.fail(red().bold(err.message));
 
         return null;
     }

@@ -14,7 +14,7 @@ const { performance } = require("perf_hooks");
 const sade = require("sade");
 const pacote = require("pacote");
 const { yellow, grey, white, green, cyan } = require("kleur");
-const ora = require("ora");
+const Spinner = require("@slimio/async-cli-spinner");
 const opn = require("opn");
 
 // Require Internal Dependencies
@@ -62,7 +62,9 @@ prog
         const { depth = 2, output } = opts;
         let manifest = null;
 
-        const spinner = ora(white().bold(`Searching for '${yellow().bold(packageName)}' manifest in npm registry!`)).start();
+        const spinner = new Spinner({
+            text: white().bold(`Searching for '${yellow().bold(packageName)}' manifest in npm registry!`)
+        }).start();
         try {
             const start = performance.now();
             manifest = await pacote.manifest(packageName);
