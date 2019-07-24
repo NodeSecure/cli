@@ -55,23 +55,22 @@ async function* searchDeepDependencies(packageName, options = {}) {
     current.isDeprecated = deprecated === true;
     current.hasCustomResolver = customResolvers.size > 0;
     current.hasDependencies = dependencies.size > 0;
+
+    if (dependencies.size !== 0 && currDepth !== maxDepth) {
+        const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
+        for (const [depName, range] of dependencies.entries()) {
+            const cleanName = `${depName}@${cleanRange(range)}`;
+            if (exclude.has(cleanName)) {
+                exclude.get(cleanName).add(`${name} ${version}`);
+            }
+            else {
+                exclude.set(cleanName, new Set());
+                yield* searchDeepDependencies(`${depName}@${range}`, opt);
+            }
+        }
+    }
+
     yield current;
-
-    if (dependencies.size === 0 || currDepth === maxDepth) {
-        return;
-    }
-
-    const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
-    for (const [depName, range] of dependencies.entries()) {
-        const cleanName = `${depName}@${cleanRange(range)}`;
-        if (exclude.has(cleanName)) {
-            exclude.get(cleanName).add(`${name} ${version}`);
-        }
-        else {
-            exclude.set(cleanName, new Set());
-            yield* searchDeepDependencies(`${depName}@${range}`, opt);
-        }
-    }
 }
 
 /**
