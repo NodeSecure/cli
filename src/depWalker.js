@@ -92,6 +92,8 @@ async function processPackageTarball(name, version, ref) {
 
         /** @type {String} */
         let license;
+
+        // Read the package.json file in the extracted tarball
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
             const { description = "", author = {}, ...others } = JSON.parse(packageStr);
@@ -105,11 +107,13 @@ async function processPackageTarball(name, version, ref) {
             ref.author = "N/A";
         }
 
+        // Get the composition of the extracted tarball
         const { ext, files, size } = await getTarballComposition(dest);
         ref.size = size;
         ref.composition = { extensions: [...ext], files };
-        ref.licenseFrom = "package.json";
 
+        // Search for a LICENSE file
+        ref.licenseFrom = "package.json";
         const licenseFile = files.find((value) => value.toLowerCase().includes("license"));
         if (typeof licenseFile !== "undefined") {
             const str = await readFile(join(dest, licenseFile), "utf-8");
@@ -119,7 +123,6 @@ async function processPackageTarball(name, version, ref) {
                 ref.licenseFrom = licenseFile;
             }
         }
-
         ref.flags.hasLicense = typeof licenseFile !== "undefined" || license !== "N/A";
         ref.license = license;
 
@@ -129,6 +132,7 @@ async function processPackageTarball(name, version, ref) {
         const suspectFiles = [];
         ref.composition.minified = [];
 
+        // TODO: achieve this in a thread pool ?
         for (const file of jsFiles) {
             try {
                 const str = await readFile(join(dest, file), "utf-8");
@@ -154,9 +158,6 @@ async function processPackageTarball(name, version, ref) {
         if (ref.flags.hasSuspectImport) {
             ref.composition.suspectFiles = suspectFiles;
         }
-
-        // wait for to the next iteration (avoid lock).
-        await new Promise((resolve) => setImmediate(resolve));
     }
     catch (err) {
         // Ignore
