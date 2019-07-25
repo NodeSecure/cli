@@ -103,17 +103,15 @@ async function processPackageTarball(name, version, ref) {
         }
         catch (err) {
             ref.flags.hasManifest = false;
-            ref.description = "";
-            ref.author = "N/A";
         }
 
         // Get the composition of the extracted tarball
         const { ext, files, size } = await getTarballComposition(dest);
         ref.size = size;
-        ref.composition = { extensions: [...ext], files };
+        ref.composition.extensions.push(...ext);
+        ref.composition.files.push(...files);
 
         // Search for a LICENSE file
-        ref.licenseFrom = "package.json";
         const licenseFile = files.find((value) => value.toLowerCase().includes("license"));
         if (typeof licenseFile !== "undefined") {
             const str = await readFile(join(dest, licenseFile), "utf-8");
@@ -130,9 +128,7 @@ async function processPackageTarball(name, version, ref) {
         const jsFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));
         const dependencies = [];
         const suspectFiles = [];
-        ref.composition.minified = [];
 
-        // TODO: achieve this in a thread pool ?
         for (const file of jsFiles) {
             try {
                 const str = await readFile(join(dest, file), "utf-8");
@@ -151,8 +147,9 @@ async function processPackageTarball(name, version, ref) {
                 // Ignore
             }
         }
+
         const required = [...new Set(dependencies)];
-        ref.composition.required = required;
+        ref.composition.required.push(...required);
         ref.composition.required_builtin = required.filter((name) => NODE_CORE_LIBS.has(name));
         ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
         if (ref.flags.hasSuspectImport) {
@@ -180,18 +177,14 @@ async function searchPackageAuthors(name, ref) {
         ref.publishedCount = pkg.versions.length;
         ref.lastUpdateAt = pkg.publishedAt(pkg.lastVersion);
         ref.lastVersion = pkg.lastVersion;
-        ref.hasChangedAuthor = false;
         ref.homepage = pkg.homepage || "";
 
         if (typeof pkg.author === "undefined") {
-            ref.author = "N/A";
-
             return;
         }
         ref.author = pkg.author.name || pkg.author;
 
         const authors = [];
-        ref.publishers = [];
         const publishers = new Set();
 
         for (const verStr of pkg.versions) {

@@ -4,6 +4,7 @@
         "sourceType": "script"
     },
     "rules": {
-        "require-jsdoc": "off"
+        "require-jsdoc": "off",
+        "require-atomic-updates": "off"
     }
 }

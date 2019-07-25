@@ -49,9 +49,31 @@ class Dependency {
             [this.version]: {
                 id: Dependency.currentId++,
                 usedBy: parent === null ? {} : { [parent.name]: parent.version },
-                flags: this.flags
+                flags: this.flags,
+                description: "",
+                size: 0,
+                author: "N/A",
+                composition: {
+                    extensions: [],
+                    files: [],
+                    minified: [],
+                    required: [],
+                    required_builtin: []
+                },
+                licenseFrom: "package.json",
+                license: ""
             },
-            metadata: {}
+            metadata: {
+                publishedCount: 0,
+                lastUpdateAt: null,
+                lastVersion: null,
+                hasChangedAuthor: false,
+                hasManyPublishers: false,
+                homepage: "",
+                author: "N/A",
+                publishers: [],
+                authors: []
+            }
         };
     }
 
