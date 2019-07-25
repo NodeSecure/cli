@@ -40,14 +40,15 @@ class Dependency {
     /**
      * @method flatten
      * @memberof Dependency#
+     * @param {number} [customId] customid
      * @returns {void}
      */
-    flatten() {
+    flatten(customId) {
         const parent = this.parent;
 
         return {
             [this.version]: {
-                id: Dependency.currentId++,
+                id: typeof customId === "number" ? customId : Dependency.currentId++,
                 usedBy: parent === null ? {} : { [parent.name]: parent.version },
                 flags: this.flags,
                 description: "",
@@ -223,6 +224,6 @@ class Dependency {
     }
 }
 
-Dependency.currentId = 0;
+Dependency.currentId = 1;
 
 module.exports = Dependency;

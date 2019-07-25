@@ -89,9 +89,9 @@ async function processPackageTarball(name, version, ref) {
 
     try {
         await pacote.extract(fullName, dest);
+        await new Promise((resolve) => setImmediate(resolve));
 
-        /** @type {String} */
-        let license;
+        let license = "N/A";
 
         // Read the package.json file in the extracted tarball
         try {
@@ -290,7 +290,7 @@ async function depWalker(manifest, options = Object.create(null)) {
 
     for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude })) {
         const { name, version } = currentDep;
-        const current = currentDep.flatten();
+        const current = currentDep.flatten(name === manifest.name ? 0 : void 0);
 
         // Note: These are not very well handled in my opinion (not so much lazy ...).
         promisesToWait.push(searchPackageAuthors(name, current.metadata));
