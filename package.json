@@ -17,6 +17,7 @@
   "files": [
     "bin",
     "src",
+    "index.js",
     "index.d.ts"
   ],
   "repository": {
