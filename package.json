@@ -16,7 +16,9 @@
   },
   "files": [
     "bin",
+    "public",
     "src",
+    "views",
     "index.js",
     "index.d.ts"
   ],
