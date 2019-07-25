@@ -29,12 +29,20 @@ $ nsecure cwd
 $ nsecure from @sindresorhus/is
 ```
 
-## Roadmap
+## Emojis for flags
 
-- Retrieve vulnerabilities for a given package using the Snyk API.
-- Improve AST analysis to counter malicious code as possible.
-- Improve the performance.
-- Improve tests.
+| emoji | flag name | description |
+| --- | --- | --- |
+| 🌍 | hasIndirectDependencies | The package have indirect dependencies. |
+| ⚠️ | hasSuspectImport | The package have suspect import. |
+| ⛔️ | isDeprecated | The package has been tagged as deprecated |
+| 📜 | hasLicense | The license is missing (or has not been detected) |
+| 🔬 | hasMinifiedCode | The package has minified/uglified code |
+| 💎 | hasCustomResolver | The package has at least one dependency that is not a npm package (like a git link or a local file link) |
+| 💕 | hasManyPublishers | The package has more than one publishers |
+| 👥 | hasChangedAuthor | The package "author" field has been updated at least one time |
+
+> Note: **hasManyPublishers** and **hasChangedAuthor** are not flags linked to a given package version (but to the package itself).
 
 ## License
 MIT
