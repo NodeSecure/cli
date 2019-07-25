@@ -1,5 +1,8 @@
 "use strict";
 
+// Require Node.js Dependencies
+const { normalize } = require("path");
+
 // Require Third-party Dependencies
 const { walk } = require("estree-walker");
 const cherow = require("cherow");
@@ -70,7 +73,7 @@ function concatBinaryExpr(node, identifiers) {
  */
 function searchRuntimeDependencies(str) {
     const identifiers = new Map();
-    const dependencies = new Set();
+    const dependencies = [];
     let isSuspect = false;
 
     if (str.charAt(0) === "#") {
@@ -88,11 +91,11 @@ function searchRuntimeDependencies(str) {
                     const arg = node.arguments[0];
                     if (arg.type === "Identifier") {
                         if (identifiers.has(arg.name)) {
-                            dependencies.add(identifiers.get(arg.name));
+                            dependencies.push(identifiers.get(arg.name));
                         }
                     }
                     else if (arg.type === "Literal") {
-                        dependencies.add(arg.value);
+                        dependencies.push(arg.value);
                     }
                     else if (arg.type === "BinaryExpression" && arg.operator === "+") {
                         const value = concatBinaryExpr(arg, identifiers);
@@ -100,7 +103,7 @@ function searchRuntimeDependencies(str) {
                             isSuspect = true;
                         }
                         else {
-                            dependencies.add(value);
+                            dependencies.push(value);
                         }
                     }
                     else {
@@ -117,7 +120,10 @@ function searchRuntimeDependencies(str) {
         }
     });
 
-    return { dependencies, isSuspect };
+    return {
+        dependencies: new Set(dependencies.map((row) => normalize(row))),
+        isSuspect
+    };
 }
 
 module.exports = { searchRuntimeDependencies };

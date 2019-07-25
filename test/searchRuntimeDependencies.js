@@ -20,7 +20,7 @@ test("should return runtime dependencies for one.js", () => {
 
     expect(isSuspect).toStrictEqual(false);
     expect(dependencies).toStrictEqual(
-        new Set(["http", "net", "fs", "assert", "timers", "./aFile.js", "path"])
+        new Set(["http", "net", "fs", "assert", "timers", "aFile.js", "path"])
     );
 });
 
