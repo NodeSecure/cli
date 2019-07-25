@@ -8,7 +8,7 @@ Node.js security CLI. The goal of the project is to a design a CLI that will all
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/en/) version 10 or higher
+- [Node.js](https://nodejs.org/en/) version 12 or higher
 
 ## Getting Started
 
