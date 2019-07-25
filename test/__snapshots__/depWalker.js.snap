@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should return null for depWalker of @slimio/is 1`] = `
+Object {
+  "@slimio/is": Object {
+    "1.5.1": Object {
+      "author": "SlimIO",
+      "composition": Object {
+        "extensions": Array [
+          ".ts",
+          ".js",
+          "",
+          ".json",
+          ".md",
+          ".toml",
+        ],
+        "files": Array [
+          "index.d.ts",
+          "index.js",
+          "LICENSE",
+          "package.json",
+          "README.md",
+          "slimio.toml",
+          "src\\\\utils.js",
+        ],
+        "minified": Array [],
+        "required": Array [
+          "src\\\\utils",
+        ],
+        "required_builtin": Array [],
+      },
+      "description": "SlimIO is (JavaScript Primitives &amp; Objects type checker)",
+      "flags": Object {
+        "hasCustomResolver": false,
+        "hasDependencies": true,
+        "hasIndirectDependencies": false,
+        "hasLicense": true,
+        "hasManifest": true,
+        "hasMinifiedCode": false,
+        "hasSuspectImport": false,
+        "isDeprecated": false,
+      },
+      "id": 0,
+      "license": "MIT",
+      "licenseFrom": "LICENSE",
+      "usedBy": Object {},
+    },
+    "metadata": Object {
+      "author": "SlimIO",
+      "authors": Array [],
+      "hasChangedAuthor": false,
+      "hasManyPublishers": false,
+      "homepage": "https://github.com/SlimIO/is#readme",
+      "lastUpdateAt": "2019-06-11T06:41:41.590Z",
+      "lastVersion": "1.5.1",
+      "publishedCount": 7,
+      "publishers": Array [
+        Object {
+          "firstPublishAt": "2018-09-22T20:36:27.523Z",
+          "name": "fraxken",
+          "version": "1.0.0",
+        },
+      ],
+    },
+  },
+}
+`;
