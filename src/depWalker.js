@@ -365,7 +365,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     const start = performance.now();
     const spinner = new Spinner({
         spinner: "dots",
-        verbose: false
+        verbose
     }).start(white().bold("Fetching all dependencies ..."));
 
     /** @type {Map<String, NodeSecure.Payload>} */
