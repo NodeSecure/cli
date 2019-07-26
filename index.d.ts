@@ -5,6 +5,7 @@ declare namespace NodeSecure {
     }
 
     interface Flags {
+        isGit: boolean;
         hasManifest: boolean;
         isDeprecated: boolean;
         hasSuspectImport: boolean;

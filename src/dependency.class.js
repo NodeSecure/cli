@@ -22,6 +22,7 @@ class Dependency {
         this.name = name;
         this.version = version;
         const flags = {
+            isGit: false,
             hasManifest: true,
             isDeprecated: false,
             hasSuspectImport: false,
@@ -35,6 +36,17 @@ class Dependency {
 
         Object.defineProperty(this, SYM_PARENT, { value: parent, writable: true, configurable: true });
         Object.defineProperty(this, SYM_FLAGS, { value: flags });
+    }
+
+    /**
+     * @method isGit
+     * @memberof Dependency#
+     * @returns {Dependency}
+     */
+    isGit() {
+        this[SYM_FLAGS].isGit = true;
+
+        return this;
     }
 
     /**

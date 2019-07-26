@@ -75,6 +75,7 @@
     "estree-walker": "^0.6.1",
     "httpie": "^1.1.2",
     "is-minified-code": "^2.0.0",
+    "isomorphic-git": "^0.57.0",
     "kleur": "^3.0.3",
     "lodash.clonedeep": "^4.5.0",
     "make-promises-safe": "^5.0.0",

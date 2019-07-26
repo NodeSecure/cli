@@ -2,6 +2,7 @@
 
 // Require Node.js Dependencies
 const { join, extname } = require("path");
+const fs = require("fs");
 const { mkdir, readFile } = require("fs").promises;
 const { performance } = require("perf_hooks");
 const repl = require("repl");
@@ -15,6 +16,8 @@ const Spinner = require("@slimio/async-cli-spinner");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
+const git = require("isomorphic-git");
+git.plugins.set("fs", fs);
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange } = require("./utils");
@@ -31,18 +34,54 @@ const tarballLocker = new Lock({ max: 25 });
 const npmReg = new Registry();
 
 /**
+ * @typedef {Object} depConfiguration
+ * @property {Map<String, Set<String>>} exclude
+ * @property {Number} currDepth
+ * @property {Number} maxDepth
+ * @property {Dependency} parent
+ */
+
+/**
  * @async
  * @generator
- * @func searchDeepDependencies
- * @param {!String} packageName packageName (and version)
- * @param {Object} [options={}] options
- * @param {Map<String, String[]>} [options.exclude] packages that are excluded (avoid infinite recursion).
- * @param {Number} [options.currDepth=0] current depth
- * @param {Dependency} [options.parent] parent dependency
- * @param {Number} [options.maxDepth=2] max depth
- * @returns {AsyncIterableIterator<NodeSecure.Dependency[]>}
+ * @function searchDeepDependencies
+ * @param {Map<String, String>} dependencies package dependencies
+ * @param {Map<String, String>} customResolvers custom resolvers
+ * @param {depConfiguration} [options] options
+ * @returns {AsyncIterableIterator<NodeSecure.Dependency>}
  */
-async function* searchDeepDependencies(packageName, options = {}) {
+async function* searchDeepDependencies(dependencies, customResolvers, options) {
+    const { exclude } = options;
+
+    for (const [depName, valueStr] of customResolvers.entries()) {
+        if (valueStr.startsWith("git+")) {
+            yield* searchGitDependencies(depName, valueStr.slice(4), options);
+        }
+    }
+
+    for (const [depName, range] of dependencies.entries()) {
+        // Note: cleanRange is not working perfectly (complicated range will fail...). We may want to review this later !
+        // I think that we need to setup a flag and detect the version that satisfies the given range.
+        const cleanName = `${depName}@${cleanRange(range)}`;
+        if (exclude.has(cleanName)) {
+            exclude.get(cleanName).add(`${name} ${version}`);
+        }
+        else {
+            exclude.set(cleanName, new Set());
+            yield* searchNpmDependencies(`${depName}@${range}`, options);
+        }
+    }
+}
+
+/**
+ * @async
+ * @generator
+ * @function searchNpmDependencies
+ * @param {!String} packageName packageName (and version)
+ * @param {depConfiguration} [options={}] options
+ * @returns {AsyncIterableIterator<NodeSecure.Dependency>}
+ */
+async function* searchNpmDependencies(packageName, options = {}) {
     const { exclude = new Map(), currDepth = 0, parent, maxDepth = 2 } = options;
 
     const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName);
@@ -56,22 +95,57 @@ async function* searchDeepDependencies(packageName, options = {}) {
     current.hasCustomResolver = customResolvers.size > 0;
     current.hasDependencies = dependencies.size > 0;
 
-    if (dependencies.size !== 0 && currDepth !== maxDepth) {
+    if (currDepth !== maxDepth) {
         const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
-        for (const [depName, range] of dependencies.entries()) {
-            // Note: cleanRange is not working perfectly (complicated range will fail...). We may want to review this later !
-            const cleanName = `${depName}@${cleanRange(range)}`;
-            if (exclude.has(cleanName)) {
-                exclude.get(cleanName).add(`${name} ${version}`);
-            }
-            else {
-                exclude.set(cleanName, new Set());
-                yield* searchDeepDependencies(`${depName}@${range}`, opt);
-            }
-        }
+        yield* searchDeepDependencies(dependencies, customResolvers, opt);
     }
 
     yield current;
+}
+
+/**
+ * @async
+ * @function searchGitDependencies
+ * @param {!string} name name
+ * @param {!string} url url
+ * @param {depConfiguration} options options
+ * @returns {AsyncIterableIterator<any>}
+ */
+async function* searchGitDependencies(name, url, options = {}) {
+    try {
+        const { exclude = new Map(), currDepth = 0, parent, maxDepth = 2 } = options;
+
+        // Clone repository
+        const dir = join(TMP, `git@${name}`);
+        await git.clone({
+            dir, url, singleBranch: true
+        });
+        await new Promise((resolve) => setImmediate(resolve));
+
+        // Parse Manifest
+        const packageStr = await readFile(join(dir, "package.json"), "utf-8");
+        const { version, ...pkg } = JSON.parse(packageStr);
+
+        // Retrieve dependencies
+        const { dependencies, customResolvers } = mergeDependencies(pkg);
+        if (dependencies.size > 0 && parent instanceof Dependency) {
+            parent.hasIndirectDependencies = true;
+        }
+
+        const current = new Dependency(name, version, parent).isGit();
+        current.hasCustomResolver = customResolvers.size > 0;
+        current.hasDependencies = dependencies.size > 0;
+
+        if (currDepth !== maxDepth) {
+            const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
+            yield* searchDeepDependencies(dependencies, customResolvers, opt);
+        }
+
+        yield current;
+    }
+    catch (err) {
+        // Ignore
+    }
 }
 
 /**
@@ -83,13 +157,14 @@ async function* searchDeepDependencies(packageName, options = {}) {
  * @returns {Promise<void>}
  */
 async function processPackageTarball(name, version, ref) {
-    const fullName = `${name}@${version}`;
-    const dest = join(TMP, fullName);
+    const dest = ref.flags.isGit ? join(TMP, `git@${name}`) : join(TMP, `${name}@${version}`);
     const free = await tarballLocker.lock();
 
     try {
-        await pacote.extract(fullName, dest);
-        await new Promise((resolve) => setImmediate(resolve));
+        if (!ref.flags.isGit) {
+            await pacote.extract(`${name}@${version}`, dest);
+            await new Promise((resolve) => setImmediate(resolve));
+        }
 
         let license = "N/A";
 
@@ -239,12 +314,22 @@ async function searchPackageAuthors(name, ref) {
 async function* getRootDependencies(manifest, options) {
     const { maxDepth = 2, exclude } = options;
 
-    const { dependencies } = mergeDependencies(manifest, void 0);
+    const { dependencies, customResolvers } = mergeDependencies(manifest, void 0);
     const parent = new Dependency(manifest.name, manifest.version);
     parent.hasDependencies = true;
 
-    const iterators = [...dependencies.entries()]
-        .map(([name, ver]) => searchDeepDependencies(`${name}@${ver}`, { exclude, maxDepth, parent }));
+    // Handle root custom resolvers!
+    const iterators = [];
+    const config = { exclude, maxDepth, parent };
+    for (const [depName, valueStr] of customResolvers.entries()) {
+        if (valueStr.startsWith("git+")) {
+            iterators.push(searchGitDependencies(depName, valueStr.slice(4), config));
+        }
+    }
+
+    iterators.push(...[...dependencies.entries()]
+        .map(([name, ver]) => searchNpmDependencies(`${name}@${ver}`, config))
+    );
     for await (const dep of combineAsyncIterators(...iterators)) {
         yield dep;
     }
@@ -280,7 +365,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     const start = performance.now();
     const spinner = new Spinner({
         spinner: "dots",
-        verbose
+        verbose: false
     }).start(white().bold("Fetching all dependencies ..."));
 
     /** @type {Map<String, NodeSecure.Payload>} */
