@@ -52,6 +52,9 @@ section#show-info {
         font-size: 14px;
         margin-top: 15px;
     }
+    section#show-info > .flags {
+        text-align: center;
+    }
     section#show-info > hr {
         width: 100%;
         border: none;
