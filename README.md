@@ -33,6 +33,7 @@ $ nsecure from @sindresorhus/is
 
 | emoji | flag name | description |
 | --- | --- | --- |
+| ☁️ | isGit | The package (project) is a git repository |
 | 🌍 | hasIndirectDependencies | The package have indirect dependencies. |
 | ⚠️ | hasSuspectImport | The package have suspect import. |
 | ⛔️ | isDeprecated | The package has been tagged as deprecated |

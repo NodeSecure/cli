@@ -76,6 +76,9 @@ function getColor(id, flags) {
 
 function getFlags(flags, metadata) {
     const flagList = [];
+    if (flags.isGit) {
+        flagList.push("☁️");
+    }
     if (flags.hasIndirectDependencies) {
         flagList.push("🌍");
     }
