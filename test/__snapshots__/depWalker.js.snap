@@ -25,7 +25,7 @@ Object {
         ],
         "minified": Array [],
         "required": Array [
-          "src\\\\utils",
+          "./src/utils",
         ],
         "required_builtin": Array [],
       },

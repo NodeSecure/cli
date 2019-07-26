@@ -73,7 +73,7 @@ function concatBinaryExpr(node, identifiers) {
  */
 function searchRuntimeDependencies(str) {
     const identifiers = new Map();
-    const dependencies = [];
+    const dependencies = new Set();
     let isSuspect = false;
 
     if (str.charAt(0) === "#") {
@@ -91,11 +91,11 @@ function searchRuntimeDependencies(str) {
                     const arg = node.arguments[0];
                     if (arg.type === "Identifier") {
                         if (identifiers.has(arg.name)) {
-                            dependencies.push(identifiers.get(arg.name));
+                            dependencies.add(identifiers.get(arg.name));
                         }
                     }
                     else if (arg.type === "Literal") {
-                        dependencies.push(arg.value);
+                        dependencies.add(arg.value);
                     }
                     else if (arg.type === "BinaryExpression" && arg.operator === "+") {
                         const value = concatBinaryExpr(arg, identifiers);
@@ -103,7 +103,7 @@ function searchRuntimeDependencies(str) {
                             isSuspect = true;
                         }
                         else {
-                            dependencies.push(value);
+                            dependencies.add(value);
                         }
                     }
                     else {
@@ -121,7 +121,7 @@ function searchRuntimeDependencies(str) {
     });
 
     return {
-        dependencies: new Set(dependencies.map((row) => normalize(row))),
+        dependencies,
         isSuspect
     };
 }
