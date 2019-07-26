@@ -39,6 +39,7 @@ Object {
         "hasMinifiedCode": false,
         "hasSuspectImport": false,
         "isDeprecated": false,
+        "isGit": false,
       },
       "id": 0,
       "license": "MIT",
