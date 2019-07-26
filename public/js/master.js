@@ -49,6 +49,17 @@ const networkGraphOptions = {
     }
 };
 
+const FLAGS = {
+    "🌍": "The package has indirect dependencies.",
+    "⚠️": "The package has suspicious imports.",
+    "💎": "The package has dependencies that are not packages.",
+    "📜": "The package does not seem to have a license.",
+    "🔬": "The package seems to have files that are minified/uglified.",
+    "⛔️": "The package is deprecated.",
+    "💕": "The package has several publishers.",
+    "👥": "The author has already changed at least one time."
+}
+
 function getColor(id, flags) {
     if (id === 0) {
         return C_MAIN;
@@ -61,6 +72,39 @@ function getColor(id, flags) {
     }
 
     return C_NORMAL;
+}
+
+function getFlags(flags, metadata) {
+    const flagList = [];
+    if (flags.hasIndirectDependencies) {
+        flagList.push("🌍");
+    }
+    if (flags.hasSuspectImport) {
+        flagList.push("⚠️");
+    }
+    if (flags.hasCustomResolver) {
+        flagList.push("💎");
+    }
+    if (flags.hasLicense === false) {
+        flagList.push("📜");
+    }
+    if (flags.hasMinifiedCode) {
+        flagList.push("🔬");
+    }
+    if (flags.isDeprecated) {
+        flagList.push("⛔️");
+    }
+    if (metadata.hasManyPublishers) {
+        flagList.push("💕");
+    }
+    if (metadata.hasChangedAuthor) {
+        flagList.push("👥");
+    }
+    return flagList;
+}
+
+function getFlagStr(flagList) {
+    return flagList.reduce((acc, cur) => `${acc} ${cur}`, "")
 }
 
 document.addEventListener("DOMContentLoaded", async() => {
@@ -82,33 +126,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             opt.name = packageName;
             opt.version = currVersion;
 
-            let flagStr = "";
-            if (flags.hasIndirectDependencies) {
-                flagStr += " 🌍";
-            }
-            if (flags.hasSuspectImport) {
-                flagStr += " ⚠️";
-            }
-            if (flags.hasCustomResolver) {
-                flagStr += " 💎";
-            }
-            if (flags.hasLicense === false) {
-                flagStr += " 📜";
-            }
-            if (flags.hasMinifiedCode) {
-                flagStr += " 🔬";
-            }
-            if (flags.isDeprecated) {
-                flagStr += " ⛔️";
-            }
-            if (metadata.hasManyPublishers) {
-                flagStr += " 💕";
-            }
-            if (metadata.hasChangedAuthor) {
-                flagStr += " 👥";
-            }
-
-            const label = `${packageName}@${currVersion}${flagStr}\n<b>[${formatBytes(size)}]</b>`;
+            const label = `${packageName}@${currVersion}${getFlagStr(getFlags(flags, metadata))}\n<b>[${formatBytes(size)}]</b>`;
             const color = getColor(id, flags);
 
             linker.set(Number(id), opt);
@@ -139,9 +157,8 @@ document.addEventListener("DOMContentLoaded", async() => {
             const clone = document.importNode(packageInfoTemplate.content, true);
             const currentNode = params.nodes[0];
             const selectedNode = linker.get(Number(currentNode));
-            const { name, version, author } = selectedNode;
+            const { name, version, author, flags } = selectedNode;
             const metadata = data[name].metadata;
-            console.log(metadata);
 
             clone.querySelector(".name").textContent = name;
             clone.querySelector(".version").textContent = version;
@@ -171,6 +188,8 @@ document.addEventListener("DOMContentLoaded", async() => {
             fieldsFragment.appendChild(createLiField("Last release (date)", lastUpdate));
             fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
             fields.appendChild(fieldsFragment);
+
+            clone.querySelector(".flags").textContent = getFlagStr(getFlags(flags, metadata)) || 'No specific flag'
 
             try {
                 const {
