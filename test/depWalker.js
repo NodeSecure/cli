@@ -15,6 +15,10 @@ const is = require(join(FIXTURE_PATH, "slimio.is.json"));
 test("should return null for depWalker of @slimio/is", async() => {
     const result = await depWalker(is, { verbose: false });
     const resultAsJSON = JSON.parse(JSON.stringify(Object.fromEntries(result), null, 2));
+
+    // TODO: how can we test the complete payload without breaking depending the OS ?
     delete resultAsJSON["@slimio/is"]["1.5.1"].size;
+    delete resultAsJSON["@slimio/is"]["1.5.1"].composition.files;
+
     expect(resultAsJSON).toMatchSnapshot();
 });
