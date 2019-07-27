@@ -32,6 +32,7 @@ const TMP = join(__dirname, "..", "tmp");
 // Vars
 const tarballLocker = new Lock({ max: 25 });
 const npmReg = new Registry();
+const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
 /**
  * @typedef {Object} depConfiguration
@@ -51,7 +52,7 @@ const npmReg = new Registry();
  * @returns {AsyncIterableIterator<NodeSecure.Dependency>}
  */
 async function* searchDeepDependencies(dependencies, customResolvers, options) {
-    const { exclude } = options;
+    const { exclude, fullName } = options;
 
     for (const [depName, valueStr] of customResolvers.entries()) {
         if (valueStr.startsWith("git+")) {
@@ -64,7 +65,7 @@ async function* searchDeepDependencies(dependencies, customResolvers, options) {
         // I think that we need to setup a flag and detect the version that satisfies the given range.
         const cleanName = `${depName}@${cleanRange(range)}`;
         if (exclude.has(cleanName)) {
-            exclude.get(cleanName).add(`${name} ${version}`);
+            exclude.get(cleanName).add(fullName);
         }
         else {
             exclude.set(cleanName, new Set());
@@ -84,7 +85,7 @@ async function* searchDeepDependencies(dependencies, customResolvers, options) {
 async function* searchNpmDependencies(packageName, options = {}) {
     const { exclude = new Map(), currDepth = 0, parent, maxDepth = 2 } = options;
 
-    const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName);
+    const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName, token);
     const { dependencies, customResolvers } = mergeDependencies(pkg);
     if (dependencies.size > 0 && parent instanceof Dependency) {
         parent.hasIndirectDependencies = true;
@@ -96,7 +97,9 @@ async function* searchNpmDependencies(packageName, options = {}) {
     current.hasDependencies = dependencies.size > 0;
 
     if (currDepth !== maxDepth) {
-        const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
+        const opt = {
+            exclude, currDepth: currDepth + 1, parent: current, maxDepth, fullName: `${name} ${version}`
+        };
         yield* searchDeepDependencies(dependencies, customResolvers, opt);
     }
 
@@ -137,7 +140,9 @@ async function* searchGitDependencies(name, url, options = {}) {
         current.hasDependencies = dependencies.size > 0;
 
         if (currDepth !== maxDepth) {
-            const opt = { exclude, currDepth: currDepth + 1, parent: current, maxDepth };
+            const opt = {
+                exclude, currDepth: currDepth + 1, parent: current, maxDepth, fullName: `${name} ${version}`
+            };
             yield* searchDeepDependencies(dependencies, customResolvers, opt);
         }
 
@@ -162,7 +167,7 @@ async function processPackageTarball(name, version, ref) {
 
     try {
         if (!ref.flags.isGit) {
-            await pacote.extract(`${name}@${version}`, dest);
+            await pacote.extract(`${name}@${version}`, dest, token);
             await new Promise((resolve) => setImmediate(resolve));
         }
 

@@ -24,6 +24,9 @@ const nodeSecure = require("../index");
 // CONSTANTS
 const SRC_PATH = join(__dirname, "..", "src");
 
+// VARS
+const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
+
 // Process script arguments
 const prog = sade("nsecure").version("0.1.0");
 console.log(grey().bold(`\n > Executing node-secure at: ${yellow().bold(process.cwd())}\n`));
@@ -67,7 +70,7 @@ prog
         }).start();
         try {
             const start = performance.now();
-            manifest = await pacote.manifest(packageName);
+            manifest = await pacote.manifest(packageName, token);
             const time = (performance.now() - start).toFixed(2);
             spinner.succeed(white().bold(`Fetched '${yellow().bold(packageName)}' manifest in ${cyan(time)} ms`));
         }
