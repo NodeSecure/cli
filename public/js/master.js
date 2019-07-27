@@ -37,7 +37,7 @@ const networkGraphOptions = {
     },
     physics: {
         forceAtlas2Based: {
-            gravitationalConstant: -26,
+            gravitationalConstant: -35,
             centralGravity: 0.005,
             springLength: 230,
             springConstant: 0.18
@@ -45,7 +45,11 @@ const networkGraphOptions = {
         maxVelocity: 150,
         solver: "forceAtlas2Based",
         timestep: 0.35,
-        stabilization: { iterations: 150 }
+        stabilization: {
+            enabled: true,
+            iterations: 1000,
+            updateInterval: 25
+        }
     }
 };
 
@@ -58,7 +62,7 @@ const FLAGS = {
     "⛔️": "The package is deprecated.",
     "💕": "The package has several publishers.",
     "👥": "The author has already changed at least one time."
-}
+};
 
 function getColor(id, flags) {
     if (id === 0) {
@@ -103,11 +107,12 @@ function getFlags(flags, metadata) {
     if (metadata.hasChangedAuthor) {
         flagList.push("👥");
     }
+
     return flagList;
 }
 
 function getFlagStr(flagList) {
-    return flagList.reduce((acc, cur) => `${acc} ${cur}`, "")
+    return flagList.reduce((acc, cur) => `${acc} ${cur}`, "");
 }
 
 document.addEventListener("DOMContentLoaded", async() => {
@@ -192,7 +197,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
             fields.appendChild(fieldsFragment);
 
-            clone.querySelector(".flags").textContent = getFlagStr(getFlags(flags, metadata)) || 'No specific flag'
+            clone.querySelector(".flags").textContent = getFlagStr(getFlags(flags, metadata)) || "No specific flag";
 
             try {
                 const {
