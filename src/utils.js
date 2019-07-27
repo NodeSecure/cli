@@ -31,26 +31,26 @@ const LICENSES = new Map([
 // TYPEDEF
 
 /**
- * @typedef {Object} mergedDep
- * @property {Map<String, String>} dependencies
- * @property {Map<String, String>} customResolvers
+ * @typedef {object} mergedDep
+ * @property {Map<string, string>} dependencies
+ * @property {Map<string, string>} customResolvers
  */
 
 /**
- * @typedef {Object} tarballComposition
- * @property {Set<String>} ext all files extension
- * @property {Number} size size in bytes
- * @property {String[]} files complete list of files retrieved in the tarball
+ * @typedef {object} tarballComposition
+ * @property {Set<string>} ext all files extension
+ * @property {number} size size in bytes
+ * @property {string[]} files complete list of files retrieved in the tarball
  */
 
 /**
-* @async
-* @generator
-* @func getFilesRecursive
-* @memberof Utils#
-* @param {!String} dir root directory
-* @returns {AsyncIterableIterator<String>}
-*/
+ * @async
+ * @generator
+ * @function getFilesRecursive
+ * @memberof Utils#
+ * @param {!string} dir root directory
+ * @returns {AsyncIterableIterator<string>}
+ */
 async function* getFilesRecursive(dir) {
     const dirents = await readdir(dir, { withFileTypes: true });
 
@@ -72,10 +72,10 @@ async function* getFilesRecursive(dir) {
 
 /**
  * @async
- * @func getTarballComposition
- * @desc Get the size and the file(s) and directorie(s) composition of a given extracted npm tarball
+ * @function getTarballComposition
+ * @description Get the size and the file(s) and directorie(s) composition of a given extracted npm tarball
  * @memberof Utils#
- * @param {!String} tarballDir tarball dir
+ * @param {!string} tarballDir tarball dir
  * @returns {Promise<tarballComposition>}
  */
 async function getTarballComposition(tarballDir) {
@@ -111,11 +111,11 @@ async function getTarballComposition(tarballDir) {
 }
 
 /**
- * @func mergeDependencies
- * @desc Merge all kinds (dep, devDep etc..) of dependencies section of npm Manifest (package.json)
+ * @function mergeDependencies
+ * @description Merge all kinds (dep, devDep etc..) of dependencies section of npm Manifest (package.json)
  * @memberof Utils#
- * @param {!Object} manifest manifest
- * @param {String[]} [types] dependencies types to merge
+ * @param {!object} manifest manifest
+ * @param {string[]} [types] dependencies types to merge
  * @returns {mergedDep}
  */
 function mergeDependencies(manifest, types = ["dependencies"]) {
@@ -143,10 +143,10 @@ function mergeDependencies(manifest, types = ["dependencies"]) {
 }
 
 /**
- * @func getLicenseFromString
+ * @function getLicenseFromString
  * @memberof Utils#
- * @param {!String} str license file content
- * @returns {String}
+ * @param {!string} str license file content
+ * @returns {string}
  */
 function getLicenseFromString(str) {
     for (const [name, licenseName] of LICENSES.entries()) {
@@ -159,11 +159,11 @@ function getLicenseFromString(str) {
 }
 
 /**
- * @func cleanRange
- * @desc Clean up range (as possible).
+ * @function cleanRange
+ * @description Clean up range (as possible).
  * @memberof Utils#
- * @param {!String} version version
- * @returns {String}
+ * @param {!string} version version
+ * @returns {string}
  *
  * @example
  * const assert = require("assert").strict;

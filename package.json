@@ -53,13 +53,13 @@
   },
   "homepage": "https://github.com/ES-Community/node-secure#readme",
   "devDependencies": {
-    "@commitlint/cli": "^8.0.0",
-    "@commitlint/config-conventional": "^8.0.0",
-    "@slimio/eslint-config": "^2.0.4",
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^8.1.0",
+    "@slimio/eslint-config": "^3.0.2",
     "@types/node": "^12.0.10",
-    "eslint": "^6.0.1",
+    "eslint": "^6.1.0",
     "get-folder-size": "^2.0.1",
-    "husky": "^3.0.0",
+    "husky": "^3.0.1",
     "jest": "^24.8.0",
     "pkg-ok": "^2.3.1"
   },
@@ -75,16 +75,16 @@
     "estree-walker": "^0.6.1",
     "httpie": "^1.1.2",
     "is-minified-code": "^2.0.0",
-    "isomorphic-git": "^0.57.0",
+    "isomorphic-git": "^0.57.1",
     "kleur": "^3.0.3",
     "lodash.clonedeep": "^4.5.0",
     "make-promises-safe": "^5.0.0",
     "opn": "^6.0.0",
-    "pacote": "^9.5.1",
+    "pacote": "^9.5.4",
     "polka": "^0.5.2",
     "premove": "^1.0.0",
     "sade": "^1.6.0",
-    "semver": "^6.2.0",
+    "semver": "^6.3.0",
     "sirv": "^0.4.2"
   }
 }

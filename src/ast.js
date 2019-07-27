@@ -1,8 +1,5 @@
 "use strict";
 
-// Require Node.js Dependencies
-const { normalize } = require("path");
-
 // Require Third-party Dependencies
 const { walk } = require("estree-walker");
 const cherow = require("cherow");
@@ -60,15 +57,15 @@ function concatBinaryExpr(node, identifiers) {
 }
 
 /**
- * @typedef {Object} ASTSummary
- * @property {Set<String>} dependencies
- * @property {Boolean} isSuspect
+ * @typedef {object} ASTSummary
+ * @property {Set<string>} dependencies
+ * @property {boolean} isSuspect
  */
 
 /**
- * @func searchRuntimeDependencies
- * @desc Parse a script, get an AST and search for require occurence!
- * @param {!String} str file content (encoded as utf-8)
+ * @function searchRuntimeDependencies
+ * @description Parse a script, get an AST and search for require occurence!
+ * @param {!string} str file content (encoded as utf-8)
  * @returns {ASTSummary}
  */
 function searchRuntimeDependencies(str) {

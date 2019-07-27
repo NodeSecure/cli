@@ -1,10 +1,7 @@
 {
     "extends": "@slimio/eslint-config",
-    "parserOptions": {
-        "sourceType": "script"
-    },
     "rules": {
-        "require-jsdoc": "off",
+        "jsdoc/require-jsdoc": "off",
         "require-atomic-updates": "off"
     }
 }

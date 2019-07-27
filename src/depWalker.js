@@ -35,10 +35,10 @@ const npmReg = new Registry();
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
 /**
- * @typedef {Object} depConfiguration
- * @property {Map<String, Set<String>>} exclude
- * @property {Number} currDepth
- * @property {Number} maxDepth
+ * @typedef {object} depConfiguration
+ * @property {Map<string, Set<string>>} exclude
+ * @property {number} currDepth
+ * @property {number} maxDepth
  * @property {Dependency} parent
  */
 
@@ -46,8 +46,8 @@ const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: proce
  * @async
  * @generator
  * @function searchDeepDependencies
- * @param {Map<String, String>} dependencies package dependencies
- * @param {Map<String, String>} customResolvers custom resolvers
+ * @param {Map<string, string>} dependencies package dependencies
+ * @param {Map<string, string>} customResolvers custom resolvers
  * @param {depConfiguration} [options] options
  * @returns {AsyncIterableIterator<NodeSecure.Dependency>}
  */
@@ -78,7 +78,7 @@ async function* searchDeepDependencies(dependencies, customResolvers, options) {
  * @async
  * @generator
  * @function searchNpmDependencies
- * @param {!String} packageName packageName (and version)
+ * @param {!string} packageName packageName (and version)
  * @param {depConfiguration} [options={}] options
  * @returns {AsyncIterableIterator<NodeSecure.Dependency>}
  */
@@ -155,9 +155,9 @@ async function* searchGitDependencies(name, url, options = {}) {
 
 /**
  * @async
- * @func processPackageTarball
- * @param {!String} name package name
- * @param {!String} version package version
+ * @function processPackageTarball
+ * @param {!string} name package name
+ * @param {!string} version package version
  * @param {*} ref version ref
  * @returns {Promise<void>}
  */
@@ -246,8 +246,8 @@ async function processPackageTarball(name, version, ref) {
 
 /**
  * @async
- * @func searchPackageAuthors
- * @param {!String} name package name
+ * @function searchPackageAuthors
+ * @param {!string} name package name
  * @param {*} ref ref
  * @returns {Promise<void>}
  */
@@ -309,10 +309,10 @@ async function searchPackageAuthors(name, ref) {
 
 /**
  * @async
- * @func getRootDependencies
+ * @function getRootDependencies
  * @param {any} manifest package manifest
- * @param {Object} options options
- * @param {Number} [options.maxDepth=2] max depth
+ * @param {object} options options
+ * @param {number} [options.maxDepth=2] max depth
  * @param {Map<any, any>} [options.exclude] exclude
  * @returns {AsyncIterableIterator<Dependency>}
  */
@@ -353,12 +353,12 @@ async function* getRootDependencies(manifest, options) {
 
 /**
  * @async
- * @func depWalker
- * @param {Object} manifest manifest (package.json)
- * @param {Object} options options
- * @param {Boolean} [options.verbose=true] enable verbose mode
- * @param {Number} [options.maxDepth=2] max depth
- * @returns {Promise<null | Map<String, NodeSecure.Dependency>>}
+ * @function depWalker
+ * @param {object} manifest manifest (package.json)
+ * @param {object} options options
+ * @param {boolean} [options.verbose=true] enable verbose mode
+ * @param {number} [options.maxDepth=2] max depth
+ * @returns {Promise<null|Map<string, NodeSecure.Dependency>>}
  */
 async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true } = options;
@@ -373,7 +373,7 @@ async function depWalker(manifest, options = Object.create(null)) {
         verbose
     }).start(white().bold("Fetching all dependencies ..."));
 
-    /** @type {Map<String, NodeSecure.Payload>} */
+    /** @type {Map<string, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
     const promisesToWait = [];
     const exclude = new Map();

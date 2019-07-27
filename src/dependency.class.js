@@ -12,10 +12,10 @@ const SYM_FLAGS = Symbol("symDependencyFlags");
  */
 class Dependency {
     /**
-     * @constructor
+     * @class
      * @memberof Dependency#
-     * @param {!String} name Dependency name
-     * @param {!String} version Dependency version
+     * @param {!string} name Dependency name
+     * @param {!string} version Dependency version
      * @param {Dependency | null} [parent] Dependency parent
      */
     constructor(name, version, parent = null) {
@@ -39,7 +39,7 @@ class Dependency {
     }
 
     /**
-     * @method isGit
+     * @function isGit
      * @memberof Dependency#
      * @returns {Dependency}
      */
@@ -50,7 +50,7 @@ class Dependency {
     }
 
     /**
-     * @method flatten
+     * @function flatten
      * @memberof Dependency#
      * @param {number} [customId] customid
      * @returns {void}
@@ -109,7 +109,7 @@ class Dependency {
 
     /**
      * @memberof Dependency#
-     * @member {Object} flags
+     * @member {object} flags
      */
     get flags() {
         return cloneDeep(this[SYM_FLAGS]);
@@ -117,7 +117,7 @@ class Dependency {
 
     /**
      * @memberof Dependency#
-     * @member {Boolean} hasManifest
+     * @member {boolean} hasManifest
      */
     get hasManifest() {
         return this[SYM_FLAGS].hasManifest;
@@ -132,7 +132,7 @@ class Dependency {
 
     /**
      * @memberof Dependency#
-     * @member {Boolean} isDeprecated
+     * @member {boolean} isDeprecated
      */
     get isDeprecated() {
         return this[SYM_FLAGS].isDeprecated;
@@ -147,7 +147,7 @@ class Dependency {
 
     /**
      * @memberof Dependency#
-     * @member {Boolean} hasSuspectImport
+     * @member {boolean} hasSuspectImport
      */
     get hasSuspectImport() {
         return this[SYM_FLAGS].hasSuspectImport;
@@ -162,7 +162,7 @@ class Dependency {
 
     /**
      * @memberof Dependency#
-     * @member {Boolean} hasLicense
+     * @member {boolean} hasLicense
      */
     get hasLicense() {
         return this[SYM_FLAGS].hasLicense;
@@ -177,7 +177,7 @@ class Dependency {
 
     /**
      * @memberof Dependency#
-     * @member {Boolean} hasIndirectDependencies
+     * @member {boolean} hasIndirectDependencies
      */
     get hasIndirectDependencies() {
         return this[SYM_FLAGS].hasIndirectDependencies;
@@ -192,7 +192,7 @@ class Dependency {
 
     /**
      * @memberof Dependency#
-     * @member {Boolean} hasMinifiedCode
+     * @member {boolean} hasMinifiedCode
      */
     get hasMinifiedCode() {
         return this[SYM_FLAGS].hasMinifiedCode;
@@ -207,7 +207,7 @@ class Dependency {
 
     /**
      * @memberof Dependency#
-     * @member {Boolean} hasCustomResolver
+     * @member {boolean} hasCustomResolver
      */
     get hasCustomResolver() {
         return this[SYM_FLAGS].hasCustomResolver;
@@ -222,7 +222,7 @@ class Dependency {
 
     /**
      * @memberof Dependency#
-     * @member {Boolean} hasDependencies
+     * @member {boolean} hasDependencies
      */
     get hasDependencies() {
         return this[SYM_FLAGS].hasDependencies;

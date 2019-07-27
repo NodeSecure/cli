@@ -4,9 +4,6 @@
 const { join } = require("path");
 const { readFileSync } = require("fs");
 
-// Require Third-party Dependencies
-const is = require("@slimio/is");
-
 // Require Internal Dependencies
 const { getLicenseFromString } = require("../src/utils");
 
