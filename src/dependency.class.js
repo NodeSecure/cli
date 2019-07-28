@@ -93,6 +93,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {Dependency} parent
+     * @returns {Dependency}
      */
     get parent() {
         return this[SYM_PARENT] === null ? null : cloneDeep(this[SYM_PARENT]);
@@ -110,6 +111,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {object} flags
+     * @returns {object}
      */
     get flags() {
         return cloneDeep(this[SYM_FLAGS]);
@@ -118,6 +120,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {boolean} hasManifest
+     * @returns {boolean}
      */
     get hasManifest() {
         return this[SYM_FLAGS].hasManifest;
@@ -133,6 +136,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {boolean} isDeprecated
+     * @returns {boolean}
      */
     get isDeprecated() {
         return this[SYM_FLAGS].isDeprecated;
@@ -148,6 +152,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {boolean} hasSuspectImport
+     * @returns {boolean}
      */
     get hasSuspectImport() {
         return this[SYM_FLAGS].hasSuspectImport;
@@ -163,6 +168,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {boolean} hasLicense
+     * @returns {boolean}
      */
     get hasLicense() {
         return this[SYM_FLAGS].hasLicense;
@@ -178,6 +184,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {boolean} hasIndirectDependencies
+     * @returns {boolean}
      */
     get hasIndirectDependencies() {
         return this[SYM_FLAGS].hasIndirectDependencies;
@@ -193,6 +200,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {boolean} hasMinifiedCode
+     * @returns {boolean}
      */
     get hasMinifiedCode() {
         return this[SYM_FLAGS].hasMinifiedCode;
@@ -208,6 +216,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {boolean} hasCustomResolver
+     * @returns {boolean}
      */
     get hasCustomResolver() {
         return this[SYM_FLAGS].hasCustomResolver;
@@ -223,6 +232,7 @@ class Dependency {
     /**
      * @memberof Dependency#
      * @member {boolean} hasDependencies
+     * @returns {boolean}
      */
     get hasDependencies() {
         return this[SYM_FLAGS].hasDependencies;
