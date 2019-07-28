@@ -16,6 +16,7 @@ const FIXTURE_PATH = join(__dirname, "fixtures/mergeDependencies");
 // JSON PAYLOADS
 const one = JSON.parse(readFileSync(join(FIXTURE_PATH, "one.json"), "utf-8"));
 const two = JSON.parse(readFileSync(join(FIXTURE_PATH, "two.json"), "utf-8"));
+const three = JSON.parse(readFileSync(join(FIXTURE_PATH, "three.json"), "utf-8"));
 
 test("should return the one.json field 'dependencies' merged", () => {
     const result = mergeDependencies(one);
@@ -52,4 +53,12 @@ test("should return two.json 'dependencies' & 'devDependencies' merged (with a c
         ["japa", "~0.1.0"]
     ]));
     expect(result.customResolvers).toMatchObject(resolvers);
+});
+
+test("should return no dependencies/customResolvers for three.json", () => {
+    const result = mergeDependencies(three, ["dependencies", "devDependencies"]);
+
+    expect(is.plainObject(result)).toStrictEqual(true);
+    expect(result.dependencies.size).toStrictEqual(0);
+    expect(result.customResolvers.size).toStrictEqual(0);
 });
