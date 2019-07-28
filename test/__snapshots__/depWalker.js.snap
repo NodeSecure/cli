@@ -7,12 +7,12 @@ Object {
       "author": "SlimIO",
       "composition": Object {
         "extensions": Array [
-          ".ts",
-          ".js",
           "",
+          ".js",
           ".json",
           ".md",
           ".toml",
+          ".ts",
         ],
         "minified": Array [],
         "required": Array [
