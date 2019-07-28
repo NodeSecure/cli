@@ -79,7 +79,7 @@
     "kleur": "^3.0.3",
     "lodash.clonedeep": "^4.5.0",
     "make-promises-safe": "^5.0.0",
-    "opn": "^6.0.0",
+    "open": "^6.4.0",
     "pacote": "^9.5.4",
     "polka": "^0.5.2",
     "premove": "^1.0.0",

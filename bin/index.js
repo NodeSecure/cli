@@ -15,7 +15,7 @@ const sade = require("sade");
 const pacote = require("pacote");
 const { yellow, grey, white, green, cyan } = require("kleur");
 const Spinner = require("@slimio/async-cli-spinner");
-const opn = require("opn");
+const open = require("open");
 
 // Require Internal Dependencies
 const { depWalker } = require("../src/depWalker");
@@ -109,7 +109,7 @@ prog
         httpServer.listen(opts.port, () => {
             const link = `http://localhost:${opts.port}`;
             console.log(green().bold("HTTP Server started: "), cyan().bold(link));
-            opn(link);
+            open(link);
         });
     });
 
