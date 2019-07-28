@@ -8,6 +8,8 @@ const C_NORMAL = "rgba(150, 200, 200, 0.15)";
 const C_SELECTED = "rgba(170, 100, 200, 0.50)";
 const C_TRS = "rgba(150, 150, 150, 0.02)";
 
+const LEFT_MENU_DESC = "click on a package to show a complete description here";
+
 const networkGraphOptions = {
     nodes: {
         mass: 6,
@@ -118,6 +120,7 @@ function getFlagStr(flagList) {
 document.addEventListener("DOMContentLoaded", async() => {
     // Find elements and declare top vars
     const networkElement = document.getElementById("network-graph");
+    networkElement.click();
     let highlightActive = false;
 
     // Hydrate nodes & edges with the data
@@ -216,7 +219,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             showInfoElem.appendChild(clone);
         }
         else {
-            showInfoElem.innerHTML = "<div class=\"select-project\"><p>SELECT A PROJECT!</p></div>";
+            showInfoElem.innerHTML = `<div class="select-project"><p>${LEFT_MENU_DESC}</p></div>`;
         }
     }
 

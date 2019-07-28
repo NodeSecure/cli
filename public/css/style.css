@@ -126,7 +126,7 @@ div.select-project {
     font-size: 16px;
     font-weight: 700;
     font-variant: small-caps;
-    text-shadow: 1px 1px 10px rgba(20, 20, 20, 0.5));
+    text-shadow: 1px 1px 10px rgba(20, 20, 20, 0.5);
 }
 
 main#network-graph {
