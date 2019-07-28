@@ -47,10 +47,10 @@ function logAndWrite(payload, output = "result") {
 prog
     .command("cwd")
     .describe("Run on the current working dir")
-    .option("-d, --depth", "maximum dependencies deepth", 2)
+    .option("-d, --depth", "maximum dependencies deepth", 4)
     .option("-o, --output", "output name", "result")
     .action(async function cwd(opts) {
-        const { depth = 2, output } = opts;
+        const { depth = 4, output } = opts;
 
         const payload = await nodeSecure(void 0, { verbose: true, maxDepth: depth });
         logAndWrite(payload, output);
@@ -59,10 +59,10 @@ prog
 prog
     .command("from <package>")
     .describe("Run on a given package from npm registry")
-    .option("-d, --depth", "maximum dependencies deepth", 2)
+    .option("-d, --depth", "maximum dependencies deepth", 4)
     .option("-o, --output", "output name", "result")
     .action(async function from(packageName, opts) {
-        const { depth = 2, output } = opts;
+        const { depth = 4, output } = opts;
         let manifest = null;
 
         const spinner = new Spinner({

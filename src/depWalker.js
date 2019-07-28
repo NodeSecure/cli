@@ -83,7 +83,7 @@ async function* searchDeepDependencies(dependencies, customResolvers, options) {
  * @returns {AsyncIterableIterator<NodeSecure.Dependency>}
  */
 async function* searchNpmDependencies(packageName, options = {}) {
-    const { exclude = new Map(), currDepth = 0, parent, maxDepth = 2 } = options;
+    const { exclude = new Map(), currDepth = 0, parent, maxDepth = 4 } = options;
 
     const { name, version, deprecated, ...pkg } = await pacote.manifest(packageName, token);
     const { dependencies, customResolvers } = mergeDependencies(pkg);
@@ -116,7 +116,7 @@ async function* searchNpmDependencies(packageName, options = {}) {
  */
 async function* searchGitDependencies(name, url, options = {}) {
     try {
-        const { exclude = new Map(), currDepth = 0, parent, maxDepth = 2 } = options;
+        const { exclude = new Map(), currDepth = 0, parent, maxDepth = 4 } = options;
 
         // Clone repository
         const dir = join(TMP, `git@${name}`);
@@ -312,12 +312,12 @@ async function searchPackageAuthors(name, ref) {
  * @function getRootDependencies
  * @param {any} manifest package manifest
  * @param {object} options options
- * @param {number} [options.maxDepth=2] max depth
+ * @param {number} [options.maxDepth=4] max depth
  * @param {Map<any, any>} [options.exclude] exclude
  * @returns {AsyncIterableIterator<Dependency>}
  */
 async function* getRootDependencies(manifest, options) {
-    const { maxDepth = 2, exclude } = options;
+    const { maxDepth = 4, exclude } = options;
 
     const { dependencies, customResolvers } = mergeDependencies(manifest, void 0);
     const parent = new Dependency(manifest.name, manifest.version);
