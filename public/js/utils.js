@@ -22,6 +22,7 @@ function createLiField(title, value, isLink = false) {
     if (isLink) {
         const aElement = document.createElement("a");
         aElement.href = value;
+        aElement.target = "_blank";
 
         const textValue = value.length > 26 ? `${value.slice(0, 26)}...` : value;
         aElement.appendChild(document.createTextNode(textValue));

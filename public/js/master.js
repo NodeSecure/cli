@@ -136,6 +136,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             const { id, usedBy, flags, size } = opt;
             opt.name = packageName;
             opt.version = currVersion;
+            opt.hidden = false;
 
             const label = `${packageName}@${currVersion}${getFlagStr(getFlags(flags, metadata))}\n<b>[${formatBytes(size)}]</b>`;
             const color = getColor(id, flags);
@@ -158,6 +159,24 @@ document.addEventListener("DOMContentLoaded", async() => {
     network.on("click", neighbourHighlight);
     network.on("click", updateMenu);
 
+    function* searchForNeighbourIds(selectedNode, reverse = false) {
+        const { name, version } = linker.get(selectedNode);
+        for (const { metadata, ...versions } of Object.values(data)) {
+            for (const { id, usedBy } of Object.values(versions)) {
+                if (Reflect.has(usedBy, name) && usedBy[name] === version) {
+                    if (reverse) {
+                        yield id;
+                        yield* searchForNeighbourIds(id, reverse);
+                    }
+                    else {
+                        yield* searchForNeighbourIds(id, reverse);
+                        yield id;
+                    }
+                }
+            }
+        }
+    }
+
     async function updateMenu(params) {
         const showInfoElem = document.getElementById("show-info");
         const packageInfoTemplate = document.getElementById("package-info");
@@ -170,6 +189,30 @@ document.addEventListener("DOMContentLoaded", async() => {
             const selectedNode = linker.get(Number(currentNode));
             const { name, version, author, flags } = selectedNode;
             const metadata = data[name].metadata;
+
+            const btnShow = clone.getElementById("btn_showOrHide");
+            btnShow.addEventListener("click", () => {
+                const nodeId = params.nodes[0];
+                const selectedNode = linker.get(nodeId);
+
+                if (selectedNode.hidden) {
+                    for (const id of searchForNeighbourIds(nodeId, true)) {
+                        const { name, version, flags, size } = linker.get(id);
+                        const metadata = data[name].metadata;
+
+                        const label = `${name}@${version}${getFlagStr(getFlags(flags, metadata))}\n<b>[${formatBytes(size)}]</b>`;
+                        const color = getColor(id, flags);
+
+                        nodes.add({ id, label, color, font: { multi: "html" } });
+                    }
+                }
+                else {
+                    for (const id of searchForNeighbourIds(nodeId)) {
+                        nodes.remove(id);
+                    }
+                }
+                selectedNode.hidden = !selectedNode.hidden;
+            });
 
             clone.querySelector(".name").textContent = name;
             clone.querySelector(".version").textContent = version;
@@ -202,6 +245,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
             clone.querySelector(".flags").textContent = getFlagStr(getFlags(flags, metadata)) || "No specific flag";
 
+            // Request sizes on the bundlephobia API
             try {
                 const {
                     gzip, size, dependencySizes
