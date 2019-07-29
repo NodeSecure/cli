@@ -30,7 +30,7 @@ async function readVulnJSONFile(path) {
 }
 
 async function hydrateVulnDB() {
-    const db = sqlite("vuln.db");
+    const db = sqlite(join(__dirname, "..", "vuln.db"));
     db.exec(await readFile(join(__dirname, "vuln.sql"), "utf-8"));
 
     const location = await download(REPO, { extract: true });

@@ -76,6 +76,7 @@ class Dependency {
                 licenseFrom: "package.json",
                 license: ""
             },
+            vulnerabilities: [],
             metadata: {
                 publishedCount: 0,
                 lastUpdateAt: null,

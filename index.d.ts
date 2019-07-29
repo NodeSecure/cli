@@ -34,6 +34,7 @@ declare namespace NodeSecure {
             hasManyPublishers: boolean;
             publishers: string[];
         };
+        vulnerabilities: any[];
         [version: string]: {
             id: number;
             usedBy: {

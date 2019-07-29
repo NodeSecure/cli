@@ -80,7 +80,7 @@ function getColor(id, flags) {
     return C_NORMAL;
 }
 
-function getFlags(flags, metadata) {
+function getFlags(flags, metadata, vulnerabilities = []) {
     const flagList = [];
     if (flags.isGit) {
         flagList.push("☁️");
@@ -109,6 +109,9 @@ function getFlags(flags, metadata) {
     if (metadata.hasChangedAuthor) {
         flagList.push("👥");
     }
+    if (vulnerabilities.length > 0) {
+        flagList.push("🚨");
+    }
 
     return flagList;
 }
@@ -130,7 +133,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     const data = await request("/data");
     for (const [packageName, descriptor] of Object.entries(data)) {
-        const { metadata, ...versions } = descriptor;
+        const { metadata, vulnerabilities, ...versions } = descriptor;
 
         for (const [currVersion, opt] of Object.entries(versions)) {
             const { id, usedBy, flags, size } = opt;
@@ -138,7 +141,8 @@ document.addEventListener("DOMContentLoaded", async() => {
             opt.version = currVersion;
             opt.hidden = false;
 
-            const label = `${packageName}@${currVersion}${getFlagStr(getFlags(flags, metadata))}\n<b>[${formatBytes(size)}]</b>`;
+            const flagStr = getFlagStr(getFlags(flags, metadata, vulnerabilities));
+            const label = `${packageName}@${currVersion}${flagStr}\n<b>[${formatBytes(size)}]</b>`;
             const color = getColor(id, flags);
 
             linker.set(Number(id), opt);
@@ -161,7 +165,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     function* searchForNeighbourIds(selectedNode) {
         const { name, version } = linker.get(selectedNode);
-        for (const { metadata, ...versions } of Object.values(data)) {
+        for (const { metadata, vulnerabilities, ...versions } of Object.values(data)) {
             for (const { id, usedBy } of Object.values(versions)) {
                 if (Reflect.has(usedBy, name) && usedBy[name] === version) {
                     yield* searchForNeighbourIds(id);

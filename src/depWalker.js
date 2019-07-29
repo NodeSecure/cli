@@ -16,6 +16,7 @@ const Spinner = require("@slimio/async-cli-spinner");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
+const sqlite = require("better-sqlite3");
 const git = require("isomorphic-git");
 git.plugins.set("fs", fs);
 
@@ -413,6 +414,25 @@ async function depWalker(manifest, options = Object.create(null)) {
         spinner.fail(red().bold(err.message));
 
         return null;
+    }
+
+    // Search for vulnerabilities in the local .db
+    const names = new Set([...flattenedDeps.keys()]);
+    const db = sqlite(join(__dirname, "..", "vuln.db"));
+    db.exec(await readFile(join(__dirname, "vuln.sql"), "utf-8"));
+
+    try {
+        const packageNames = db.prepare("SELECT package FROM db").all();
+        const filtered = new Set(packageNames.filter((row) => names.has(row.package)).map((row) => row.package));
+
+        const stmt = db.prepare("SELECT * FROM db WHERE package = ?");
+        for (const name of filtered) {
+            const vulnerabilities = stmt.all(name);
+            flattenedDeps.get(name).vulnerabilities = vulnerabilities;
+        }
+    }
+    finally {
+        db.close();
     }
 
     // Handle excluded dependencies
