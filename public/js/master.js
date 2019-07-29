@@ -194,23 +194,10 @@ document.addEventListener("DOMContentLoaded", async() => {
             btnShow.addEventListener("click", () => {
                 const nodeId = params.nodes[0];
                 const selectedNode = linker.get(nodeId);
+                const hidden = !selectedNode.hidden;
 
-                if (selectedNode.hidden) {
-                    for (const id of searchForNeighbourIds(nodeId, true)) {
-                        const { name, version, flags, size } = linker.get(id);
-                        const metadata = data[name].metadata;
-
-                        const label = `${name}@${version}${getFlagStr(getFlags(flags, metadata))}\n<b>[${formatBytes(size)}]</b>`;
-                        const color = getColor(id, flags);
-
-                        nodes.add({ id, label, color, font: { multi: "html" } });
-                    }
-                }
-                else {
-                    for (const id of searchForNeighbourIds(nodeId)) {
-                        nodes.remove(id);
-                    }
-                }
+                // eslint-disable-next-line
+                nodes.update([...searchForNeighbourIds(nodeId)].map((id) => ({ id, hidden })));
                 selectedNode.hidden = !selectedNode.hidden;
             });
 
