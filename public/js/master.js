@@ -159,19 +159,13 @@ document.addEventListener("DOMContentLoaded", async() => {
     network.on("click", neighbourHighlight);
     network.on("click", updateMenu);
 
-    function* searchForNeighbourIds(selectedNode, reverse = false) {
+    function* searchForNeighbourIds(selectedNode) {
         const { name, version } = linker.get(selectedNode);
         for (const { metadata, ...versions } of Object.values(data)) {
             for (const { id, usedBy } of Object.values(versions)) {
                 if (Reflect.has(usedBy, name) && usedBy[name] === version) {
-                    if (reverse) {
-                        yield id;
-                        yield* searchForNeighbourIds(id, reverse);
-                    }
-                    else {
-                        yield* searchForNeighbourIds(id, reverse);
-                        yield id;
-                    }
+                    yield* searchForNeighbourIds(id);
+                    yield id;
                 }
             }
         }
