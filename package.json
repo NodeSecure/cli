@@ -66,9 +66,11 @@
   "dependencies": {
     "@polka/send-type": "^0.5.2",
     "@slimio/async-cli-spinner": "^0.3.0",
+    "@slimio/github": "^0.5.0",
     "@slimio/is": "^1.5.1",
     "@slimio/lock": "^0.1.0",
     "@slimio/npm-registry": "^0.5.0",
+    "better-sqlite3": "^5.4.1",
     "cherow": "^1.6.9",
     "combine-async-iterators": "^1.1.1",
     "dotenv": "^8.0.0",

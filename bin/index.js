@@ -6,7 +6,10 @@ require("make-promises-safe");
 require("dotenv").config();
 
 // Require Node.js Dependencies
-const { writeFileSync, accessSync, createReadStream, constants: { R_OK, W_OK } } = require("fs");
+const {
+    writeFileSync, accessSync, createReadStream, unlinkSync,
+    constants: { R_OK, W_OK }
+} = require("fs");
 const { join, extname } = require("path");
 const { performance } = require("perf_hooks");
 
@@ -16,9 +19,11 @@ const pacote = require("pacote");
 const { yellow, grey, white, green, cyan } = require("kleur");
 const Spinner = require("@slimio/async-cli-spinner");
 const open = require("open");
+const premove = require("premove");
 
 // Require Internal Dependencies
 const { depWalker } = require("../src/depWalker");
+const hydrateVulnDB = require("../src/hydrateVulnDB");
 const nodeSecure = require("../index");
 
 // CONSTANTS
@@ -43,6 +48,31 @@ function logAndWrite(payload, output = "result") {
     writeFileSync(filePath, ret);
     console.log(white().bold(`Sucessfully result .json file at: ${green().bold(filePath)}`));
 }
+
+prog
+    .command("hydrate-db")
+    .describe("Hydrate the vulnerabilities db")
+    .action(async function hydrate() {
+        try {
+            unlinkSync(join(__dirname, "..", "vuln.db"));
+        }
+        catch (err) {
+            // ignore
+        }
+
+        const spinner = new Spinner({
+            text: white().bold(`Hydrating local vulnerabilities db from '${yellow().bold("nodejs security-wg")}'`)
+        }).start();
+        try {
+            const start = performance.now();
+            await hydrateVulnDB();
+            const time = (performance.now() - start).toFixed(2);
+            spinner.succeed(white().bold(`Successfully hydrated local db in ${cyan(time)} ms`));
+        }
+        catch (err) {
+            spinner.fail(err.message);
+        }
+    });
 
 prog
     .command("cwd")
