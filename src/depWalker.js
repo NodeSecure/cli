@@ -44,7 +44,7 @@ const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: proce
  */
 async function getExpectedSemVer(range) {
     try {
-        const { versions, "dist-tags": { latest } } = await pacote.packument(depName);
+        const { versions, "dist-tags": { latest } } = await pacote.packument(depName, token);
         const currVersion = semver.maxSatisfying(Object.keys(versions), range);
 
         return currVersion === null ? latest : currVersion;
