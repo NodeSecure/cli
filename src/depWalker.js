@@ -11,6 +11,7 @@ const repl = require("repl");
 const pacote = require("pacote");
 const { red, white, yellow, cyan } = require("kleur");
 const premove = require("premove");
+const semver = require("semver");
 const Lock = require("@slimio/lock");
 const Spinner = require("@slimio/async-cli-spinner");
 const isMinified = require("is-minified-code");
@@ -34,6 +35,24 @@ const TMP = join(__dirname, "..", "tmp");
 const tarballLocker = new Lock({ max: 25 });
 const npmReg = new Registry();
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
+
+/**
+ * @async
+ * @function getExpectedSemVer
+ * @param {!string} range SemVer range
+ * @returns {string}
+ */
+async function getExpectedSemVer(range) {
+    try {
+        const { versions, "dist-tags": { latest } } = await pacote.packument(depName);
+        const currVersion = semver.maxSatisfying(Object.keys(versions), range);
+
+        return currVersion === null ? latest : currVersion;
+    }
+    catch (err) {
+        return cleanRange(range);
+    }
+}
 
 /**
  * @typedef {object} depConfiguration
@@ -62,9 +81,8 @@ async function* searchDeepDependencies(dependencies, customResolvers, options) {
     }
 
     for (const [depName, range] of dependencies.entries()) {
-        // Note: cleanRange is not working perfectly (complicated range will fail...). We may want to review this later !
-        // I think that we need to setup a flag and detect the version that satisfies the given range.
-        const cleanName = `${depName}@${cleanRange(range)}`;
+        const depVer = await getExpectedSemVer(range);
+        const cleanName = `${depName}@${depVer === null ? latest : depVer}`;
         if (exclude.has(cleanName)) {
             exclude.get(cleanName).add(fullName);
         }
@@ -344,8 +362,9 @@ async function* getRootDependencies(manifest, options) {
 
     // Re-insert root project dependencies
     const fullName = `${manifest.name} ${manifest.version}`;
-    for (const [name, version] of dependencies.entries()) {
-        const fullRange = `${name}@${cleanRange(version)}`;
+    for (const [name, range] of dependencies.entries()) {
+        const version = await getExpectedSemVer(range);
+        const fullRange = `${name}@${version}`;
         if (exclude.has(fullRange)) {
             exclude.get(fullRange).add(fullName);
         }
