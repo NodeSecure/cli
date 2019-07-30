@@ -52,6 +52,9 @@ Then a `result.json` will be writted at the current location. To view it on web 
 $ nsecure http
 ```
 
+## Private packages
+Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contain a [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
+
 ## Emojis for flags
 
 | emoji | flag name | description |
@@ -65,6 +68,7 @@ $ nsecure http
 | 💎 | hasCustomResolver | The package has at least one dependency that is not a npm package (like a git link or a local file link) |
 | 💕 | hasManyPublishers | The package has more than one publishers |
 | 👥 | hasChangedAuthor | The package "author" field has been updated at least one time |
+| 🚨 | vulnerabilities | The package have one or many vulnerabilities |
 
 > Note: **hasManyPublishers** and **hasChangedAuthor** are not flags linked to a given package version (but to the package itself).
 
