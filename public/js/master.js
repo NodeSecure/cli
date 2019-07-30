@@ -49,8 +49,7 @@ const networkGraphOptions = {
         timestep: 0.35,
         stabilization: {
             enabled: true,
-            iterations: 1000,
-            updateInterval: 25
+            iterations: 100
         }
     }
 };
@@ -160,8 +159,12 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     // Initialize vis Network
     const network = new vis.Network(networkElement, { nodes, edges }, networkGraphOptions);
+    network.on("afterDrawing", () => {
+        document.getElementById("network-loader").style.display = "none";
+    });
     network.on("click", neighbourHighlight);
     network.on("click", updateMenu);
+    network.stabilize(2000);
 
     function* searchForNeighbourIds(selectedNode) {
         const { name, version } = linker.get(selectedNode);
