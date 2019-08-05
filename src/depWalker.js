@@ -17,7 +17,6 @@ const Spinner = require("@slimio/async-cli-spinner");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
-const sqlite = require("better-sqlite3");
 const git = require("isomorphic-git");
 git.plugins.set("fs", fs);
 
