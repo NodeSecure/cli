@@ -61,4 +61,4 @@ typings/
 .next
 
 result.json
-vuln.db
+vuln.json

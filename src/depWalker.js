@@ -435,23 +435,23 @@ async function depWalker(manifest, options = Object.create(null)) {
         return null;
     }
 
-    // Search for vulnerabilities in the local .db
-    const names = new Set([...flattenedDeps.keys()]);
-    const db = sqlite(join(__dirname, "..", "vuln.db"));
-    db.exec(await readFile(join(__dirname, "vuln.sql"), "utf-8"));
-
+    // Search for vulnerabilities in the local .json db
     try {
-        const packageNames = db.prepare("SELECT package FROM db").all();
-        const filtered = new Set(packageNames.filter((row) => names.has(row.package)).map((row) => row.package));
+        const buf = await readFile(join(__dirname, "..", "vuln.json"));
+        const vulnerabilities = JSON.parse(buf.toString());
 
-        const stmt = db.prepare("SELECT * FROM db WHERE package = ?");
+        const currThreeNames = new Set([...flattenedDeps.keys()]);
+        const filtered = new Set(
+            Object.keys(vulnerabilities).filter((name) => currThreeNames.has(name))
+        );
+
         for (const name of filtered) {
-            const vulnerabilities = stmt.all(name);
-            flattenedDeps.get(name).vulnerabilities = vulnerabilities;
+            // TODO: only push if vulnerable_versions match one of the three version
+            flattenedDeps.get(name).vulnerabilities = vulnerabilities[name];
         }
     }
-    finally {
-        db.close();
+    catch (err) {
+        // Ignore
     }
 
     // Handle excluded dependencies

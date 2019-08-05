@@ -70,7 +70,7 @@ prog
             spinner.succeed(white().bold(`Successfully hydrated local db in ${cyan(time)} ms`));
         }
         catch (err) {
-            spinner.fail(err.message);
+            spinner.failed(err.message);
         }
     });
 
