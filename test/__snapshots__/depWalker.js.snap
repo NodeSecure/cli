@@ -24,6 +24,7 @@ Object {
       "flags": Object {
         "hasCustomResolver": false,
         "hasDependencies": true,
+        "hasExternalCapacity": false,
         "hasIndirectDependencies": false,
         "hasLicense": true,
         "hasManifest": true,
