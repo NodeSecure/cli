@@ -30,7 +30,8 @@ class Dependency {
             hasIndirectDependencies: false,
             hasMinifiedCode: false,
             hasCustomResolver: false,
-            hasDependencies: false
+            hasDependencies: false,
+            hasExternalCapacity: false
         };
         Object.preventExtensions(flags);
 

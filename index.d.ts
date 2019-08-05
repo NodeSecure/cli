@@ -14,6 +14,7 @@ declare namespace NodeSecure {
         hasIndirectDependencies: boolean;
         hasCustomResolver: boolean;
         hasDependencies: boolean;
+        hasExternalCapacity: boolean;
     }
 
     interface Dependency {

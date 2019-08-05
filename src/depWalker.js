@@ -27,6 +27,7 @@ const Dependency = require("./dependency.class");
 
 // CONSTANTS
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
+const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram"]);
 const NODE_CORE_LIBS = new Set([...repl._builtinLibs]);
 const TMP = join(__dirname, "..", "tmp");
 
@@ -249,6 +250,10 @@ async function processPackageTarball(name, version, ref) {
         const required = [...new Set(dependencies)];
         ref.composition.required.push(...required);
         ref.composition.required_builtin = required.filter((name) => NODE_CORE_LIBS.has(name));
+
+        const hasExternal = ref.composition.required_builtin.some((depName) => EXT_DEPS.has(depName));
+        ref.flags.hasExternalCapacity = hasExternal;
+
         ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
         if (ref.flags.hasSuspectImport) {
             ref.composition.suspectFiles = suspectFiles;

@@ -85,7 +85,7 @@ function getFlags(flags, metadata, vulnerabilities = []) {
         flagList.push("☁️");
     }
     if (flags.hasIndirectDependencies) {
-        flagList.push("🌍");
+        flagList.push("🌲");
     }
     if (flags.hasSuspectImport) {
         flagList.push("⚠️");
@@ -101,6 +101,9 @@ function getFlags(flags, metadata, vulnerabilities = []) {
     }
     if (flags.isDeprecated) {
         flagList.push("⛔️");
+    }
+    if (flags.hasExternalCapacity) {
+        flagList.push("🌍");
     }
     if (metadata.hasManyPublishers) {
         flagList.push("💕");
