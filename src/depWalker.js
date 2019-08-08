@@ -32,9 +32,10 @@ const NODE_CORE_LIBS = new Set([...repl._builtinLibs]);
 const TMP = join(__dirname, "..", "tmp");
 
 // Vars
-const tarballLocker = new Lock({ max: 25 });
+const tarballLocker = new Lock({ maxConcurrent: 25 });
 const npmReg = new Registry();
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
+Lock.CHECK_INTERVAL_MS = 100;
 
 /**
  * @async
@@ -182,7 +183,7 @@ async function* searchGitDependencies(name, url, options = {}) {
  */
 async function processPackageTarball(name, version, ref) {
     const dest = ref.flags.isGit ? join(TMP, `git@${name}`) : join(TMP, `${name}@${version}`);
-    const free = await tarballLocker.lock();
+    const free = await tarballLocker.acquireOne();
 
     try {
         if (!ref.flags.isGit) {
