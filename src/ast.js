@@ -2,7 +2,7 @@
 
 // Require Third-party Dependencies
 const { walk } = require("estree-walker");
-const cherow = require("cherow");
+const meriyah = require("meriyah");
 
 // CONSTANTS
 const BINARY_EXPR_TYPES = new Set(["Literal", "BinaryExpression", "Identifier"]);
@@ -77,7 +77,7 @@ function searchRuntimeDependencies(str) {
         // eslint-disable-next-line
         str = str.slice(str.indexOf("\n"));
     }
-    const { body } = cherow.parseScript(str, { next: true });
+    const { body } = meriyah.parseScript(str, { next: true });
 
     walk(body, {
         enter(node) {
