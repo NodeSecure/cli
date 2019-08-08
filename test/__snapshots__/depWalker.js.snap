@@ -33,6 +33,7 @@ Object {
         "isDeprecated": false,
         "isGit": false,
       },
+      "gitUrl": null,
       "id": 0,
       "license": "MIT",
       "licenseFrom": "LICENSE",

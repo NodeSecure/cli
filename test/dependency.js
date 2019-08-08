@@ -13,7 +13,7 @@ test("Dependency class should act as expected by assertions", () => {
     expect(dep.parent).toStrictEqual(null);
     expect(dep.name).toStrictEqual("semver");
     expect(dep.version).toStrictEqual("1.0.0");
-    expect(Reflect.ownKeys(dep)).toHaveLength(4);
+    expect(Reflect.ownKeys(dep)).toHaveLength(5);
 
     const flagOne = dep.flags;
     const flagTwo = dep.flags;
