@@ -21,6 +21,7 @@ class Dependency {
     constructor(name, version, parent = null) {
         this.name = name;
         this.version = version;
+        this.gitUrl = null;
         const flags = {
             isGit: false,
             hasManifest: true,
@@ -42,10 +43,14 @@ class Dependency {
     /**
      * @function isGit
      * @memberof Dependency#
+     * @param {string} [url]
      * @returns {Dependency}
      */
-    isGit() {
+    isGit(url) {
         this[SYM_FLAGS].isGit = true;
+        if (typeof url === "string") {
+            this.gitUrl = url;
+        }
 
         return this;
     }
@@ -75,7 +80,8 @@ class Dependency {
                     required_builtin: []
                 },
                 licenseFrom: "package.json",
-                license: ""
+                license: "",
+                gitUrl: this.gitUrl
             },
             vulnerabilities: [],
             metadata: {
