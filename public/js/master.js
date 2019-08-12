@@ -239,6 +239,8 @@ document.addEventListener("DOMContentLoaded", async() => {
 
             clone.querySelector(".flags").textContent = getFlagStr(getFlags(flags, metadata)) || "No specific flag";
 
+            showInfoElem.appendChild(clone);
+
             // Request sizes on the bundlephobia API
             try {
                 const {
@@ -246,15 +248,13 @@ document.addEventListener("DOMContentLoaded", async() => {
                 } = await request(`https://bundlephobia.com/api/size?package=${name}@${version}`);
                 const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
 
-                clone.querySelector(".size-gzip").textContent = formatBytes(gzip);
-                clone.querySelector(".size-min").textContent = formatBytes(size);
-                clone.querySelector(".size-full").textContent = formatBytes(fullSize);
+                document.querySelector(".size-gzip").textContent = formatBytes(gzip);
+                document.querySelector(".size-min").textContent = formatBytes(size);
+                document.querySelector(".size-full").textContent = formatBytes(fullSize);
             }
             catch (err) {
                 // ignore
             }
-
-            showInfoElem.appendChild(clone);
         }
         else {
             showInfoElem.innerHTML = `<div class="select-project"><p>${LEFT_MENU_DESC}</p></div>`;
