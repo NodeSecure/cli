@@ -45,6 +45,76 @@ div#network-loader {
         font-weight: bold;
     }
 
+section#stats {
+    height: 30px;
+    position: absolute;
+    z-index: 9999;
+    right: 10px;
+    top: 10px;
+    display: flex;
+}
+    section#stats > div.btn {
+        padding: 0 10px;
+        border-radius: 2px;
+        background: rgba(36, 36, 36, 0.76);
+        border: 1px solid #37474F;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    section#stats > div.btn:hover {
+        cursor: pointer;
+        background: #37474F;
+    }
+    section#stats > div.btn + div.btn {
+        margin-left: 10px;
+    }
+    section#stats > div.btn:hover div.hiddenarea {
+        display: flex;
+        flex-direction: column;
+    }
+
+    section#stats div.hiddenarea {
+        display: none;
+        padding-top: 10px;
+        width: 320px;
+        position: absolute;
+        top: 29px;
+        right: -1px;
+    }
+    section#stats div.hiddenarea > div.infobox {
+        border-radius: 2px;
+    }
+
+div.legend {
+    display: flex;
+    flex-direction: column;
+    border-radius: 2px;
+}
+    div.legend > div.title {
+        height: 23px;
+        display: flex;
+        background: #263238;
+        align-items: center;
+        padding: 0 5px;
+        font-size: 14px;
+    }
+        div.legend > div.title > b {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+    div.legend > p {
+        background: #37474F;
+        color: #CFD8DC;
+        padding: 5px;
+        font-size: 13px;
+        text-align: justify;
+    }
+div.legend + div.legend {
+    margin-top: 5px;
+}
+
 section#show-info {
     width: 370px;
     position: absolute;
