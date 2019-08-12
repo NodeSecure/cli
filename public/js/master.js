@@ -194,8 +194,9 @@ document.addEventListener("DOMContentLoaded", async() => {
             const clone = document.importNode(packageInfoTemplate.content, true);
             const currentNode = params.nodes[0];
             const selectedNode = linker.get(Number(currentNode));
-            const { name, version, author, flags } = selectedNode;
+            const { name, version, author, flags, composition } = selectedNode;
             const metadata = data[name].metadata;
+            console.log(composition);
 
             const btnShow = clone.getElementById("btn_showOrHide");
             btnShow.addEventListener("click", () => {
@@ -237,7 +238,27 @@ document.addEventListener("DOMContentLoaded", async() => {
             fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
             fields.appendChild(fieldsFragment);
 
-            clone.querySelector(".flags").textContent = getFlagStr(getFlags(flags, metadata)) || "No specific flag";
+            clone.querySelector(".flags").textContent = getFlagStr(getFlags(flags, metadata)) || "No flag";
+
+            {
+                const fragment = document.createDocumentFragment();
+                for (const dep of composition.required_builtin) {
+                    const span = document.createElement("span");
+                    span.appendChild(document.createTextNode(dep));
+                    fragment.appendChild(span);
+                }
+                clone.getElementById("nodedep").appendChild(fragment);
+            }
+
+            {
+                const fragment = document.createDocumentFragment();
+                for (const ext of composition.extensions) {
+                    const span = document.createElement("span");
+                    span.appendChild(document.createTextNode(ext === "" ? "void" : ext));
+                    fragment.appendChild(span);
+                }
+                clone.getElementById("extensions").appendChild(fragment);
+            }
 
             showInfoElem.appendChild(clone);
 

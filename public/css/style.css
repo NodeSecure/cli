@@ -10,11 +10,11 @@ body, html {
 }
 
 button {
-    border: 2px solid #3E2723;
+    border: 2px solid rgb(16, 85, 70);
     background: #FFF;
     border-radius: 2px;
     height: 30px;
-    color: #3E2723;
+    color: rgb(2, 32, 23);
     font-weight: bold;
 }
 button + button {
@@ -153,24 +153,55 @@ section#show-info {
         font-size: 14px;
         margin-top: 15px;
     }
+
     section#show-info > .flags {
         text-align: center;
+        font-size: 14px;
     }
+
+    section#show-info .list-item {
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: -5px;
+        margin-top: -5px;
+    }
+        section#show-info .list-item > span {
+            padding: 0 10px;
+            height: 25px;
+            background: #263238ad;
+            border-radius: 4px;
+            font-size: 13px;
+            flex-basis: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+        section#show-info .list-item > span {
+            margin: 2.5px;
+        }
+
     section#show-info > hr {
         width: 100%;
         border: none;
-        background: #2f3826;
+        background: #2632385e;
         height: 2px;
         border-radius: 50px;
     }
+
     section#show-info > .head-title {
         text-align: center;
         color: #FFF;
+        background: rgba(7, 144, 92, 0.657);
+        box-shadow: 1px 1px 10px rgba(3, 34, 15, 0.5);
+        border-radius: 40px;
+        padding: 4px 10px;
         font-size: 14px;
-        font-variant: small-caps;
-        margin-bottom: 10px;
+        margin-top: 10px;
+        margin-bottom: 15px;
         text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
     }
+
     section#show-info ul li {
         display: flex;
         height: 25px;
