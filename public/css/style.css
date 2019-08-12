@@ -128,8 +128,7 @@ section#show-info {
     flex-direction: column;
     box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
     border: 1px solid rgba(200, 200, 200, 0.1);
-    z-index: 9999;
-    overflow-y: auto;
+    z-index: 5000;
     max-height: calc(100% - 20px);
 }
     section#show-info > .name {
@@ -145,15 +144,41 @@ section#show-info {
         text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
     }
     section#show-info > .buttons {
-        margin-top: 10px;
         display: flex;
+        position: absolute;
+        flex-direction: column;
+        top: 10px;
+        left: 348px;
+        z-index: 9999;
     }
+        section#show-info > .buttons > div.bull {
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            background: #263238;
+            border: 2px solid #37474F;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        section#show-info > .buttons > div.bull:hover {
+            cursor: pointer;
+            background: #90A4AE;
+        }
+        section#show-info > .buttons > div.bull + div.bull {
+            margin-top: 5px;
+        }
+
     section#show-info > .desc {
         color: #B0BEC5;
         text-align: justify;
         font-style: italic;
         font-size: 14px;
         margin-top: 15px;
+        min-height: 30px;
+        padding-right: 10px;
     }
 
     section#show-info > .flags {
@@ -195,14 +220,19 @@ section#show-info {
     section#show-info > .head-title {
         text-align: center;
         color: #FFF;
-        background: rgba(7, 144, 92, 0.657);
-        box-shadow: 1px 1px 10px rgba(3, 34, 15, 0.5);
-        border-radius: 40px;
-        padding: 4px 10px;
+        box-shadow: 1px 1px 10px rgba(41, 122, 98, 0.739) inset;
+        border-radius: 10px;
+        height: 30px;
         font-size: 14px;
         margin-top: 10px;
         margin-bottom: 15px;
+        box-sizing: border-box;
         text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
+        border: 2px solid #263238;
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     section#show-info ul li {

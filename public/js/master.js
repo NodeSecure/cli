@@ -200,6 +200,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 const selectedNode = linker.get(nodeId);
                 const hidden = !selectedNode.hidden;
 
+                network.startSimulation();
                 // eslint-disable-next-line
                 nodes.update([...searchForNeighbourIds(nodeId)].map((id) => ({ id, hidden })));
                 selectedNode.hidden = !selectedNode.hidden;
@@ -207,7 +208,20 @@ document.addEventListener("DOMContentLoaded", async() => {
 
             clone.querySelector(".name").textContent = name;
             clone.querySelector(".version").textContent = version;
-            clone.querySelector(".desc").textContent = selectedNode.description;
+            {
+                const descElement = clone.querySelector(".desc");
+                const desc = selectedNode.description.trim();
+                if (desc === "") {
+                    descElement.style.display = "none";
+                }
+                else {
+                    descElement.textContent = desc;
+                    if (desc.length <= 60) {
+                        descElement.style["text-align"] = "center";
+                    }
+                }
+            }
+
 
             // eslint-disable-next-line
             let fAuthor = typeof author === "string" ? author : (author.name || "Unknown");
