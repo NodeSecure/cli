@@ -115,10 +115,6 @@ function getFlags(flags, metadata, vulnerabilities = []) {
         flagList.push("🚨");
     }
 
-    return flagList;
-}
-
-function getFlagStr(flagList) {
     return flagList.reduce((acc, cur) => `${acc} ${cur}`, "");
 }
 
@@ -144,7 +140,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             opt.version = currVersion;
             opt.hidden = false;
 
-            const flagStr = getFlagStr(getFlags(flags, metadata, vulnerabilities));
+            const flagStr = getFlags(flags, metadata, vulnerabilities);
             const label = `${packageName}@${currVersion}${flagStr}\n<b>[${formatBytes(size)}]</b>`;
             const color = getColor(id, flags);
 
@@ -197,7 +193,6 @@ document.addEventListener("DOMContentLoaded", async() => {
             const selectedNode = linker.get(Number(currentNode));
             const { name, version, author, flags, composition } = selectedNode;
             const metadata = data[name].metadata;
-            console.log(composition);
 
             const btnShow = clone.getElementById("btn_showOrHide");
             btnShow.addEventListener("click", () => {
@@ -239,27 +234,20 @@ document.addEventListener("DOMContentLoaded", async() => {
             fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
             fields.appendChild(fieldsFragment);
 
-            clone.querySelector(".flags").textContent = getFlagStr(getFlags(flags, metadata)) || "No flag";
-
             {
-                const fragment = document.createDocumentFragment();
-                for (const dep of composition.required_builtin) {
-                    const span = document.createElement("span");
-                    span.appendChild(document.createTextNode(dep));
-                    fragment.appendChild(span);
+                const flagsElement = clone.querySelector(".flags");
+                const textContent = getFlags(flags, metadata);
+                if (textContent === "") {
+                    flagsElement.style.display = "none";
+                    clone.getElementById("flags-title").style.display = "none";
                 }
-                clone.getElementById("nodedep").appendChild(fragment);
+                else {
+                    flagsElement.textContent = textContent;
+                }
             }
 
-            {
-                const fragment = document.createDocumentFragment();
-                for (const ext of composition.extensions) {
-                    const span = document.createElement("span");
-                    span.appendChild(document.createTextNode(ext === "" ? "void" : ext));
-                    fragment.appendChild(span);
-                }
-                clone.getElementById("extensions").appendChild(fragment);
-            }
+            renderItemsList(clone.getElementById("nodedep"), composition.required_builtin);
+            renderItemsList(clone.getElementById("extensions"), composition.extensions);
 
             showInfoElem.appendChild(clone);
 

@@ -129,6 +129,8 @@ section#show-info {
     box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
     border: 1px solid rgba(200, 200, 200, 0.1);
     z-index: 9999;
+    overflow-y: auto;
+    max-height: calc(100% - 20px);
 }
     section#show-info > .name {
         color: #D4E157;
@@ -157,6 +159,7 @@ section#show-info {
     section#show-info > .flags {
         text-align: center;
         font-size: 14px;
+        margin-bottom: 10px;
     }
 
     section#show-info .list-item {

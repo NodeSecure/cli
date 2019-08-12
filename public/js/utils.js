@@ -37,6 +37,25 @@ function createLiField(title, value, isLink = false) {
     return liElement;
 }
 
+function renderItemsList(node, items = []) {
+    if (items.length === 0) {
+        const previousNode = node.previousElementSibling;
+        if (previousNode !== null) {
+            previousNode.style.display = "none";
+        }
+
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    for (const dep of items) {
+        const span = document.createElement("span");
+        span.appendChild(document.createTextNode(dep));
+        fragment.appendChild(span);
+    }
+    node.appendChild(fragment);
+}
+
 async function request(path, customHeaders = Object.create(null)) {
     const headers = {
         Accept: "application/json"
