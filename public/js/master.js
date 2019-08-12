@@ -49,7 +49,7 @@ const networkGraphOptions = {
         timestep: 0.35,
         stabilization: {
             enabled: true,
-            iterations: 100
+            iterations: 1000
         }
     }
 };
@@ -135,9 +135,10 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     const data = await request("/data");
     for (const [packageName, descriptor] of Object.entries(data)) {
-        const { metadata, vulnerabilities, ...versions } = descriptor;
+        const { metadata, vulnerabilities, versions } = descriptor;
 
-        for (const [currVersion, opt] of Object.entries(versions)) {
+        for (const currVersion of versions) {
+            const opt = descriptor[currVersion];
             const { id, usedBy, flags, size } = opt;
             opt.name = packageName;
             opt.version = currVersion;
@@ -165,9 +166,10 @@ document.addEventListener("DOMContentLoaded", async() => {
     network.on("afterDrawing", () => {
         document.getElementById("network-loader").style.display = "none";
     });
+    network.on("stabilizationIterationsDone", () => network.stopSimulation());
     network.on("click", neighbourHighlight);
     network.on("click", updateMenu);
-    network.stabilize(2000);
+    network.stabilize(500);
 
     function* searchForNeighbourIds(selectedNode) {
         const { name, version } = linker.get(selectedNode);
@@ -182,6 +184,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
 
     async function updateMenu(params) {
+        network.stopSimulation();
         const showInfoElem = document.getElementById("show-info");
         const packageInfoTemplate = document.getElementById("package-info");
 
@@ -259,6 +262,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
 
     function neighbourHighlight(params) {
+        network.stopSimulation();
         const allNodes = nodes.get({ returnType: "Object" });
 
         // if something is selected:

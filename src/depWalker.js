@@ -359,14 +359,13 @@ async function depWalker(manifest, options = Object.create(null)) {
         promisesToWait.push(processPackageTarball(name, version, current[version]));
 
         if (flattenedDeps.has(name)) {
-            // Merge all versions, and always force hasIndirectDependencies to true
+            // TODO: how to handle different metadata ?
             const dep = flattenedDeps.get(name);
-            const hasIndirectDependencies = Reflect.has(dep, version) ? dep[version].flags.hasIndirectDependencies : false;
 
-            // Note: here we get "ref" for hasIndirectDependencies (but Object.assign still need to be executed outside of the if).
-            const ref = Object.assign(dep, current);
-            if (hasIndirectDependencies) {
-                ref[version].flags.hasIndirectDependencies = true;
+            const currVersion = current.versions[0];
+            if (!Reflect.has(dep, currVersion)) {
+                dep[currVersion] = current[currVersion];
+                dep.versions.push(currVersion);
             }
         }
         else {
@@ -398,8 +397,18 @@ async function depWalker(manifest, options = Object.create(null)) {
         );
 
         for (const name of filtered) {
-            // TODO: only push if vulnerable_versions match one of the three version
-            flattenedDeps.get(name).vulnerabilities = vulnerabilities[name];
+            const dep = flattenedDeps.get(name);
+            const detectedVulnerabilities = [];
+            for (const currVuln of vulnerabilities[name]) {
+                const satisfied = dep.versions.some((version) => semver.satisfies(version, currVuln.vulnerable_versions));
+                if (satisfied) {
+                    detectedVulnerabilities.push(currVuln);
+                }
+            }
+
+            if (detectedVulnerabilities.length > 0) {
+                dep.vulnerabilities = detectedVulnerabilities;
+            }
         }
     }
     catch (err) {

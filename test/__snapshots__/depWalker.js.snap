@@ -56,6 +56,9 @@ Object {
         },
       ],
     },
+    "versions": Array [
+      "1.5.1",
+    ],
     "vulnerabilities": Array [],
   },
 }

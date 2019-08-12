@@ -83,6 +83,7 @@ class Dependency {
                 license: "",
                 gitUrl: this.gitUrl
             },
+            versions: [this.version],
             vulnerabilities: [],
             metadata: {
                 publishedCount: 0,
