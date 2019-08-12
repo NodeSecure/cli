@@ -173,8 +173,9 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     function* searchForNeighbourIds(selectedNode) {
         const { name, version } = linker.get(selectedNode);
-        for (const { metadata, vulnerabilities, ...versions } of Object.values(data)) {
-            for (const { id, usedBy } of Object.values(versions)) {
+        for (const descriptor of Object.values(data)) {
+            for (const currVersion of descriptor.versions) {
+                const { id, usedBy } = descriptor[currVersion];
                 if (Reflect.has(usedBy, name) && usedBy[name] === version) {
                     yield* searchForNeighbourIds(id);
                     yield id;
