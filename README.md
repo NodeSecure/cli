@@ -53,6 +53,7 @@ $ nsecure http
 ```
 
 ## Private packages
+
 Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contain a [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
 
 ## Emojis for flags
@@ -72,6 +73,14 @@ Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_S
 | 🚨 | vulnerabilities | The package have one or many vulnerabilities |
 
 > Note: **hasManyPublishers** and **hasChangedAuthor** are not flags linked to a given package version (but to the package itself).
+
+## How to get package(s) vulnerabilities
+
+Right now, vulnerabilities are not shipped automatically because it request a manual action to hydrate a local .json file with all detected vulnerabilities from the [Security WG](https://github.com/nodejs/security-wg) repository.
+
+```bash
+$ nsecure hydrate-db
+```
 
 ## License
 MIT
