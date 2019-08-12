@@ -227,9 +227,9 @@ document.addEventListener("DOMContentLoaded", async() => {
             const fieldsFragment = document.createDocumentFragment();
             fieldsFragment.appendChild(createLiField("Author", fAuthor));
             fieldsFragment.appendChild(createLiField(`License (${selectedNode.licenseFrom})`, selectedNode.license));
-            fieldsFragment.appendChild(createLiField("Size on system", formatBytes(selectedNode.size)));
-            fieldsFragment.appendChild(createLiField("Home", metadata.homepage || "N/A", true));
-            fieldsFragment.appendChild(createLiField("Last release", metadata.lastVersion));
+            fieldsFragment.appendChild(createLiField("Size on (local) system", formatBytes(selectedNode.size)));
+            fieldsFragment.appendChild(createLiField("Homepage", metadata.homepage || "N/A", true));
+            fieldsFragment.appendChild(createLiField("Last release (version)", metadata.lastVersion));
             fieldsFragment.appendChild(createLiField("Last release (date)", lastUpdate));
             fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
             fields.appendChild(fieldsFragment);

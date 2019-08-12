@@ -48,9 +48,12 @@ function renderItemsList(node, items = []) {
     }
 
     const fragment = document.createDocumentFragment();
-    for (const dep of items) {
+    for (const elem of items) {
+        if (elem.trim() === "") {
+            continue;
+        }
         const span = document.createElement("span");
-        span.appendChild(document.createTextNode(dep));
+        span.appendChild(document.createTextNode(elem));
         fragment.appendChild(span);
     }
     node.appendChild(fragment);
