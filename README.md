@@ -52,6 +52,18 @@ Then a `result.json` will be writted at the current location. To view it on web 
 $ nsecure http
 ```
 
+---
+Some options are available on both `cwd` and `from` commands.
+
+| name | shortcut | default value | description |
+| --- | --- | --- | --- |
+| --depth | -d | **4** | the maximum depth we must walk (when we fetch the whole tree). |
+| --output | -o | **result** | the name that the outputted .json file will have |
+
+```bash
+$ nsecure from express -d 10 -o express-security-report
+```
+
 ## Private packages
 
 Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contain a [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
@@ -77,6 +89,8 @@ Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_S
 ## How to get package(s) vulnerabilities
 
 Right now, vulnerabilities are not shipped automatically because it request a manual action to hydrate a local .json file with all detected vulnerabilities from the [Security WG](https://github.com/nodejs/security-wg) repository.
+
+To run the hydratation just run the following command in your terminal:
 
 ```bash
 $ nsecure hydrate-db
