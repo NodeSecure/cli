@@ -27,6 +27,12 @@ $ npm ci
 $ npm link
 ```
 
+or
+
+```bash
+$ npm i -g https://github.com/ES-Community/node-secure.git
+```
+
 > ⚠️ under development (not published on npm yet).
 
 ## Usage example
@@ -64,11 +70,11 @@ Some options are available on both `cwd` and `from` commands.
 $ nsecure from express -d 10 -o express-security-report
 ```
 
-## Private packages
+## Fetching private packages
 
 Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contain a [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
 
-## Emojis for flags
+## Emojis and flags legends
 
 | emoji | flag name | description |
 | --- | --- | --- |
@@ -86,7 +92,7 @@ Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_S
 
 > Note: **hasManyPublishers** and **hasChangedAuthor** are not flags linked to a given package version (but to the package itself).
 
-## How to get package(s) vulnerabilities
+## Fetching vulnerabilities
 
 Right now, vulnerabilities are not shipped automatically because it request a manual action to hydrate a local .json file with all detected vulnerabilities from the [Security WG](https://github.com/nodejs/security-wg) repository.
 
