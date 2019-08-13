@@ -6,7 +6,11 @@
 ![dep](https://img.shields.io/david/ES-Community/node-secure?style=flat-square)
 ![size](https://img.shields.io/github/languages/code-size/ES-Community/node-secure?style=flat-square)
 
-Node.js security CLI. The goal of the project is to a design a CLI that will allow to fetch all dependencies of a given package (or the package at the current working dir if there is a package.json to read) and draw a Network of all dependencies in a webpage.
+Node.js security CLI. The goal of the project is to a design a CLI (and a API) that will fetch and deeply analyze the dependency tree of a given **npm** package (or a local project) and output a **.json file** that will contains all metadata and flags about each packages.
+
+The CLI will allow to load this .json to draw a Network of all dependencies in a webpage (example below).
+
+> Note: The TypeScript definition of the .json file can be found in the root file index.d.ts
 
 - [Google Drive Documentation](https://docs.google.com/document/d/1853Uwup9mityAYqAOnen1KSqSA6hlBgpKU0u0ygGY4Y/edit?usp=sharing)
 
