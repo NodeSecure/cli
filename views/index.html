@@ -107,15 +107,19 @@
 </div>
 
 <template id="package-info">
-    <!-- button to interact with the network or show more informations -->
-    <div class="buttons">
-        <div class="bull" id="btn_showOrHide">🙈</div>
-        <div class="bull">📊</div>
-    </div>
-
-    <p class="name"></p>
-    <p class="version"></p>
+    <span class="line-title">
+        <p class="name"></p>
+        <p class="arrobase">@</p>
+        <p class="version"></p>
+    </span>
     <p class="desc"></p>
+
+    <!-- button to interact with the network or show more informations -->
+    <hr />
+    <div class="buttons">
+        <div class="bull" id="btn_showOrHide">Show / Hide nodes 🙈</div>
+        <div class="bull">Composition 📊</div>
+    </div>
     <hr />
 
     <!-- package metadata -->

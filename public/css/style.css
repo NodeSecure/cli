@@ -1,3 +1,7 @@
+:root {
+    --primary-color: #D4E157;
+}
+
 body, html {
     height: 100%;
     font-family: "Roboto", sans-serif;
@@ -9,24 +13,10 @@ body, html {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#273238', endColorstr='#161e21',GradientType=1 );
 }
 
-button {
-    border: 2px solid rgb(16, 85, 70);
-    background: #FFF;
-    border-radius: 2px;
-    height: 30px;
-    color: rgb(2, 32, 23);
-    font-weight: bold;
-}
-button + button {
-    margin-left: 10px;
-}
-
 body {
-    display: flex;
-    align-content: center;
-    justify-content: center;
     position: relative;
     color: #FFF;
+    overflow: hidden;
 }
 
 div#network-loader {
@@ -116,10 +106,12 @@ div.legend + div.legend {
 }
 
 section#show-info {
+    min-width: 340px;
     width: 370px;
-    position: absolute;
-    left: 10px;
-    top: 10px;
+    max-width: 550px;
+    margin-left: 10px;
+    margin-top: 10px;
+    position: relative;
     background: #37474F;
     border-radius: 2px;
     box-sizing: border-box;
@@ -128,47 +120,62 @@ section#show-info {
     flex-direction: column;
     box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
     border: 1px solid rgba(200, 200, 200, 0.1);
-    z-index: 5000;
     max-height: calc(100% - 20px);
+    resize: horizontal;
+    overflow-x: auto;
+    z-index: 5000;
 }
-    section#show-info > .name {
-        color: #D4E157;
-        font-size: 24px;
-        text-align: center;
-        text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
+    section#show-info > .line-title {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
-    section#show-info > .version {
-        color: #ECEFF1;
-        font-size: 18px;
-        text-align: center;
-        text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
-    }
+        section#show-info > .line-title > .name {
+            color: var(--primary-color);
+            font-size: 24px;
+            text-align: center;
+            text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
+        }
+        section#show-info > .line-title > .arrobase {
+            color: gray;
+            margin: 0 5px;
+        }
+        section#show-info > .line-title > .version {
+            color: #ECEFF1;
+            font-size: 18px;
+            text-align: center;
+            text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
+        }
+
     section#show-info > .buttons {
         display: flex;
-        position: absolute;
-        flex-direction: column;
-        top: 10px;
-        left: 348px;
-        z-index: 9999;
+        justify-content: center;
     }
         section#show-info > .buttons > div.bull {
-            width: 40px;
+            padding: 0 10px;
             height: 40px;
-            border-radius: 40px;
-            background: #263238;
-            border: 2px solid #37474F;
+            background: rgb(38,50,56);
+            background: -moz-linear-gradient(top,  rgba(38,50,56,1) 0%, rgba(33,33,33,1) 100%);
+            background: -webkit-linear-gradient(top,  rgba(38,50,56,1) 0%,rgba(33,33,33,1) 100%);
+            background: linear-gradient(to bottom,  rgba(38,50,56,1) 0%,rgba(33,33,33,1) 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#263238', endColorstr='#212121',GradientType=0 );
+            border: 1px solid #000;
+            border-radius: 4px;
+            font-size: 14px;
             box-sizing: border-box;
             display: flex;
             align-items: center;
             justify-content: center;
             user-select: none;
+            flex-grow: 1;
         }
         section#show-info > .buttons > div.bull:hover {
             cursor: pointer;
-            background: #90A4AE;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
         section#show-info > .buttons > div.bull + div.bull {
-            margin-top: 5px;
+            margin-left: 10px;
         }
 
     section#show-info > .desc {
@@ -177,14 +184,11 @@ section#show-info {
         font-style: italic;
         font-size: 14px;
         margin-top: 15px;
-        min-height: 30px;
-        padding-right: 10px;
     }
 
     section#show-info > .flags {
         text-align: center;
         font-size: 14px;
-        margin-bottom: 10px;
     }
 
     section#show-info .list-item {
@@ -196,7 +200,7 @@ section#show-info {
         section#show-info .list-item > span {
             padding: 0 10px;
             height: 25px;
-            background: #263238ad;
+            background: #455A64;
             border-radius: 4px;
             font-size: 13px;
             flex-basis: 50px;
@@ -206,30 +210,35 @@ section#show-info {
             flex-grow: 1;
         }
         section#show-info .list-item > span {
-            margin: 2.5px;
+            margin-left: 5px;
+            margin-top: 5px;
         }
 
     section#show-info > hr {
         width: 100%;
         border: none;
-        background: #2632385e;
         height: 2px;
+        border-bottom: 2px solid #2632385e;
         border-radius: 50px;
     }
 
     section#show-info > .head-title {
         text-align: center;
         color: #FFF;
-        box-shadow: 1px 1px 10px rgba(41, 122, 98, 0.739) inset;
-        border-radius: 10px;
-        height: 30px;
+        background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%, rgba(38,50,56,1) 100%);
+        background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,0) 0%,rgba(38,50,56,1) 100%);
+        background: radial-gradient(ellipse at center,  rgba(255,255,255,0) 0%,rgba(38,50,56,1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#263238',GradientType=1 );
+        border-radius: 5px;
+        height: 26px;
         font-size: 14px;
         margin-top: 10px;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         box-sizing: border-box;
         text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
-        border: 2px solid #263238;
+        border: 1px solid #263238;
         font-family:Verdana, Geneva, Tahoma, sans-serif;
+        font-variant: small-caps;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -277,7 +286,7 @@ section#show-info {
         }
             section#show-info > div.bundlephobia > div > b {
                 font-weight: 800px;
-                color: #D4E157;
+                color: var(--primary-color);
                 margin-bottom: 2px;
                 font-size: 18px;
             }
@@ -296,5 +305,10 @@ div.select-project {
 
 main#network-graph {
     flex-grow: 1;
+    width: 100vw;
     height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
 }
