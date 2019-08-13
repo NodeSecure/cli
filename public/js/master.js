@@ -253,7 +253,6 @@ document.addEventListener("DOMContentLoaded", async() => {
                 const textContent = getFlags(flags, metadata);
                 if (textContent === "") {
                     flagsElement.style.display = "none";
-                    clone.getElementById("flags-title").style.display = "none";
                 }
                 else {
                     flagsElement.textContent = textContent;

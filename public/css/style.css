@@ -152,8 +152,7 @@ section#show-info {
         justify-content: center;
     }
         section#show-info > .buttons > div.bull {
-            padding: 0 10px;
-            height: 40px;
+            height: 30px;
             background: rgb(38,50,56);
             background: -moz-linear-gradient(top,  rgba(38,50,56,1) 0%, rgba(33,33,33,1) 100%);
             background: -webkit-linear-gradient(top,  rgba(38,50,56,1) 0%,rgba(33,33,33,1) 100%);
@@ -189,6 +188,7 @@ section#show-info {
     section#show-info > .flags {
         text-align: center;
         font-size: 14px;
+        margin-top: 5px;
     }
 
     section#show-info .list-item {
