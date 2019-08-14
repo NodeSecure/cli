@@ -40,19 +40,22 @@ section#stats {
     position: absolute;
     z-index: 9999;
     right: 10px;
-    top: 10px;
+    top: 0;
     display: flex;
 }
     section#stats > div.btn {
         padding: 0 10px;
         border-radius: 2px;
-        background: rgba(36, 36, 36, 0.76);
+        background: #263238;
         border: 1px solid #37474F;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
     }
+        section#stats > div.btn > p {
+            margin-left: 10px;
+        }
     section#stats > div.btn:hover {
         cursor: pointer;
         background: #37474F;
@@ -168,7 +171,16 @@ section#show-info {
             user-select: none;
             flex-grow: 1;
         }
-        section#show-info > .buttons > div.bull:hover {
+            section#show-info > .buttons > div.bull > p {
+                margin-left: 4px;
+            }
+
+        section#show-info > .buttons > div.bull.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        section#show-info > .buttons > div.bull:not(.active):hover {
             cursor: pointer;
             border-color: var(--primary-color);
             color: var(--primary-color);

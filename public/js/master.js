@@ -195,14 +195,27 @@ document.addEventListener("DOMContentLoaded", async() => {
             const metadata = data[name].metadata;
 
             const btnShow = clone.getElementById("btn_showOrHide");
-            btnShow.addEventListener("click", () => {
-                const nodeId = params.nodes[0];
-                const selectedNode = linker.get(nodeId);
+            if (selectedNode.hidden) {
+                btnShow.innerHTML = "<i class=\"icon-eye\"></i><p>Show childs</p>";
+            }
+            else {
+                btnShow.innerHTML = "<i class=\"icon-eye-off\"></i><p>Hide childs</p>";
+            }
+
+            btnShow.addEventListener("click", function showOrHide() {
+                const currBtn = document.getElementById("btn_showOrHide");
+                currBtn.classList.toggle("active");
                 const hidden = !selectedNode.hidden;
+                if (hidden) {
+                    currBtn.innerHTML = "<i class=\"icon-eye\"></i><p>Show childs</p>";
+                }
+                else {
+                    currBtn.innerHTML = "<i class=\"icon-eye-off\"></i><p>Hide childs</p>";
+                }
 
                 network.startSimulation();
                 // eslint-disable-next-line
-                nodes.update([...searchForNeighbourIds(nodeId)].map((id) => ({ id, hidden })));
+                nodes.update([...searchForNeighbourIds(currentNode)].map((id) => ({ id, hidden })));
                 selectedNode.hidden = !selectedNode.hidden;
             });
 

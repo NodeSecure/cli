@@ -1,0 +1,58 @@
+{
+  "name": "",
+  "css_prefix_text": "icon-",
+  "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
+  "glyphs": [
+    {
+      "uid": "e45a3da2ebde8bc8e30a873f3bd51f30",
+      "css": "eye",
+      "code": 59392,
+      "src": "elusive"
+    },
+    {
+      "uid": "d218294e6f9f7191f6b0b3d1ff6239ff",
+      "css": "eye-off",
+      "code": 59393,
+      "src": "elusive"
+    },
+    {
+      "uid": "ogmm8kz4f7y6ji50gzajnwed8h6ck2u7",
+      "css": "chart-bar",
+      "code": 59394,
+      "src": "modernpics"
+    },
+    {
+      "uid": "crns7fze53tnmwvi0wyfhq8whxfmmroz",
+      "css": "chart-pie",
+      "code": 59395,
+      "src": "modernpics"
+    },
+    {
+      "uid": "dcedf50ab1ede3283d7a6c70e2fe32f3",
+      "css": "chat",
+      "code": 59396,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "178053298e3e5b03551d754d4b9acd8b",
+      "css": "doc-inv",
+      "code": 61787,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "b035c28eba2b35c6ffe92aee8b0df507",
+      "css": "attention-circled",
+      "code": 59397,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "51727ca007aa35ceabcaffc28934faee",
+      "css": "book-open",
+      "code": 59398,
+      "src": "entypo"
+    }
+  ]
+}
