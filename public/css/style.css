@@ -52,6 +52,7 @@ section#stats {
         align-items: center;
         justify-content: center;
         position: relative;
+        box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
     }
         section#stats > div.btn > p {
             margin-left: 10px;
@@ -71,19 +72,24 @@ section#stats {
     section#stats div.hiddenarea {
         display: none;
         padding-top: 10px;
-        width: 320px;
+        width: 360px;
+        height: 88vh;
         position: absolute;
         top: 29px;
         right: -1px;
     }
     section#stats div.hiddenarea > div.infobox {
-        border-radius: 2px;
+        overflow-y: auto;
     }
 
 div.legend {
     display: flex;
     flex-direction: column;
-    border-radius: 2px;
+    border-radius: 4px;
+    box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
+    border: 1px solid #263238;
+    box-sizing: border-box;
+    overflow: hidden;
 }
     div.legend > div.title {
         height: 23px;
@@ -105,7 +111,7 @@ div.legend {
         text-align: justify;
     }
 div.legend + div.legend {
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 section#show-info {
