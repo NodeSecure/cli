@@ -32,7 +32,8 @@ class Dependency {
             hasMinifiedCode: false,
             hasCustomResolver: false,
             hasDependencies: false,
-            hasExternalCapacity: false
+            hasExternalCapacity: false,
+            hasScript: false
         };
         Object.preventExtensions(flags);
 
@@ -236,6 +237,22 @@ class Dependency {
             throw new TypeError("value must be typeof boolean");
         }
         this[SYM_FLAGS].hasCustomResolver = value;
+    }
+
+    /**
+     * @memberof Dependency#
+     * @member {boolean} hasScript
+     * @returns {boolean}
+     */
+    get hasScript() {
+        return this[SYM_FLAGS].hasScript;
+    }
+
+    set hasScript(value) {
+        if (typeof value !== "boolean") {
+            throw new TypeError("value must be typeof boolean");
+        }
+        this[SYM_FLAGS].hasScript = value;
     }
 
     /**

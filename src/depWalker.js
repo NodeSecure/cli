@@ -15,6 +15,7 @@ const Spinner = require("@slimio/async-cli-spinner");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
+const is = require("@slimio/is");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange } = require("./utils");
@@ -24,6 +25,7 @@ const Dependency = require("./dependency.class");
 // CONSTANTS
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
 const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram"]);
+const NPM_SCRIPTS = new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]);
 const NODE_CORE_LIBS = new Set([...repl._builtinLibs]);
 const TMP = join(__dirname, "..", "tmp");
 
@@ -141,10 +143,12 @@ async function processPackageTarball(name, version, ref) {
         // Read the package.json file in the extracted tarball
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
-            const { description = "", author = {}, ...others } = JSON.parse(packageStr);
+            const { description = "", author = {}, scripts = {}, ...others } = JSON.parse(packageStr);
             ref.description = description;
             ref.author = author;
             license = others.license || "N/A";
+
+            ref.flags.hasScript = [...Object.keys(scripts)].some((value) => NPM_SCRIPTS.has(value.toLowerCase()));
         }
         catch (err) {
             ref.flags.hasManifest = false;

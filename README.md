@@ -90,6 +90,7 @@ Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_S
 | 🔬 | hasMinifiedCode | The package has minified/uglified code |
 | 💎 | hasCustomResolver | The package has at least one dependency that is not a npm package (like a git link or a local file link) |
 | 🌍 | hasExternalCapacity | The package use at least one Node.js dependency capable to communicate outside or to establish a listening server |
+| 📦 | hasScript | has `post` and/or `pre` (un)install npm script |
 | 💕 | hasManyPublishers | The package has more than one publishers |
 | 👥 | hasChangedAuthor | The package "author" field has been updated at least one time |
 | 🚨 | vulnerabilities | The package have one or many vulnerabilities |

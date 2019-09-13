@@ -29,6 +29,7 @@ Object {
         "hasLicense": true,
         "hasManifest": true,
         "hasMinifiedCode": false,
+        "hasScript": false,
         "hasSuspectImport": false,
         "isDeprecated": false,
         "isGit": false,

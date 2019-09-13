@@ -62,7 +62,8 @@ const FLAGS = {
     "🔬": "The package seems to have files that are minified/uglified.",
     "⛔️": "The package is deprecated.",
     "💕": "The package has several publishers.",
-    "👥": "The author has already changed at least one time."
+    "👥": "The author has already changed at least one time.",
+    "📦": "has `post` and/or `pre` (un)install npm script"
 };
 
 function getColor(id, flags) {
@@ -104,6 +105,9 @@ function getFlags(flags, metadata, vulnerabilities = []) {
     }
     if (flags.hasExternalCapacity) {
         flagList.push("🌍");
+    }
+    if (flags.hasScript) {
+        flagList.push("📦");
     }
     if (metadata.hasManyPublishers) {
         flagList.push("💕");
