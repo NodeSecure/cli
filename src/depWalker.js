@@ -2,9 +2,7 @@
 
 // Require Node.js Dependencies
 const { join, extname } = require("path");
-const fs = require("fs");
 const { mkdir, readFile } = require("fs").promises;
-const { performance } = require("perf_hooks");
 const repl = require("repl");
 
 // Require Third-party Dependencies
@@ -339,7 +337,6 @@ async function depWalker(manifest, options = Object.create(null)) {
     // Create TMP directory
     await mkdir(TMP, { recursive: true });
 
-    const start = performance.now();
     const spinner = new Spinner({
         spinner: "dots",
         verbose
@@ -377,7 +374,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     spinner.text = white().bold("Waiting to fetch all packages stats...");
     try {
         await Promise.all(promisesToWait);
-        const execTime = cyan().bold((performance.now() - start).toFixed(2));
+        const execTime = cyan().bold(spinner.elapsedTime.toFixed(2).toString());
         spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime} ms`));
     }
     catch (err) {

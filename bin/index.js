@@ -19,7 +19,6 @@ const pacote = require("pacote");
 const { yellow, grey, white, green, cyan } = require("kleur");
 const Spinner = require("@slimio/async-cli-spinner");
 const open = require("open");
-const premove = require("premove");
 
 // Require Internal Dependencies
 const { depWalker } = require("../src/depWalker");
@@ -99,10 +98,11 @@ prog
             text: white().bold(`Searching for '${yellow().bold(packageName)}' manifest in npm registry!`)
         }).start();
         try {
-            const start = performance.now();
             manifest = await pacote.manifest(packageName, token);
-            const time = (performance.now() - start).toFixed(2);
-            spinner.succeed(white().bold(`Fetched '${yellow().bold(packageName)}' manifest in ${cyan(time)} ms`));
+            const elapsedTime = spinner.elapsedTime.toFixed(2);
+            spinner.succeed(
+                white().bold(`Fetched ${yellow().bold(packageName)} manifest on npm in ${cyan(elapsedTime)} ms`)
+            );
         }
         catch (err) {
             spinner.fail(err.message);
