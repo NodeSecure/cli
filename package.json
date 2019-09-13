@@ -55,7 +55,7 @@
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
-    "@slimio/eslint-config": "^3.0.2",
+    "@slimio/eslint-config": "^3.0.3",
     "@types/node": "^12.6.8",
     "eslint": "^6.1.0",
     "get-folder-size": "^2.0.1",
