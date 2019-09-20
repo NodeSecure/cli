@@ -34,7 +34,7 @@ $ npm link
 or
 
 ```bash
-$ npm i -g https://github.com/ES-Community/node-secure.git
+$ npm install nsecure -g
 ```
 
 > ⚠️ under development (not published on npm yet).
