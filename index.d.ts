@@ -4,6 +4,12 @@ declare namespace NodeSecure {
         version: string;
     }
 
+    interface Publisher {
+        name: string;
+        version: string;
+        firstPublishAt: string;
+    }
+
     interface Flags {
         isGit: boolean;
         hasManifest: boolean;
@@ -31,10 +37,10 @@ declare namespace NodeSecure {
             lastUpdateAt: number;
             lastVersion: number;
             hasChangedAuthor: boolean;
+            hasManyPublishers: boolean;
             author: string;
             authors?: string[];
-            hasManyPublishers: boolean;
-            publishers: string[];
+            publishers: Publisher[];
         };
         versions: string[];
         vulnerabilities: any[];
@@ -68,9 +74,10 @@ declare namespace NodeSecure {
         verbose?: boolean;
         maxDepth?: number;
     }
-}
 
-declare function NodeSecure(cwd?: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
+    declare function cwd(path: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
+    declare function from(packageName: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
+}
 
 export = NodeSecure;
 export as namespace NodeSecure;

@@ -4,10 +4,13 @@
 const { join } = require("path");
 const { readFile, access } = require("fs").promises;
 
+// Require Third-party Dependencies
+const pacote = require("pacote");
+
 // Require Internal Dependencies
 const { depWalker } = require("./src/depWalker");
 
-module.exports = async function nodesecure(cwd = process.cwd(), options) {
+async function cwd(cwd = process.cwd(), options) {
     const packagePath = join(cwd, "package.json");
 
     await access(packagePath);
@@ -15,4 +18,15 @@ module.exports = async function nodesecure(cwd = process.cwd(), options) {
     const manifest = JSON.parse(str);
 
     return depWalker(manifest, options);
+}
+
+async function from(packageName, options) {
+    const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
+    const manifest = await pacote.manifest(packageName, token);
+
+    return depWalker(manifest, options);
+}
+
+module.exports = {
+    cwd, from
 };
