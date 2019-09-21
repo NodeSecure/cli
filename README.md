@@ -78,6 +78,33 @@ $ nsecure from express -d 10 -o express-security-report
 
 Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contain a [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
 
+## API
+Use nsecure as API package to fetch and work with the JSON. The following example demonstrate how to retrieve the JSON Payload for mocha, cacache and is-wsl packages. It's possible to use the **cwd** method if you want to achieve similar work on local projects.
+
+```js
+const { from } = require("nsecure");
+const { writeFile } = require("fs").promises;
+
+async function main() {
+    const toFetch = ["mocha", "cacache", "is-wsl"];
+    const options = { verbose: false };
+
+    const payloads = await Promise.all(
+        toFetch.map((name) => from(name, options))
+    );
+
+    const toWritePromise = [];
+    for (let i = 0; i < toFetch.length; i++) {
+        const fileName = `${toFetch[i]}.json`;
+        const data = JSON.stringify(payloads[i], null, 2);
+
+        toWritePromise.push(writeFile(fileName, data));
+    }
+    await Promise.all(toWritePromise);
+}
+main().catch(console.error);
+```
+
 ## Emojis and flags legends
 
 | emoji | flag name | description |
