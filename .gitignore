@@ -62,3 +62,4 @@ typings/
 
 result.json
 vuln.json
+tmp/
