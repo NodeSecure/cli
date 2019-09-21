@@ -23,7 +23,7 @@ const open = require("open");
 // Require Internal Dependencies
 const { depWalker } = require("../src/depWalker");
 const hydrateVulnDB = require("../src/hydrateVulnDB");
-const nodeSecure = require("../index");
+const { cwd } = require("../index");
 
 // CONSTANTS
 const SRC_PATH = join(__dirname, "..", "src");
@@ -78,10 +78,10 @@ prog
     .describe("Run on the current working dir")
     .option("-d, --depth", "maximum dependencies deepth", 4)
     .option("-o, --output", "output name", "result")
-    .action(async function cwd(opts) {
+    .action(async function cwdCmd(opts) {
         const { depth = 4, output } = opts;
 
-        const payload = await nodeSecure(void 0, { verbose: true, maxDepth: depth });
+        const payload = await cwd(void 0, { verbose: true, maxDepth: depth });
         logAndWrite(payload, output);
     });
 
