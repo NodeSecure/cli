@@ -15,7 +15,6 @@ const Spinner = require("@slimio/async-cli-spinner");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
-const is = require("@slimio/is");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange } = require("./utils");
