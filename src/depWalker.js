@@ -15,6 +15,7 @@ const Spinner = require("@slimio/async-cli-spinner");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
+const uniqueSlug = require("unique-slug");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange } = require("./utils");
@@ -123,11 +124,15 @@ async function* searchDeepDependencies(packageName, gitURL, options = {}) {
  * @function processPackageTarball
  * @param {!string} name package name
  * @param {!string} version package version
- * @param {*} ref version ref
+ * @param {object} options
+ * @param {*} [options.ref] version ref
+ * @param {string} [options.tmpLocation] temp location
  * @returns {Promise<void>}
  */
-async function processPackageTarball(name, version, ref) {
-    const dest = join(TMP, `${name}@${version}`);
+async function processPackageTarball(name, version, options) {
+    const { ref, tmpLocation } = options;
+
+    const dest = join(tmpLocation, `${name}@${version}`);
     const free = await tarballLocker.acquireOne();
 
     try {
@@ -338,7 +343,8 @@ async function depWalker(manifest, options = Object.create(null)) {
     pacote.clearMemoized();
 
     // Create TMP directory
-    await mkdir(TMP, { recursive: true });
+    const randomTMP = join(TMP, uniqueSlug());
+    await mkdir(randomTMP, { recursive: true });
 
     const spinner = new Spinner({
         spinner: "dots",
@@ -356,7 +362,10 @@ async function depWalker(manifest, options = Object.create(null)) {
 
         // Note: These are not very well handled in my opinion (not so much lazy ...).
         promisesToWait.push(searchPackageAuthors(name, current.metadata));
-        promisesToWait.push(processPackageTarball(name, version, current[version]));
+        promisesToWait.push(processPackageTarball(name, version, {
+            ref: current[version],
+            tmpLocation: randomTMP
+        }));
 
         if (flattenedDeps.has(name)) {
             // TODO: how to handle different metadata ?
@@ -436,14 +445,16 @@ async function depWalker(manifest, options = Object.create(null)) {
         }
     }
 
-    // Cleanup TMP dir
+    // Cleanup randomTMP dir
     try {
-        await premove(TMP);
+        await premove(randomTMP);
     }
     catch (err) {
-        console.log(red().bold(`Failed to remove directory ${yellow().bold(TMP)}`));
+        console.log(red().bold(`Failed to remove directory ${yellow().bold(randomTMP)}`));
     }
-    console.log("");
+    if (verbose) {
+        console.log("");
+    }
 
     return flattenedDeps;
 }
