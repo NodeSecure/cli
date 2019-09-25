@@ -25,8 +25,8 @@ The CLI will allow to load this .json to draw a Network of all dependencies in a
 ## Getting Started
 
 ```bash
-$ git clone https://github.com/ES-Community/node-secure.git
-$ cd node-secure
+$ git clone https://github.com/ES-Community/nsecure.git
+$ cd nsecure
 $ npm ci
 $ npm link
 ```
