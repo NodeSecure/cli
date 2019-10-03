@@ -169,6 +169,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     network.on("stabilizationIterationsDone", () => network.stopSimulation());
     network.on("click", neighbourHighlight);
     network.on("click", updateMenu);
+    network.on("click", centerOnNode)
     network.stabilize(500);
 
     function* searchForNeighbourIds(selectedNode) {
@@ -345,5 +346,12 @@ document.addEventListener("DOMContentLoaded", async() => {
 
         // transform the object into an array
         nodes.update(Object.values(allNodes));
+    }
+
+    function centerOnNode(params) {
+        network.stopSimulation();
+        if(params.nodes.length > 0) {
+            network.focus(params.nodes[0], {animation: true});
+        }
     }
 });
