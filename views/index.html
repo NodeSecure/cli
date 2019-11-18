@@ -1,19 +1,28 @@
 <!DOCTYPE html>
 
 <!-- Headers -->
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css">
-<link rel="stylesheet" href="css/reset.css">
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/fontello.css">
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" rel="stylesheet">
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"
+/>
+<link rel="stylesheet" href="css/reset.css" />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/fontello.css" />
+<link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap"
+    rel="stylesheet"
+/>
 
 <script src="js/utils.js" defer></script>
 <script src="js/master.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js" defer></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"
+    defer
+></script>
 <title>Node-Secure</title>
 
 <section id="stats">
@@ -22,79 +31,112 @@
         <p>Global Stats</p>
     </div>
     <div class="btn">
+        <p>Search</p>
+        <input
+            type="text"
+            list="package-list"
+            id="package-finder"
+            class="package-finder"
+            placeholder="Package Name"
+        />
+        <datalist id="package-list"></datalist>
+    </div>
+    <div class="btn">
         <i class="icon-book-open"></i>
         <p>Emojis Legends</p>
         <div class="hiddenarea">
             <div class="infobox">
                 <div class="legend">
                     <div class="title">
-                        <p>☁️</p><b>isGit</b>
+                        <p>☁️</p>
+                        <b>isGit</b>
                     </div>
                     <p>The package (project) is a git repository</p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>🌲</p><b>hasIndirectDependencies</b>
+                        <p>🌲</p>
+                        <b>hasIndirectDependencies</b>
                     </div>
                     <p>The package have indirect dependencies.</p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>⚠️</p><b>hasSuspectImport</b>
+                        <p>⚠️</p>
+                        <b>hasSuspectImport</b>
                     </div>
                     <p>The package have suspect import/require statment.</p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>⛔️</p><b>isDeprecated</b>
+                        <p>⛔️</p>
+                        <b>isDeprecated</b>
                     </div>
                     <p>The package has been tagged as deprecated on npm.</p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>📜</p><b>hasLicense</b>
+                        <p>📜</p>
+                        <b>hasLicense</b>
                     </div>
                     <p>The license is missing (or has not been detected).</p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>🔬</p><b>hasMinifiedCode</b>
+                        <p>🔬</p>
+                        <b>hasMinifiedCode</b>
                     </div>
                     <p>The package has minified/uglified code.</p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>💎</p><b>hasCustomResolver</b>
+                        <p>💎</p>
+                        <b>hasCustomResolver</b>
                     </div>
-                    <p>The package has at least one dependency that is not a npm package (like a git link or a local file link)</p>
+                    <p>
+                        The package has at least one dependency that is not a
+                        npm package (like a git link or a local file link)
+                    </p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>🌍</p><b>hasExternalCapacity</b>
+                        <p>🌍</p>
+                        <b>hasExternalCapacity</b>
                     </div>
-                    <p>The package use at least one Node.js dependency capable to communicate outside or to establish a listening server.</p>
+                    <p>
+                        The package use at least one Node.js dependency capable
+                        to communicate outside or to establish a listening
+                        server.
+                    </p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>💕</p><b>hasManyPublishers</b>
+                        <p>💕</p>
+                        <b>hasManyPublishers</b>
                     </div>
                     <p>The package has more than one publishers.</p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>📦</p><b>hasScript</b>
+                        <p>📦</p>
+                        <b>hasScript</b>
                     </div>
                     <p>has `post` and/or `pre` (un)install npm script.</p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>👥</p><b>hasChangedAuthor</b>
+                        <p>👥</p>
+                        <b>hasChangedAuthor</b>
                     </div>
-                    <p>The package "author" field has been updated at least one time.</p>
+                    <p>
+                        The package "author" field has been updated at least one
+                        time.
+                    </p>
                 </div>
                 <div class="legend">
                     <div class="title">
-                        <p>🚨</p><b>vulnerabilities</b>
+                        <p>🚨</p>
+                        <b>vulnerabilities</b>
                     </div>
                     <p>The package have one or many vulnerabilities.</p>
                 </div>
@@ -144,7 +186,7 @@
 
     <!-- package metadata -->
     <ul class="fields"></ul>
-    <hr>
+    <hr />
 
     <!-- Node.js dependencies -->
     <p class="head-title">node.js core dependencies</p>
