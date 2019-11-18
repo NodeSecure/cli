@@ -320,6 +320,29 @@ div.select-project {
     text-shadow: 1px 1px 10px rgba(20, 20, 20, 0.5);
 }
 
+
+.package-finder {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #CCC;
+    color: #FFF;
+    box-sizing: border-box;
+    font-size: 18px;
+    margin-left: 10px;
+  }
+
+  .package-finder:focus {
+    outline: none;
+  }
+  
+  .package-finder::-webkit-input-placeholder {
+    color: #AAA;
+  }
+  
+  .package-finder:focus::-webkit-input-placeholder {
+    color: #FFF;
+  }
+
 main#network-graph {
     flex-grow: 1;
     width: 100vw;

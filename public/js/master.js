@@ -122,9 +122,11 @@ function getFlags(flags, metadata, vulnerabilities = []) {
     return flagList.reduce((acc, cur) => `${acc} ${cur}`, "");
 }
 
-document.addEventListener("DOMContentLoaded", async() => {
+document.addEventListener("DOMContentLoaded", async () => {
     // Find elements and declare top vars
     const networkElement = document.getElementById("network-graph");
+    const dataListElement = document.getElementById("package-list");
+    const inputFinderElement = document.getElementById("package-finder");
     networkElement.click();
     let highlightActive = false;
 
@@ -143,7 +145,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             opt.name = packageName;
             opt.version = currVersion;
             opt.hidden = false;
-
+            dataListElement.insertAdjacentHTML('beforeend', `<option data-value="${id}" value="${packageName} ${currVersion}"></option>`);
             const flagStr = getFlags(flags, metadata, vulnerabilities);
             const label = `${packageName}@${currVersion}${flagStr}\n<b>[${formatBytes(size)}]</b>`;
             const color = getColor(id, flags);
@@ -172,6 +174,17 @@ document.addEventListener("DOMContentLoaded", async() => {
     network.on("click", centerOnNode)
     network.stabilize(500);
 
+    inputFinderElement.addEventListener("input", function finded() {
+        if (inputFinderElement.value != null && inputFinderElement !== "") {
+            let idToSend = document.querySelector("#package-list option[value='" + inputFinderElement.value + "']").dataset.value;
+
+            const params = { nodes: [idToSend] };
+            neighbourHighlight(params);
+            centerOnNode(params);
+            updateMenu(params);
+        }
+
+    })
     function* searchForNeighbourIds(selectedNode) {
         const { name, version } = linker.get(selectedNode);
         for (const descriptor of Object.values(data)) {
@@ -350,8 +363,8 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     function centerOnNode(params) {
         network.stopSimulation();
-        if(params.nodes.length > 0) {
-            network.focus(params.nodes[0], {animation: true});
+        if (params.nodes.length > 0) {
+            network.focus(params.nodes[0], { animation: true });
         }
     }
 });
