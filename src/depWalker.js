@@ -343,7 +343,6 @@ async function* getRootDependencies(manifest, options) {
  */
 async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true } = options;
-    pacote.clearMemoized();
 
     // Create TMP directory
     const randomTMP = join(TMP, uniqueSlug());
