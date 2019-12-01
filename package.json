@@ -72,7 +72,7 @@
     "@slimio/npm-registry": "^0.5.0",
     "combine-async-iterators": "^1.1.2",
     "dotenv": "^8.2.0",
-    "estree-walker": "^0.8.1",
+    "estree-walker": "^1.0.0",
     "httpie": "^1.1.2",
     "is-minified-code": "^2.0.0",
     "kleur": "^3.0.3",
