@@ -79,7 +79,7 @@
     "lodash.clonedeep": "^4.5.0",
     "make-promises-safe": "^5.1.0",
     "meriyah": "^1.9.3",
-    "open": "^6.4.0",
+    "open": "^7.0.0",
     "pacote": "^9.5.8",
     "polka": "^0.5.2",
     "premove": "^1.0.0",
