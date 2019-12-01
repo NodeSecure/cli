@@ -26,7 +26,7 @@ const Dependency = require("./dependency.class");
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
 const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram"]);
 const NPM_SCRIPTS = new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]);
-const NODE_CORE_LIBS = new Set([...repl._builtinLibs]);
+const NODE_CORE_LIBS = new Set([...repl._builtinLibs, "timers", "module"]);
 const TMP = join(__dirname, "..", "tmp");
 
 // Vars
@@ -143,14 +143,16 @@ async function processPackageTarball(name, version, options) {
         await new Promise((resolve) => setImmediate(resolve));
 
         let license = "N/A";
+        let isProjectUsingESM = false;
 
         // Read the package.json file in the extracted tarball
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
-            const { description = "", author = {}, scripts = {}, ...others } = JSON.parse(packageStr);
+            const { type = "script", description = "", author = {}, scripts = {}, ...others } = JSON.parse(packageStr);
             ref.description = description;
             ref.author = author;
             license = others.license || "N/A";
+            isProjectUsingESM = type === "module";
 
             ref.flags.hasScript = [...Object.keys(scripts)].some((value) => NPM_SCRIPTS.has(value.toLowerCase()));
         }
@@ -189,7 +191,8 @@ async function processPackageTarball(name, version, options) {
                     ref.composition.minified.push(file);
                 }
 
-                const { dependencies: deps, isSuspect } = searchRuntimeDependencies(str);
+                const usingECMAModules = extname(file) === ".mjs" ? true : isProjectUsingESM;
+                const { dependencies: deps, isSuspect } = searchRuntimeDependencies(str, usingECMAModules);
                 dependencies.push(...deps);
                 if (isSuspect) {
                     suspectFiles.push(file);

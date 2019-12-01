@@ -66,9 +66,10 @@ function concatBinaryExpr(node, identifiers) {
  * @function searchRuntimeDependencies
  * @description Parse a script, get an AST and search for require occurence!
  * @param {!string} str file content (encoded as utf-8)
+ * @param {boolean} [module=false] enable sourceType module
  * @returns {ASTSummary}
  */
-function searchRuntimeDependencies(str) {
+function searchRuntimeDependencies(str, module = false) {
     const identifiers = new Map();
     const dependencies = new Set();
     let isSuspect = false;
@@ -77,14 +78,14 @@ function searchRuntimeDependencies(str) {
         // eslint-disable-next-line
         str = str.slice(str.indexOf("\n"));
     }
-    const { body } = meriyah.parseScript(str, { next: true });
+    const { body } = meriyah.parseScript(str, { next: true, module });
 
     walk(body, {
         enter(node) {
             // console.log(JSON.stringify(node, null, 2));
             // console.log("-------------------------");
             try {
-                if (isRequireStatment(node)) {
+                if (!module && isRequireStatment(node)) {
                     const arg = node.arguments[0];
                     if (arg.type === "Identifier") {
                         if (identifiers.has(arg.name)) {
@@ -105,6 +106,13 @@ function searchRuntimeDependencies(str) {
                     }
                     else {
                         isSuspect = true;
+                    }
+                }
+                else if (module && node.type === "ImportDeclaration") {
+                    const source = node.source;
+
+                    if (source.type === "Literal") {
+                        dependencies.add(source.value);
                     }
                 }
                 else if (isVariableDeclarator(node)) {
