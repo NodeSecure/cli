@@ -56,10 +56,10 @@
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
     "@slimio/eslint-config": "^3.0.3",
-    "@types/node": "^12.7.5",
-    "eslint": "^6.4.0",
+    "@types/node": "^12.12.14",
+    "eslint": "^6.7.2",
     "get-folder-size": "^2.0.1",
-    "husky": "^3.0.5",
+    "husky": "^3.1.0",
     "jest": "^24.9.0",
     "pkg-ok": "^2.3.1"
   },
