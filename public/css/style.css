@@ -80,6 +80,29 @@ section#stats {
     section#stats div.hiddenarea > div.infobox {
         overflow-y: auto;
     }
+    section#stats div.hiddenarea > div.global-stats {
+        padding: 5px 10px;
+        border-radius: 4px;
+        box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
+        border: 1px solid #263238;
+        box-sizing: border-box;
+        background: #263238;
+    }
+        section#stats div.hiddenarea > div.global-stats ul li {
+            display: flex;
+            height: 34px;
+            align-items: center;
+        }
+        section#stats div.hiddenarea > div.global-stats ul li + li {
+            border-top: 1px solid #37474F;
+        }
+        section#stats div.hiddenarea > div.global-stats ul li p {
+            color: #B0BEC5;
+        }
+        section#stats div.hiddenarea > div.global-stats ul li b {
+            margin-left: auto;
+            color: #FFEB3B;
+        }
 
 div.legend {
     display: flex;
@@ -324,7 +347,7 @@ div.select-project {
 .package-finder {
     background-color: transparent;
     border: none;
-    color: #00B0FF;
+    color: #FFEB3B;
     box-sizing: border-box;
     font-size: 16px;
     margin-left: 10px;
@@ -336,7 +359,7 @@ div.select-project {
   }
 
   .package-finder::-webkit-input-placeholder {
-    color: #00B0FF;
+    color: #FFEB3B;
   }
 
 main#network-graph {
