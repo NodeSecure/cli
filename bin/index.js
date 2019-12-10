@@ -105,7 +105,7 @@ prog
             );
         }
         catch (err) {
-            spinner.fail(err.message);
+            spinner.failed(err.message);
         }
 
         if (manifest === null) {
