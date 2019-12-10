@@ -21,12 +21,14 @@ const Spinner = require("@slimio/async-cli-spinner");
 const open = require("open");
 
 // Require Internal Dependencies
+const { getRegistryURL } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
 const hydrateVulnDB = require("../src/hydrateVulnDB");
 const { cwd } = require("../index");
 
 // CONSTANTS
 const SRC_PATH = join(__dirname, "..", "src");
+const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 
 // VARS
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
@@ -81,7 +83,10 @@ prog
     .action(async function cwdCmd(opts) {
         const { depth = 4, output } = opts;
 
-        const payload = await cwd(void 0, { verbose: true, maxDepth: depth });
+        const payload = await cwd(void 0, {
+            verbose: true,
+            maxDepth: depth
+        });
         logAndWrite(payload, output);
     });
 
@@ -98,7 +103,10 @@ prog
             text: white().bold(`Searching for '${yellow().bold(packageName)}' manifest in npm registry!`)
         }).start();
         try {
-            manifest = await pacote.manifest(packageName, token);
+            manifest = await pacote.manifest(packageName, {
+                registry: REGISTRY_DEFAULT_ADDR,
+                ...token
+            });
             const elapsedTime = spinner.elapsedTime.toFixed(2);
             spinner.succeed(
                 white().bold(`Fetched ${yellow().bold(packageName)} manifest on npm in ${cyan(elapsedTime)} ms`)
@@ -112,7 +120,10 @@ prog
             return;
         }
 
-        const payload = await depWalker(manifest, { verbose: true, maxDepth: depth });
+        const payload = await depWalker(manifest, {
+            verbose: true,
+            maxDepth: depth
+        });
         logAndWrite(payload, output);
     });
 

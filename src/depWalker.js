@@ -3,7 +3,6 @@
 // Require Node.js Dependencies
 const { join, extname } = require("path");
 const { mkdir, readFile } = require("fs").promises;
-const { spawnSync } = require("child_process");
 const repl = require("repl");
 
 // Require Third-party Dependencies
@@ -19,7 +18,7 @@ const combineAsyncIterators = require("combine-async-iterators");
 const uniqueSlug = require("unique-slug");
 
 // Require Internal Dependencies
-const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange } = require("./utils");
+const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange, getRegistryURL } = require("./utils");
 const { searchRuntimeDependencies } = require("./ast");
 const Dependency = require("./dependency.class");
 
@@ -29,18 +28,7 @@ const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram"]);
 const NPM_SCRIPTS = new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]);
 const NODE_CORE_LIBS = new Set([...repl._builtinLibs, "timers", "module"]);
 const TMP = join(__dirname, "..", "tmp");
-let REGISTRY_DEFAULT_ADDR = "https://registry.npmjs.org/";
-
-try {
-    const { stdout = REGISTRY_DEFAULT_ADDR } = spawnSync(
-        `npm${process.platform === "win32" ? ".cmd" : ""}`, ["config", "get", "registry"]);
-    if (stdout.trim() !== "") {
-        REGISTRY_DEFAULT_ADDR = stdout;
-    }
-}
-catch (error) {
-    // do nothing!
-}
+const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 
 // Vars
 const tarballLocker = new Lock({ maxConcurrent: 25 });
