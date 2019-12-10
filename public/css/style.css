@@ -324,23 +324,19 @@ div.select-project {
 .package-finder {
     background-color: transparent;
     border: none;
-    border-bottom: 1px solid #CCC;
-    color: #FFF;
+    color: #00B0FF;
     box-sizing: border-box;
-    font-size: 18px;
+    font-size: 16px;
     margin-left: 10px;
+    font-weight: bold;
   }
 
   .package-finder:focus {
     outline: none;
   }
-  
+
   .package-finder::-webkit-input-placeholder {
-    color: #AAA;
-  }
-  
-  .package-finder:focus::-webkit-input-placeholder {
-    color: #FFF;
+    color: #00B0FF;
   }
 
 main#network-graph {
