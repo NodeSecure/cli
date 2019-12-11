@@ -27,6 +27,10 @@ const LICENSES = new Map([
     ["Artistic", "Artistic"],
     ["DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE", "WTF"]
 ]);
+const REGISTRY_DEFAULT_ADDR = "https://registry.npmjs.org/";
+
+// VARS
+let localNPMRegistry = null;
 
 // TYPEDEF
 
@@ -183,12 +187,37 @@ function cleanRange(version) {
     return version;
 }
 
+/**
+ * @function getRegistryURL
+ * @description retrieve the local npm registry URL (or return the default registry url if there is nothing in local).
+ * @memberof Utils#
+ * @param {boolean} [force=false] force spawn execution
+ * @returns {string}
+ */
+function getRegistryURL(force = false) {
+    if (localNPMRegistry !== null && !force) {
+        return localNPMRegistry;
+    }
+
+    try {
+        const { stdout = REGISTRY_DEFAULT_ADDR } = spawnSync(
+            `npm${process.platform === "win32" ? ".cmd" : ""}`, ["config", "get", "registry"]);
+        localNPMRegistry = stdout.trim() === "" ? REGISTRY_DEFAULT_ADDR : stdout;
+
+        return localNPMRegistry;
+    }
+    catch (error) {
+        return REGISTRY_DEFAULT_ADDR;
+    }
+}
+
 module.exports = Object.freeze({
     getFilesRecursive,
     getTarballComposition,
     mergeDependencies,
     getLicenseFromString,
     cleanRange,
+    getRegistryURL,
     constants: Object.freeze({
         FILE: SYM_FILE,
         DIRECTORY: SYM_DIR

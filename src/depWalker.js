@@ -18,7 +18,7 @@ const combineAsyncIterators = require("combine-async-iterators");
 const uniqueSlug = require("unique-slug");
 
 // Require Internal Dependencies
-const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange } = require("./utils");
+const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange, getRegistryURL } = require("./utils");
 const { searchRuntimeDependencies } = require("./ast");
 const Dependency = require("./dependency.class");
 
@@ -26,12 +26,13 @@ const Dependency = require("./dependency.class");
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
 const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram"]);
 const NPM_SCRIPTS = new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]);
-const NODE_CORE_LIBS = new Set([...repl._builtinLibs]);
+const NODE_CORE_LIBS = new Set([...repl._builtinLibs, "timers", "module"]);
 const TMP = join(__dirname, "..", "tmp");
+const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 
 // Vars
 const tarballLocker = new Lock({ maxConcurrent: 25 });
-const npmReg = new Registry();
+const npmReg = new Registry(REGISTRY_DEFAULT_ADDR);
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 Lock.CHECK_INTERVAL_MS = 100;
 
@@ -43,7 +44,10 @@ Lock.CHECK_INTERVAL_MS = 100;
  */
 async function getExpectedSemVer(range) {
     try {
-        const { versions, "dist-tags": { latest } } = await pacote.packument(depName, token);
+        const { versions, "dist-tags": { latest } } = await pacote.packument(depName, {
+            registry: REGISTRY_DEFAULT_ADDR,
+            ...token
+        });
         const currVersion = semver.maxSatisfying(Object.keys(versions), range);
 
         return currVersion === null ? latest : currVersion;
@@ -76,6 +80,7 @@ async function* searchDeepDependencies(packageName, gitURL, options = {}) {
 
     const { name, version, deprecated, ...pkg } = await pacote.manifest(isGit ? gitURL : packageName, {
         ...token,
+        registry: REGISTRY_DEFAULT_ADDR,
         cache: `${process.env.HOME}/.npm`
     });
     const { dependencies, customResolvers } = mergeDependencies(pkg);
@@ -138,19 +143,22 @@ async function processPackageTarball(name, version, options) {
     try {
         await pacote.extract(ref.flags.isGit ? ref.gitUrl : `${name}@${version}`, dest, {
             ...token,
+            registry: REGISTRY_DEFAULT_ADDR,
             cache: `${process.env.HOME}/.npm`
         });
         await new Promise((resolve) => setImmediate(resolve));
 
         let license = "N/A";
+        let isProjectUsingESM = false;
 
         // Read the package.json file in the extracted tarball
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
-            const { description = "", author = {}, scripts = {}, ...others } = JSON.parse(packageStr);
+            const { type = "script", description = "", author = {}, scripts = {}, ...others } = JSON.parse(packageStr);
             ref.description = description;
             ref.author = author;
             license = others.license || "N/A";
+            isProjectUsingESM = type === "module";
 
             ref.flags.hasScript = [...Object.keys(scripts)].some((value) => NPM_SCRIPTS.has(value.toLowerCase()));
         }
@@ -189,7 +197,8 @@ async function processPackageTarball(name, version, options) {
                     ref.composition.minified.push(file);
                 }
 
-                const { dependencies: deps, isSuspect } = searchRuntimeDependencies(str);
+                const usingECMAModules = extname(file) === ".mjs" ? true : isProjectUsingESM;
+                const { dependencies: deps, isSuspect } = searchRuntimeDependencies(str, usingECMAModules);
                 dependencies.push(...deps);
                 if (isSuspect) {
                     suspectFiles.push(file);
@@ -340,7 +349,8 @@ async function* getRootDependencies(manifest, options) {
  */
 async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true } = options;
-    pacote.clearMemoized();
+
+    // Get local NPM registry
 
     // Create TMP directory
     const randomTMP = join(TMP, uniqueSlug());
