@@ -122,7 +122,7 @@ function getFlags(flags, metadata, vulnerabilities = []) {
     return flagList.reduce((acc, cur) => `${acc} ${cur}`, "");
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", async() => {
     // Find elements and declare top vars
     const networkElement = document.getElementById("network-graph");
     const dataListElement = document.getElementById("package-list");
@@ -136,7 +136,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const linker = new Map();
 
     const data = await request("/data");
-    for (const [packageName, descriptor] of Object.entries(data)) {
+    const dataEntries = Object.entries(data);
+
+    let indirectDependenciesCount = 0;
+    let totalSize = 0;
+    for (const [packageName, descriptor] of dataEntries) {
         const { metadata, vulnerabilities, versions } = descriptor;
 
         for (const currVersion of versions) {
@@ -145,7 +149,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             opt.name = packageName;
             opt.version = currVersion;
             opt.hidden = false;
-            dataListElement.insertAdjacentHTML('beforeend', `<option data-value="${id}" value="${packageName} ${currVersion}"></option>`);
+
+            if (flags.hasIndirectDependencies) {
+                indirectDependenciesCount++;
+            }
+            totalSize += size;
+            dataListElement.insertAdjacentHTML("beforeend",
+                `<option data-value="${id}" value="${packageName} ${currVersion}"></option>`);
             const flagStr = getFlags(flags, metadata, vulnerabilities);
             const label = `${packageName}@${currVersion}${flagStr}\n<b>[${formatBytes(size)}]</b>`;
             const color = getColor(id, flags);
@@ -159,6 +169,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // Setup global stats
+    document.getElementById("total-packages").innerHTML = dataEntries.length;
+    document.getElementById("indirect-dependencies").innerHTML = indirectDependenciesCount;
+    document.getElementById("total-size").innerHTML = formatBytes(totalSize);
+
     // Create required DataSet for the Network Graph
     const nodes = new vis.DataSet(nodesDataArr);
     const edges = new vis.DataSet(edgesDataArr);
@@ -171,20 +186,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     network.on("stabilizationIterationsDone", () => network.stopSimulation());
     network.on("click", neighbourHighlight);
     network.on("click", updateMenu);
-    network.on("click", centerOnNode)
+    network.on("click", centerOnNode);
     network.stabilize(500);
 
     inputFinderElement.addEventListener("input", function finded() {
-        if (inputFinderElement.value != null && inputFinderElement !== "") {
-            let idToSend = document.querySelector("#package-list option[value='" + inputFinderElement.value + "']").dataset.value;
+        if (inputFinderElement.value !== null && inputFinderElement !== "") {
+            const idToSend = document.querySelector(`#package-list option[value='${inputFinderElement.value}']`).dataset.value;
 
             const params = { nodes: [idToSend] };
             neighbourHighlight(params);
             centerOnNode(params);
             updateMenu(params);
         }
+    });
 
-    })
     function* searchForNeighbourIds(selectedNode) {
         const { name, version } = linker.get(selectedNode);
         for (const descriptor of Object.values(data)) {
