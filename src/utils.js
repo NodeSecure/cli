@@ -7,6 +7,7 @@
 // Require Node.js Dependencies
 const { readdir, stat } = require("fs").promises;
 const { extname, join, relative } = require("path");
+const spawnSync = require("child_process").spawnSync;
 
 // SYMBOLS
 const SYM_FILE = Symbol("symTypeFile");
@@ -200,9 +201,9 @@ function getRegistryURL(force = false) {
     }
 
     try {
-        const { stdout = REGISTRY_DEFAULT_ADDR } = spawnSync(
-            `npm${process.platform === "win32" ? ".cmd" : ""}`, ["config", "get", "registry"]);
-        localNPMRegistry = stdout.trim() === "" ? REGISTRY_DEFAULT_ADDR : stdout;
+        const stdout = spawnSync(
+            `npm${process.platform === "win32" ? ".cmd" : ""}`, ["config", "get", "registry"]).stdout.toString();
+        localNPMRegistry = stdout.trim() === "" ? REGISTRY_DEFAULT_ADDR : stdout.trim();
 
         return localNPMRegistry;
     }
