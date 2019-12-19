@@ -25,19 +25,17 @@ The CLI will allow to load this .json to draw a Network of all dependencies in a
 ## Getting Started
 
 ```bash
-$ git clone https://github.com/ES-Community/nsecure.git
-$ cd nsecure
-$ npm ci
-$ npm link
+$ npm install nsecure -g
 ```
 
 or
 
 ```bash
-$ npm install nsecure -g
+$ git clone https://github.com/ES-Community/nsecure.git
+$ cd nsecure
+$ npm ci
+$ npm link
 ```
-
-> ⚠️ under development (not published on npm yet).
 
 ## Usage example
 
