@@ -305,8 +305,18 @@ document.addEventListener("DOMContentLoaded", async() => {
                 }
             }
 
-            renderItemsList(clone.getElementById("nodedep"), composition.required_builtin);
-            renderItemsList(clone.getElementById("extensions"), composition.extensions);
+            {
+                const builtInDeps = new Set(composition.required_builtin);
+                const requiredDeps = [...composition.required.filter((name) => !builtInDeps.has(name))];
+                const thirdParty = requiredDeps.filter((name) => !name.startsWith("."));
+                const internal = requiredDeps.filter((name) => name.startsWith("."));
+
+                renderItemsList(clone.getElementById("nodedep"), composition.required_builtin);
+                renderItemsList(clone.getElementById("extensions"), composition.extensions);
+                renderItemsList(clone.getElementById("minifiedfiles"), composition.minified);
+                renderItemsList(clone.getElementById("requireddep"), thirdParty);
+                renderItemsList(clone.getElementById("internaldep"), internal);
+            }
 
             showInfoElem.appendChild(clone);
 
