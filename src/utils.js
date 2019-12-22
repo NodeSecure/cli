@@ -5,9 +5,9 @@
 "use strict";
 
 // Require Node.js Dependencies
-const { readdir, stat } = require("fs").promises;
+const { stat, opendir } = require("fs").promises;
 const { extname, join, relative } = require("path");
-const spawnSync = require("child_process").spawnSync;
+const { spawnSync } = require("child_process");
 
 // SYMBOLS
 const SYM_FILE = Symbol("symTypeFile");
@@ -57,9 +57,9 @@ let localNPMRegistry = null;
  * @returns {AsyncIterableIterator<string>}
  */
 async function* getFilesRecursive(dir) {
-    const dirents = await readdir(dir, { withFileTypes: true });
+    const dirents = await opendir(dir);
 
-    for (const dirent of dirents) {
+    for await (const dirent of dirents) {
         if (EXCLUDE_DIRS.has(dirent.name)) {
             continue;
         }
@@ -87,7 +87,7 @@ async function getTarballComposition(tarballDir) {
     const ext = new Set();
     const files = [];
     const dirs = [];
-    let size = (await stat(tarballDir)).size;
+    const rootSizePromise = stat(tarballDir);
 
     for await (const [kind, file] of getFilesRecursive(tarballDir)) {
         switch (kind) {
@@ -101,6 +101,7 @@ async function getTarballComposition(tarballDir) {
         }
     }
 
+    let { size } = await rootSizePromise;
     try {
         const sizeAll = await Promise.all([
             ...files.map((file) => stat(file)),
@@ -112,7 +113,11 @@ async function getTarballComposition(tarballDir) {
         // ignore
     }
 
-    return { ext, size, files: files.map((path) => relative(tarballDir, path)) };
+    return {
+        ext,
+        size,
+        files: files.map((path) => relative(tarballDir, path))
+    };
 }
 
 /**

@@ -34,7 +34,6 @@ const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 const tarballLocker = new Lock({ maxConcurrent: 25 });
 const npmReg = new Registry(REGISTRY_DEFAULT_ADDR);
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
-Lock.CHECK_INTERVAL_MS = 100;
 
 /**
  * @async
