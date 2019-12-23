@@ -80,8 +80,7 @@ class Dependency {
                     required: [],
                     required_builtin: []
                 },
-                licenseFrom: "package.json",
-                license: "",
+                license: "unkown license",
                 gitUrl: this.gitUrl
             },
             versions: [this.version],

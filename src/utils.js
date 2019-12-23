@@ -87,7 +87,7 @@ async function getTarballComposition(tarballDir) {
     const ext = new Set();
     const files = [];
     const dirs = [];
-    const rootSizePromise = stat(tarballDir);
+    let { size } = await stat(tarballDir);
 
     for await (const [kind, file] of getFilesRecursive(tarballDir)) {
         switch (kind) {
@@ -101,7 +101,6 @@ async function getTarballComposition(tarballDir) {
         }
     }
 
-    let { size } = await rootSizePromise;
     try {
         const sizeAll = await Promise.all([
             ...files.map((file) => stat(file)),
@@ -150,22 +149,6 @@ function mergeDependencies(manifest, types = ["dependencies"]) {
     }
 
     return { dependencies, customResolvers };
-}
-
-/**
- * @function getLicenseFromString
- * @memberof Utils#
- * @param {!string} str license file content
- * @returns {string}
- */
-function getLicenseFromString(str) {
-    for (const [name, licenseName] of LICENSES.entries()) {
-        if (str.indexOf(name) > -1) {
-            return licenseName;
-        }
-    }
-
-    return "Unknown License";
 }
 
 /**
@@ -221,7 +204,6 @@ module.exports = Object.freeze({
     getFilesRecursive,
     getTarballComposition,
     mergeDependencies,
-    getLicenseFromString,
     cleanRange,
     getRegistryURL,
     constants: Object.freeze({

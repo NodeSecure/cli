@@ -283,10 +283,12 @@ document.addEventListener("DOMContentLoaded", async() => {
                 second: "numeric"
             }).format(new Date(metadata.lastUpdateAt));
 
+            const licenses = selectedNode.license === "unkown license" ?
+                "unkown license" : selectedNode.license.uniqueLicenseIds.join(",");
             const fields = clone.querySelector(".fields");
             const fieldsFragment = document.createDocumentFragment();
             fieldsFragment.appendChild(createLiField("Author", fAuthor));
-            fieldsFragment.appendChild(createLiField(`License (${selectedNode.licenseFrom})`, selectedNode.license));
+            fieldsFragment.appendChild(createLiField("License", licenses));
             fieldsFragment.appendChild(createLiField("Size on (local) system", formatBytes(selectedNode.size)));
             fieldsFragment.appendChild(createLiField("Homepage", metadata.homepage || "N/A", true));
             fieldsFragment.appendChild(createLiField("Last release (version)", metadata.lastVersion));

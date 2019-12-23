@@ -16,9 +16,10 @@ const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
 const uniqueSlug = require("unique-slug");
+const ntlp = require("ntlp");
 
 // Require Internal Dependencies
-const { getTarballComposition, mergeDependencies, getLicenseFromString, cleanRange, getRegistryURL } = require("./utils");
+const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
 const { searchRuntimeDependencies } = require("./ast");
 const Dependency = require("./dependency.class");
 
@@ -146,17 +147,14 @@ async function processPackageTarball(name, version, options) {
             cache: `${process.env.HOME}/.npm`
         });
         await new Promise((resolve) => setImmediate(resolve));
-
-        let license = "N/A";
         let isProjectUsingESM = false;
 
         // Read the package.json file in the extracted tarball
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
-            const { type = "script", description = "", author = {}, scripts = {}, ...others } = JSON.parse(packageStr);
+            const { type = "script", description = "", author = {}, scripts = {} } = JSON.parse(packageStr);
             ref.description = description;
             ref.author = author;
-            license = others.license || "N/A";
             isProjectUsingESM = type === "module";
 
             ref.flags.hasScript = [...Object.keys(scripts)].some((value) => NPM_SCRIPTS.has(value.toLowerCase()));
@@ -170,19 +168,6 @@ async function processPackageTarball(name, version, options) {
         ref.size = size;
         ref.composition.extensions.push(...ext);
         ref.composition.files.push(...files);
-
-        // Search for a LICENSE file
-        const licenseFile = files.find((value) => value.toLowerCase().includes("license"));
-        if (typeof licenseFile !== "undefined") {
-            const str = await readFile(join(dest, licenseFile), "utf-8");
-            const licenseName = getLicenseFromString(str);
-            if (licenseName !== "Unknown License") {
-                license = licenseName;
-                ref.licenseFrom = licenseFile;
-            }
-        }
-        ref.flags.hasLicense = typeof licenseFile !== "undefined" || license !== "N/A";
-        ref.license = license;
 
         // Search for minified and runtime dependencies
         const jsFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));
@@ -220,9 +205,15 @@ async function processPackageTarball(name, version, options) {
         if (ref.flags.hasSuspectImport) {
             ref.composition.suspectFiles = suspectFiles;
         }
+
+        await new Promise((resolve) => setImmediate(resolve));
+        const licenses = await ntlp(dest);
+        ref.flags.hasLicense = licenses.uniqueLicenseIds.size > 0;
+        ref.license = licenses;
+        ref.license.uniqueLicenseIds = [...licenses.uniqueLicenseIds];
     }
     catch (err) {
-        // Ignore
+        ref.flags.hasLicense = true;
     }
     finally {
         free();

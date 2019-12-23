@@ -36,8 +36,43 @@ Object {
       },
       "gitUrl": null,
       "id": 0,
-      "license": "MIT",
-      "licenseFrom": "LICENSE",
+      "license": Object {
+        "licenses": Array [
+          Object {
+            "from": "package.json",
+            "spdx": Object {
+              "fsf": true,
+              "fsfAndOsi": true,
+              "includesDeprecated": false,
+              "osi": true,
+            },
+            "spdxLicenseLinks": Array [
+              "https://spdx.org/licenses/MIT.html#licenseText",
+            ],
+            "uniqueLicenseIds": Array [
+              "MIT",
+            ],
+          },
+          Object {
+            "from": "LICENSE",
+            "spdx": Object {
+              "fsf": true,
+              "fsfAndOsi": true,
+              "includesDeprecated": false,
+              "osi": true,
+            },
+            "spdxLicenseLinks": Array [
+              "https://spdx.org/licenses/MIT.html#licenseText",
+            ],
+            "uniqueLicenseIds": Array [
+              "MIT",
+            ],
+          },
+        ],
+        "uniqueLicenseIds": Array [
+          "MIT",
+        ],
+      },
       "usedBy": Object {},
     },
     "metadata": Object {
