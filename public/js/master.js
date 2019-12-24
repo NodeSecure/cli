@@ -59,6 +59,7 @@ const FLAGS = {
     "⚠️": "The package has suspicious imports.",
     "💎": "The package has dependencies that are not packages.",
     "📜": "The package does not seem to have a license.",
+    "📚": "The package has multiple licenses in multiple files",
     "🔬": "The package seems to have files that are minified/uglified.",
     "⛔️": "The package is deprecated.",
     "💕": "The package has several publishers.",
@@ -96,6 +97,9 @@ function getFlags(flags, metadata, vulnerabilities = []) {
     }
     if (flags.hasLicense === false) {
         flagList.push("📜");
+    }
+    if (flags.hasMultipleLicenses) {
+        flagList.push("📚");
     }
     if (flags.hasMinifiedCode) {
         flagList.push("🔬");

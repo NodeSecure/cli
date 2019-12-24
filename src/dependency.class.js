@@ -28,6 +28,7 @@ class Dependency {
             isDeprecated: false,
             hasSuspectImport: false,
             hasLicense: false,
+            hasMultipleLicenses: false,
             hasIndirectDependencies: false,
             hasMinifiedCode: false,
             hasCustomResolver: false,

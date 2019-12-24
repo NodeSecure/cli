@@ -15,19 +15,6 @@ const SYM_DIR = Symbol("symTypeDir");
 
 // CONSTANTS
 const EXCLUDE_DIRS = new Set(["node_modules", ".vscode", ".git"]);
-const LICENSES = new Map([
-    ["MIT", "MIT"],
-    ["BSD", "BSD"],
-    ["ISC ", "ISC"],
-    ["Apache License", "Apache"],
-    ["Mozilla", "Mozilla"],
-    ["LGPL", "LGPL"],
-    ["Affero", "GPL"],
-    ["GPL", "GPL"],
-    ["Eclipse", "Eclipse"],
-    ["Artistic", "Artistic"],
-    ["DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE", "WTF"]
-]);
 const REGISTRY_DEFAULT_ADDR = "https://registry.npmjs.org/";
 
 // VARS

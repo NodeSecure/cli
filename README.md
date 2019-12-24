@@ -112,6 +112,7 @@ main().catch(console.error);
 | ⚠️ | hasSuspectImport | The package have suspect import. |
 | ⛔️ | isDeprecated | The package has been tagged as deprecated |
 | 📜 | hasLicense | The license is missing (or has not been detected) |
+| 📚 | hasMultipleLicenses | The package has multiple licenses in multiple files. |
 | 🔬 | hasMinifiedCode | The package has minified/uglified code |
 | 💎 | hasCustomResolver | The package has at least one dependency that is not a npm package (like a git link or a local file link) |
 | 🌍 | hasExternalCapacity | The package use at least one Node.js dependency capable to communicate outside or to establish a listening server |

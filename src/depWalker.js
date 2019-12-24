@@ -2,13 +2,12 @@
 
 // Require Node.js Dependencies
 const { join, extname } = require("path");
-const { mkdir, readFile } = require("fs").promises;
+const { mkdir, readFile, rmdir } = require("fs").promises;
 const repl = require("repl");
 
 // Require Third-party Dependencies
 const pacote = require("pacote");
 const { red, white, yellow, cyan } = require("kleur");
-const premove = require("premove");
 const semver = require("semver");
 const Lock = require("@slimio/lock");
 const Spinner = require("@slimio/async-cli-spinner");
@@ -208,9 +207,10 @@ async function processPackageTarball(name, version, options) {
 
         await new Promise((resolve) => setImmediate(resolve));
         const licenses = await ntlp(dest);
-        ref.flags.hasLicense = licenses.uniqueLicenseIds.size > 0;
+        ref.flags.hasLicense = licenses.uniqueLicenseIds.length > 0;
+        ref.flags.hasMultipleLicenses = licenses.hasMultipleLicenses;
         ref.license = licenses;
-        ref.license.uniqueLicenseIds = [...licenses.uniqueLicenseIds];
+        ref.license.uniqueLicenseIds = licenses.uniqueLicenseIds;
     }
     catch (err) {
         ref.flags.hasLicense = true;
@@ -447,7 +447,8 @@ async function depWalker(manifest, options = Object.create(null)) {
 
     // Cleanup randomTMP dir
     try {
-        await premove(randomTMP);
+        await new Promise((resolve) => setImmediate(resolve));
+        // await rmdir(randomTMP, { recursive: true });
     }
     catch (err) {
         console.log(red().bold(`Failed to remove directory ${yellow().bold(randomTMP)}`));

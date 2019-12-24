@@ -29,6 +29,7 @@ Object {
         "hasLicense": true,
         "hasManifest": true,
         "hasMinifiedCode": false,
+        "hasMultipleLicenses": false,
         "hasScript": false,
         "hasSuspectImport": false,
         "isDeprecated": false,
@@ -37,6 +38,7 @@ Object {
       "gitUrl": null,
       "id": 0,
       "license": Object {
+        "hasMultipleLicenses": false,
         "licenses": Array [
           Object {
             "from": "package.json",
