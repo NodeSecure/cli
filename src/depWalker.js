@@ -448,7 +448,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     // Cleanup randomTMP dir
     try {
         await new Promise((resolve) => setImmediate(resolve));
-        // await rmdir(randomTMP, { recursive: true });
+        await rmdir(randomTMP, { recursive: true });
     }
     catch (err) {
         console.log(red().bold(`Failed to remove directory ${yellow().bold(randomTMP)}`));
