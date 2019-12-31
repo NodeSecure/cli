@@ -5,24 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"
-/>
+<link rel="stylesheet" href="lib/vis.min.css" />
 <link rel="stylesheet" href="css/reset.css" />
 <link rel="stylesheet" href="css/style.css" />
 <link rel="stylesheet" href="css/fontello.css" />
-<link
-    href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap"
-    rel="stylesheet"
-/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap"
+    rel="stylesheet" />
 
 <script src="js/utils.js" defer></script>
 <script src="js/master.js" defer></script>
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"
-    defer
-></script>
+<script src="lib/vis.min.js" defer></script>
 <title>Node-Secure</title>
 
 <section id="stats">
@@ -32,23 +24,23 @@
         <div class="hiddenarea">
             <div class="global-stats">
                 <ul>
-                    <li><p>Total of packages</p><b id="total-packages">0</b></li>
-                    <li><p>Total size</p><b id="total-size">0</b></li>
-                    <li><p>Packages with indirect dependencies</p><b id="indirect-dependencies">0</b></li>
+                    <li>
+                        <p>Total of packages</p><b id="total-packages">0</b>
+                    </li>
+                    <li>
+                        <p>Total size</p><b id="total-size">0</b>
+                    </li>
+                    <li>
+                        <p>Packages with indirect dependencies</p><b id="indirect-dependencies">0</b>
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="btn">
         <p>Search</p>
-        <input
-            type="text"
-            list="package-list"
-            spellcheck="false"
-            id="package-finder"
-            class="package-finder"
-            placeholder="Package Name"
-        />
+        <input type="text" list="package-list" spellcheck="false" id="package-finder" class="package-finder"
+            placeholder="Package Name" />
         <datalist id="package-list"></datalist>
     </div>
     <div class="btn">
