@@ -4,57 +4,11 @@
 const { walk } = require("estree-walker");
 const meriyah = require("meriyah");
 
+// Require Internal Dependencies
+const helpers = require("./helpers");
+
 // CONSTANTS
-const BINARY_EXPR_TYPES = new Set(["Literal", "BinaryExpression", "Identifier"]);
-
-function isRequireStatment(node) {
-    if (node.type !== "CallExpression" || node.callee.name !== "require") {
-        return false;
-    }
-
-    return true;
-}
-
-function isVariableDeclarator(node) {
-    if (node.type !== "VariableDeclarator" ||
-        node.init === null ||
-        node.init.type !== "Literal" ||
-        node.id.type !== "Identifier") {
-        return false;
-    }
-
-    return true;
-}
-
-function concatBinaryExpr(node, identifiers) {
-    const { left, right } = node;
-    if (!BINARY_EXPR_TYPES.has(left.type) || !BINARY_EXPR_TYPES.has(right.type)) {
-        return null;
-    }
-    let str = "";
-
-    for (const childNode of [left, right]) {
-        switch (childNode.type) {
-            case "BinaryExpression": {
-                const value = concatBinaryExpr(childNode, identifiers);
-                if (value !== null) {
-                    str += value;
-                }
-                break;
-            }
-            case "Literal":
-                str += childNode.value;
-                break;
-            case "Identifier":
-                if (identifiers.has(childNode.name)) {
-                    str += identifiers.get(childNode.name);
-                }
-                break;
-        }
-    }
-
-    return str;
-}
+const kMainModuleStr = "process.mainModule.";
 
 /**
  * @typedef {object} ASTSummary
@@ -85,18 +39,30 @@ function searchRuntimeDependencies(str, module = false) {
             // console.log(JSON.stringify(node, null, 2));
             // console.log("-------------------------");
             try {
-                if (!module && isRequireStatment(node)) {
+                if (!module && (helpers.isRequireStatment(node) || helpers.isRequireResolve(node))) {
                     const arg = node.arguments[0];
                     if (arg.type === "Identifier") {
                         if (identifiers.has(arg.name)) {
                             dependencies.add(identifiers.get(arg.name));
                         }
+                        else {
+                            isSuspect = true;
+                        }
                     }
                     else if (arg.type === "Literal") {
                         dependencies.add(arg.value);
                     }
+                    else if (arg.type === "ArrayExpression") {
+                        const value = helpers.arrExprToString(arg.elements);
+                        if (value.trim() === "") {
+                            isSuspect = true;
+                        }
+                        else {
+                            dependencies.add(value);
+                        }
+                    }
                     else if (arg.type === "BinaryExpression" && arg.operator === "+") {
-                        const value = concatBinaryExpr(arg, identifiers);
+                        const value = helpers.concatBinaryExpr(arg, identifiers);
                         if (value === null) {
                             isSuspect = true;
                         }
@@ -115,7 +81,13 @@ function searchRuntimeDependencies(str, module = false) {
                         dependencies.add(source.value);
                     }
                 }
-                else if (isVariableDeclarator(node)) {
+                else if (node.type === "MemberExpression") {
+                    const memberName = helpers.getMemberExprName(node);
+                    if (memberName.startsWith(kMainModuleStr)) {
+                        dependencies.add(memberName.slice(kMainModuleStr.length));
+                    }
+                }
+                else if (helpers.isVariableDeclarator(node)) {
                     identifiers.set(node.id.name, node.init.value);
                 }
             }
