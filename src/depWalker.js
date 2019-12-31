@@ -1,6 +1,7 @@
 "use strict";
 
 // Require Node.js Dependencies
+const os = require("os");
 const { join, extname } = require("path");
 const { mkdir, readFile, rmdir } = require("fs").promises;
 const repl = require("repl");
@@ -27,7 +28,7 @@ const JS_EXTENSIONS = new Set([".js", ".mjs"]);
 const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram"]);
 const NPM_SCRIPTS = new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]);
 const NODE_CORE_LIBS = new Set([...repl._builtinLibs, "timers", "module"]);
-const TMP = join(__dirname, "..", "tmp");
+const TMP = os.tmpdir();
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 
 // Vars
