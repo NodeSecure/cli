@@ -2,12 +2,11 @@
 
 // Require Node.js Dependencies
 const { join, extname } = require("path");
-const { readdir, readFile, writeFile } = require("fs").promises;
+const { readdir, readFile, writeFile, rmdir } = require("fs").promises;
 
 // Require Third-party Dependencies
 const download = require("@slimio/github");
 const semver = require("semver");
-const premove = require("premove");
 
 // CONSTANTS
 const REPO = "nodejs.security-wg";
@@ -55,7 +54,7 @@ async function hydrateDB() {
         throw error;
     }
     finally {
-        await premove(location);
+        await rmdir(location, { recursive: true });
     }
 }
 
