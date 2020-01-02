@@ -58,6 +58,12 @@ async function getExpectedSemVer(range) {
     }
 }
 
+async function getCleanDependencyName([depName, range]) {
+    const depVer = await getExpectedSemVer(range);
+
+    return [`${depName}@${range}`, `${depName}@${depVer}`];
+}
+
 /**
  * @typedef {object} depConfiguration
  * @property {Map<string, Set<string>>} exclude
@@ -102,21 +108,19 @@ async function* searchDeepDependencies(packageName, gitURL, options = {}) {
             exclude, currDepth: currDepth + 1, parent: current, maxDepth
         };
 
-        for (const [depName, valueStr] of customResolvers.entries()) {
-            if (valueStr.startsWith("git+")) {
-                yield* searchDeepDependencies(depName, valueStr.slice(4), config);
-            }
+        const gitDependencies = iter.filter(customResolvers.entries(), ([, valueStr]) => valueStr.startsWith("git+"));
+        for (const [depName, valueStr] of gitDependencies) {
+            yield* searchDeepDependencies(depName, valueStr.slice(4), config);
         }
 
-        for (const [depName, range] of dependencies.entries()) {
-            const depVer = await getExpectedSemVer(range);
-            const cleanName = `${depName}@${depVer === null ? latest : depVer}`;
+        const depsNames = await Promise.all(iter.map(dependencies.entries(), getCleanDependencyName));
+        for (const [fullName, cleanName] of depsNames) {
             if (exclude.has(cleanName)) {
                 exclude.get(cleanName).add(current.fullName);
             }
             else {
                 exclude.set(cleanName, new Set());
-                yield* searchDeepDependencies(`${depName}@${range}`, undefined, config);
+                yield* searchDeepDependencies(fullName, void 0, config);
             }
         }
     }
@@ -301,7 +305,6 @@ async function* getRootDependencies(manifest, options = Object.create(null)) {
     parent.hasCustomResolver = customResolvers.size > 0;
     parent.hasDependencies = dependencies.size > 0;
 
-    // Handle root custom resolvers!
     const configRef = { exclude, maxDepth, parent };
     const iterators = [
         ...iter.filter(customResolvers.entries(), ([, valueStr]) => valueStr.startsWith("git+"))
@@ -314,10 +317,10 @@ async function* getRootDependencies(manifest, options = Object.create(null)) {
     }
     yield parent;
 
-    // Re-insert root project dependencies
-    for (const [name, range] of dependencies.entries()) {
-        const version = await getExpectedSemVer(range);
-        const fullRange = `${name}@${version}`;
+    // Add root dependencies to the exclude Map (because the parent is not handled by searchDeepDependencies)
+    // if we skip this the code will fail to re-link properly dependencies in the following steps
+    const depsName = await Promise.all(iter.map(dependencies.entries(), getCleanDependencyName));
+    for (const [, fullRange] of depsName) {
         if (exclude.has(fullRange)) {
             exclude.get(fullRange).add(parent.fullName);
         }
@@ -348,6 +351,8 @@ async function depWalker(manifest, options = Object.create(null)) {
     /** @type {Map<string, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
     const promisesToWait = [];
+
+    // We are dealing with an exclude Map to avoid checking a package more than one time in searchDeepDependencies
     const exclude = new Map();
 
     for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude })) {
@@ -418,8 +423,8 @@ async function depWalker(manifest, options = Object.create(null)) {
         // Ignore
     }
 
-    // Handle excluded dependencies
-    // Note: We do this because it "seem" (to me) impossible to link all dependencies in the first walk.
+    // We do this because it "seem" impossible to link all dependencies in the first walk.
+    // Because we are dealing with package only one time it may happen sometimes.
     for (const [packageName, descriptor] of flattenedDeps) {
         const { metadata, ...versions } = descriptor;
 
