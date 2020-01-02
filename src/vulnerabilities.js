@@ -6,6 +6,7 @@ const { readdir, readFile, writeFile } = require("fs").promises;
 
 // Require Third-party Dependencies
 const download = require("@slimio/github");
+const semver = require("semver");
 const premove = require("premove");
 
 // CONSTANTS
@@ -23,7 +24,7 @@ async function readVulnJSONFile(path) {
     }
 }
 
-async function hydrateVulnDB() {
+async function hydrateDB() {
     const location = await download(REPO, { extract: true });
     const vulnPath = join(location, VULN_DIR_PATH);
 
@@ -58,4 +59,39 @@ async function hydrateVulnDB() {
     }
 }
 
-module.exports = hydrateVulnDB;
+async function hydrateNodeSecurePayload(flattenedDeps) {
+    try {
+        const buf = await readFile(join(__dirname, "..", "vuln.json"));
+        const vulnerabilities = JSON.parse(buf.toString());
+
+        const currThreeNames = new Set([...flattenedDeps.keys()]);
+        const filtered = new Set(
+            Object.keys(vulnerabilities).filter((name) => currThreeNames.has(name))
+        );
+
+        for (const name of filtered) {
+            const dep = flattenedDeps.get(name);
+            const detectedVulnerabilities = [];
+            for (const currVuln of vulnerabilities[name]) {
+                // eslint-disable-next-line no-loop-func
+                const satisfied = dep.versions.some((version) => semver.satisfies(version, currVuln.vulnerable_versions));
+                if (satisfied) {
+                    detectedVulnerabilities.push(currVuln);
+                }
+            }
+
+            if (detectedVulnerabilities.length > 0) {
+                dep.vulnerabilities = detectedVulnerabilities;
+            }
+        }
+    }
+    catch (err) {
+        console.log(err);
+        // Ignore
+    }
+}
+
+module.exports = {
+    hydrateDB,
+    hydrateNodeSecurePayload
+};

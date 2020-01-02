@@ -22,6 +22,7 @@ const iter = require("itertools");
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
 const { searchRuntimeDependencies } = require("./ast");
+const { hydrateNodeSecurePayload } = require("./vulnerabilities");
 const Dependency = require("./dependency.class");
 
 // CONSTANTS
@@ -395,33 +396,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     // Search for vulnerabilities in the local .json db
-    try {
-        const buf = await readFile(join(__dirname, "..", "vuln.json"));
-        const vulnerabilities = JSON.parse(buf.toString());
-
-        const currThreeNames = new Set([...flattenedDeps.keys()]);
-        const filtered = new Set(
-            Object.keys(vulnerabilities).filter((name) => currThreeNames.has(name))
-        );
-
-        for (const name of filtered) {
-            const dep = flattenedDeps.get(name);
-            const detectedVulnerabilities = [];
-            for (const currVuln of vulnerabilities[name]) {
-                const satisfied = dep.versions.some((version) => semver.satisfies(version, currVuln.vulnerable_versions));
-                if (satisfied) {
-                    detectedVulnerabilities.push(currVuln);
-                }
-            }
-
-            if (detectedVulnerabilities.length > 0) {
-                dep.vulnerabilities = detectedVulnerabilities;
-            }
-        }
-    }
-    catch (err) {
-        // Ignore
-    }
+    await hydrateNodeSecurePayload(flattenedDeps);
 
     // We do this because it "seem" impossible to link all dependencies in the first walk.
     // Because we are dealing with package only one time it may happen sometimes.

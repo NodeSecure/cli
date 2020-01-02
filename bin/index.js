@@ -23,7 +23,7 @@ const open = require("open");
 // Require Internal Dependencies
 const { getRegistryURL } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
-const hydrateVulnDB = require("../src/hydrateVulnDB");
+const { hydrateDB } = require("../src/vulnerabilities");
 const { cwd } = require("../index");
 
 // CONSTANTS
@@ -66,7 +66,7 @@ prog
         }).start();
         try {
             const start = performance.now();
-            await hydrateVulnDB();
+            await hydrateDB();
             const time = (performance.now() - start).toFixed(2);
             spinner.succeed(white().bold(`Successfully hydrated local db in ${cyan(time)} ms`));
         }
