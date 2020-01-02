@@ -42,6 +42,10 @@ class Dependency {
         Object.defineProperty(this, SYM_FLAGS, { value: flags });
     }
 
+    get fullName() {
+        return `${this.name} ${this.version}`;
+    }
+
     /**
      * @function isGit
      * @memberof Dependency#

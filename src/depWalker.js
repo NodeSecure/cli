@@ -17,6 +17,7 @@ const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
 const uniqueSlug = require("unique-slug");
 const ntlp = require("ntlp");
+const iter = require("itertools");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
@@ -84,7 +85,7 @@ async function* searchDeepDependencies(packageName, gitURL, options = {}) {
         cache: `${process.env.HOME}/.npm`
     });
     const { dependencies, customResolvers } = mergeDependencies(pkg);
-    if (dependencies.size > 0 && parent instanceof Dependency) {
+    if (dependencies.size > 0) {
         parent.hasIndirectDependencies = true;
     }
 
@@ -97,7 +98,6 @@ async function* searchDeepDependencies(packageName, gitURL, options = {}) {
     current.hasDependencies = dependencies.size > 0;
 
     if (currDepth !== maxDepth) {
-        const fullName = `${name} ${version}`;
         const config = {
             exclude, currDepth: currDepth + 1, parent: current, maxDepth
         };
@@ -112,7 +112,7 @@ async function* searchDeepDependencies(packageName, gitURL, options = {}) {
             const depVer = await getExpectedSemVer(range);
             const cleanName = `${depName}@${depVer === null ? latest : depVer}`;
             if (exclude.has(cleanName)) {
-                exclude.get(cleanName).add(fullName);
+                exclude.get(cleanName).add(current.fullName);
             }
             else {
                 exclude.set(cleanName, new Set());
@@ -293,38 +293,33 @@ async function searchPackageAuthors(name, ref) {
  * @param {Map<any, any>} [options.exclude] exclude
  * @returns {AsyncIterableIterator<Dependency>}
  */
-async function* getRootDependencies(manifest, options) {
+async function* getRootDependencies(manifest, options = Object.create(null)) {
     const { maxDepth = 4, exclude } = options;
 
     const { dependencies, customResolvers } = mergeDependencies(manifest, void 0);
     const parent = new Dependency(manifest.name, manifest.version);
-    parent.hasDependencies = true;
+    parent.hasCustomResolver = customResolvers.size > 0;
+    parent.hasDependencies = dependencies.size > 0;
 
     // Handle root custom resolvers!
-    const iterators = [];
-    const config = { exclude, maxDepth, parent };
-    for (const [depName, valueStr] of customResolvers.entries()) {
-        if (valueStr.startsWith("git+")) {
-            iterators.push(searchDeepDependencies(depName, valueStr.slice(4), config));
-        }
-    }
+    const configRef = { exclude, maxDepth, parent };
+    const iterators = [
+        ...iter.filter(customResolvers.entries(), ([, valueStr]) => valueStr.startsWith("git+"))
+            .map(([depName, valueStr]) => searchDeepDependencies(depName, valueStr.slice(4), configRef)),
+        ...iter.map(dependencies.entries(), ([name, ver]) => searchDeepDependencies(`${name}@${ver}`, void 0, configRef))
+    ];
 
-    iterators.push(...[...dependencies.entries()]
-        .map(([name, ver]) => searchDeepDependencies(`${name}@${ver}`, undefined, config))
-    );
     for await (const dep of combineAsyncIterators(...iterators)) {
         yield dep;
     }
-
     yield parent;
 
     // Re-insert root project dependencies
-    const fullName = `${manifest.name} ${manifest.version}`;
     for (const [name, range] of dependencies.entries()) {
         const version = await getExpectedSemVer(range);
         const fullRange = `${name}@${version}`;
         if (exclude.has(fullRange)) {
-            exclude.get(fullRange).add(fullName);
+            exclude.get(fullRange).add(parent.fullName);
         }
     }
 }
