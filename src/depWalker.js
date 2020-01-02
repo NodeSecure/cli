@@ -32,7 +32,7 @@ const TMP = os.tmpdir();
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 
 // Vars
-const tarballLocker = new Lock({ maxConcurrent: 25 });
+const tarballLocker = new Lock({ maxConcurrent: 5 });
 const npmReg = new Registry(REGISTRY_DEFAULT_ADDR);
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
@@ -341,11 +341,9 @@ async function* getRootDependencies(manifest, options) {
 async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true } = options;
 
-    // Get local NPM registry
-
     // Create TMP directory
-    const randomTMP = join(TMP, uniqueSlug());
-    await mkdir(randomTMP, { recursive: true });
+    const tmpLocation = join(TMP, uniqueSlug());
+    await mkdir(tmpLocation, { recursive: true });
 
     const spinner = new Spinner({
         spinner: "dots",
@@ -365,7 +363,7 @@ async function depWalker(manifest, options = Object.create(null)) {
         promisesToWait.push(searchPackageAuthors(name, current.metadata));
         promisesToWait.push(processPackageTarball(name, version, {
             ref: current[version],
-            tmpLocation: randomTMP
+            tmpLocation
         }));
 
         if (flattenedDeps.has(name)) {
@@ -446,13 +444,13 @@ async function depWalker(manifest, options = Object.create(null)) {
         }
     }
 
-    // Cleanup randomTMP dir
+    // Cleanup tmpLocation dir
     try {
         await new Promise((resolve) => setImmediate(resolve));
-        await rmdir(randomTMP, { recursive: true });
+        await rmdir(tmpLocation, { recursive: true });
     }
     catch (err) {
-        console.log(red().bold(`Failed to remove directory ${yellow().bold(randomTMP)}`));
+        console.log(red().bold(`Failed to remove directory ${yellow().bold(tmpLocation)}`));
     }
     if (verbose) {
         console.log("");
