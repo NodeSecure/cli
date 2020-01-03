@@ -57,7 +57,7 @@ $ nsecure from @sindresorhus/is
 Then a `result.json` will be writted at the current location. To view it on web page just run
 
 ```bash
-$ nsecure http
+$ nsecure open
 ```
 
 ---

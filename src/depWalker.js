@@ -18,6 +18,7 @@ const combineAsyncIterators = require("combine-async-iterators");
 const uniqueSlug = require("unique-slug");
 const ntlp = require("ntlp");
 const iter = require("itertools");
+const ms = require("ms");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
@@ -386,8 +387,8 @@ async function depWalker(manifest, options = Object.create(null)) {
     spinner.text = white().bold("Waiting to fetch all packages stats...");
     try {
         await Promise.all(promisesToWait);
-        const execTime = cyan().bold(spinner.elapsedTime.toFixed(2).toString());
-        spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime} ms`));
+        const execTime = cyan().bold(ms(spinner.elapsedTime.toFixed(2)));
+        spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime}`));
     }
     catch (err) {
         spinner.fail(red().bold(err.message));

@@ -7,23 +7,25 @@ require("dotenv").config();
 
 // Require Node.js Dependencies
 const {
-    writeFileSync, accessSync, createReadStream, unlinkSync,
+    writeFileSync, accessSync, createReadStream,
     constants: { R_OK, W_OK }
 } = require("fs");
 const { join, extname } = require("path");
-const { performance } = require("perf_hooks");
 
 // Require Third-party Dependencies
+const { yellow, grey, white, green, cyan } = require("kleur");
 const sade = require("sade");
 const pacote = require("pacote");
-const { yellow, grey, white, green, cyan } = require("kleur");
 const Spinner = require("@slimio/async-cli-spinner");
 const open = require("open");
+const getPort = require("get-port");
+const filenamify = require("filenamify");
+const ms = require("ms");
 
 // Require Internal Dependencies
 const { getRegistryURL } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
-const { hydrateDB } = require("../src/vulnerabilities");
+const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
 const { cwd } = require("../index");
 
 // CONSTANTS
@@ -34,10 +36,10 @@ const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
 // Process script arguments
-const prog = sade("nsecure").version("0.1.0");
+const prog = sade("nsecure").version("0.3.0");
 console.log(grey().bold(`\n > Executing node-secure at: ${yellow().bold(process.cwd())}\n`));
 
-function logAndWrite(payload, output = "result") {
+function logAndWrite(payload, output = "nsecure-result") {
     if (payload === null) {
         console.log("No dependencies to proceed !");
 
@@ -45,30 +47,23 @@ function logAndWrite(payload, output = "result") {
     }
 
     const ret = JSON.stringify(Object.fromEntries(payload), null, 2);
-    const filePath = join(process.cwd(), extname(output) === ".json" ? output : `${output}.json`);
+    const filePath = join(process.cwd(), extname(output) === ".json" ? filenamify(output) : `${filenamify(output)}.json`);
     writeFileSync(filePath, ret);
-    console.log(white().bold(`Sucessfully result .json file at: ${green().bold(filePath)}`));
+    console.log(white().bold(`Successfully writed .json file at: ${green().bold(filePath)}`));
 }
 
 prog
     .command("hydrate-db")
     .describe("Hydrate the vulnerabilities db")
     .action(async function hydrate() {
-        try {
-            unlinkSync(join(__dirname, "..", "vuln.db"));
-        }
-        catch (err) {
-            // ignore
-        }
+        deleteDB();
 
         const spinner = new Spinner({
-            text: white().bold(`Hydrating local vulnerabilities db from '${yellow().bold("nodejs security-wg")}'`)
+            text: white().bold(`Hydrating local vulnerabilities with '${yellow().bold("nodejs security-wg")} db'`)
         }).start();
         try {
-            const start = performance.now();
             await hydrateDB();
-            const time = (performance.now() - start).toFixed(2);
-            spinner.succeed(white().bold(`Successfully hydrated local db in ${cyan(time)} ms`));
+            spinner.succeed(white().bold(`Successfully hydrated vulnerabilities db in ${cyan(ms(spinner.elapsedTime))}`));
         }
         catch (err) {
             spinner.failed(err.message);
@@ -77,81 +72,87 @@ prog
 
 prog
     .command("cwd")
-    .describe("Run on the current working dir")
-    .option("-d, --depth", "maximum dependencies deepth", 4)
-    .option("-o, --output", "output name", "result")
-    .action(async function cwdCmd(opts) {
-        const { depth = 4, output } = opts;
-
-        const payload = await cwd(void 0, {
-            verbose: true,
-            maxDepth: depth
-        });
-        logAndWrite(payload, output);
-    });
+    .describe("Run security analysis on the current working dir")
+    .option("-d, --depth", "maximum dependencies depth to fetch", 4)
+    .option("-o, --output", "json file output name", "nsecure-result")
+    .action(cwdCmd);
 
 prog
     .command("from <package>")
-    .describe("Run on a given package from npm registry")
-    .option("-d, --depth", "maximum dependencies deepth", 4)
-    .option("-o, --output", "output name", "result")
-    .action(async function from(packageName, opts) {
-        const { depth = 4, output } = opts;
-        let manifest = null;
-
-        const spinner = new Spinner({
-            text: white().bold(`Searching for '${yellow().bold(packageName)}' manifest in npm registry!`)
-        }).start();
-        try {
-            manifest = await pacote.manifest(packageName, {
-                registry: REGISTRY_DEFAULT_ADDR,
-                ...token
-            });
-            const elapsedTime = spinner.elapsedTime.toFixed(2);
-            spinner.succeed(
-                white().bold(`Fetched ${yellow().bold(packageName)} manifest on npm in ${cyan(elapsedTime)} ms`)
-            );
-        }
-        catch (err) {
-            spinner.failed(err.message);
-        }
-
-        if (manifest === null) {
-            return;
-        }
-
-        const payload = await depWalker(manifest, {
-            verbose: true,
-            maxDepth: depth
-        });
-        logAndWrite(payload, output);
-    });
+    .describe("Run security analysis on a given package from npm registry")
+    .option("-d, --depth", "maximum dependencies depth to fetch", 4)
+    .option("-o, --output", "json file output name", "nsecure-result")
+    .action(fromCmd);
 
 prog
-    .command("http [json]")
-    .describe("Run an HTTP Server with a given analysis .JSON")
-    .option("-p, --port", "http server port", 1338)
-    .action((json = "result.json", opts) => {
-        const dataFilePath = join(process.cwd(), json);
-        accessSync(dataFilePath, R_OK | W_OK);
+    .command("auto [package]")
+    .option("-d, --depth", "maximum dependencies depth to fetch", 4)
+    .describe("Run security analysis on cwd or a given package and automatically open the web interface")
+    .action(autoCmd);
 
-        // TODO: replace require with lazy-import (when available in Node.js).
-        // eslint-disable-next-line
-        const httpServer = require(join(SRC_PATH, "httpServer.js"));
-
-        httpServer.get("/data", (req, res) => {
-            res.writeHead(200, {
-                "Content-Type": "application/json"
-            });
-
-            createReadStream(dataFilePath).pipe(res);
-        });
-
-        httpServer.listen(opts.port, () => {
-            const link = `http://localhost:${opts.port}`;
-            console.log(green().bold("HTTP Server started: "), cyan().bold(link));
-            open(link);
-        });
-    });
+prog
+    .command("open [json]")
+    .describe("Run an HTTP Server with a given nsecure JSON file")
+    .action(httpCmd);
 
 prog.parse(process.argv);
+
+async function autoCmd(packageName, opts) {
+    await (typeof packageName === "string" ? fromCmd(packageName, opts) : cwdCmd(opts));
+    httpCmd();
+}
+
+async function cwdCmd(opts) {
+    const { depth: maxDepth = 4, output } = opts;
+
+    const payload = await cwd(void 0, { verbose: true, maxDepth });
+    logAndWrite(payload, output);
+}
+
+async function fromCmd(packageName, opts) {
+    const { depth: maxDepth = 4, output } = opts;
+    let manifest = null;
+
+    const spinner = new Spinner({
+        text: white().bold(`Searching for '${yellow().bold(packageName)}' manifest in the npm registry!`)
+    }).start();
+    try {
+        manifest = await pacote.manifest(packageName, {
+            registry: REGISTRY_DEFAULT_ADDR,
+            ...token
+        });
+        const elapsedTime = ms(spinner.elapsedTime.toFixed(2));
+        spinner.succeed(
+            white().bold(`Fetched ${yellow().bold(packageName)} manifest on npm in ${cyan(elapsedTime)}`)
+        );
+    }
+    catch (err) {
+        spinner.failed(err.message);
+    }
+
+    if (manifest !== null) {
+        const payload = await depWalker(manifest, { verbose: true, maxDepth });
+        logAndWrite(payload, output);
+    }
+}
+
+async function httpCmd(json = "nsecure-result.json") {
+    const dataFilePath = join(process.cwd(), json);
+    accessSync(dataFilePath, R_OK | W_OK);
+
+    // TODO: replace require with lazy-import (when available in Node.js).
+    // eslint-disable-next-line
+    const httpServer = require(join(SRC_PATH, "httpServer.js"));
+
+    httpServer.get("/data", (req, res) => {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        createReadStream(dataFilePath).pipe(res);
+    });
+
+    const port = await getPort();
+    httpServer.listen(port, () => {
+        const link = `http://localhost:${port}`;
+        console.log(green().bold(" HTTP Server started at "), cyan().bold(link));
+        open(link);
+    });
+}

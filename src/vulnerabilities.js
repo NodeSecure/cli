@@ -2,7 +2,10 @@
 
 // Require Node.js Dependencies
 const { join, extname } = require("path");
-const { readdir, readFile, writeFile, rmdir } = require("fs").promises;
+const {
+    unlinkSync,
+    promises: { readdir, readFile, writeFile, rmdir }
+} = require("fs");
 
 // Require Third-party Dependencies
 const download = require("@slimio/github");
@@ -11,6 +14,7 @@ const semver = require("semver");
 // CONSTANTS
 const REPO = "nodejs.security-wg";
 const VULN_DIR_PATH = join("vuln", "npm");
+const VULN_FILE_PATH = join(__dirname, "..", "vuln.json");
 
 async function readVulnJSONFile(path) {
     try {
@@ -48,7 +52,7 @@ async function hydrateDB() {
         }
 
         const data = JSON.stringify(Object.fromEntries(payload));
-        await writeFile(join(__dirname, "..", "vuln.json"), data);
+        await writeFile(VULN_FILE_PATH, data);
     }
     catch (error) {
         throw error;
@@ -60,7 +64,7 @@ async function hydrateDB() {
 
 async function hydrateNodeSecurePayload(flattenedDeps) {
     try {
-        const buf = await readFile(join(__dirname, "..", "vuln.json"));
+        const buf = await readFile(VULN_FILE_PATH);
         const vulnerabilities = JSON.parse(buf.toString());
 
         const currThreeNames = new Set([...flattenedDeps.keys()]);
@@ -90,7 +94,17 @@ async function hydrateNodeSecurePayload(flattenedDeps) {
     }
 }
 
+function deleteDB() {
+    try {
+        unlinkSync(VULN_FILE_PATH);
+    }
+    catch (err) {
+        // ignore
+    }
+}
+
 module.exports = {
+    deleteDB,
     hydrateDB,
     hydrateNodeSecurePayload
 };
