@@ -26,17 +26,17 @@ function isVariableDeclarator(node) {
     return true;
 }
 
-function arrExprToString(elements) {
+function arrExprToString(elements, identifiers = null) {
     let ret = "";
 
     for (const row of elements) {
         if (row.type === "Literal") {
-            const value = row.value;
-            if (typeof value === "number") {
-                ret += String.fromCharCode(value);
-            }
-            else if (typeof value === "string") {
-                ret += value;
+            const value = Number(row.value);
+            ret += Number.isNaN(value) ? row.value : String.fromCharCode(value);
+        }
+        else if (row.type === "Identifier" && identifiers !== null) {
+            if (identifiers.has(row.name)) {
+                ret += identifiers.get(row.name);
             }
         }
     }
@@ -61,7 +61,7 @@ function concatBinaryExpr(node, identifiers) {
                 break;
             }
             case "ArrayExpression": {
-                str += arrExprToString(childNode.elements);
+                str += arrExprToString(childNode.elements, identifiers);
                 break;
             }
             case "Literal":

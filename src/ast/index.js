@@ -53,7 +53,7 @@ function searchRuntimeDependencies(str, module = false) {
                         dependencies.add(arg.value);
                     }
                     else if (arg.type === "ArrayExpression") {
-                        const value = helpers.arrExprToString(arg.elements);
+                        const value = helpers.arrExprToString(arg.elements, identifiers);
                         if (value.trim() === "") {
                             isSuspect = true;
                         }
