@@ -50,34 +50,52 @@ $ nsecure --help
 # Run analysis on the current working dir
 $ nsecure cwd
 
-# Run analysis for a given 'npm' package (must be in the registry).
+# Run analysis for a given 'npm' package (must be in the npm registry).
 $ nsecure from @sindresorhus/is
 ```
 
-Then a `result.json` will be writted at the current location. To view it on web page just run
+Then a `nsecure-result.json` will be writted at the current CLI location. To open it on a web page just run
 
 ```bash
 $ nsecure open
 ```
 
+The `auto` command can be used to chain `cwd/from` and `open` commands automatically.
+
+```bash
+$ nsecure auto jest
+
+# if no package is given to the auto command, then it will run the cwd command.
+$ nsecure auto
+```
+
 ---
-Some options are available on both `cwd` and `from` commands.
+Some options are available on both `cwd`, `from` and `auto` commands. The output option is not available for the `auto` command.
 
 | name | shortcut | default value | description |
 | --- | --- | --- | --- |
 | --depth | -d | **4** | the maximum depth we must walk (when we fetch the whole tree). |
-| --output | -o | **result** | the name that the outputted .json file will have |
+| --output | -o | **nsecure-result** | the name that the outputted .json file will have |
 
 ```bash
 $ nsecure from express -d 10 -o express-security-report
 ```
 
-## Fetching private packages
+## Private packages / registry
 
 Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contain a [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
 
+> 👀 If you'r linking the package yourself you can create a `.env` file at the root of the project too.
+
+Nsecure is capable to work behind a custom private npm registry too by searching the default registry URL in your local npm configuration.
+
+```bash
+$ npm config get registry
+$ npm config set "http://your-registry/"
+```
+
 ## API
-Use nsecure as API package to fetch and work with the JSON. The following example demonstrate how to retrieve the JSON Payload for mocha, cacache and is-wsl packages. It's possible to use the **cwd** method if you want to achieve similar work on local projects.
+Use nsecure as API package to fetch and work with the generated JSON. The following example demonstrate how to retrieve the Payload for mocha, cacache and is-wsl packages. It's possible to use the **cwd** method if you want to achieve similar work on a local project.
 
 ```js
 const { from } = require("nsecure");
