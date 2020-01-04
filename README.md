@@ -125,16 +125,6 @@ main().catch(console.error);
 
 Flags and emojis legends are documented [here](./FLAGS.md)
 
-## Fetching vulnerabilities
-
-Right now, vulnerabilities are not shipped automatically because it request a manual action to hydrate a local .json file with all detected vulnerabilities from the [Security WG](https://github.com/nodejs/security-wg) repository.
-
-To run the hydratation just run the following command in your terminal:
-
-```bash
-$ nsecure hydrate-db
-```
-
 ## License
 MIT
 

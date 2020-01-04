@@ -19,13 +19,15 @@ const ms = require("ms");
 
 // Require Internal Dependencies
 const startHTTPServer = require("../src/httpServer.js");
-const { getRegistryURL } = require("../src/utils");
+const { getRegistryURL, loadNsecureCache } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
 const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
 const { cwd } = require("../index");
 
 // CONSTANTS
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
+const LOCAL_CACHE = loadNsecureCache();
+const ONE_DAY = 3600000 * 24;
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
 // Process script arguments
@@ -45,23 +47,18 @@ function logAndWrite(payload, output = "nsecure-result") {
     console.log(white().bold(`Successfully writed .json file at: ${green().bold(filePath)}`));
 }
 
+async function checkHydrateDB() {
+    const ts = Math.abs(Date.now() - LOCAL_CACHE.lastUpdated);
+
+    if (ts > ONE_DAY) {
+        await hydrateCmd();
+    }
+}
+
 prog
     .command("hydrate-db")
     .describe("Hydrate the vulnerabilities db")
-    .action(async function hydrate() {
-        deleteDB();
-
-        const spinner = new Spinner({
-            text: white().bold(`Hydrating local vulnerabilities with '${yellow().bold("nodejs security-wg")} db'`)
-        }).start();
-        try {
-            await hydrateDB();
-            spinner.succeed(white().bold(`Successfully hydrated vulnerabilities db in ${cyan(ms(spinner.elapsedTime))}`));
-        }
-        catch (err) {
-            spinner.failed(err.message);
-        }
-    });
+    .action(hydrateCmd);
 
 prog
     .command("cwd")
@@ -90,6 +87,21 @@ prog
 
 prog.parse(process.argv);
 
+async function hydrateCmd() {
+    deleteDB();
+
+    const spinner = new Spinner({
+        text: white().bold(`Hydrating local vulnerabilities with '${yellow().bold("nodejs security-wg")} db'`)
+    }).start();
+    try {
+        await hydrateDB();
+        spinner.succeed(white().bold(`Successfully hydrated vulnerabilities db in ${cyan(ms(spinner.elapsedTime))}`));
+    }
+    catch (err) {
+        spinner.failed(err.message);
+    }
+}
+
 async function autoCmd(packageName, opts) {
     await (typeof packageName === "string" ? fromCmd(packageName, opts) : cwdCmd(opts));
     await httpCmd();
@@ -98,6 +110,7 @@ async function autoCmd(packageName, opts) {
 async function cwdCmd(opts) {
     const { depth: maxDepth = 4, output } = opts;
 
+    await checkHydrateDB();
     const payload = await cwd(void 0, { verbose: true, maxDepth });
     logAndWrite(payload, output);
 }
@@ -106,6 +119,7 @@ async function fromCmd(packageName, opts) {
     const { depth: maxDepth = 4, output } = opts;
     let manifest = null;
 
+    await checkHydrateDB();
     const spinner = new Spinner({
         text: white().bold(`Searching for '${yellow().bold(packageName)}' manifest in the npm registry!`)
     }).start();

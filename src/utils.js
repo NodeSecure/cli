@@ -5,9 +5,16 @@
 "use strict";
 
 // Require Node.js Dependencies
-const { stat, opendir } = require("fs").promises;
+const os = require("os");
+const {
+    existsSync, readFileSync, writeFileSync,
+    promises: { stat, opendir }
+} = require("fs");
 const { extname, join, relative } = require("path");
 const { spawnSync } = require("child_process");
+
+// Require Third-party Dependencies
+const cloneDeep = require("lodash.clonedeep");
 
 // SYMBOLS
 const SYM_FILE = Symbol("symTypeFile");
@@ -187,7 +194,25 @@ function getRegistryURL(force = false) {
     }
 }
 
+function loadNsecureCache(defaultPayload = {}) {
+    const filePath = join(os.tmpdir(), "nsecure-cache.json");
+
+    if (existsSync(filePath)) {
+        const buf = readFileSync(filePath);
+
+        return JSON.parse(buf.toString());
+    }
+
+    const payload = Object.assign({}, cloneDeep(defaultPayload), {
+        lastUpdated: Date.now() - (3600000 * 48)
+    });
+    writeFileSync(filePath, JSON.stringify(payload));
+
+    return payload;
+}
+
 module.exports = Object.freeze({
+    loadNsecureCache,
     getFilesRecursive,
     getTarballComposition,
     mergeDependencies,
