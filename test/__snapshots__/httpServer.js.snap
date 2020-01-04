@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`'/data' should return the fixture payload we expect 1`] = `
+Object {
+  "foo": "bar",
+}
+`;

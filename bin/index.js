@@ -6,10 +6,7 @@ require("make-promises-safe");
 require("dotenv").config();
 
 // Require Node.js Dependencies
-const {
-    writeFileSync, accessSync, createReadStream,
-    constants: { R_OK, W_OK }
-} = require("fs");
+const { writeFileSync } = require("fs");
 const { join, extname } = require("path");
 
 // Require Third-party Dependencies
@@ -17,22 +14,18 @@ const { yellow, grey, white, green, cyan } = require("kleur");
 const sade = require("sade");
 const pacote = require("pacote");
 const Spinner = require("@slimio/async-cli-spinner");
-const open = require("open");
-const getPort = require("get-port");
 const filenamify = require("filenamify");
 const ms = require("ms");
 
 // Require Internal Dependencies
+const startHTTPServer = require("../src/httpServer.js");
 const { getRegistryURL } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
 const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
 const { cwd } = require("../index");
 
 // CONSTANTS
-const SRC_PATH = join(__dirname, "..", "src");
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
-
-// VARS
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
 // Process script arguments
@@ -99,7 +92,7 @@ prog.parse(process.argv);
 
 async function autoCmd(packageName, opts) {
     await (typeof packageName === "string" ? fromCmd(packageName, opts) : cwdCmd(opts));
-    httpCmd();
+    await httpCmd();
 }
 
 async function cwdCmd(opts) {
@@ -138,21 +131,5 @@ async function fromCmd(packageName, opts) {
 
 async function httpCmd(json = "nsecure-result.json") {
     const dataFilePath = join(process.cwd(), json);
-    accessSync(dataFilePath, R_OK | W_OK);
-
-    // TODO: replace require with lazy-import (when available in Node.js).
-    // eslint-disable-next-line
-    const httpServer = require(join(SRC_PATH, "httpServer.js"));
-
-    httpServer.get("/data", (req, res) => {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        createReadStream(dataFilePath).pipe(res);
-    });
-
-    const port = await getPort();
-    httpServer.listen(port, () => {
-        const link = `http://localhost:${port}`;
-        console.log(green().bold(" HTTP Server started at "), cyan().bold(link));
-        open(link);
-    });
+    await startHTTPServer(dataFilePath);
 }

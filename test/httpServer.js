@@ -8,15 +8,19 @@ const { join } = require("path");
 const { get } = require("httpie");
 
 // Require Internal Dependencies
-const httpServer = require("../src/httpServer");
+const startHTTPServer = require("../src/httpServer");
 
 // CONSTANTS
 const HTTP_PORT = 1337;
 const HTTP_URL = new URL(`http://localhost:${HTTP_PORT}`);
+const JSON_PATH = join(__dirname, "fixtures", "httpServer", "payload.json");
 const INDEX_HTML = readFileSync(join(__dirname, "..", "views", "index.html"), "utf-8");
 
+// VARS
+let httpServer;
+
 beforeAll(async() => {
-    await new Promise((resolve) => httpServer.listen(HTTP_PORT, resolve));
+    httpServer = await startHTTPServer(JSON_PATH, HTTP_PORT);
 });
 
 afterAll(() => {
@@ -29,4 +33,12 @@ test("'/' should return index.html HTML content", async() => {
     expect(result.statusCode).toStrictEqual(200);
     expect(result.headers["content-type"]).toStrictEqual("text/html");
     expect(result.data).toStrictEqual(INDEX_HTML);
+});
+
+test("'/data' should return the fixture payload we expect", async() => {
+    const result = await get(new URL("/data", HTTP_URL));
+
+    expect(result.statusCode).toStrictEqual(200);
+    expect(result.headers["content-type"]).toStrictEqual("application/json");
+    expect(result.data).toMatchSnapshot();
 });
