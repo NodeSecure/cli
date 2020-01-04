@@ -15,6 +15,7 @@ const one = readFileSync(join(FIXTURE_PATH, "one.js"), "utf-8");
 const two = readFileSync(join(FIXTURE_PATH, "two.js"), "utf-8");
 const three = readFileSync(join(FIXTURE_PATH, "three.js"), "utf-8");
 const five = readFileSync(join(FIXTURE_PATH, "five.js"), "utf-8");
+const esm = readFileSync(join(FIXTURE_PATH, "esm.js"), "utf-8");
 
 test("should return runtime dependencies for one.js", () => {
     const { dependencies, isSuspect } = searchRuntimeDependencies(one);
@@ -44,4 +45,11 @@ test("should return runtime dependencies for five.js", () => {
 
     expect(isSuspect).toStrictEqual(false);
     expect(dependencies).toStrictEqual(new Set(["http", "net-tcp", "barworld", "hello", "util"]));
+});
+
+test("should support runtime analysis of ESM and return http", () => {
+    const { dependencies, isSuspect } = searchRuntimeDependencies(esm, true);
+
+    expect(isSuspect).toStrictEqual(false);
+    expect(dependencies).toStrictEqual(new Set(["http"]));
 });
