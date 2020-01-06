@@ -411,7 +411,10 @@ div.select-project {
     position: relative;
     display: inline-block;
   }
-  
+  .tooltip + .tooltip {
+      margin-left: 5px;
+  }
+
   .tooltip .tooltiptext {
     visibility: hidden;
     width: 280px;
@@ -426,7 +429,7 @@ div.select-project {
     left: 50%;
     margin-left: -140px;
   }
-  
+
   .tooltip .tooltiptext::after {
     content: "";
     position: absolute;
@@ -437,7 +440,7 @@ div.select-project {
     border-style: solid;
     border-color: transparent transparent black transparent;
   }
-  
+
   .tooltip:hover .tooltiptext {
     visibility: visible;
   }

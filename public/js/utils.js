@@ -12,6 +12,20 @@ function formatBytes(bytes, decimals) {
     return parseFloat((bytes / Math.pow(1024, id)).toFixed(dm)) + ' ' + sizes[id];
 }
 
+function createTooltip(icon, description) {
+    const divElement = document.createElement("div");
+    divElement.classList.add("tooltip");
+    divElement.appendChild(document.createTextNode(icon));
+
+    const spanElement = document.createElement("span");
+    spanElement.classList.add("tooltiptext");
+    spanElement.appendChild(document.createTextNode(description));
+
+    divElement.appendChild(spanElement);
+
+    return divElement;
+}
+
 function createLiField(title, value, isLink = false) {
     const liElement = document.createElement("li");
     const bElement = document.createElement("b");

@@ -57,7 +57,7 @@ const networkGraphOptions = {
 
 const FLAGS = {
     "🌍": "The package has indirect dependencies.",
-    "⚠️": "The package has suspicious imports.",
+    "⚠": "The package has suspicious imports.",
     "💎": "The package has dependencies that are not packages.",
     "📜": "The package does not seem to have a license.",
     "📚": "The package has multiple licenses in multiple files",
@@ -310,13 +310,13 @@ document.addEventListener("DOMContentLoaded", async() => {
                     flagsElement.style.display = "none";
                 }
                 else {
-                    [...textContent].forEach((icons) => {
-                        if (icons !== " ") {
-                            flagsElement.innerHTML += `<div class="tooltip">${icons}
-                    <span class="tooltiptext">${FLAGS[icons]}</span>
-                  </div>`;
+                    const flagsFragment = document.createDocumentFragment();
+                    for (const icon of textContent) {
+                        if (icon !== " ") {
+                            flagsFragment.appendChild(createTooltip(icon, FLAGS[icon]));
                         }
-                    });
+                    }
+                    flagsElement.appendChild(flagsFragment);
                 }
             }
 
