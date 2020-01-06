@@ -54,6 +54,7 @@ const networkGraphOptions = {
     }
 };
 
+
 const FLAGS = {
     "🌍": "The package has indirect dependencies.",
     "⚠️": "The package has suspicious imports.",
@@ -64,7 +65,9 @@ const FLAGS = {
     "⛔️": "The package is deprecated.",
     "💕": "The package has several publishers.",
     "👥": "The author has already changed at least one time.",
-    "📦": "has `post` and/or `pre` (un)install npm script"
+    "📦": "has `post` and/or `pre` (un)install npm script",
+    "🌲": "The package have indirect dependencies.",
+    "☁️": "The package (project) is a git repository"
 };
 
 function getColor(id, flags) {
@@ -307,7 +310,13 @@ document.addEventListener("DOMContentLoaded", async() => {
                     flagsElement.style.display = "none";
                 }
                 else {
-                    flagsElement.textContent = textContent;
+                    [...textContent].forEach((icons) => {
+                        if (icons !== " ") {
+                            flagsElement.innerHTML += `<div class="tooltip">${icons}
+                    <span class="tooltiptext">${FLAGS[icons]}</span>
+                  </div>`;
+                        }
+                    });
                 }
             }
 
