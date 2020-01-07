@@ -1,0 +1,54 @@
+{
+    "🌍": {
+        "title": "hasExternalCapacity",
+        "tooltipDescription": "The package use at least one Node.js dependency capable to communicate outside or to establish a listening server."
+    },
+    "⚠": {
+        "title": "hasSuspectImport",
+        "tooltipDescription": "The package has suspicious imports."
+    },
+    "💎": {
+        "title": "hasCustomResolver",
+        "tooltipDescription": "The package has dependencies that are not packages."
+    },
+    "📜": {
+        "title": "hasLicense",
+        "tooltipDescription": "The package does not seem to have a license."
+    },
+    "📚": {
+        "title": "hasMultipleLicenses",
+        "tooltipDescription": "The package has multiple licenses in multiple files"
+    },
+    "🔬": {
+        "title": "hasMinifiedCode",
+        "tooltipDescription": "The package seems to have files that are minified/uglified."
+    },
+    "⛔️": {
+        "title": "isDeprecated",
+        "tooltipDescription": "The package is deprecated."
+    },
+    "💕": {
+        "title": "hasManyPublishers",
+        "tooltipDescription": "The package has several publishers."
+    },
+    "👥": {
+        "title": "hasChangedAuthor",
+        "tooltipDescription": "The author has already changed at least one time."
+    },
+    "📦": {
+        "title": "hasScript",
+        "tooltipDescription": "has `post` and/or `pre` (un)install npm script"
+    },
+    "🌲": {
+        "title": "hasIndirectDependencies",
+        "tooltipDescription": "The package have indirect dependencies."
+    },
+    "☁️": {
+        "title": "isGit",
+        "tooltipDescription": "The package (project) is a git repository"
+    },
+    "🚨": {
+        "title": "vulnerabilities",
+        "tooltipDescription": "The package have one or many vulnerabilities."
+    }
+}

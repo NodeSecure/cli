@@ -55,21 +55,6 @@ const networkGraphOptions = {
 };
 
 
-const FLAGS = {
-    "🌍": "The package has indirect dependencies.",
-    "⚠": "The package has suspicious imports.",
-    "💎": "The package has dependencies that are not packages.",
-    "📜": "The package does not seem to have a license.",
-    "📚": "The package has multiple licenses in multiple files",
-    "🔬": "The package seems to have files that are minified/uglified.",
-    "⛔️": "The package is deprecated.",
-    "💕": "The package has several publishers.",
-    "👥": "The author has already changed at least one time.",
-    "📦": "has `post` and/or `pre` (un)install npm script",
-    "🌲": "The package have indirect dependencies.",
-    "☁️": "The package (project) is a git repository"
-};
-
 function getColor(id, flags) {
     if (id === 0) {
         return C_MAIN;
@@ -134,6 +119,16 @@ document.addEventListener("DOMContentLoaded", async() => {
     const networkElement = document.getElementById("network-graph");
     const dataListElement = document.getElementById("package-list");
     const inputFinderElement = document.getElementById("package-finder");
+    const flagLegendElement = document.getElementById("flag-legends");
+
+    const modal = document.querySelector(".modal");
+    const trigger = document.getElementById("trigger");
+    const closeButton = document.querySelector(".close-button");
+
+    trigger.addEventListener("click", toggleModal);
+    closeButton.addEventListener("click", toggleModal);
+    modal.addEventListener("click", onClickOutsideModal);
+
     networkElement.click();
     let highlightActive = false;
 
@@ -143,10 +138,20 @@ document.addEventListener("DOMContentLoaded", async() => {
     const linker = new Map();
 
     const data = await request("/data");
+    const FLAGS = await request("/flags");
     const dataEntries = Object.entries(data);
 
     let indirectDependenciesCount = 0;
     let totalSize = 0;
+
+    const legendsFlagsFragment = document.createDocumentFragment();
+
+    for (const [flagName, flagDescriptor] of Object.entries(FLAGS)) {
+        legendsFlagsFragment.appendChild(createLegend(flagName, flagDescriptor.title));
+    }
+
+    flagLegendElement.appendChild(legendsFlagsFragment);
+
     for (const [packageName, descriptor] of dataEntries) {
         const { metadata, vulnerabilities, versions } = descriptor;
 
@@ -313,7 +318,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                     const flagsFragment = document.createDocumentFragment();
                     for (const icon of textContent) {
                         if (icon !== " ") {
-                            flagsFragment.appendChild(createTooltip(icon, FLAGS[icon]));
+                            flagsFragment.appendChild(createTooltip(icon, FLAGS[icon].tooltipDescription));
                         }
                     }
                     flagsElement.appendChild(flagsFragment);
@@ -405,6 +410,15 @@ document.addEventListener("DOMContentLoaded", async() => {
         network.stopSimulation();
         if (params.nodes.length > 0) {
             network.focus(params.nodes[0], { animation: true });
+        }
+    }
+    function toggleModal() {
+        modal.classList.toggle("show-modal");
+    }
+
+    function onClickOutsideModal(event) {
+        if (event.target === modal) {
+            toggleModal();
         }
     }
 });

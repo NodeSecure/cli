@@ -25,7 +25,26 @@ function createTooltip(icon, description) {
 
     return divElement;
 }
+function createLegend(icon, title) {
+    const legendDivElement = document.createElement("div");
+    const titleDivElement = document.createElement("div");
+    const iconPElement = document.createElement("p");
+    const titleBElement = document.createElement("b");
+    legendDivElement.classList.add("legend");
+    legendDivElement.addEventListener("click", function legendClicked() {
+        updateDescription(title);
+    });
 
+    titleDivElement.classList.add("title");
+    iconPElement.appendChild(document.createTextNode(icon));
+    titleBElement.appendChild(document.createTextNode(title));
+
+    titleDivElement.appendChild(iconPElement);
+    titleDivElement.appendChild(titleBElement);
+    legendDivElement.appendChild(titleDivElement);
+
+    return legendDivElement;
+}
 function createLiField(title, value, isLink = false) {
     const liElement = document.createElement("li");
     const bElement = document.createElement("b");
@@ -84,4 +103,10 @@ async function request(path, customHeaders = Object.create(null)) {
     });
 
     return raw.json();
+}
+
+async function updateDescription(title) {
+    const flagDescriptionElement = document.getElementById("flag-description");
+    const description = await (await fetch(`flags/description/${title}`)).text();
+    flagDescriptionElement.innerHTML = description;
 }

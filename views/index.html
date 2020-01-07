@@ -9,8 +9,10 @@
 <link rel="stylesheet" href="css/reset.css" />
 <link rel="stylesheet" href="css/style.css" />
 <link rel="stylesheet" href="css/fontello.css" />
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap"
-    rel="stylesheet" />
+<link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap"
+    rel="stylesheet"
+/>
 
 <script src="js/utils.js" defer></script>
 <script src="js/master.js" defer></script>
@@ -25,13 +27,16 @@
             <div class="global-stats">
                 <ul>
                     <li>
-                        <p>Total of packages</p><b id="total-packages">0</b>
+                        <p>Total of packages</p>
+                        <b id="total-packages">0</b>
                     </li>
                     <li>
-                        <p>Total size</p><b id="total-size">0</b>
+                        <p>Total size</p>
+                        <b id="total-size">0</b>
                     </li>
                     <li>
-                        <p>Packages with indirect dependencies</p><b id="indirect-dependencies">0</b>
+                        <p>Packages with indirect dependencies</p>
+                        <b id="indirect-dependencies">0</b>
                     </li>
                 </ul>
             </div>
@@ -39,121 +44,32 @@
     </div>
     <div class="btn">
         <p>Search</p>
-        <input type="text" list="package-list" spellcheck="false" id="package-finder" class="package-finder"
-            placeholder="Package Name" />
+        <input
+            type="text"
+            list="package-list"
+            spellcheck="false"
+            id="package-finder"
+            class="package-finder"
+            placeholder="Package Name"
+        />
         <datalist id="package-list"></datalist>
     </div>
-    <div class="btn">
+    <div class="btn" id="trigger">
         <i class="icon-book-open"></i>
         <p>Emojis Legends</p>
-        <div class="hiddenarea">
-            <div class="infobox">
-                <div class="legend">
-                    <div class="title">
-                        <p>☁️</p>
-                        <b>isGit</b>
-                    </div>
-                    <p>The package (project) is a git repository</p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>🌲</p>
-                        <b>hasIndirectDependencies</b>
-                    </div>
-                    <p>The package have indirect dependencies.</p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>⚠️</p>
-                        <b>hasSuspectImport</b>
-                    </div>
-                    <p>The package have suspect import/require statment.</p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>⛔️</p>
-                        <b>isDeprecated</b>
-                    </div>
-                    <p>The package has been tagged as deprecated on npm.</p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>📜</p>
-                        <b>hasLicense</b>
-                    </div>
-                    <p>The license is missing (or has not been detected).</p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>📚</p>
-                        <b>hasMultipleLicenses</b>
-                    </div>
-                    <p>The package has multiple licenses in multiple files.</p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>🔬</p>
-                        <b>hasMinifiedCode</b>
-                    </div>
-                    <p>The package has minified/uglified code.</p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>💎</p>
-                        <b>hasCustomResolver</b>
-                    </div>
-                    <p>
-                        The package has at least one dependency that is not a
-                        npm package (like a git link or a local file link)
-                    </p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>🌍</p>
-                        <b>hasExternalCapacity</b>
-                    </div>
-                    <p>
-                        The package use at least one Node.js dependency capable
-                        to communicate outside or to establish a listening
-                        server.
-                    </p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>💕</p>
-                        <b>hasManyPublishers</b>
-                    </div>
-                    <p>The package has more than one publishers.</p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>📦</p>
-                        <b>hasScript</b>
-                    </div>
-                    <p>has `post` and/or `pre` (un)install npm script.</p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>👥</p>
-                        <b>hasChangedAuthor</b>
-                    </div>
-                    <p>
-                        The package "author" field has been updated at least one
-                        time.
-                    </p>
-                </div>
-                <div class="legend">
-                    <div class="title">
-                        <p>🚨</p>
-                        <b>vulnerabilities</b>
-                    </div>
-                    <p>The package have one or many vulnerabilities.</p>
-                </div>
-            </div>
-        </div>
     </div>
 </section>
-
+<div class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <div class="infobox">
+            <div class="flags-legend">
+                <div class="flags-legend-tags" id="flag-legends"></div>
+            </div>
+            <div class="description-box" id="flag-description"></div>
+        </div>
+    </div>
+</div>
 <section id="show-info">
     <div class="select-project">
         <p>click on a package to show a complete description here</p>
