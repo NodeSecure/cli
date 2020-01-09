@@ -1,3 +1,16 @@
 <p>
-    isGit
+    The project has been detected as a GIT repository. Sometimes a dependency on
+    the package.json link to a GIT repository, example:
+</p>
+<br/>   
+<pre><code>{
+    "dependencies": {
+        "uNodeHttpServer": "git+https://github.com/tpoisseau/uNodeHttpServer.git#1.2.0"
+    }
+}</code></pre>
+<br/>
+<p>
+    Because under the hood we use
+    <a href="https://github.com/npm/pacote#readme">pacote</a> to fetch and
+    extract packages we are supporting this given pattern.
 </p>

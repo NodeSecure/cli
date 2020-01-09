@@ -1,3 +1,14 @@
 <p>
-   hasMultipleLicenses
+    We have detected different licenses in <strong>package.json</strong> and
+    other licenses files (<strong>LICENSE</strong>,
+    <strong>LICENSE.MD</strong> etc). This probably means that there is an
+    inconsistency in the choice of the license (or a file not updated yet with
+    the right license).
+</p>
+<p>
+    This flag has not been created to detect multiple licenses / conformance
+    rules. Example: <code>ISC OR GPL-2.0-with-GCC-exception</code>. Under the
+    hood we use
+    <a href="https://github.com/cutenode/conformance#readme">conformance</a> to
+    parse licenses !
 </p>
