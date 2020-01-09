@@ -10,12 +10,38 @@ declare namespace NodeSecure {
         firstPublishAt: string;
     }
 
+    interface License {
+        uniqueLicenseIds: string[];
+        spdxLicenseLinks: string[];
+        spdx: {
+            osi: boolean;
+            fsf: boolean;
+            fsfAndOsi: boolean;
+            includesDeprecated: boolean;
+        };
+        from: string;
+    }
+
+    interface Owner {
+        name: string;
+        at: string;
+        version: string;
+    }
+
+    interface Author {
+        name?: string;
+        url?: string;
+        email?: string;
+    }
+
     interface Flags {
         isGit: boolean;
         hasManifest: boolean;
         isDeprecated: boolean;
         hasSuspectImport: boolean;
         hasLicense: boolean;
+        hasMultipleLicenses: boolean;
+        hasMissingOrUnusedDependency: boolean;
         hasMinifiedCode: boolean;
         hasIndirectDependencies: boolean;
         hasCustomResolver: boolean;
@@ -38,8 +64,8 @@ declare namespace NodeSecure {
             lastVersion: number;
             hasChangedAuthor: boolean;
             hasManyPublishers: boolean;
-            author: string;
-            authors?: string[];
+            author: 'N/A' | string;
+            authors: Owner[];
             publishers: Publisher[];
         };
         versions: string[];
@@ -51,7 +77,7 @@ declare namespace NodeSecure {
             };
             size: number;
             description: string;
-            author: any;
+            author: string | Author;
             composition: {
                 extensions: string[];
                 files: string[];
@@ -60,9 +86,9 @@ declare namespace NodeSecure {
                 required_builtin: string[];
                 suspectFiles?: string[];
             };
-            license: string;
-            licenseFrom: string;
+            license: string | License[];
             flags: Flags;
+            gitUrl: null | string;
         };
     }
 
