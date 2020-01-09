@@ -50,5 +50,9 @@
     "🚨": {
         "title": "vulnerabilities",
         "tooltipDescription": "The package have one or many vulnerabilities."
+    },
+    "👀": {
+        "title": "hasMissingOrUnusedDependency",
+        "tooltipDescription": "A dependency is missing in package.json or a dependency is installed but never used!"
     }
 }

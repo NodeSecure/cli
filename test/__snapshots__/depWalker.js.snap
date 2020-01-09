@@ -19,6 +19,7 @@ Object {
           "./src/utils",
         ],
         "required_builtin": Array [],
+        "unusedOrMissing": Array [],
       },
       "description": "SlimIO is (JavaScript Primitives &amp; Objects type checker)",
       "flags": Object {
@@ -29,6 +30,7 @@ Object {
         "hasLicense": true,
         "hasManifest": true,
         "hasMinifiedCode": false,
+        "hasMissingOrUnusedDependency": false,
         "hasMultipleLicenses": false,
         "hasScript": false,
         "hasSuspectImport": false,

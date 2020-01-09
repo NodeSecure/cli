@@ -34,6 +34,7 @@ class Dependency {
             hasCustomResolver: false,
             hasDependencies: false,
             hasExternalCapacity: false,
+            hasMissingOrUnusedDependency: false,
             hasScript: false
         };
         Object.preventExtensions(flags);
@@ -82,6 +83,7 @@ class Dependency {
                     extensions: [],
                     files: [],
                     minified: [],
+                    unusedOrMissing: [],
                     required: [],
                     required_builtin: []
                 },
@@ -129,6 +131,22 @@ class Dependency {
      */
     get flags() {
         return cloneDeep(this[SYM_FLAGS]);
+    }
+
+    /**
+     * @memberof Dependency#
+     * @member {boolean} hasMissingOrUnusedDependency
+     * @returns {boolean}
+     */
+    get hasMissingOrUnusedDependency() {
+        return this[SYM_FLAGS].hasMissingOrUnusedDependency;
+    }
+
+    set hasMissingOrUnusedDependency(value) {
+        if (typeof value !== "boolean") {
+            throw new TypeError("value must be typeof boolean");
+        }
+        this[SYM_FLAGS].hasMissingOrUnusedDependency = value;
     }
 
     /**

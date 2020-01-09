@@ -19,6 +19,7 @@ const uniqueSlug = require("unique-slug");
 const ntlp = require("ntlp");
 const iter = require("itertools");
 const ms = require("ms");
+const difference = require("lodash.difference");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
@@ -154,14 +155,20 @@ async function processPackageTarball(name, version, options) {
         });
         await new Promise((resolve) => setImmediate(resolve));
         let isProjectUsingESM = false;
+        let depsInLocalPackage = null;
+        let devDepsInLocalPackage = [];
 
         // Read the package.json file in the extracted tarball
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
-            const { type = "script", description = "", author = {}, scripts = {} } = JSON.parse(packageStr);
+            const {
+                type = "script", description = "", author = {}, scripts = {}, dependencies = {}, devDependencies = {}
+            } = JSON.parse(packageStr);
             ref.description = description;
             ref.author = author;
             isProjectUsingESM = type === "module";
+            depsInLocalPackage = Object.keys(dependencies);
+            devDepsInLocalPackage = Object.keys(devDependencies);
 
             ref.flags.hasScript = [...Object.keys(scripts)].some((value) => NPM_SCRIPTS.has(value.toLowerCase()));
         }
@@ -201,6 +208,18 @@ async function processPackageTarball(name, version, options) {
         }
 
         const required = [...new Set(dependencies)];
+
+        if (depsInLocalPackage !== null) {
+            const thirdPartyDependencies = required
+                .filter((name) => !name.startsWith("."))
+                .filter((name) => !NODE_CORE_LIBS.has(name))
+                .filter((name) => !devDepsInLocalPackage.includes(name));
+
+            const depDiff = difference(depsInLocalPackage, thirdPartyDependencies);
+            ref.flags.hasMissingOrUnusedDependency = depDiff.length > 0;
+            ref.composition.unusedOrMissing.push(...depDiff);
+        }
+
         ref.composition.required.push(...required);
         ref.composition.required_builtin = required.filter((name) => NODE_CORE_LIBS.has(name));
 

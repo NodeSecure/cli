@@ -101,6 +101,9 @@ function getFlags(flags, metadata, vulnerabilities = []) {
     if (flags.hasScript) {
         flagList.push("📦");
     }
+    if (flags.hasMissingOrUnusedDependency) {
+        flagList.push("👀");
+    }
     if (metadata.hasManyPublishers) {
         flagList.push("💕");
     }
@@ -178,8 +181,8 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     {
         const legendsFlagsFragment = document.createDocumentFragment();
-        for (const [flagName, flagDescriptor] of Object.entries(FLAGS)) {
-            legendsFlagsFragment.appendChild(createLegend(flagName, flagDescriptor.title));
+        for (const [flagName, { title }] of Object.entries(FLAGS)) {
+            legendsFlagsFragment.appendChild(createLegend(flagName, title));
         }
         flagLegendElement.appendChild(legendsFlagsFragment);
     }
@@ -397,6 +400,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 renderItemsList(clone.getElementById("nodedep"), composition.required_builtin);
                 renderItemsList(clone.getElementById("extensions"), composition.extensions);
                 renderItemsList(clone.getElementById("minifiedfiles"), composition.minified);
+                renderItemsList(clone.getElementById("unusedormissing"), composition.unusedOrMissing);
                 renderItemsList(clone.getElementById("requireddep"), thirdParty);
                 renderItemsList(clone.getElementById("internaldep"), internal);
             }

@@ -61,6 +61,7 @@ function createAvatar(name, desc) {
 }
 
 function createLegend(icon, title) {
+    const slicedTitle = title.length > 23 ? `${title.slice(0, 23)}..` : title;
     const legendDivElement = document.createElement("div");
 
     const iconPElement = document.createElement("p");
@@ -76,7 +77,7 @@ function createLegend(icon, title) {
     });
 
     iconPElement.appendChild(document.createTextNode(icon));
-    titleBElement.appendChild(document.createTextNode(title));
+    titleBElement.appendChild(document.createTextNode(slicedTitle));
 
     legendDivElement.appendChild(iconPElement);
     legendDivElement.appendChild(titleBElement);
