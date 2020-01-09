@@ -1,5 +1,7 @@
 "use strict";
 
+let activeLegendElement = null;
+
 function formatBytes(bytes, decimals) {
     if (bytes === 0) {
         return "0 B";
@@ -25,23 +27,27 @@ function createTooltip(icon, description) {
 
     return divElement;
 }
+
 function createLegend(icon, title) {
     const legendDivElement = document.createElement("div");
-    const titleDivElement = document.createElement("div");
+
     const iconPElement = document.createElement("p");
     const titleBElement = document.createElement("b");
     legendDivElement.classList.add("legend");
     legendDivElement.addEventListener("click", function legendClicked() {
+        if (activeLegendElement !== null) {
+            activeLegendElement.classList.remove("active");
+        }
+        activeLegendElement = legendDivElement;
+        activeLegendElement.classList.add("active");
         updateDescription(title);
     });
 
-    titleDivElement.classList.add("title");
     iconPElement.appendChild(document.createTextNode(icon));
     titleBElement.appendChild(document.createTextNode(title));
 
-    titleDivElement.appendChild(iconPElement);
-    titleDivElement.appendChild(titleBElement);
-    legendDivElement.appendChild(titleDivElement);
+    legendDivElement.appendChild(iconPElement);
+    legendDivElement.appendChild(titleBElement);
 
     return legendDivElement;
 }

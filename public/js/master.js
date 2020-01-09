@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 else {
                     const flagsFragment = document.createDocumentFragment();
                     for (const icon of textContent) {
-                        if (icon !== " ") {
+                        if (Reflect.has(FLAGS, icon)) {
                             flagsFragment.appendChild(createTooltip(icon, FLAGS[icon].tooltipDescription));
                         }
                     }

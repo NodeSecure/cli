@@ -164,32 +164,25 @@ section#stats div.hiddenarea > div.global-stats ul li b {
 
 div.legend {
     display: flex;
-    flex-direction: column;
-    border-radius: 4px;
-    box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
-    border: 1px solid #263238;
+    border-radius: 2px;
     box-sizing: border-box;
-    overflow: hidden;
-    margin-right: auto;
-}
-div.legend > div.title {
-    height: 24px;
-    display: flex;
-    background: #263238;
+    height: 28px;
+    background: #455A64;
     align-items: center;
-    padding: 0 5px;
+    padding: 0 10px;
     font-size: 14px;
 }
-div.legend > div.title > b {
-    margin-left: 10px;
-    font-weight: bold;
+div.legend:not(.active):hover {
+    background: rgb(89, 122, 138);
+    cursor: pointer;
 }
-div.legend > p {
-    background: #37474f;
-    color: #cfd8dc;
-    padding: 5px;
-    font-size: 13px;
-    text-align: justify;
+div.legend.active {
+    background: #00897B;
+    color: #FFF;
+}
+div.legend > b {
+    margin-left: 10px;
+    font-weight: none;
 }
 div.legend + div.legend {
     margin-top: 10px;
@@ -511,26 +504,28 @@ div.select-project {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 1rem 1.5rem;
-    width: 70%;
+    background-color: #263238;
+    padding: 1.5rem;
+    width: 80%;
+    max-width: 900px;
     border-radius: 0.5rem;
 }
 .close-button {
-    float: right;
+    position: absolute;
+    right: 5px;
+    top: 5px;
     width: 1.5rem;
     line-height: 1.5rem;
     text-align: center;
-    cursor: pointer;
     border-radius: 0.25rem;
-    background-color: lightgray;
+    background-color: rgba(183, 28, 28, 0.466);
 }
 .close-button:hover {
-    background-color: red;
+    background-color: #F44336;
+    cursor: pointer;
 }
 .infobox {
     display: flex;
-    align-items: center;
 }
 .show-modal {
     opacity: 1;
@@ -541,20 +536,58 @@ div.select-project {
 
 .flags-legend {
     display: flex;
+    width: 230px;
+    flex-shrink: 0;
     flex-direction: column;
 }
 .flags-legend-tags {
     max-height: 500px;
-    overflow: auto;
+    overflow-y: auto;
 }
 
 .description-box {
-    max-height: 500px;
-    overflow: auto;
-    color: black;
-    max-width: 80%;
-    margin-left: 10px;
+    max-height: 480px;
+    overflow-y: auto;
+    color: #ECEFF1;
+    margin-left: 1rem;
     padding-right: 15px;
+    flex-grow: 1;
+}
+.description-box img {
+    max-width: 100%;
+}
+.description-box span {
+    background: rgba(0, 137, 123, 0.527);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.description-box b {
+    color: #FDD835;
+}
+.description-box h1 {
+    color: #00897B;
+    height: 30px;
+    font-size: 24px;
+    border-bottom: 2px solid #00897B;
+    margin-bottom: 1rem;
+}
+.description-box p {
+    text-align: justify;
+    line-height: 1.20;
+}
+.description-box p.note {
+    border-left: 3px solid #455A64;
+    padding: 5px 15px;
+    background: rgba(39, 50, 56, 0.05);
+    color: #B0BEC5;
+}
+.description-box ul {
+    margin: 1rem 0;
+    list-style: disc !important;
+}
+
+.description-box a {
+    color: #26C6DA;
 }
 
 main#network-graph {

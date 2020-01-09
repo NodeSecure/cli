@@ -1,7 +1,8 @@
+<h1>hasMinifiedCode</h1>
 <p>
     Has one or many files that has been detected as minified JavaScript code. We
     use a package that will tell us if the code is minified (in case the file as
-    a <strong>.min</strong> then we will consider the file minified by default).
+    a <b>.min</b> then we will consider the file minified by default).
 </p>
 <br />
 <p>
@@ -12,11 +13,8 @@
 <br />
 <p>Example of minified code:</p>
 <br />
-<pre><code>function cleanRange(version){const firstChar=version.charAt(0);if(firstChar==="^"||firstChar==="<"||firstChar===">"||firstChar==="="||firstChar==="~"){return version.slice(version.charAt(1)==="="?2:1)}
-   return version}</code></pre>
-<blockquote>
-    <p>
-        ⚠️ sometimes one line file are considered minified (we are working to
-        fix this in the future).
-    </p>
-</blockquote>
+<img src="https://i.imgur.com/13Mxfb2.png">
+<br />
+<p class="note">
+    ⚠️ sometimes one line file are considered minified (we are working to fix this in the future).
+</p>

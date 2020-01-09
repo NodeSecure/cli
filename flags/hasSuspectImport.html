@@ -1,28 +1,19 @@
-<br />
+<h1>hasSuspectImport</h1>
 <p>
-    This mean that AST (Abstract Syntax Tree) analysis of one of the JavaScript
+    This mean that the AST (Abstract Syntax Tree) analysis of one of the JavaScript
     code of the package has failed because the code was to complicated. For
     example if your package contains a .js file with the following content:
 </p>
 <br />
-<pre><code>const { readFileSync } = require("fs");
-const { join } = require("path");
-const myLib = require("./lib");</code></pre>
+<img src="https://i.imgur.com/nD07oQa.png">
 <br />
 <p>
-    Then the AST analysis will return <code>fs</code>, <code>path</code> and
-    <code>./lib</code> as required dependencies. The code will not be considered
+    Then the AST analysis will return <span>fs</span>, <span>path</span> and
+    <span>./lib</span> as required dependencies. The code will not be considered
     suspicious ! But if we take a malicious code:
 </p>
-<pre><code>function unhex(r) {
-   return Buffer.from(r, "hex").toString();
-}
-
-const g = Function("return this")();
-const p = g["pro" + "cess"];
-
-const evil = p["mainMod" + "ule"][unhex("72657175697265")];
-evil(unhex("68747470")).request</code></pre>
+<img src="https://i.imgur.com/tuWqIUr.png">
+<br />
 <p>
     This code require the core package http but the AST analysis is not capable
     to get it (not yet 😁). So the code will be flagged as "suspect".
