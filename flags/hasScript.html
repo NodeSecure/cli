@@ -1,3 +1,23 @@
 <p>
-    hasScript
+    The package has pre and/or post script in the
+    <strong>package.json</strong> file. These script will be executed before or
+    after the installation of a dependency (this is useful for example to build
+    native addons or similar things). However these script may be used to
+    execute malicious code on your system.
 </p>
+<ul>
+    <li>
+        <a
+            href="https://blog.npmjs.org/post/141702881055/package-install-scripts-vulnerability"
+            rel="nofollow"
+            >Package install scripts vulnerability</a
+        >
+    </li>
+    <li>
+        <a
+            href="https://snyk.io/blog/ten-npm-security-best-practices/"
+            rel="nofollow"
+            >10 npm Security Best Practices</a
+        >
+    </li>
+</ul>
