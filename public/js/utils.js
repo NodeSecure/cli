@@ -28,6 +28,38 @@ function createTooltip(icon, description) {
     return divElement;
 }
 
+function createAvatar(name, desc) {
+    const divEl = document.createElement("div");
+    divEl.classList.add("avatar");
+
+    const pElement = document.createElement("p");
+    pElement.classList.add("count");
+    pElement.appendChild(document.createTextNode(desc.count));
+    divEl.appendChild(pElement);
+
+    const aElement = document.createElement("a");
+    aElement.target = "_blank";
+    aElement.href = desc.url || "#";
+
+    const imgEl = document.createElement("img");
+    if (desc.email === null) {
+        imgEl.src = "/img/avatar-default.png";
+    }
+    else {
+        const hash = md5(desc.email);
+        imgEl.src = `https://gravatar.com/avatar/${hash}?&d=404`;
+        imgEl.onerror = () => {
+            imgEl.src = "/img/avatar-default.png";
+        };
+    }
+    imgEl.alt = name;
+
+    aElement.appendChild(imgEl);
+    divEl.appendChild(aElement);
+
+    return divEl;
+}
+
 function createLegend(icon, title) {
     const legendDivElement = document.createElement("div");
 

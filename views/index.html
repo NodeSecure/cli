@@ -17,6 +17,7 @@
 <script src="js/utils.js" defer></script>
 <script src="js/master.js" defer></script>
 <script src="libs/vis.min.js" defer></script>
+<script src="libs/md5.js" defer></script>
 <title>Node-Secure</title>
 
 <section id="stats">
@@ -37,6 +38,14 @@
                     <li>
                         <p>Packages with indirect dependencies</p>
                         <b id="indirect-dependencies">0</b>
+                    </li>
+                    <li class="column">
+                        <p>Licenses</p>
+                        <div class="stat-container" id="license-counts"></div>
+                    </li>
+                    <li class="column">
+                        <p id="stat-maintainers-title">Maintainers</p>
+                        <div class="stat-container" id="maintainers-list"></div>
                     </li>
                 </ul>
             </div>

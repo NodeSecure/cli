@@ -143,24 +143,66 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     let indirectDependenciesCount = 0;
     let totalSize = 0;
+    const licensesCount = { Unknown: 0 };
+    const authorsList = new Map();
 
-    const legendsFlagsFragment = document.createDocumentFragment();
+    function handleAuthor(author) {
+        if (author === "N/A") {
+            return;
+        }
+        let name = null;
+        let email = null;
+        let url = null;
 
-    for (const [flagName, flagDescriptor] of Object.entries(FLAGS)) {
-        legendsFlagsFragment.appendChild(createLegend(flagName, flagDescriptor.title));
+        if (typeof author === "string") {
+            const match = /^(.*)<(.*)>/g.exec(author);
+            name = match === null ? author : match[1].trim();
+            email = match === null ? null : match[2].trim();
+        }
+        else {
+            if (typeof author.name !== "string") {
+                return;
+            }
+            name = author.name;
+            email = author.email || null;
+            url = author.url || null;
+        }
+
+        if (authorsList.has(name)) {
+            authorsList.get(name).count++;
+        }
+        else {
+            authorsList.set(name, { email, url, count: 1 });
+        }
     }
 
-    flagLegendElement.appendChild(legendsFlagsFragment);
+    {
+        const legendsFlagsFragment = document.createDocumentFragment();
+        for (const [flagName, flagDescriptor] of Object.entries(FLAGS)) {
+            legendsFlagsFragment.appendChild(createLegend(flagName, flagDescriptor.title));
+        }
+        flagLegendElement.appendChild(legendsFlagsFragment);
+    }
 
     for (const [packageName, descriptor] of dataEntries) {
         const { metadata, vulnerabilities, versions } = descriptor;
 
         for (const currVersion of versions) {
             const opt = descriptor[currVersion];
-            const { id, usedBy, flags, size } = opt;
+            const { id, usedBy, flags, size, license, author } = opt;
             opt.name = packageName;
             opt.version = currVersion;
             opt.hidden = false;
+
+            if (typeof license === "string") {
+                licensesCount.Unknown++;
+            }
+            else {
+                for (const licenseName of license.uniqueLicenseIds) {
+                    licensesCount[licenseName] = Reflect.has(licensesCount, licenseName) ? ++licensesCount[licenseName] : 1;
+                }
+            }
+            handleAuthor(author);
 
             if (flags.hasIndirectDependencies) {
                 indirectDependenciesCount++;
@@ -185,6 +227,27 @@ document.addEventListener("DOMContentLoaded", async() => {
     document.getElementById("total-packages").innerHTML = dataEntries.length;
     document.getElementById("indirect-dependencies").innerHTML = indirectDependenciesCount;
     document.getElementById("total-size").innerHTML = formatBytes(totalSize);
+    {
+        const licenseFragment = document.createDocumentFragment();
+        const licensesEntries = [...Object.entries(licensesCount)].sort(([, left], [, right]) => right - left);
+
+        for (const [licenseName, licenseCount] of licensesEntries) {
+            const divEl = document.createElement("div");
+            divEl.classList.add("license-row");
+            divEl.textContent = `${licenseName} (${licenseCount})`;
+            licenseFragment.appendChild(divEl);
+        }
+        document.getElementById("license-counts").appendChild(licenseFragment);
+    }
+
+    {
+        document.getElementById("stat-maintainers-title").textContent = `${authorsList.size} Maintainers`;
+        const authorsFragment = document.createDocumentFragment();
+        for (const [name, desc] of authorsList.entries()) {
+            authorsFragment.appendChild(createAvatar(name, desc));
+        }
+        document.getElementById("maintainers-list").appendChild(authorsFragment);
+    }
 
     // Create required DataSet for the Network Graph
     const nodes = new vis.DataSet(nodesDataArr);
@@ -296,7 +359,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             }).format(new Date(metadata.lastUpdateAt));
 
             const licenses = selectedNode.license === "unkown license" ?
-                "unkown license" : selectedNode.license.uniqueLicenseIds.join(",");
+                "unkown license" : selectedNode.license.uniqueLicenseIds.join(", ");
             const fields = clone.querySelector(".fields");
             const fieldsFragment = document.createDocumentFragment();
             fieldsFragment.appendChild(createLiField("Author", fAuthor));

@@ -148,8 +148,15 @@ section#stats div.hiddenarea > div.global-stats {
 }
 section#stats div.hiddenarea > div.global-stats ul li {
     display: flex;
+}
+section#stats div.hiddenarea > div.global-stats ul li:not(.column) {
     height: 34px;
     align-items: center;
+}
+
+section#stats div.hiddenarea > div.global-stats ul li.column {
+    padding: 10px 0;
+    flex-direction: column;
 }
 section#stats div.hiddenarea > div.global-stats ul li + li {
     border-top: 1px solid #37474f;
@@ -161,6 +168,54 @@ section#stats div.hiddenarea > div.global-stats ul li b {
     margin-left: auto;
     color: #ffeb3b;
 }
+section#stats div.hiddenarea > div.global-stats ul li div.stat-container {
+    width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -5px;
+    margin-top: 5px;
+}
+    section#stats div.hiddenarea > div.global-stats ul li div.stat-container .license-row {
+        flex-basis: 100px;
+        padding: 5px;
+        border-radius: 2px;
+        background: #37474F;
+        color: #FFF;
+        margin-left: 5px;
+        margin-top: 5px;
+        flex-grow: 1;
+        text-align: center;
+        font-size: 14px;
+    }
+    section#stats div.hiddenarea > div.global-stats ul li div.stat-container .avatar {
+        width: 50px;
+        height: 50px;
+        margin-left: 5px;
+        margin-top: 5px;
+        overflow: hidden;
+        border-radius: 2px;
+        position: relative;
+    }
+        section#stats div.hiddenarea > div.global-stats ul li div.stat-container .avatar img {
+            width: 50px;
+            height: 50px;
+        }
+        section#stats div.hiddenarea > div.global-stats ul li div.stat-container .avatar p.count {
+            position: absolute;
+            right: 2px;
+            bottom: 2px;
+            width: 16px;
+            height: 16px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #FFF;
+            background: rgba(39, 50, 56, 0.7);
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
 div.legend {
     display: flex;
