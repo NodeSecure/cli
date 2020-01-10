@@ -10,11 +10,12 @@ const { writeFileSync } = require("fs");
 const { join, extname } = require("path");
 
 // Require Third-party Dependencies
-const { yellow, grey, white, green, cyan } = require("kleur");
+const { yellow, grey, white, green, cyan, red } = require("kleur");
 const sade = require("sade");
 const pacote = require("pacote");
 const Spinner = require("@slimio/async-cli-spinner");
 const filenamify = require("filenamify");
+const semver = require("semver");
 const ms = require("ms");
 
 // Require Internal Dependencies
@@ -33,6 +34,12 @@ const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: proce
 // Process script arguments
 const prog = sade("nsecure").version("0.3.0");
 console.log(grey().bold(`\n > Executing node-secure at: ${yellow().bold(process.cwd())}\n`));
+
+const currNodeSemVer = process.versions.node;
+if (semver.lt(currNodeSemVer, "12.10.0")) {
+    console.log(red().bold(" [!] node-secure require at least Node.js v12.10.0 to work! Please upgrade your Node.js version.\n"));
+    process.exit(0);
+}
 
 function logAndWrite(payload, output = "nsecure-result") {
     if (payload === null) {
