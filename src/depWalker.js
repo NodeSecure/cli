@@ -215,9 +215,11 @@ async function processPackageTarball(name, version, options) {
                 .filter((name) => !NODE_CORE_LIBS.has(name))
                 .filter((name) => !devDepsInLocalPackage.includes(name));
 
-            const depDiff = difference(depsInLocalPackage, thirdPartyDependencies);
-            ref.flags.hasMissingOrUnusedDependency = depDiff.length > 0;
-            ref.composition.unusedOrMissing.push(...depDiff);
+            const unusedDeps = difference(depsInLocalPackage, thirdPartyDependencies);
+            const missingDeps = difference(thirdPartyDependencies, depsInLocalPackage);
+            ref.flags.hasMissingOrUnusedDependency = unusedDeps.length > 0 || missingDeps.length > 0;
+            ref.composition.unused.push(...unusedDeps);
+            ref.composition.missing.push(...missingDeps);
         }
 
         ref.composition.required.push(...required);

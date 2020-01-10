@@ -84,7 +84,8 @@ declare namespace NodeSecure {
                 minified: string[];
                 required: string[];
                 required_builtin: string[];
-                unusedOrMissing: string[];
+                unused: string[];
+                missing: string[];
                 suspectFiles?: string[];
             };
             license: string | License[];

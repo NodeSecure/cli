@@ -83,7 +83,8 @@ class Dependency {
                     extensions: [],
                     files: [],
                     minified: [],
-                    unusedOrMissing: [],
+                    unused: [],
+                    missing: [],
                     required: [],
                     required_builtin: []
                 },

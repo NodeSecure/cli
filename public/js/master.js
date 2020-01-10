@@ -147,6 +147,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     let indirectDependenciesCount = 0;
     let totalSize = 0;
     const licensesCount = { Unknown: 0 };
+    const extensionsCount = {};
     const authorsList = new Map();
 
     function handleAuthor(author) {
@@ -192,10 +193,17 @@ document.addEventListener("DOMContentLoaded", async() => {
 
         for (const currVersion of versions) {
             const opt = descriptor[currVersion];
-            const { id, usedBy, flags, size, license, author } = opt;
+            const { id, usedBy, flags, size, license, author, composition } = opt;
             opt.name = packageName;
             opt.version = currVersion;
             opt.hidden = false;
+
+            for (const extName of composition.extensions) {
+                if (extName === "") {
+                    continue;
+                }
+                extensionsCount[extName] = Reflect.has(extensionsCount, extName) ? ++extensionsCount[extName] : 1;
+            }
 
             if (typeof license === "string") {
                 licensesCount.Unknown++;
@@ -235,12 +243,30 @@ document.addEventListener("DOMContentLoaded", async() => {
         const licensesEntries = [...Object.entries(licensesCount)].sort(([, left], [, right]) => right - left);
 
         for (const [licenseName, licenseCount] of licensesEntries) {
+            if (licenseCount === 0) {
+                continue;
+            }
             const divEl = document.createElement("div");
-            divEl.classList.add("license-row");
+            divEl.classList.add("license");
+            divEl.classList.add("stat-case");
             divEl.textContent = `${licenseName} (${licenseCount})`;
             licenseFragment.appendChild(divEl);
         }
         document.getElementById("license-counts").appendChild(licenseFragment);
+    }
+
+    {
+        const extFragment = document.createDocumentFragment();
+        const extEntries = [...Object.entries(extensionsCount)].sort(([, left], [, right]) => right - left);
+
+        for (const [extName, extCount] of extEntries) {
+            const divEl = document.createElement("div");
+            divEl.classList.add("ext");
+            divEl.classList.add("stat-case");
+            divEl.textContent = `${extName} (${extCount})`;
+            extFragment.appendChild(divEl);
+        }
+        document.getElementById("extensions-counts").appendChild(extFragment);
     }
 
     {
@@ -400,7 +426,8 @@ document.addEventListener("DOMContentLoaded", async() => {
                 renderItemsList(clone.getElementById("nodedep"), composition.required_builtin);
                 renderItemsList(clone.getElementById("extensions"), composition.extensions);
                 renderItemsList(clone.getElementById("minifiedfiles"), composition.minified);
-                renderItemsList(clone.getElementById("unusedormissing"), composition.unusedOrMissing);
+                renderItemsList(clone.getElementById("unuseddep"), composition.unused);
+                renderItemsList(clone.getElementById("missingdep"), composition.missing);
                 renderItemsList(clone.getElementById("requireddep"), thirdParty);
                 renderItemsList(clone.getElementById("internaldep"), internal);
             }

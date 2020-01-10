@@ -176,8 +176,14 @@ section#stats div.hiddenarea > div.global-stats ul li div.stat-container {
     margin-left: -5px;
     margin-top: 5px;
 }
-    section#stats div.hiddenarea > div.global-stats ul li div.stat-container .license-row {
+    section#stats div.hiddenarea > div.global-stats ul li div.stat-container .ext {
+        flex-basis: 70px;
+    }
+    section#stats div.hiddenarea > div.global-stats ul li div.stat-container .license {
         flex-basis: 100px;
+    }
+
+    section#stats div.hiddenarea > div.global-stats ul li div.stat-container div.stat-case {
         padding: 5px;
         border-radius: 2px;
         background: #37474F;

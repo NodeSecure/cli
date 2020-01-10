@@ -40,6 +40,10 @@
                         <b id="indirect-dependencies">0</b>
                     </li>
                     <li class="column">
+                        <p>Extensions</p>
+                        <div class="stat-container" id="extensions-counts"></div>
+                    </li>
+                    <li class="column">
                         <p>Licenses</p>
                         <div class="stat-container" id="license-counts"></div>
                     </li>
@@ -120,8 +124,11 @@
     <p class="head-title">files extensions</p>
     <div class="list-item" id="extensions"></div>
 
-    <p class="head-title">unused OR missing dependencies</p>
-    <div class="list-item line" id="unusedormissing"></div>
+    <p class="head-title">unused dependencies</p>
+    <div class="list-item line" id="unuseddep"></div>
+
+    <p class="head-title">missing dependencies</p>
+    <div class="list-item line" id="missingdep"></div>
 
     <p class="head-title">minified files</p>
     <div class="list-item line" id="minifiedfiles"></div>

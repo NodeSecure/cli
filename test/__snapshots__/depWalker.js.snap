@@ -15,11 +15,12 @@ Object {
           ".ts",
         ],
         "minified": Array [],
+        "missing": Array [],
         "required": Array [
           "./src/utils",
         ],
         "required_builtin": Array [],
-        "unusedOrMissing": Array [],
+        "unused": Array [],
       },
       "description": "SlimIO is (JavaScript Primitives &amp; Objects type checker)",
       "flags": Object {
