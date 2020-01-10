@@ -162,5 +162,11 @@ The package original author/owner has been updated. This may indicate ownership 
 Vulnerabilities has been detected for the given package **version**. We are fetching vulnerabilities from the official [Node.js Security-WG repository](https://github.com/nodejs/security-wg)
 </details>
 
+<details><summary>👀 hasMissingOrUnusedDependency</summary>
+<br />
+
+The package has a missing dependency (in package.json) or a dependency that is not used in the code (this may happen if the AST Analysis fail!)
+</details>
+
 ## Notes
 In the JSON payload some flags are linked to a given package version while other are linked to the package in general. For example **hasManyPublishers** and **hasChangedAuthor** are package flags.
