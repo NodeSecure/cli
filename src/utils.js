@@ -211,8 +211,18 @@ function loadNsecureCache(defaultPayload = {}) {
     return payload;
 }
 
+function writeNsecureCache() {
+    const filePath = join(os.tmpdir(), "nsecure-cache.json");
+
+    const payload = {
+        lastUpdated: Date.now()
+    };
+    writeFileSync(filePath, JSON.stringify(payload));
+}
+
 module.exports = Object.freeze({
     loadNsecureCache,
+    writeNsecureCache,
     getFilesRecursive,
     getTarballComposition,
     mergeDependencies,

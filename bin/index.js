@@ -20,7 +20,7 @@ const ms = require("ms");
 
 // Require Internal Dependencies
 const startHTTPServer = require("../src/httpServer.js");
-const { getRegistryURL, loadNsecureCache } = require("../src/utils");
+const { getRegistryURL, loadNsecureCache, writeNsecureCache } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
 const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
 const { cwd } = require("../index");
@@ -59,6 +59,7 @@ async function checkHydrateDB() {
 
     if (ts > ONE_DAY) {
         await hydrateCmd();
+        writeNsecureCache();
     }
 }
 
