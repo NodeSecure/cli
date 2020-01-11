@@ -211,6 +211,7 @@ async function processPackageTarball(name, version, options) {
 
         if (depsInLocalPackage !== null) {
             const thirdPartyDependencies = required
+                .map((name) => (depsInLocalPackage.includes(name) ? name : name.split("/", 1)[0]))
                 .filter((name) => !name.startsWith("."))
                 .filter((name) => !NODE_CORE_LIBS.has(name))
                 .filter((name) => !devDepsInLocalPackage.includes(name));
