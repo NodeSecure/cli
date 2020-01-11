@@ -32,7 +32,7 @@ const ONE_DAY = 3600000 * 24;
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
 // Process script arguments
-const prog = sade("nsecure").version("0.3.0");
+const prog = sade("nsecure").version("0.4.0");
 console.log(grey().bold(`\n > Executing node-secure at: ${yellow().bold(process.cwd())}\n`));
 
 const currNodeSemVer = process.versions.node;
