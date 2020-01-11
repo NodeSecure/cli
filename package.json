@@ -19,6 +19,7 @@
     "public",
     "src",
     "views",
+    "flags",
     "index.js",
     "index.d.ts"
   ],
