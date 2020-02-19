@@ -69,7 +69,7 @@
     "@slimio/async-cli-spinner": "^0.5.1",
     "@slimio/github": "^0.5.0",
     "@slimio/is": "^1.5.1",
-    "@slimio/lock": "^0.3.0",
+    "@slimio/lock": "^0.4.0",
     "@slimio/npm-registry": "^0.5.0",
     "combine-async-iterators": "^1.1.2",
     "dotenv": "^8.2.0",
