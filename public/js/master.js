@@ -507,7 +507,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         }
     }
     function toggleModal() {
-        modal.classList.toggle("show-modal");
+        modal.classList.toggle("show");
     }
 
     function onClickOutsideModal(event) {
