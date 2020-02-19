@@ -89,7 +89,6 @@ async function hydrateNodeSecurePayload(flattenedDeps) {
         }
     }
     catch (err) {
-        console.log(err);
         // Ignore
     }
 }
