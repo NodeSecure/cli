@@ -73,7 +73,7 @@
     "@slimio/npm-registry": "^0.5.0",
     "combine-async-iterators": "^1.1.2",
     "dotenv": "^8.2.0",
-    "estree-walker": "^1.0.0",
+    "estree-walker": "^2.0.1",
     "filenamify": "^4.1.0",
     "get-port": "^5.1.0",
     "httpie": "^1.1.2",
