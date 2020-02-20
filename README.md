@@ -6,16 +6,14 @@
 ![dep](https://img.shields.io/david/ES-Community/node-secure?style=flat-square)
 ![size](https://img.shields.io/github/languages/code-size/ES-Community/node-secure?style=flat-square)
 
-Node.js security CLI. The goal of the project is to a design a CLI (and a API) that will fetch and deeply analyze the dependency tree of a given **npm** package (or a local project) and output a **.json file** that will contains all metadata and flags about each packages.
+[Node.js](https://nodejs.org/en/) security Command Line Interface. The goal of the project is to a design a CLI/API that will fetch and deeply analyze the dependency tree of a given **npm** package (or a local project with a **package.json**) and output a **.json file** that will contains all metadata and flags about each packages.
 
-The CLI will allow to load this .json to draw a Network of all dependencies in a webpage (example below).
+The CLI allow to load the JSON into a Webpage that will draw a Network (with [vis.js](https://visjs.org/)) of all dependencies in a webpage (example in the screenshot below).
 
-> Note: The TypeScript definition of the .json file can be found in the root file index.d.ts
-
-- [Google Drive Documentation](https://docs.google.com/document/d/1853Uwup9mityAYqAOnen1KSqSA6hlBgpKU0u0ygGY4Y/edit?usp=sharing)
+- [NodeSecure G.Drive Design document](https://docs.google.com/document/d/1853Uwup9mityAYqAOnen1KSqSA6hlBgpKU0u0ygGY4Y/edit?usp=sharing)
 
 <p align="center">
-<img src="https://i.imgur.com/eQhxa5S.png">
+<img src="https://i.imgur.com/w9xynjJ.png">
 </p>
 
 ## Requirements
@@ -37,6 +35,13 @@ $ npm ci
 $ npm link
 ```
 
+Then the **nsecure** binary will be available in your terminal. Give a try on [express](http://expressjs.com/).
+```bash
+$ nsecure auto express
+```
+
+> ⚠️ Setup an npm token to avoid hiting the maximum request limit on the npm registry.
+
 ## Usage example
 
 To show the complete list of commands
@@ -47,10 +52,10 @@ $ nsecure --help
 ---
 
 ```bash
-# Run analysis on the current working dir
+# Run an analysis on the current working dir (must have a package.json file).
 $ nsecure cwd
 
-# Run analysis for a given 'npm' package (must be in the npm registry).
+# Run an analysis for a given 'npm' package (must be in the npm registry).
 $ nsecure from @sindresorhus/is
 ```
 
@@ -65,7 +70,7 @@ The `auto` command can be used to chain `cwd/from` and `open` commands automatic
 ```bash
 $ nsecure auto jest
 
-# if no package is given to the auto command, then it will run the cwd command.
+# if no package is given to the auto command then it will run the cwd command instead of from.
 $ nsecure auto
 ```
 
@@ -95,7 +100,7 @@ $ npm config set "http://your-registry/"
 ```
 
 ## API
-Use nsecure as API package to fetch and work with the generated JSON. The following example demonstrate how to retrieve the Payload for mocha, cacache and is-wsl packages. It's possible to use the **cwd** method if you want to achieve similar work on a local project.
+Use nsecure as an API package to fetch and work with the generated JSON. The following example demonstrate how to retrieve the Payload for mocha, cacache and is-wsl packages. It's possible to use the **cwd** method if you want to achieve similar work on a local project.
 
 ```js
 const { from } = require("nsecure");
@@ -111,19 +116,19 @@ async function main() {
 
     const toWritePromise = [];
     for (let i = 0; i < toFetch.length; i++) {
-        const fileName = `${toFetch[i]}.json`;
         const data = JSON.stringify(payloads[i], null, 2);
-
-        toWritePromise.push(writeFile(fileName, data));
+        toWritePromise.push(writeFile(`${toFetch[i]}.json`, data));
     }
     await Promise.all(toWritePromise);
 }
 main().catch(console.error);
 ```
 
+The SlimIO [Security project](https://github.com/SlimIO/Security) use nsecure with the API to analyze packages and repositories of a given github organization (or user).
+
 ## Flags legends
 
-Flags and emojis legends are documented [here](./FLAGS.md)
+Flags and emojis legends are documented [here](./FLAGS.md).
 
 ## License
 MIT
