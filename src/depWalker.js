@@ -122,7 +122,7 @@ async function* searchDeepDependencies(packageName, gitURL, options = {}) {
                 exclude.get(cleanName).add(current.fullName);
             }
             else {
-                exclude.set(cleanName, new Set());
+                exclude.set(cleanName, new Set([current.fullName]));
                 yield* searchDeepDependencies(fullName, void 0, config);
             }
         }
@@ -369,7 +369,7 @@ async function depWalker(manifest, options = Object.create(null)) {
 
     const spinner = new Spinner({
         spinner: "dots",
-        verbose
+        verbose: false
     }).start(white().bold("Fetching all dependencies ..."));
 
     /** @type {Map<string, NodeSecure.Payload>} */
@@ -424,21 +424,18 @@ async function depWalker(manifest, options = Object.create(null)) {
     // We do this because it "seem" impossible to link all dependencies in the first walk.
     // Because we are dealing with package only one time it may happen sometimes.
     for (const [packageName, descriptor] of flattenedDeps) {
-        const { metadata, ...versions } = descriptor;
-
-        for (const verStr of Object.keys(versions)) {
+        for (const verStr of descriptor.versions) {
             const fullName = `${packageName}@${verStr}`;
             const usedDeps = exclude.get(fullName) || new Set();
             if (usedDeps.size === 0) {
                 continue;
             }
 
-            const usedBy = {};
-            for (const dep of usedDeps) {
-                const [name, version] = dep.split(" ");
+            const usedBy = Object.create(null);
+            for (const [name, version] of [...usedDeps].map((name) => name.split(" "))) {
                 usedBy[name] = version;
             }
-            Object.assign(versions[verStr].usedBy, usedBy);
+            Object.assign(descriptor[verStr].usedBy, usedBy);
         }
     }
 
