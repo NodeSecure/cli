@@ -7,17 +7,7 @@ const cloneDeep = require("lodash.clonedeep");
 const SYM_PARENT = Symbol("symDependencyParent");
 const SYM_FLAGS = Symbol("symDependencyFlags");
 
-/**
- * @class Dependency
- */
 class Dependency {
-    /**
-     * @class
-     * @memberof Dependency#
-     * @param {!string} name Dependency name
-     * @param {!string} version Dependency version
-     * @param {Dependency | null} [parent] Dependency parent
-     */
     constructor(name, version, parent = null) {
         this.name = name;
         this.version = version;
@@ -47,12 +37,6 @@ class Dependency {
         return `${this.name} ${this.version}`;
     }
 
-    /**
-     * @function isGit
-     * @memberof Dependency#
-     * @param {string} [url]
-     * @returns {Dependency}
-     */
     isGit(url) {
         this[SYM_FLAGS].isGit = true;
         if (typeof url === "string") {
@@ -62,12 +46,6 @@ class Dependency {
         return this;
     }
 
-    /**
-     * @function flatten
-     * @memberof Dependency#
-     * @param {number} [customId] customid
-     * @returns {void}
-     */
     flatten(customId) {
         const parent = this.parent;
 
@@ -107,11 +85,6 @@ class Dependency {
         };
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {Dependency} parent
-     * @returns {Dependency}
-     */
     get parent() {
         return this[SYM_PARENT] === null ? null : cloneDeep(this[SYM_PARENT]);
     }
@@ -125,20 +98,10 @@ class Dependency {
         }
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {object} flags
-     * @returns {object}
-     */
     get flags() {
         return cloneDeep(this[SYM_FLAGS]);
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} hasMissingOrUnusedDependency
-     * @returns {boolean}
-     */
     get hasMissingOrUnusedDependency() {
         return this[SYM_FLAGS].hasMissingOrUnusedDependency;
     }
@@ -150,11 +113,6 @@ class Dependency {
         this[SYM_FLAGS].hasMissingOrUnusedDependency = value;
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} hasManifest
-     * @returns {boolean}
-     */
     get hasManifest() {
         return this[SYM_FLAGS].hasManifest;
     }
@@ -166,11 +124,6 @@ class Dependency {
         this[SYM_FLAGS].hasManifest = value;
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} isDeprecated
-     * @returns {boolean}
-     */
     get isDeprecated() {
         return this[SYM_FLAGS].isDeprecated;
     }
@@ -182,11 +135,6 @@ class Dependency {
         this[SYM_FLAGS].isDeprecated = value;
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} hasSuspectImport
-     * @returns {boolean}
-     */
     get hasSuspectImport() {
         return this[SYM_FLAGS].hasSuspectImport;
     }
@@ -198,11 +146,6 @@ class Dependency {
         this[SYM_FLAGS].hasSuspectImport = value;
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} hasLicense
-     * @returns {boolean}
-     */
     get hasLicense() {
         return this[SYM_FLAGS].hasLicense;
     }
@@ -214,11 +157,6 @@ class Dependency {
         this[SYM_FLAGS].hasLicense = value;
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} hasIndirectDependencies
-     * @returns {boolean}
-     */
     get hasIndirectDependencies() {
         return this[SYM_FLAGS].hasIndirectDependencies;
     }
@@ -230,11 +168,6 @@ class Dependency {
         this[SYM_FLAGS].hasIndirectDependencies = value;
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} hasMinifiedCode
-     * @returns {boolean}
-     */
     get hasMinifiedCode() {
         return this[SYM_FLAGS].hasMinifiedCode;
     }
@@ -246,11 +179,6 @@ class Dependency {
         this[SYM_FLAGS].hasMinifiedCode = value;
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} hasCustomResolver
-     * @returns {boolean}
-     */
     get hasCustomResolver() {
         return this[SYM_FLAGS].hasCustomResolver;
     }
@@ -262,11 +190,6 @@ class Dependency {
         this[SYM_FLAGS].hasCustomResolver = value;
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} hasScript
-     * @returns {boolean}
-     */
     get hasScript() {
         return this[SYM_FLAGS].hasScript;
     }
@@ -278,11 +201,6 @@ class Dependency {
         this[SYM_FLAGS].hasScript = value;
     }
 
-    /**
-     * @memberof Dependency#
-     * @member {boolean} hasDependencies
-     * @returns {boolean}
-     */
     get hasDependencies() {
         return this[SYM_FLAGS].hasDependencies;
     }
