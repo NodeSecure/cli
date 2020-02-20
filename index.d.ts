@@ -57,6 +57,29 @@ declare namespace NodeSecure {
         flags: Flags;
     }
 
+    interface Vulnerability {
+        id: number;
+        created_at: string;
+        updated_at: string;
+        title: string;
+        author: {
+            name: string;
+            website: string | null;
+            username: string | null;
+        };
+        module_name: string;
+        publish_data: string;
+        cves: string[];
+        vulnerable_versions: string;
+        patched_versions: string;
+        overview: string;
+        recommendation: string;
+        references: string[];
+        cvss_vector: string;
+        cvss_score: number;
+        coordinating_vendor: string;
+    }
+
     interface VersionDescriptor {
         metadata: {
             publishedCount: number;
@@ -69,7 +92,7 @@ declare namespace NodeSecure {
             publishers: Publisher[];
         };
         versions: string[];
-        vulnerabilities: any[];
+        vulnerabilities: Vulnerability[];
         [version: string]: {
             id: number;
             usedBy: {
@@ -103,8 +126,8 @@ declare namespace NodeSecure {
         maxDepth?: number;
     }
 
-    declare function cwd(path: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
-    declare function from(packageName: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
+    export function cwd(path: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
+    export function from(packageName: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
 }
 
 export = NodeSecure;
