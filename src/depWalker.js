@@ -40,13 +40,7 @@ const tarballLocker = new Lock({ maxConcurrent: 5 });
 const npmReg = new Registry(REGISTRY_DEFAULT_ADDR);
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
-/**
- * @async
- * @function getExpectedSemVer
- * @param {!string} range SemVer range
- * @returns {string}
- */
-async function getExpectedSemVer(range) {
+async function getExpectedSemVer(depName, range) {
     try {
         const { versions, "dist-tags": { latest } } = await pacote.packument(depName, {
             registry: REGISTRY_DEFAULT_ADDR,
@@ -54,17 +48,17 @@ async function getExpectedSemVer(range) {
         });
         const currVersion = semver.maxSatisfying(Object.keys(versions), range);
 
-        return currVersion === null ? latest : currVersion;
+        return [currVersion === null ? latest : currVersion, semver.eq(latest, currVersion)];
     }
     catch (err) {
-        return cleanRange(range);
+        return [cleanRange(range), true];
     }
 }
 
 async function getCleanDependencyName([depName, range]) {
-    const depVer = await getExpectedSemVer(range);
+    const [depVer, isLatest] = await getExpectedSemVer(depName, range);
 
-    return [`${depName}@${range}`, `${depName}@${depVer}`];
+    return [`${depName}@${range}`, `${depName}@${depVer}`, isLatest];
 }
 
 /**
@@ -87,6 +81,7 @@ async function getCleanDependencyName([depName, range]) {
 async function* searchDeepDependencies(packageName, gitURL, options = {}) {
     const isGit = typeof gitURL === "string";
     const { exclude = new Map(), currDepth = 0, parent, maxDepth = 4 } = options;
+    parent.dependencyCount++;
 
     const { name, version, deprecated, ...pkg } = await pacote.manifest(isGit ? gitURL : packageName, {
         ...token,
@@ -117,7 +112,11 @@ async function* searchDeepDependencies(packageName, gitURL, options = {}) {
         }
 
         const depsNames = await Promise.all(iter.map(dependencies.entries(), getCleanDependencyName));
-        for (const [fullName, cleanName] of depsNames) {
+        for (const [fullName, cleanName, isLatest] of depsNames) {
+            if (!isLatest) {
+                current.hasOutdatedDependency = true;
+            }
+
             if (exclude.has(cleanName)) {
                 exclude.get(cleanName).add(current.fullName);
             }
@@ -261,6 +260,11 @@ async function searchPackageAuthors(name, ref) {
         const pkg = await npmReg.package(name);
         ref.publishedCount = pkg.versions.length;
         ref.lastUpdateAt = pkg.publishedAt(pkg.lastVersion);
+        {
+            const oneYearFromToday = new Date();
+            oneYearFromToday.setFullYear(oneYearFromToday.getFullYear() - 1);
+            ref.hasReceivedUpdateInOneYear = !(oneYearFromToday > ref.lastUpdateAt);
+        }
         ref.lastVersion = pkg.lastVersion;
         ref.homepage = pkg.homepage || "";
 
@@ -339,16 +343,20 @@ async function* getRootDependencies(manifest, options = Object.create(null)) {
     for await (const dep of combineAsyncIterators(...iterators)) {
         yield dep;
     }
-    yield parent;
 
     // Add root dependencies to the exclude Map (because the parent is not handled by searchDeepDependencies)
     // if we skip this the code will fail to re-link properly dependencies in the following steps
     const depsName = await Promise.all(iter.map(dependencies.entries(), getCleanDependencyName));
-    for (const [, fullRange] of depsName) {
+    for (const [, fullRange, isLatest] of depsName) {
+        if (!isLatest) {
+            parent.hasOutdatedDependency = true;
+        }
         if (exclude.has(fullRange)) {
             exclude.get(fullRange).add(parent.fullName);
         }
     }
+
+    yield parent;
 }
 
 /**

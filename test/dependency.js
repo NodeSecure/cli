@@ -23,7 +23,7 @@ test("Dependency class should act as expected by assertions", () => {
     expect(dep.hasScript).toStrictEqual(false);
     expect(dep.hasDependencies).toStrictEqual(false);
     expect(dep.hasIndirectDependencies).toStrictEqual(false);
-    expect(Reflect.ownKeys(dep)).toHaveLength(5);
+    expect(Reflect.ownKeys(dep)).toHaveLength(6);
 
     const flagOne = dep.flags;
     const flagTwo = dep.flags;

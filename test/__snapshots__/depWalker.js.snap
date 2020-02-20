@@ -33,6 +33,7 @@ Object {
         "hasMinifiedCode": false,
         "hasMissingOrUnusedDependency": false,
         "hasMultipleLicenses": false,
+        "hasOutdatedDependency": false,
         "hasScript": false,
         "hasSuspectImport": false,
         "isDeprecated": false,
@@ -83,8 +84,10 @@ Object {
     "metadata": Object {
       "author": "SlimIO",
       "authors": Array [],
+      "dependencyCount": 0,
       "hasChangedAuthor": false,
       "hasManyPublishers": false,
+      "hasReceivedUpdateInOneYear": true,
       "homepage": "https://github.com/SlimIO/is#readme",
       "lastUpdateAt": "2019-06-11T06:41:41.590Z",
       "lastVersion": "1.5.1",

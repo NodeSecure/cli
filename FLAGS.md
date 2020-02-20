@@ -168,5 +168,12 @@ Vulnerabilities has been detected for the given package **version**. We are fetc
 The package has a missing dependency (in package.json) or a dependency that is not used in the code (this may happen if the AST Analysis fail!)
 </details>
 
+<details><summary>💀 isDead</summary>
+<br />
+
+The dependency (package) has not received update from at least one year and has at least one dependency that need to be updated. It probably
+means it's dangerous to use (or continue to) because the author doesn't seem to update the package anymore (even worst if you want him to implement a new version / security patch).
+</details>
+
 ## Notes
 In the JSON payload some flags are linked to a given package version while other are linked to the package in general. For example **hasManyPublishers** and **hasChangedAuthor** are package flags.

@@ -12,6 +12,8 @@ class Dependency {
         this.name = name;
         this.version = version;
         this.gitUrl = null;
+        this.dependencyCount = 0;
+
         const flags = {
             isGit: false,
             hasManifest: true,
@@ -25,6 +27,7 @@ class Dependency {
             hasDependencies: false,
             hasExternalCapacity: false,
             hasMissingOrUnusedDependency: false,
+            hasOutdatedDependency: false,
             hasScript: false
         };
         Object.preventExtensions(flags);
@@ -72,11 +75,13 @@ class Dependency {
             versions: [this.version],
             vulnerabilities: [],
             metadata: {
+                dependencyCount: this.dependencyCount,
                 publishedCount: 0,
                 lastUpdateAt: null,
                 lastVersion: null,
                 hasChangedAuthor: false,
                 hasManyPublishers: false,
+                hasReceivedUpdateInOneYear: true,
                 homepage: "",
                 author: "N/A",
                 publishers: [],
@@ -111,6 +116,17 @@ class Dependency {
             throw new TypeError("value must be typeof boolean");
         }
         this[SYM_FLAGS].hasMissingOrUnusedDependency = value;
+    }
+
+    get hasOutdatedDependency() {
+        return this[SYM_FLAGS].hasOutdatedDependency;
+    }
+
+    set hasOutdatedDependency(value) {
+        if (typeof value !== "boolean") {
+            throw new TypeError("value must be typeof boolean");
+        }
+        this[SYM_FLAGS].hasOutdatedDependency = value;
     }
 
     get hasManifest() {

@@ -37,6 +37,7 @@ declare namespace NodeSecure {
     interface Flags {
         isGit: boolean;
         hasManifest: boolean;
+        hasOutdatedDependency: boolean;
         isDeprecated: boolean;
         hasSuspectImport: boolean;
         hasLicense: boolean;
@@ -82,11 +83,13 @@ declare namespace NodeSecure {
 
     interface VersionDescriptor {
         metadata: {
+            dependencyCount: number;
             publishedCount: number;
             lastUpdateAt: number;
             lastVersion: number;
             hasChangedAuthor: boolean;
             hasManyPublishers: boolean;
+            hasReceivedUpdateInOneYear: boolean;
             author: 'N/A' | string;
             authors: Owner[];
             publishers: Publisher[];

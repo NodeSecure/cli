@@ -104,6 +104,9 @@ function getFlags(flags, metadata, vulnerabilities = []) {
     if (flags.hasMissingOrUnusedDependency) {
         flagList.push("👀");
     }
+    if (!metadata.hasReceivedUpdateInOneYear && flags.hasOutdatedDependency) {
+        flagList.push("💀");
+    }
     if (metadata.hasManyPublishers) {
         flagList.push("💕");
     }
