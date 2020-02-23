@@ -59,6 +59,32 @@
             overflow-y: auto;
         }
 
+div.legend {
+    display: flex;
+    border-radius: 2px;
+    box-sizing: border-box;
+    height: 28px;
+    background: #455A64;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 14px;
+}
+div.legend:not(.active):hover {
+    background: rgb(89, 122, 138);
+    cursor: pointer;
+}
+div.legend.active {
+    background: #00897B;
+    color: #FFF;
+}
+div.legend > b {
+    margin-left: 10px;
+    font-weight: none;
+}
+div.legend + div.legend {
+    margin-top: 10px;
+}
+
 .flags-description-container {
     max-height: 480px;
     overflow-y: auto;

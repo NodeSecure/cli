@@ -1,0 +1,84 @@
+div.search-bar-container {
+    border-radius: 2px;
+    background: #263238;
+    display: flex;
+    position: relative;
+    box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.5);
+    margin-right: 10px;
+    display: flex;
+    box-sizing: border-box;
+}
+    div.search-bar-container > input {
+        width: 200px;
+        background: none;
+        border: none;
+        outline: none;
+        padding: 0 10px;
+        color: #EEEEEE;
+        font-family: "Roboto";
+    }
+    div.search-bar-container > input::placeholder {
+        color: #BDBDBD;
+    }
+    /* div.search-bar-container > input:focus ~ div.search-result-background {
+        display: flex;
+    } */
+    div.search-bar-container > i {
+        width: 35px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+div.search-result-background {
+    width: 300px;
+    position: absolute;
+    flex-direction: column;
+    top: 40px;
+    right: 0;
+    display: none;
+    margin-top: 10px;
+    background: #263238ce;
+    border-radius: 2px;
+    box-sizing: border-box;
+    padding: 7px;
+}
+div.search-result-background.show {
+    display: flex;
+}
+
+    div.search-result-background > div.search-result-container {
+        max-height: 70vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    div.search-result-container .package {
+        background: #1e2529;
+        height: 30px;
+        align-items: center;
+        border-radius: 2px;
+        padding: 0 10px;
+        display: flex;
+        flex-shrink: 0;
+        text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
+        font-size: 15px;
+    }
+        div.search-result-container .package:hover {
+            color: #E1F5FE;
+            background: #1976D2;
+            cursor: pointer;
+        }
+    div.search-result-container .package > b {
+        color: #ffeb3b;
+        font-weight: bold;
+        margin-left: auto;
+    }
+
+    div.search-result-container .package.hide {
+        display: none;
+    }
+    div.search-result-container .package + .package {
+        margin-top: 3px;
+    }

@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="libs/vis.min.css" />
 <link rel="stylesheet" href="css/reset.css" />
 <link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/searchbar.css" />
 <link rel="stylesheet" href="css/popup.css" />
 <link rel="stylesheet" href="css/fontello.css" />
 <link
@@ -22,8 +23,15 @@
 <title>Node-Secure</title>
 
 <section id="stats">
+    <div class="search-bar-container">
+        <input type="text" placeholder="Search" id="search-bar-input"></input>
+        <i class="icon-search"></i>
+        <div class="search-result-background">
+            <div class="search-result-container" id="package-list"></div>
+        </div>
+    </div>
     <div class="btn">
-        <i class="icon-chart-pie"></i>
+        <i class="icon-chart-pie" style="margin-bottom: 2px;"></i>
         <p>Global Stats</p>
         <div class="hiddenarea">
             <div class="global-stats">
@@ -55,18 +63,6 @@
                 </ul>
             </div>
         </div>
-    </div>
-    <div class="btn">
-        <p>Search</p>
-        <input
-            type="text"
-            list="package-list"
-            spellcheck="false"
-            id="package-finder"
-            class="package-finder"
-            placeholder="Package Name"
-        />
-        <datalist id="package-list"></datalist>
     </div>
     <div class="btn" id="trigger">
         <i class="icon-book-open"></i>

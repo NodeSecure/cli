@@ -124,12 +124,15 @@ document.addEventListener("DOMContentLoaded", async() => {
     // Find elements and declare top vars
     const networkElement = document.getElementById("network-graph");
     const dataListElement = document.getElementById("package-list");
-    const inputFinderElement = document.getElementById("package-finder");
+    const inputFinderElement = document.getElementById("search-bar-input");
     const flagLegendElement = document.getElementById("flag-legends");
+    const searchBarContainer = document.querySelector(".search-bar-container");
+    const searchResultBackground = document.querySelector(".search-result-background");
 
     const modal = document.querySelector(".modal");
     const trigger = document.getElementById("trigger");
     const closeButton = document.querySelector(".close-button");
+    let delayOpenSearchBar = true;
 
     trigger.addEventListener("click", toggleModal);
     closeButton.addEventListener("click", toggleModal);
@@ -222,9 +225,11 @@ document.addEventListener("DOMContentLoaded", async() => {
                 indirectDependenciesCount++;
             }
             totalSize += size;
-            dataListElement.insertAdjacentHTML("beforeend",
-                `<option data-value="${id}" value="${packageName} ${currVersion}"></option>`);
             const flagStr = getFlags(flags, metadata, vulnerabilities);
+            {
+                const content = `<p>${flagStr.replace(/\s/g, "")} ${packageName}</p><b>${currVersion}</b>`;
+                dataListElement.insertAdjacentHTML("beforeend", `<div class="package hide" data-value="${id}">${content}</div>`);
+            }
             const label = `${packageName}@${currVersion}${flagStr}\n<b>[${formatBytes(size)}]</b>`;
             const color = getColor(id, flags);
 
@@ -236,6 +241,20 @@ document.addEventListener("DOMContentLoaded", async() => {
             }
         }
     }
+    const allSearchPackages = document.querySelectorAll(".package");
+    allSearchPackages.forEach((element) => element.addEventListener("click", packageClick));
+    searchBarContainer.addEventListener("click", () => {
+        if (!searchResultBackground.classList.contains("show") && delayOpenSearchBar) {
+            searchResultBackground.classList.toggle("show");
+        }
+    });
+    document.addEventListener("click", (event) => {
+        const isClickInside = searchBarContainer.contains(event.target);
+        if (!isClickInside && searchResultBackground.classList.contains("show")) {
+            searchResultBackground.classList.remove("show");
+            allSearchPackages.forEach((element) => element.classList.remove("hide"));
+        }
+    });
 
     // Setup global stats
     document.getElementById("total-packages").innerHTML = dataEntries.length;
@@ -297,13 +316,15 @@ document.addEventListener("DOMContentLoaded", async() => {
     network.stabilize(500);
 
     inputFinderElement.addEventListener("input", function finded() {
-        if (inputFinderElement.value !== null && inputFinderElement !== "") {
-            const idToSend = document.querySelector(`#package-list option[value='${inputFinderElement.value}']`).dataset.value;
+        if (inputFinderElement.value === null || inputFinderElement.value === "") {
+            allSearchPackages.forEach((element) => element.classList.add("hide"));
 
-            const params = { nodes: [idToSend] };
-            neighbourHighlight(params);
-            centerOnNode(params);
-            updateMenu(params);
+            return;
+        }
+
+        for (const pkgElement of allSearchPackages) {
+            const isMatching = pkgElement.textContent.match(inputFinderElement.value);
+            pkgElement.classList[isMatching ? "remove" : "add"]("hide");
         }
     });
 
@@ -517,5 +538,24 @@ document.addEventListener("DOMContentLoaded", async() => {
         if (event.target === modal) {
             toggleModal();
         }
+    }
+
+    function packageClick() {
+        delayOpenSearchBar = false;
+        // eslint-disable-next-line no-invalid-this
+        const idToSend = this.getAttribute("data-value");
+
+        const params = { nodes: [idToSend] };
+        neighbourHighlight(params);
+        centerOnNode(params);
+        updateMenu(params);
+
+        searchResultBackground.classList.remove("show");
+        inputFinderElement.value = "";
+        inputFinderElement.blur();
+        allSearchPackages.forEach((element) => element.classList.add("hide"));
+        setTimeout(() => {
+            delayOpenSearchBar = true;
+        }, 5);
     }
 });

@@ -43,7 +43,7 @@ div#network-loader {
     }
 
 section#stats {
-    height: 30px;
+    height: 35px;
     position: absolute;
     z-index: 9999;
     right: 10px;
@@ -53,35 +53,39 @@ section#stats {
 section#stats > div.btn {
     padding: 0 10px;
     border-radius: 2px;
-    background: #263238;
-    border: 1px solid #37474f;
+    background: #78909C;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
     display: flex;
     align-items: center;
-    justify-content: center;
     position: relative;
-    box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
+    box-shadow: 1px 1px 10px rgba(50, 50, 20, 0.5);
+    box-sizing: border-box;
+    transition: all 0.1s linear;
 }
-section#stats > div.btn > p {
-    margin-left: 10px;
-}
-section#stats > div.btn:hover {
-    cursor: pointer;
-    background: #37474f;
-}
-section#stats > div.btn + div.btn {
-    margin-left: 10px;
-}
-section#stats > div.btn:hover div.hiddenarea {
-    display: flex;
-    flex-direction: column;
-}
+    section#stats > div.btn > p {
+        color: #E1F5FE;
+        margin-left: 7px;
+        text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
+    }
+    section#stats > div.btn:hover {
+        cursor: pointer;
+        background: #1976D2;
+    }
+    section#stats > div.btn + div.btn {
+        margin-left: 12px;
+    }
+    section#stats > div.btn:hover div.hiddenarea {
+        display: flex;
+        flex-direction: column;
+    }
 
 section#stats div.hiddenarea {
     display: none;
     padding-top: 10px;
     width: 360px;
     position: absolute;
-    top: 29px;
+    top: 34px;
     right: -1px;
 }
 section#stats div.hiddenarea > div.infobox {
@@ -171,32 +175,6 @@ section#stats div.hiddenarea > div.global-stats ul li div.stat-container {
             justify-content: center;
             align-items: center;
         }
-
-div.legend {
-    display: flex;
-    border-radius: 2px;
-    box-sizing: border-box;
-    height: 28px;
-    background: #455A64;
-    align-items: center;
-    padding: 0 10px;
-    font-size: 14px;
-}
-div.legend:not(.active):hover {
-    background: rgb(89, 122, 138);
-    cursor: pointer;
-}
-div.legend.active {
-    background: #00897B;
-    color: #FFF;
-}
-div.legend > b {
-    margin-left: 10px;
-    font-weight: none;
-}
-div.legend + div.legend {
-    margin-top: 10px;
-}
 
 section#show-info {
     min-width: 340px;
