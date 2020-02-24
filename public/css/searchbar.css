@@ -32,7 +32,7 @@ div.search-result-background {
     width: 300px;
     position: absolute;
     flex-direction: column;
-    top: 40px;
+    top: 35px;
     right: 0;
     display: none;
     margin-top: 10px;

@@ -23,21 +23,24 @@
 <title>Node-Secure</title>
 
 <section id="stats">
-    <div class="btn">
+    <div class="btn platine-button-skin">
         <i class="icon-chart-pie" style="margin-bottom: 2px;"></i>
         <p>Global Stats</p>
         <div class="hiddenarea">
-            <div class="global-stats">
+            <div class="global-stats dark-box-skin">
                 <ul>
                     <li>
+                        <i class="icon-cubes"></i>
                         <p>Total of packages</p>
                         <b id="total-packages">0</b>
                     </li>
                     <li>
+                        <i class="icon-archive"></i>
                         <p>Total size</p>
                         <b id="total-size">0</b>
                     </li>
                     <li>
+                        <i class="icon-sitemap"></i>
                         <p>Packages with indirect dependencies</p>
                         <b id="indirect-dependencies">0</b>
                     </li>
@@ -57,7 +60,7 @@
             </div>
         </div>
     </div>
-    <div class="btn" id="trigger">
+    <div class="btn platine-button-skin" id="trigger">
         <i class="icon-book-open"></i>
         <p>Emojis Legends</p>
     </div>
@@ -73,6 +76,7 @@
         </div>
     </div>
 </section>
+
 <div class="modal">
     <div class="modal-content">
         <span class="close-button">&times;</span>
@@ -84,7 +88,8 @@
         </div>
     </div>
 </div>
-<section id="show-info">
+
+<section id="show-info" class="dark-box-skin">
     <div class="select-project">
         <p>click on a package to show a complete description here</p>
     </div>
@@ -108,11 +113,11 @@
     <!-- button to interact with the network or show more informations -->
     <hr />
     <div class="buttons">
-        <div class="bull" id="btn_showOrHide">
+        <div class="platine-button-skin" id="btn_showOrHide">
             <i class="icon-eye-off"></i>
             <p>Hide childs</p>
         </div>
-        <div class="bull">
+        <div class="platine-button-skin" id="btn_vuln">
             <i class="icon-attention-circled"></i>
             <p>Vuln</p>
         </div>

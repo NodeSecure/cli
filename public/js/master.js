@@ -361,6 +361,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             const selectedNode = linker.get(Number(currentNode));
             const { name, version, author, flags, composition } = selectedNode;
             const metadata = data[name].metadata;
+            const vulnerabilities = data[name].vulnerabilities;
 
             const btnShow = clone.getElementById("btn_showOrHide");
             if (selectedNode.hidden) {
@@ -370,22 +371,32 @@ document.addEventListener("DOMContentLoaded", async() => {
                 btnShow.innerHTML = "<i class=\"icon-eye-off\"></i><p>Hide childs</p>";
             }
 
-            btnShow.addEventListener("click", function showOrHide() {
-                const currBtn = document.getElementById("btn_showOrHide");
-                currBtn.classList.toggle("active");
-                const hidden = !selectedNode.hidden;
-                if (hidden) {
-                    currBtn.innerHTML = "<i class=\"icon-eye\"></i><p>Show childs</p>";
-                }
-                else {
-                    currBtn.innerHTML = "<i class=\"icon-eye-off\"></i><p>Hide childs</p>";
-                }
+            if (metadata.dependencyCount === 0) {
+                btnShow.classList.add("disabled");
+            }
+            else {
+                btnShow.addEventListener("click", function showOrHide() {
+                    const currBtn = document.getElementById("btn_showOrHide");
+                    currBtn.classList.toggle("active");
+                    const hidden = !selectedNode.hidden;
+                    if (hidden) {
+                        currBtn.innerHTML = "<i class=\"icon-eye\"></i><p>Show childs</p>";
+                    }
+                    else {
+                        currBtn.innerHTML = "<i class=\"icon-eye-off\"></i><p>Hide childs</p>";
+                    }
 
-                network.startSimulation();
-                // eslint-disable-next-line
-                nodes.update([...searchForNeighbourIds(currentNode)].map((id) => ({ id, hidden })));
-                selectedNode.hidden = !selectedNode.hidden;
-            });
+                    network.startSimulation();
+                    // eslint-disable-next-line
+                    nodes.update([...searchForNeighbourIds(currentNode)].map((id) => ({ id, hidden })));
+                    selectedNode.hidden = !selectedNode.hidden;
+                });
+            }
+
+            const btnVuln = clone.getElementById("btn_vuln");
+            if (vulnerabilities.length === 0) {
+                btnVuln.classList.add("disabled");
+            }
 
             clone.querySelector(".name").textContent = name;
             clone.querySelector(".version").textContent = version;
