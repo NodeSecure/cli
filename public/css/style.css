@@ -1,5 +1,6 @@
 :root {
-    --primary-color: #d4e157;
+    --primary-color: #64B5F6;
+    --background-color: #1976D2;
 }
 
 body, html {
@@ -70,7 +71,7 @@ section#stats > div.btn {
     }
     section#stats > div.btn:hover {
         cursor: pointer;
-        background: #1976D2;
+        background: var(--background-color);
     }
     section#stats > div.btn + div.btn {
         margin-left: 12px;
@@ -139,13 +140,14 @@ section#stats div.hiddenarea > div.global-stats ul li div.stat-container {
     section#stats div.hiddenarea > div.global-stats ul li div.stat-container div.stat-case {
         padding: 5px;
         border-radius: 2px;
-        background: #37474F;
+        background: rgba(55, 71, 79, 0.63);
         color: #FFF;
         margin-left: 5px;
         margin-top: 5px;
         flex-grow: 1;
         text-align: center;
-        font-size: 14px;
+        font-size: 13px;
+        letter-spacing: 0.7px;
     }
     section#stats div.hiddenarea > div.global-stats ul li div.stat-container .avatar {
         width: 50px;
@@ -183,14 +185,13 @@ section#show-info {
     margin-left: 10px;
     margin-top: 10px;
     position: relative;
-    background: #37474f;
-    border-radius: 2px;
+    background: #263238;
+    border-radius: 4px;
     box-sizing: border-box;
     padding: 15px;
     display: flex;
     flex-direction: column;
-    box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.8);
-    border: 1px solid rgba(200, 200, 200, 0.1);
+    box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.4);
     max-height: calc(100% - 20px);
     resize: horizontal;
     overflow-x: auto;
@@ -221,28 +222,14 @@ section#show-info > .line-title > .version {
 section#show-info > .buttons {
     display: flex;
     justify-content: center;
+    margin-bottom: 10px;
 }
 section#show-info > .buttons > div.bull {
     height: 30px;
-    background: rgb(38, 50, 56);
-    background: -moz-linear-gradient(
-        top,
-        rgba(38, 50, 56, 1) 0%,
-        rgba(33, 33, 33, 1) 100%
-    );
-    background: -webkit-linear-gradient(
-        top,
-        rgba(38, 50, 56, 1) 0%,
-        rgba(33, 33, 33, 1) 100%
-    );
-    background: linear-gradient(
-        to bottom,
-        rgba(38, 50, 56, 1) 0%,
-        rgba(33, 33, 33, 1) 100%
-    );
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#263238', endColorstr='#212121',GradientType=0 );
-    border: 1px solid #000;
-    border-radius: 4px;
+    background: #78909C;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
     font-size: 14px;
     box-sizing: border-box;
     display: flex;
@@ -251,30 +238,31 @@ section#show-info > .buttons > div.bull {
     user-select: none;
     flex-grow: 1;
 }
-section#show-info > .buttons > div.bull > p {
-    margin-left: 4px;
-}
+    section#show-info > .buttons > div.bull > p {
+        margin-left: 4px;
+        color: #E1F5FE;
+        text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
+    }
 
 section#show-info > .buttons > div.bull.active {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+    background: var(--background-color);
 }
 
 section#show-info > .buttons > div.bull:not(.active):hover {
     cursor: pointer;
-    border-color: var(--primary-color);
-    color: var(--primary-color);
+    background: var(--background-color);
 }
 section#show-info > .buttons > div.bull + div.bull {
     margin-left: 10px;
 }
 
 section#show-info > .desc {
-    color: #b0bec5;
+    color: #E1F5FE;
     text-align: justify;
     font-style: italic;
-    font-size: 14px;
-    margin-top: 15px;
+    font-size: 13px;
+    margin-top: 7px;
+    letter-spacing: 0.5px;
 }
 
 section#show-info > .flags {
@@ -294,14 +282,16 @@ section#show-info .list-item.line {
 section#show-info .list-item > span {
     padding: 0 10px;
     height: 25px;
-    background: rgba(95, 121, 153, 0.356);
+    background: #2c3941;
     border-radius: 4px;
     font-size: 13px;
     flex-basis: 50px;
+    letter-spacing: 0.7px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-grow: 1;
+    color: #CFD8DC;
 }
 section#show-info .list-item.line > span {
     flex-basis: 25px;
@@ -322,47 +312,27 @@ section#show-info > hr {
 
 section#show-info > .head-title {
     text-align: center;
-    color: #fff;
+    color: #FFF;
     border-radius: 5px;
     height: 26px;
     flex-shrink: 0;
-    font-size: 14px;
     margin-top: 10px;
     margin-bottom: 5px;
-    box-sizing: border-box;
-    background: -moz-linear-gradient(
-        top,
-        rgba(0, 29, 68, 0.4) 0%,
-        rgba(0, 29, 67, 0.4) 1%,
-        rgba(0, 0, 0, 0) 100%
-    );
-    background: -webkit-linear-gradient(
-        top,
-        rgba(0, 29, 68, 0.4) 0%,
-        rgba(0, 29, 67, 0.4) 1%,
-        rgba(0, 0, 0, 0) 100%
-    );
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 29, 68, 0.4) 0%,
-        rgba(0, 29, 67, 0.4) 1%,
-        rgba(0, 0, 0, 0) 100%
-    );
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#66001d44', endColorstr='#00000000',GradientType=0 );
+    font-size: 18px;
+    letter-spacing: 1px;
     text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
-    border: 1px solid #263238;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
     font-variant: small-caps;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: bold;
 }
 
 section#show-info ul li {
     display: flex;
     height: 25px;
     font-size: 14px;
-    background: rgba(69, 90, 100, 0.65);
+    background: rgba(69, 90, 100, 0.198);
     padding: 0 10px;
     line-height: 26px;
     border-radius: 2px;
@@ -371,7 +341,7 @@ section#show-info ul li + li {
     margin-top: 2px;
 }
 section#show-info ul li > b {
-    color: #f9fbe7;
+    color: #E1F5FE;
     font-weight: 500;
 }
 section#show-info ul li > p,
@@ -388,13 +358,13 @@ section#show-info > div.bundlephobia > div {
     height: inherit;
     box-sizing: border-box;
     border-radius: 4px;
-    border: 2px solid #263238;
+    border: 2px solid #1e678ba2;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 1px 1px 10px rgba(122, 122, 41, 0.3) inset;
+    box-shadow: 1px 1px 10px rgba(41, 103, 122, 0.3) inset;
 }
 section#show-info > div.bundlephobia > div + div {
     margin-left: 10px;

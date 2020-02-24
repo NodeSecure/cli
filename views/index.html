@@ -23,13 +23,6 @@
 <title>Node-Secure</title>
 
 <section id="stats">
-    <div class="search-bar-container">
-        <input type="text" placeholder="Search" id="search-bar-input"></input>
-        <i class="icon-search"></i>
-        <div class="search-result-background">
-            <div class="search-result-container" id="package-list"></div>
-        </div>
-    </div>
     <div class="btn">
         <i class="icon-chart-pie" style="margin-bottom: 2px;"></i>
         <p>Global Stats</p>
@@ -67,6 +60,18 @@
     <div class="btn" id="trigger">
         <i class="icon-book-open"></i>
         <p>Emojis Legends</p>
+    </div>
+    <div class="search-bar-container">
+        <input type="text" placeholder="Search" id="search-bar-input"></input>
+        <i class="icon-search"></i>
+        <div class="search-result-background">
+            <div class="search-result-container" id="package-list">
+                <div class="helpers">
+                    <div class="title"><p>History</p></div>
+                    <div class="package"><p>test</p></div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 <div class="modal">
@@ -113,7 +118,6 @@
             <p>Vuln</p>
         </div>
     </div>
-    <hr />
 
     <!-- package metadata -->
     <ul class="fields"></ul>

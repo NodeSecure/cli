@@ -128,6 +128,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     const flagLegendElement = document.getElementById("flag-legends");
     const searchBarContainer = document.querySelector(".search-bar-container");
     const searchResultBackground = document.querySelector(".search-result-background");
+    const searchBarHelpers = document.querySelector(".search-result-container > .helpers");
 
     const modal = document.querySelector(".modal");
     const trigger = document.getElementById("trigger");
@@ -241,10 +242,11 @@ document.addEventListener("DOMContentLoaded", async() => {
             }
         }
     }
-    const allSearchPackages = document.querySelectorAll(".package");
+    const allSearchPackages = document.querySelectorAll(".search-result-container > .package");
     allSearchPackages.forEach((element) => element.addEventListener("click", packageClick));
     searchBarContainer.addEventListener("click", () => {
         if (!searchResultBackground.classList.contains("show") && delayOpenSearchBar) {
+            searchBarHelpers.style.display = "flex";
             searchResultBackground.classList.toggle("show");
         }
     });
@@ -252,7 +254,10 @@ document.addEventListener("DOMContentLoaded", async() => {
         const isClickInside = searchBarContainer.contains(event.target);
         if (!isClickInside && searchResultBackground.classList.contains("show")) {
             searchResultBackground.classList.remove("show");
-            allSearchPackages.forEach((element) => element.classList.remove("hide"));
+            allSearchPackages.forEach((element) => element.classList.add("hide"));
+            inputFinderElement.value = "";
+            inputFinderElement.blur();
+            searchBarHelpers.style.display = "flex";
         }
     });
 
@@ -318,9 +323,11 @@ document.addEventListener("DOMContentLoaded", async() => {
     inputFinderElement.addEventListener("input", function finded() {
         if (inputFinderElement.value === null || inputFinderElement.value === "") {
             allSearchPackages.forEach((element) => element.classList.add("hide"));
+            searchBarHelpers.style.display = "flex";
 
             return;
         }
+        searchBarHelpers.style.display = "none";
 
         for (const pkgElement of allSearchPackages) {
             const isMatching = pkgElement.textContent.match(inputFinderElement.value);
@@ -554,6 +561,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         inputFinderElement.value = "";
         inputFinderElement.blur();
         allSearchPackages.forEach((element) => element.classList.add("hide"));
+        searchBarHelpers.style.display = "flex";
         setTimeout(() => {
             delayOpenSearchBar = true;
         }, 5);
