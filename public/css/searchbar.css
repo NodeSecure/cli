@@ -70,20 +70,24 @@ div.search-result-background.show {
         }
     div.search-result-container .package {
         background: #1e2529;
-        height: 30px;
         align-items: center;
         border-radius: 2px;
-        padding: 0 10px;
+        padding: 10px;
         display: flex;
         flex-shrink: 0;
         text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
-        font-size: 15px;
+        font-size: 14px;
+        letter-spacing: 0.7px;
     }
         div.search-result-container .package:hover {
             color: #E1F5FE;
-            background: #1976D2;
+            background: #01579B;
             cursor: pointer;
         }
+
+    div.search-result-container .package > p {
+        margin-right: 10px;
+    }
     div.search-result-container .package > b {
         color: #ffeb3b;
         font-weight: bold;
