@@ -345,24 +345,25 @@ document.addEventListener("DOMContentLoaded", async() => {
         const matchingIds = new Set();
         const inputRegex = new RegExp(`^${inputValue}`, "gi");
         for (const [id, opt] of linker) {
+            let isMatching = false;
             switch (filterName) {
                 case "version":
                 case "package":
                     if (inputRegex.test(filterName === "package" ? opt.name : opt.version)) {
-                        matchingIds.add(String(id));
+                        isMatching = true;
                     }
                     break;
                 case "license": {
                     if (typeof opt.license === "string") {
                         if (inputValue === "Unknown") {
-                            matchingIds.add(String(id));
+                            isMatching = true;
                         }
                         break;
                     }
 
                     const uniqueLicenseIds = new Set(opt.license.uniqueLicenseIds.map((value) => value.toLowerCase()));
                     if (uniqueLicenseIds.has(inputValue.toLowerCase())) {
-                        matchingIds.add(String(id));
+                        isMatching = true;
                     }
 
                     break;
@@ -371,7 +372,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                     const extensions = new Set(opt.composition.extensions);
                     const wantedExtension = inputValue.startsWith(".") ? inputValue : `.${inputValue}`;
                     if (extensions.has(wantedExtension.toLowerCase())) {
-                        matchingIds.add(String(id));
+                        isMatching = true;
                     }
 
                     break;
@@ -379,21 +380,30 @@ document.addEventListener("DOMContentLoaded", async() => {
                 case "builtin": {
                     const builtin = new Set(opt.composition.required_builtin);
                     if (builtin.has(inputValue.toLowerCase())) {
-                        matchingIds.add(String(id));
+                        isMatching = true;
                     }
 
                     break;
                 }
-                case "author":
-                    if (opt.author.match(inputValue)) {
-                        matchingIds.add(String(id));
+                case "author": {
+                    const author = inputValue.toLowerCase();
+                    if (typeof opt.author === "string" && opt.author.toLowerCase().match(author)) {
+                        isMatching = true;
+                    }
+                    else if (opt.author.name && opt.author.name.toLowerCase().match(author)) {
+                        isMatching = true;
                     }
                     break;
+                }
                 case "flag":
                     if (inputValue in opt.flags && opt.flags[inputValue] === true) {
-                        matchingIds.add(String(id));
+                        isMatching = true;
                     }
                     break;
+            }
+
+            if (isMatching) {
+                matchingIds.add(String(id));
             }
         }
 
