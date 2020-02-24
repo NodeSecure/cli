@@ -5,6 +5,15 @@
     --sky-text-color: #E1F5FE;
 }
 
+@font-face{
+    font-family: "mononoki";
+    src: url("font/mononoki/mononoki-Regular.eot");
+    src: url("font/mononoki/mononoki-Regular.woff") format("woff"),
+    url("font/mononoki/mononoki-Regular.ttf") format("truetype"),
+    url("font/mononoki/mononoki-Bold.woff2") format("woff2");
+    font-style: normal;
+}
+
 body, html {
     height: 100%;
     font-family: "Roboto", sans-serif;
@@ -47,6 +56,9 @@ body {
         color: var(--sky-text-color);
         margin-left: 5px;
         text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
+        font-family: "mononoki";
+        letter-spacing: 0.2px;
+        font-weight: bold;
     }
 .platine-button-skin + .platine-button-skin {
     margin-left: 10px;
@@ -218,19 +230,20 @@ section#show-info > .line-title {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: "mononoki";
 }
 section#show-info > .line-title > .name {
     color: var(--primary-color);
-    font-size: 24px;
+    font-size: 22px;
     text-align: center;
     text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
 }
 section#show-info > .line-title > .arrobase {
-    color: gray;
+    color: #B0BEC5;
     margin: 0 5px;
 }
 section#show-info > .line-title > .version {
-    color: #eceff1;
+    color: #FFFDE7;
     font-size: 18px;
     text-align: center;
     text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
@@ -315,6 +328,7 @@ section#show-info > .head-title {
     letter-spacing: 1px;
     text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
     font-variant: small-caps;
+    font-family: "mononoki";
     display: flex;
     align-items: center;
     justify-content: center;

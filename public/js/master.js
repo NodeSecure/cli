@@ -18,7 +18,7 @@ const networkGraphOptions = {
         font: {
             face: "Roboto",
             vadjust: 1,
-            size: 34,
+            size: 38,
             color: "#ECEFF1",
             bold: {
                 face: "Roboto",

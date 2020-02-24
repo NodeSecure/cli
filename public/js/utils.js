@@ -61,12 +61,10 @@ function createAvatar(name, desc) {
 }
 
 function createLegend(icon, title) {
-    const slicedTitle = title.length > 23 ? `${title.slice(0, 23)}..` : title;
+    const slicedTitle = title.length > 20 ? `${title.slice(0, 20)}..` : title;
     const legendDivElement = document.createElement("div");
 
-    const iconPElement = document.createElement("p");
-    const titleBElement = document.createElement("b");
-    legendDivElement.classList.add("legend");
+    legendDivElement.classList.add("platine-button-skin");
     legendDivElement.addEventListener("click", function legendClicked() {
         if (activeLegendElement !== null) {
             activeLegendElement.classList.remove("active");
@@ -76,11 +74,9 @@ function createLegend(icon, title) {
         updateDescription(title);
     });
 
-    iconPElement.appendChild(document.createTextNode(icon));
-    titleBElement.appendChild(document.createTextNode(slicedTitle));
-
-    legendDivElement.appendChild(iconPElement);
-    legendDivElement.appendChild(titleBElement);
+    const PElement = document.createElement("p");
+    PElement.appendChild(document.createTextNode(`${icon} ${slicedTitle}`));
+    legendDivElement.appendChild(PElement);
 
     return legendDivElement;
 }

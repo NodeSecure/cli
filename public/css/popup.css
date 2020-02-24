@@ -23,8 +23,6 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #263238;
-    padding: 1.5rem;
     width: 80%;
     max-width: 900px;
     border-radius: 0.5rem;
@@ -49,7 +47,7 @@
     }
         .modal .modal-content > .infobox .flags-legend {
             display: flex;
-            width: 230px;
+            width: 280px;
             flex-shrink: 0;
             flex-direction: column;
         }
@@ -59,31 +57,14 @@
             overflow-y: auto;
         }
 
-div.legend {
-    display: flex;
-    border-radius: 2px;
-    box-sizing: border-box;
-    height: 28px;
-    background: #455A64;
-    align-items: center;
-    padding: 0 10px;
-    font-size: 14px;
+.flags-legend-tags > .platine-button-skin {
+    height: 30px;
+    justify-content: start;
 }
-div.legend:not(.active):hover {
-    background: rgb(89, 122, 138);
-    cursor: pointer;
-}
-div.legend.active {
-    background: #00897B;
-    color: #FFF;
-}
-div.legend > b {
-    margin-left: 10px;
-    font-weight: none;
-}
-div.legend + div.legend {
-    margin-top: 10px;
-}
+    .flags-legend-tags > .platine-button-skin + .platine-button-skin {
+        margin-left: 0;
+        margin-top: 3px;
+    }
 
 .flags-description-container {
     max-height: 480px;
@@ -92,6 +73,7 @@ div.legend + div.legend {
     margin-left: 1rem;
     padding-right: 15px;
     flex-grow: 1;
+    font-family: "mononoki";
 }
 .flags-description-container img {
     max-width: 100%;
@@ -105,10 +87,10 @@ div.legend + div.legend {
     color: #FDD835;
 }
 .flags-description-container h1 {
-    color: #1DE9B6;
+    color: var(--primary-color);
     height: 30px;
     font-size: 24px;
-    border-bottom: 2px solid #1DE9B6;
+    border-bottom: 2px solid var(--primary-color);
     margin-bottom: 1rem;
 }
 .flags-description-container p {
