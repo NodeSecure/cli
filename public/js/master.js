@@ -8,6 +8,7 @@ const C_NORMAL = "rgba(150, 200, 200, 0.15)";
 const C_SELECTED = "rgba(170, 100, 200, 0.50)";
 const C_TRS = "rgba(150, 150, 150, 0.02)";
 
+const FILTERS_NAME = new Set(["package", "version", "flag", "license", "author", "ext", "builtin"]);
 const LEFT_MENU_DESC = "click on a package to show a complete description here";
 
 const networkGraphOptions = {
@@ -327,10 +328,77 @@ document.addEventListener("DOMContentLoaded", async() => {
 
             return;
         }
+
+        let filterName = "package";
+        let inputValue = inputFinderElement.value;
+        if (inputFinderElement.value.startsWith(":")) {
+            const [filter, ...other] = inputFinderElement.value.split(" ");
+            if (!FILTERS_NAME.has(filter.slice(1))) {
+                return;
+            }
+
+            filterName = filter.slice(1);
+            inputValue = other.join(" ");
+        }
         searchBarHelpers.style.display = "none";
 
+        const matchingIds = new Set();
+        const inputRegex = new RegExp(`^${inputValue}`, "gi");
+        for (const [id, opt] of linker) {
+            switch (filterName) {
+                case "version":
+                case "package":
+                    if (inputRegex.test(filterName === "package" ? opt.name : opt.version)) {
+                        matchingIds.add(String(id));
+                    }
+                    break;
+                case "license": {
+                    if (typeof opt.license === "string") {
+                        if (inputValue === "Unknown") {
+                            matchingIds.add(String(id));
+                        }
+                        break;
+                    }
+
+                    const uniqueLicenseIds = new Set(opt.license.uniqueLicenseIds.map((value) => value.toLowerCase()));
+                    if (uniqueLicenseIds.has(inputValue.toLowerCase())) {
+                        matchingIds.add(String(id));
+                    }
+
+                    break;
+                }
+                case "ext": {
+                    const extensions = new Set(opt.composition.extensions);
+                    const wantedExtension = inputValue.startsWith(".") ? inputValue : `.${inputValue}`;
+                    if (extensions.has(wantedExtension.toLowerCase())) {
+                        matchingIds.add(String(id));
+                    }
+
+                    break;
+                }
+                case "builtin": {
+                    const builtin = new Set(opt.composition.required_builtin);
+                    if (builtin.has(inputValue.toLowerCase())) {
+                        matchingIds.add(String(id));
+                    }
+
+                    break;
+                }
+                case "author":
+                    if (opt.author.match(inputValue)) {
+                        matchingIds.add(String(id));
+                    }
+                    break;
+                case "flag":
+                    if (inputValue in opt.flags && opt.flags[inputValue] === true) {
+                        matchingIds.add(String(id));
+                    }
+                    break;
+            }
+        }
+
         for (const pkgElement of allSearchPackages) {
-            const isMatching = pkgElement.textContent.match(inputFinderElement.value);
+            const isMatching = matchingIds.has(pkgElement.getAttribute("data-value"));
             pkgElement.classList[isMatching ? "remove" : "add"]("hide");
         }
     });

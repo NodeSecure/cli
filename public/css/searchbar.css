@@ -31,19 +31,10 @@ div.search-bar-container {
 div.search-result-background {
     width: 300px;
     position: absolute;
-    flex-direction: column;
     top: 35px;
     right: 0;
     display: none;
     margin-top: 10px;
-    background: #263238ce;
-    border-radius: 2px;
-    box-sizing: border-box;
-    padding: 7px;
-    max-height: 70vh;
-    overflow-y: auto;
-    scroll-padding-top: 10px;
-    scroll-padding-bottom: 10px;
 }
 div.search-result-background.show {
     display: flex;
@@ -52,7 +43,8 @@ div.search-result-background.show {
     div.search-result-background > div.search-result-container {
         display: flex;
         flex-direction: column;
-        padding-right: 2px;
+        max-height: 70vh;
+        overflow-y: auto;
     }
     div.search-result-container > .helpers {
         display: flex;
@@ -69,7 +61,7 @@ div.search-result-background.show {
             color: #607D8B;
         }
     div.search-result-container .package {
-        background: #1e2529;
+        background: rgba(69, 90, 100, 0.198);
         align-items: center;
         border-radius: 2px;
         padding: 10px;
@@ -78,6 +70,7 @@ div.search-result-background.show {
         text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
         font-size: 14px;
         letter-spacing: 0.7px;
+        margin-right: 2px;
     }
         div.search-result-container .package:hover {
             color: #E1F5FE;
@@ -98,5 +91,5 @@ div.search-result-background.show {
         display: none;
     }
     div.search-result-container .package + .package {
-        margin-top: 3px;
+        margin-top: 5px;
     }

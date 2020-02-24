@@ -8,9 +8,6 @@
 @font-face{
     font-family: "mononoki";
     src: url("font/mononoki/mononoki-Regular.eot");
-    src: url("font/mononoki/mononoki-Regular.woff") format("woff"),
-    url("font/mononoki/mononoki-Regular.ttf") format("truetype"),
-    url("font/mononoki/mononoki-Bold.woff2") format("woff2");
     font-style: normal;
 }
 
@@ -360,6 +357,7 @@ section#show-info ul li > a {
 section#show-info > div.bundlephobia {
     height: 60px;
     display: flex;
+    margin-top: 5px;
 }
 section#show-info > div.bundlephobia > div {
     height: inherit;
