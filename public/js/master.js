@@ -497,7 +497,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         modal.classList.toggle("show");
     }
 
-    function searchResultClick () {
+    function searchResultClick() {
         bar.resultRowClick(this.getAttribute("data-value"));
     }
 

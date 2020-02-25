@@ -1,3 +1,5 @@
+"use strict";
+
 // CONSTANTS
 const FILTERS_NAME = new Set(["package", "version", "flag", "license", "author", "ext", "builtin"]);
 
