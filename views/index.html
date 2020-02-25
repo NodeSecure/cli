@@ -13,11 +13,23 @@
 <link rel="stylesheet" href="css/fontello.css" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i&display=swap" />
 
+<script src="js/searchbar.js" defer></script>
 <script src="js/utils.js" defer></script>
 <script src="js/master.js" defer></script>
 <script src="libs/vis.min.js" defer></script>
 <script src="libs/md5.js" defer></script>
 <title>Node-Secure</title>
+
+<section class="nsecure">
+    <a href="https://github.com/ES-Community/nsecure" target="_blank">
+        <img src="img/github-mark.png" alt="github" />
+    </a>
+    <p>NODE-SECURE</p>
+    <div class="current-project">
+        <p id="main-project-name"></p>
+        <b id="main-project-version"></b>
+    </div>
+</section>
 
 <section id="stats">
     <div class="btn platine-button-skin">
@@ -57,7 +69,7 @@
             </div>
         </div>
     </div>
-    <div class="btn platine-button-skin" id="trigger">
+    <div class="btn platine-button-skin" id="legend_popup_btn">
         <i class="icon-book-open"></i>
         <p>Emojis Legends</p>
     </div>
@@ -77,12 +89,7 @@
 <div class="modal">
     <div class="modal-content dark-box-skin">
         <span class="close-button">&times;</span>
-        <div class="infobox">
-            <div class="flags-legend">
-                <div class="flags-legend-tags" id="flag-legends"></div>
-            </div>
-            <div class="flags-description-container" id="flag-description"></div>
-        </div>
+        <div class="infobox"></div>
     </div>
 </div>
 
@@ -160,4 +167,11 @@
             <span>FULL</span>
         </div>
     </div>
+</template>
+
+<template id="popup-legends">
+    <div class="flags-legend">
+        <div class="flags-legend-tags" id="flag-legends"></div>
+    </div>
+    <div class="flags-description-container" id="flag-description"></div>
 </template>

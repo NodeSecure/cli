@@ -2,6 +2,9 @@
     "extends": "@slimio/eslint-config",
     "rules": {
         "jsdoc/require-jsdoc": "off",
-        "require-atomic-updates": "off"
+        "require-atomic-updates": "off",
+        "arrow-body-style": "off",
+        "new-cap": "off",
+        "no-invalid-this": "no-invalid-this"
     }
 }

@@ -10,7 +10,6 @@ function formatBytes(bytes, decimals) {
     const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
     const id = Math.floor(Math.log(bytes) / Math.log(1024));
 
-    // eslint-disable-next-line
     return parseFloat((bytes / Math.pow(1024, id)).toFixed(dm)) + ' ' + sizes[id];
 }
 

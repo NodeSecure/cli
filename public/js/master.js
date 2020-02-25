@@ -8,7 +8,6 @@ const C_NORMAL = "rgba(150, 200, 200, 0.15)";
 const C_SELECTED = "rgba(170, 100, 200, 0.50)";
 const C_TRS = "rgba(150, 150, 150, 0.02)";
 
-const FILTERS_NAME = new Set(["package", "version", "flag", "license", "author", "ext", "builtin"]);
 const LEFT_MENU_DESC = "click on a package to show a complete description here";
 
 const networkGraphOptions = {
@@ -122,80 +121,44 @@ function getFlags(flags, metadata, vulnerabilities = []) {
 }
 
 document.addEventListener("DOMContentLoaded", async() => {
-    // Find elements and declare top vars
+    const networkLoaderElement = document.getElementById("network-loader");
     const networkElement = document.getElementById("network-graph");
     const dataListElement = document.getElementById("package-list");
-    const inputFinderElement = document.getElementById("search-bar-input");
-    const flagLegendElement = document.getElementById("flag-legends");
-    const searchBarContainer = document.querySelector(".search-bar-container");
-    const searchResultBackground = document.querySelector(".search-result-background");
-    const searchBarHelpers = document.querySelector(".search-result-container > .helpers");
-
     const modal = document.querySelector(".modal");
-    const trigger = document.getElementById("trigger");
-    const closeButton = document.querySelector(".close-button");
-    let delayOpenSearchBar = true;
 
-    trigger.addEventListener("click", toggleModal);
-    closeButton.addEventListener("click", toggleModal);
-    modal.addEventListener("click", onClickOutsideModal);
-
-    networkElement.click();
-    let highlightActive = false;
+    document.getElementById("legend_popup_btn").addEventListener("click", () => {
+        toggleModal("popup-legends");
+        const legendsFlagsFragment = document.createDocumentFragment();
+        for (const [flagName, { title }] of Object.entries(FLAGS)) {
+            legendsFlagsFragment.appendChild(createLegend(flagName, title));
+        }
+        document.getElementById("flag-legends").appendChild(legendsFlagsFragment);
+    });
+    document.querySelector(".close-button").addEventListener("click", toggleModal);
+    modal.addEventListener("click", () => {
+        if (event.target === modal) {
+            toggleModal();
+        }
+    });
 
     // Hydrate nodes & edges with the data
     const nodesDataArr = [];
     const edgesDataArr = [];
     const linker = new Map();
 
-    const data = await request("/data");
-    const FLAGS = await request("/flags");
+    const [data, FLAGS] = await Promise.all([
+        request("/data"), request("/flags")
+    ]);
     const dataEntries = Object.entries(data);
 
     let indirectDependenciesCount = 0;
     let totalSize = 0;
+    let highlightActive = false;
     const licensesCount = { Unknown: 0 };
     const extensionsCount = {};
     const authorsList = new Map();
 
-    function handleAuthor(author) {
-        if (author === "N/A") {
-            return;
-        }
-        let name = null;
-        let email = null;
-        let url = null;
-
-        if (typeof author === "string") {
-            const match = /^(.*)<(.*)>/g.exec(author);
-            name = match === null ? author : match[1].trim();
-            email = match === null ? null : match[2].trim();
-        }
-        else {
-            if (typeof author.name !== "string") {
-                return;
-            }
-            name = author.name;
-            email = author.email || null;
-            url = author.url || null;
-        }
-
-        if (authorsList.has(name)) {
-            authorsList.get(name).count++;
-        }
-        else {
-            authorsList.set(name, { email, url, count: 1 });
-        }
-    }
-
-    {
-        const legendsFlagsFragment = document.createDocumentFragment();
-        for (const [flagName, { title }] of Object.entries(FLAGS)) {
-            legendsFlagsFragment.appendChild(createLegend(flagName, title));
-        }
-        flagLegendElement.appendChild(legendsFlagsFragment);
-    }
-
+    // Generate network!
     for (const [packageName, descriptor] of dataEntries) {
         const { metadata, vulnerabilities, versions } = descriptor;
 
@@ -243,24 +206,15 @@ document.addEventListener("DOMContentLoaded", async() => {
             }
         }
     }
-    const allSearchPackages = document.querySelectorAll(".search-result-container > .package");
-    allSearchPackages.forEach((element) => element.addEventListener("click", packageClick));
-    searchBarContainer.addEventListener("click", () => {
-        if (!searchResultBackground.classList.contains("show") && delayOpenSearchBar) {
-            searchBarHelpers.style.display = "flex";
-            searchResultBackground.classList.toggle("show");
-        }
-    });
-    document.addEventListener("click", (event) => {
-        const isClickInside = searchBarContainer.contains(event.target);
-        if (!isClickInside && searchResultBackground.classList.contains("show")) {
-            searchResultBackground.classList.remove("show");
-            allSearchPackages.forEach((element) => element.classList.add("hide"));
-            inputFinderElement.value = "";
-            inputFinderElement.blur();
-            searchBarHelpers.style.display = "flex";
-        }
-    });
+    {
+        const { name, version } = linker.get(0);
+        document.getElementById("main-project-name").textContent = name;
+        document.getElementById("main-project-version").textContent = `version ${version}`;
+        document.querySelector(".current-project").addEventListener("click", () => {
+            network.emit("click", { nodes: [0] });
+        });
+    }
+    networkElement.click();
 
     // Setup global stats
     document.getElementById("total-packages").innerHTML = dataEntries.length;
@@ -312,106 +266,16 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     // Initialize vis Network
     const network = new vis.Network(networkElement, { nodes, edges }, networkGraphOptions);
-    network.on("afterDrawing", () => {
-        document.getElementById("network-loader").style.display = "none";
+    network.on("stabilizationIterationsDone", () => {
+        networkLoaderElement.style.display = "none";
+        network.stopSimulation();
+        network.focus(0, { animation: true, scale: 0.35 });
     });
-    network.on("stabilizationIterationsDone", () => network.stopSimulation());
     network.on("click", neighbourHighlight);
-    network.on("click", updateMenu);
-    network.on("click", centerOnNode);
+    network.on("click", updateShowInfoMenu);
     network.stabilize(500);
-
-    inputFinderElement.addEventListener("input", function finded() {
-        if (inputFinderElement.value === null || inputFinderElement.value === "") {
-            allSearchPackages.forEach((element) => element.classList.add("hide"));
-            searchBarHelpers.style.display = "flex";
-
-            return;
-        }
-
-        let filterName = "package";
-        let inputValue = inputFinderElement.value;
-        if (inputFinderElement.value.startsWith(":")) {
-            const [filter, ...other] = inputFinderElement.value.split(" ");
-            if (!FILTERS_NAME.has(filter.slice(1))) {
-                return;
-            }
-
-            filterName = filter.slice(1);
-            inputValue = other.join(" ");
-        }
-        searchBarHelpers.style.display = "none";
-
-        const matchingIds = new Set();
-        const inputRegex = new RegExp(`^${inputValue}`, "gi");
-        for (const [id, opt] of linker) {
-            let isMatching = false;
-            switch (filterName) {
-                case "version":
-                case "package":
-                    if (inputRegex.test(filterName === "package" ? opt.name : opt.version)) {
-                        isMatching = true;
-                    }
-                    break;
-                case "license": {
-                    if (typeof opt.license === "string") {
-                        if (inputValue === "Unknown") {
-                            isMatching = true;
-                        }
-                        break;
-                    }
-
-                    const uniqueLicenseIds = new Set(opt.license.uniqueLicenseIds.map((value) => value.toLowerCase()));
-                    if (uniqueLicenseIds.has(inputValue.toLowerCase())) {
-                        isMatching = true;
-                    }
-
-                    break;
-                }
-                case "ext": {
-                    const extensions = new Set(opt.composition.extensions);
-                    const wantedExtension = inputValue.startsWith(".") ? inputValue : `.${inputValue}`;
-                    if (extensions.has(wantedExtension.toLowerCase())) {
-                        isMatching = true;
-                    }
-
-                    break;
-                }
-                case "builtin": {
-                    const builtin = new Set(opt.composition.required_builtin);
-                    if (builtin.has(inputValue.toLowerCase())) {
-                        isMatching = true;
-                    }
-
-                    break;
-                }
-                case "author": {
-                    const author = inputValue.toLowerCase();
-                    if (typeof opt.author === "string" && opt.author.toLowerCase().match(author)) {
-                        isMatching = true;
-                    }
-                    else if (opt.author.name && opt.author.name.toLowerCase().match(author)) {
-                        isMatching = true;
-                    }
-                    break;
-                }
-                case "flag":
-                    if (inputValue in opt.flags && opt.flags[inputValue] === true) {
-                        isMatching = true;
-                    }
-                    break;
-            }
-
-            if (isMatching) {
-                matchingIds.add(String(id));
-            }
-        }
-
-        for (const pkgElement of allSearchPackages) {
-            const isMatching = matchingIds.has(pkgElement.getAttribute("data-value"));
-            pkgElement.classList[isMatching ? "remove" : "add"]("hide");
-        }
-    });
+    const bar = new SearchBar(network, linker);
+    bar.allSearchPackages.forEach((element) => element.addEventListener("click", searchResultClick));
 
     function* searchForNeighbourIds(selectedNode) {
         const { name, version } = linker.get(selectedNode);
@@ -426,7 +290,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         }
     }
 
-    async function updateMenu(params) {
+    async function updateShowInfoMenu(params) {
         network.stopSimulation();
         const showInfoElem = document.getElementById("show-info");
         const packageInfoTemplate = document.getElementById("package-info");
@@ -438,16 +302,13 @@ document.addEventListener("DOMContentLoaded", async() => {
             const currentNode = params.nodes[0];
             const selectedNode = linker.get(Number(currentNode));
             const { name, version, author, flags, composition } = selectedNode;
-            const metadata = data[name].metadata;
-            const vulnerabilities = data[name].vulnerabilities;
+            const { metadata, vulnerabilities } = data[name];
 
             const btnShow = clone.getElementById("btn_showOrHide");
-            if (selectedNode.hidden) {
-                btnShow.innerHTML = "<i class=\"icon-eye\"></i><p>Show childs</p>";
-            }
-            else {
-                btnShow.innerHTML = "<i class=\"icon-eye-off\"></i><p>Hide childs</p>";
-            }
+            const btnVuln = clone.getElementById("btn_vuln");
+            btnShow.innerHTML = selectedNode.hidden ?
+                "<i class=\"icon-eye\"></i><p>Show childs</p>" :
+                "<i class=\"icon-eye-off\"></i><p>Hide childs</p>";
 
             if (metadata.dependencyCount === 0) {
                 btnShow.classList.add("disabled");
@@ -465,18 +326,22 @@ document.addEventListener("DOMContentLoaded", async() => {
                     }
 
                     network.startSimulation();
-                    // eslint-disable-next-line
                     nodes.update([...searchForNeighbourIds(currentNode)].map((id) => ({ id, hidden })));
                     selectedNode.hidden = !selectedNode.hidden;
                 });
             }
 
-            const btnVuln = clone.getElementById("btn_vuln");
             if (vulnerabilities.length === 0) {
                 btnVuln.classList.add("disabled");
             }
 
-            clone.querySelector(".name").textContent = name;
+            {
+                const nameElement = clone.querySelector(".name");
+                if (name.length > 16) {
+                    nameElement.style["font-size"] = "18px";
+                }
+                nameElement.textContent = name;
+            }
             clone.querySelector(".version").textContent = version;
             {
                 const descElement = clone.querySelector(".desc");
@@ -492,12 +357,9 @@ document.addEventListener("DOMContentLoaded", async() => {
                 }
             }
 
-
-            // eslint-disable-next-line
             let fAuthor = typeof author === "string" ? author : (author.name || "Unknown");
             fAuthor = fAuthor.length > 26 ? `${fAuthor.slice(0, 26)}...` : fAuthor;
 
-            // eslint-disable-next-line
             const lastUpdate = Intl.DateTimeFormat("en-GB", {
                 day: "2-digit",
                 month: "short",
@@ -507,18 +369,20 @@ document.addEventListener("DOMContentLoaded", async() => {
                 second: "numeric"
             }).format(new Date(metadata.lastUpdateAt));
 
-            const licenses = selectedNode.license === "unkown license" ?
-                "unkown license" : selectedNode.license.uniqueLicenseIds.join(", ");
-            const fields = clone.querySelector(".fields");
-            const fieldsFragment = document.createDocumentFragment();
-            fieldsFragment.appendChild(createLiField("Author", fAuthor));
-            fieldsFragment.appendChild(createLiField("License", licenses));
-            fieldsFragment.appendChild(createLiField("Size on (local) system", formatBytes(selectedNode.size)));
-            fieldsFragment.appendChild(createLiField("Homepage", metadata.homepage || "N/A", true));
-            fieldsFragment.appendChild(createLiField("Last release (version)", metadata.lastVersion));
-            fieldsFragment.appendChild(createLiField("Last release (date)", lastUpdate));
-            fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
-            fields.appendChild(fieldsFragment);
+            {
+                const licenses = selectedNode.license === "unkown license" ?
+                    "unkown license" : selectedNode.license.uniqueLicenseIds.join(", ");
+                const fields = clone.querySelector(".fields");
+                const fieldsFragment = document.createDocumentFragment();
+                fieldsFragment.appendChild(createLiField("Author", fAuthor));
+                fieldsFragment.appendChild(createLiField("License", licenses));
+                fieldsFragment.appendChild(createLiField("Size on (local) system", formatBytes(selectedNode.size)));
+                fieldsFragment.appendChild(createLiField("Homepage", metadata.homepage || "N/A", true));
+                fieldsFragment.appendChild(createLiField("Last release (version)", metadata.lastVersion));
+                fieldsFragment.appendChild(createLiField("Last release (date)", lastUpdate));
+                fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
+                fields.appendChild(fieldsFragment);
+            }
 
             {
                 const flagsElement = clone.querySelector(".flags");
@@ -607,6 +471,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
             // the main node gets its own color and its label back.
             allNodes[selectedNode].color = C_MAIN;
+            network.focus(selectedNode, { animation: true, scale: 0.35 });
         }
         else if (highlightActive) {
             highlightActive = false;
@@ -620,39 +485,49 @@ document.addEventListener("DOMContentLoaded", async() => {
         nodes.update(Object.values(allNodes));
     }
 
-    function centerOnNode(params) {
-        network.stopSimulation();
-        if (params.nodes.length > 0) {
-            network.focus(params.nodes[0], { animation: true });
+    function toggleModal(templateName) {
+        const infoBox = document.querySelector(".modal-content > .infobox");
+        if (typeof templateName === "string") {
+            const templateElement = document.getElementById(templateName);
+            infoBox.appendChild(templateElement.content.cloneNode(true));
         }
-    }
-    function toggleModal() {
+        else {
+            infoBox.innerHTML = "";
+        }
         modal.classList.toggle("show");
     }
 
-    function onClickOutsideModal(event) {
-        if (event.target === modal) {
-            toggleModal();
-        }
+    function searchResultClick () {
+        bar.resultRowClick(this.getAttribute("data-value"));
     }
 
-    function packageClick() {
-        delayOpenSearchBar = false;
-        // eslint-disable-next-line no-invalid-this
-        const idToSend = this.getAttribute("data-value");
+    function handleAuthor(author) {
+        if (author === "N/A") {
+            return;
+        }
+        let name = null;
+        let email = null;
+        let url = null;
 
-        const params = { nodes: [idToSend] };
-        neighbourHighlight(params);
-        centerOnNode(params);
-        updateMenu(params);
+        if (typeof author === "string") {
+            const match = /^(.*)<(.*)>/g.exec(author);
+            name = match === null ? author : match[1].trim();
+            email = match === null ? null : match[2].trim();
+        }
+        else {
+            if (typeof author.name !== "string") {
+                return;
+            }
+            name = author.name;
+            email = author.email || null;
+            url = author.url || null;
+        }
 
-        searchResultBackground.classList.remove("show");
-        inputFinderElement.value = "";
-        inputFinderElement.blur();
-        allSearchPackages.forEach((element) => element.classList.add("hide"));
-        searchBarHelpers.style.display = "flex";
-        setTimeout(() => {
-            delayOpenSearchBar = true;
-        }, 5);
+        if (authorsList.has(name)) {
+            authorsList.get(name).count++;
+        }
+        else {
+            authorsList.set(name, { email, url, count: 1 });
+        }
     }
 });
