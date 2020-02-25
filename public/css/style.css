@@ -339,6 +339,12 @@ section#show-info .list-item > span {
     flex-grow: 1;
     color: #CFD8DC;
 }
+section#show-info .list-item > span.clickable:hover {
+    background: var(--background-color);
+    color: #FFF;
+    cursor: pointer;
+}
+
 section#show-info .list-item.line > span {
     flex-basis: 25px;
     justify-content: start;

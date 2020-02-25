@@ -104,7 +104,7 @@ function createLiField(title, value, isLink = false) {
     return liElement;
 }
 
-function renderItemsList(node, items = []) {
+function renderItemsList(node, items = [], onclick = null) {
     if (items.length === 0) {
         const previousNode = node.previousElementSibling;
         if (previousNode !== null) {
@@ -120,6 +120,10 @@ function renderItemsList(node, items = []) {
             continue;
         }
         const span = document.createElement("span");
+        if (onclick !== null && typeof onclick === "function") {
+            span.classList.add("clickable");
+            span.addEventListener("click", (event) => onclick(event, elem));
+        }
         span.appendChild(document.createTextNode(elem));
         fragment.appendChild(span);
     }
