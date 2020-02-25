@@ -261,7 +261,7 @@ section#show-info {
     flex-direction: column;
     max-height: calc(100% - 100px);
     resize: horizontal;
-    overflow-x: auto;
+    overflow-x: hidden;
     z-index: 5000;
     position: absolute;
     top: 10px;
@@ -446,27 +446,31 @@ section#show-info > div.select-project {
     .tooltip > .tooltiptext {
         visibility: hidden;
         width: 280px;
-        background-color: black;
-        color: #fff;
+        background-color: var(--background-color);
+        color: var(--sky-text-color);
         text-align: center;
         border-radius: 6px;
-        padding: 5px 0;
+        padding: 2px 5px;
         position: absolute;
         z-index: 1;
+        font-size: 14px;
+        text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
         top: 150%;
         left: 50%;
         margin-left: -140px;
+        font-family: "mononoki";
+        z-index: 99999999;
     }
 
     .tooltip > .tooltiptext::after {
         content: "";
         position: absolute;
         bottom: 100%;
-        left: 50%;
+        left: 48%;
         margin-left: -5px;
         border-width: 5px;
         border-style: solid;
-        border-color: transparent transparent black transparent;
+        border-color: transparent transparent var(--background-color) transparent;
     }
 
     .tooltip:hover .tooltiptext {
