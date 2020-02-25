@@ -5,6 +5,6 @@
         "require-atomic-updates": "off",
         "arrow-body-style": "off",
         "new-cap": "off",
-        "no-invalid-this": "no-invalid-this"
+        "no-invalid-this": "off"
     }
 }
