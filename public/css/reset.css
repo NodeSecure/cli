@@ -90,3 +90,38 @@ table {
     -webkit-border-bottom-left-radius: 5px 9px;
 }
 
+table {
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.25);
+}
+    table tbody tr:nth-child(even) {
+        background: #546E7A;
+    }
+    table tbody tr:nth-child(odd) {
+        background: #455A64
+        ;
+    }
+
+    table thead {
+        background: #37474F;
+    }
+        table thead tr td {
+            font-weight: bold;
+            color: #FFF;
+        }
+
+    table tr td {
+        font-size: 14px;
+        font-family: "mononoki";
+        color: #FFF;
+        border: 4px solid #37474F;
+        text-align: center;
+        height: 30px;
+        line-height: 30px;
+    }
+    table tr td a {
+        color: #E3F2FD;
+        font-weight: bold;
+        font-family: "Roboto";
+    }

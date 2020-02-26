@@ -9,6 +9,7 @@ const C_SELECTED = "rgba(170, 100, 200, 0.50)";
 const C_TRS = "rgba(150, 150, 150, 0.02)";
 
 const LEFT_MENU_DESC = "click on a package to show a complete description here";
+let toggleModal;
 
 const networkGraphOptions = {
     nodes: {
@@ -134,7 +135,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         }
         document.getElementById("flag-legends").appendChild(legendsFlagsFragment);
     });
-    document.querySelector(".close-button").addEventListener("click", toggleModal);
+    document.querySelector(".close-button").addEventListener("click", () => toggleModal());
     modal.addEventListener("click", () => {
         if (event.target === modal) {
             toggleModal();
@@ -373,11 +374,30 @@ document.addEventListener("DOMContentLoaded", async() => {
                 const licenses = selectedNode.license === "unkown license" ?
                     "unkown license" : selectedNode.license.uniqueLicenseIds.join(", ");
                 const fields = clone.querySelector(".fields");
+                // eslint-disable-next-line func-style
+                const licenseModal = () => {
+                    toggleModal("popup-license", (clone) => {
+                        if (licenses === "unkown license") {
+                            return;
+                        }
+                        const tbody = clone.querySelector("#licenses-table tbody");
+                        for (const license of selectedNode.license.licenses) {
+                            for (let id = 0; id < license.uniqueLicenseIds.length; id++) {
+                                const name = license.uniqueLicenseIds[id];
+                                const link = Reflect.has(license.spdxLicenseLinks, id) ?
+                                    license.spdxLicenseLinks[id] : license.spdxLicenseLinks[0];
+
+                                createLicenseLine(tbody, license, { name, link });
+                            }
+                        }
+                    });
+                };
+
                 const fieldsFragment = document.createDocumentFragment();
                 fieldsFragment.appendChild(createLiField("Author", fAuthor));
-                fieldsFragment.appendChild(createLiField("License", licenses));
+                fieldsFragment.appendChild(createLiField("License", licenses, { modal: licenseModal }));
                 fieldsFragment.appendChild(createLiField("Size on (local) system", formatBytes(selectedNode.size)));
-                fieldsFragment.appendChild(createLiField("Homepage", metadata.homepage || "N/A", true));
+                fieldsFragment.appendChild(createLiField("Homepage", metadata.homepage || "N/A", { isLink: true }));
                 fieldsFragment.appendChild(createLiField("Last release (version)", metadata.lastVersion));
                 fieldsFragment.appendChild(createLiField("Last release (date)", lastUpdate));
                 fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
@@ -510,17 +530,21 @@ document.addEventListener("DOMContentLoaded", async() => {
         nodes.update(Object.values(allNodes));
     }
 
-    function toggleModal(templateName) {
+    toggleModal = function toggleModal(templateName, customCallback = null) {
         const infoBox = document.querySelector(".modal-content > .infobox");
         if (typeof templateName === "string") {
             const templateElement = document.getElementById(templateName);
-            infoBox.appendChild(templateElement.content.cloneNode(true));
+            const clone = templateElement.content.cloneNode(true);
+            if (customCallback !== null) {
+                customCallback(clone);
+            }
+            infoBox.appendChild(clone);
         }
         else {
             infoBox.innerHTML = "";
         }
         modal.classList.toggle("show");
-    }
+    };
 
     function searchResultClick() {
         bar.resultRowClick(this.getAttribute("data-value"));

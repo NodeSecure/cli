@@ -79,11 +79,30 @@ function createLegend(icon, title) {
 
     return legendDivElement;
 }
-function createLiField(title, value, isLink = false) {
+
+function createLicenseLine(tbody, license, { name, link }) {
+    const line = tbody.insertRow(0);
+
+    {
+        const aElement = document.createElement("a");
+        aElement.setAttribute("target", "_blank");
+        aElement.href = link;
+        aElement.textContent = name;
+        line.insertCell(0).appendChild(aElement);
+    }
+    line.insertCell(1).appendChild(document.createTextNode(license.spdx.osi ? "✔️" : "❌"));
+    line.insertCell(2).appendChild(document.createTextNode(license.spdx.fsf ? "✔️" : "❌"));
+    line.insertCell(3).appendChild(document.createTextNode(license.spdx.fsfAndOsi ? "✔️" : "❌"));
+    line.insertCell(4).appendChild(document.createTextNode(license.spdx.includesDeprecated ? "✔️" : "❌"));
+    line.insertCell(5).appendChild(document.createTextNode(license.from));
+}
+
+function createLiField(title, value, options = {}) {
+    const { isLink = false, modal = null } = options;
+
     const liElement = document.createElement("li");
     const bElement = document.createElement("b");
     bElement.appendChild(document.createTextNode(title));
-
 
     liElement.appendChild(bElement);
     if (isLink) {
@@ -98,6 +117,15 @@ function createLiField(title, value, isLink = false) {
     else {
         const pElement = document.createElement("p");
         pElement.appendChild(document.createTextNode(value));
+
+        if (modal !== null) {
+            const iElement = document.createElement("i");
+            iElement.classList.add("icon-eye");
+            pElement.appendChild(iElement);
+
+            liElement.classList.add("clickable");
+            liElement.addEventListener("click", modal);
+        }
         liElement.appendChild(pElement);
     }
 

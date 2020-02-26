@@ -431,6 +431,14 @@ section#show-info ul li > a {
     margin-left: auto;
     color: #cfd8dc;
 }
+section#show-info ul li.clickable i {
+    margin-left: 5px;
+}
+section#show-info ul li.clickable:hover {
+    background-color: var(--background-color);
+    color: #FFF;
+    cursor: pointer;
+}
 
 section#show-info > div.bundlephobia {
     height: 60px;
@@ -511,4 +519,3 @@ section#show-info > div.select-project {
     .tooltip:hover .tooltiptext {
         visibility: visible;
     }
-
