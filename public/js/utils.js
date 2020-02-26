@@ -104,7 +104,8 @@ function createLiField(title, value, isLink = false) {
     return liElement;
 }
 
-function renderItemsList(node, items = [], onclick = null) {
+// eslint-disable-next-line max-params
+function renderItemsList(node, items = [], onclick = null, handleHidden = false) {
     if (items.length === 0) {
         const previousNode = node.previousElementSibling;
         if (previousNode !== null) {
@@ -115,11 +116,16 @@ function renderItemsList(node, items = [], onclick = null) {
     }
 
     const fragment = document.createDocumentFragment();
-    for (const elem of items) {
+    for (let id = 0; id < items.length; id++) {
+        const elem = items[id];
         if (elem.trim() === "") {
             continue;
         }
+
         const span = document.createElement("span");
+        if (handleHidden && id >= 5) {
+            span.classList.add("hidden");
+        }
         if (onclick !== null && typeof onclick === "function") {
             span.classList.add("clickable");
             span.addEventListener("click", (event) => onclick(event, elem));
@@ -128,6 +134,44 @@ function renderItemsList(node, items = [], onclick = null) {
         fragment.appendChild(span);
     }
     node.appendChild(fragment);
+
+    if (handleHidden && items.length >= 5) {
+        const span = document.createElement("span");
+        span.setAttribute("data-value", "closed");
+        span.addEventListener("click", function spanClick() {
+            const isClosed = this.getAttribute("data-value") === "closed";
+            {
+                const innerI = this.querySelector("i");
+                innerI.classList.remove(isClosed ? "icon-plus-squared-alt" : "icon-minus-squared-alt");
+                innerI.classList.add(isClosed ? "icon-minus-squared-alt" : "icon-plus-squared-alt");
+            }
+            this.querySelector("p").textContent = isClosed ? "show less" : "show more";
+            this.setAttribute("data-value", isClosed ? "opened" : "closed");
+
+            for (let id = 0; id < this.parentNode.childNodes.length; id++) {
+                const node = this.parentNode.childNodes[id];
+                if (node !== this) {
+                    if (isClosed) {
+                        node.classList.remove("hidden");
+                    }
+                    else if (id >= 5) {
+                        node.classList.add("hidden");
+                    }
+                }
+            }
+        });
+        span.classList.add("expandable");
+
+        const iElement = document.createElement("i");
+        iElement.classList.add("icon-plus-squared-alt");
+        span.appendChild(iElement);
+
+        const pElement = document.createElement("p");
+        pElement.appendChild(document.createTextNode("show more"));
+        span.appendChild(pElement);
+
+        node.appendChild(span);
+    }
 }
 
 async function request(path, customHeaders = Object.create(null)) {

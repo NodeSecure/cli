@@ -339,7 +339,11 @@ section#show-info .list-item > span {
     flex-grow: 1;
     color: #CFD8DC;
 }
-section#show-info .list-item > span.clickable:hover {
+section#show-info .list-item > span.hidden {
+    display: none;
+}
+
+section#show-info .list-item > span:not(.expandable).clickable:hover {
     background: var(--background-color);
     color: #FFF;
     cursor: pointer;
@@ -352,6 +356,31 @@ section#show-info .list-item.line > span {
 section#show-info .list-item > span {
     margin-left: 5px;
     margin-top: 5px;
+}
+
+section#show-info .list-item > span.expandable {
+    display: flex;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 35px;
+    font-size: 13px;
+    font-family: "mononoki";
+    background: none;
+    color: #00B0FF;
+    text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
+    transition: all 0.2s linear;
+    margin-top: 5px;
+}
+section#show-info .list-item > span.expandable[data-value="opened"] {
+    color: #F44336 !important;
+}
+section#show-info .list-item > span.expandable:hover {
+    cursor: pointer;
+    background: #1c262a70;
+}
+section#show-info .list-item > span.expandable i {
+    margin-right: 4px;
+    margin-top: 1px;
 }
 
 section#show-info > hr {

@@ -422,9 +422,9 @@ document.addEventListener("DOMContentLoaded", async() => {
                 };
                 renderItemsList(clone.getElementById("extensions"), composition.extensions);
                 renderItemsList(clone.getElementById("minifiedfiles"), composition.minified,
-                    WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null);
+                    WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null, true);
                 renderItemsList(clone.getElementById("unuseddep"), composition.unused);
-                renderItemsList(clone.getElementById("missingdep"), composition.missing);
+                renderItemsList(clone.getElementById("missingdep"), composition.missing, null);
                 renderItemsList(clone.getElementById("requireddep"), thirdParty, (event, packageName) => {
                     let wantedId = null;
                     for (const [id, opt] of linker) {
@@ -435,10 +435,10 @@ document.addEventListener("DOMContentLoaded", async() => {
                     if (wantedId !== null) {
                         network.emit("click", { nodes: [wantedId] });
                     }
-                });
+                }, true);
 
                 renderItemsList(clone.getElementById("internaldep"), internal,
-                    WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null);
+                    WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null, true);
             }
 
             showInfoElem.appendChild(clone);
