@@ -6,13 +6,14 @@ const meriyah = require("meriyah");
 
 // Require Internal Dependencies
 const helpers = require("./helpers");
+const ASTDeps = require("./ASTDeps");
 
 // CONSTANTS
 const kMainModuleStr = "process.mainModule.";
 
 /**
  * @typedef {object} ASTSummary
- * @property {Set<string>} dependencies
+ * @property {ASTDeps} dependencies
  * @property {boolean} isSuspect
  * @property {boolean} isOneLineRequire
  */
@@ -26,7 +27,7 @@ const kMainModuleStr = "process.mainModule.";
  */
 function searchRuntimeDependencies(str, module = false) {
     const identifiers = new Map();
-    const dependencies = new Set();
+    const dependencies = new ASTDeps();
     let isSuspect = false;
 
     if (str.charAt(0) === "#") {
@@ -72,6 +73,12 @@ function searchRuntimeDependencies(str, module = false) {
                     else {
                         isSuspect = true;
                     }
+                }
+                else if (node.type === "TryStatement") {
+                    dependencies.isInTryStmt = true;
+                }
+                else if (node.type === "CatchClause") {
+                    dependencies.isInTryStmt = false;
                 }
                 else if (module && node.type === "ImportDeclaration") {
                     const source = node.source;
