@@ -194,6 +194,7 @@ async function processPackageTarball(name, version, options) {
 
                 const usingECMAModules = extname(file) === ".mjs" ? true : isProjectUsingESM;
                 const { dependencies: ASTDeps, isSuspect, isOneLineRequire } = searchRuntimeDependencies(str, usingECMAModules);
+                ASTDeps.removeByName(name);
                 dependencies.push(...ASTDeps);
                 [...ASTDeps.getDependenciesInTryStatement()].forEach((depName) => inTryDeps.add(depName));
 

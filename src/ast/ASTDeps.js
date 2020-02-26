@@ -6,6 +6,12 @@ class ASTDeps {
         this.dependencies = Object.create(null);
     }
 
+    removeByName(name) {
+        if (Reflect.has(this.dependencies, name)) {
+            delete this.dependencies[name];
+        }
+    }
+
     add(depName) {
         this.dependencies[depName] = {
             inTry: this.isInTryStmt
