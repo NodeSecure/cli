@@ -209,7 +209,11 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
     {
         const { name, version } = linker.get(0);
-        document.getElementById("main-project-name").textContent = name;
+        const nameElement = document.getElementById("main-project-name");
+        if (name.length > 17) {
+            nameElement.style["font-size"] = "16px";
+        }
+        nameElement.textContent = name;
         document.getElementById("main-project-version").textContent = `version ${version}`;
         document.querySelector(".current-project").addEventListener("click", () => {
             network.emit("click", { nodes: [0] });

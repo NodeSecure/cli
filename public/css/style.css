@@ -216,7 +216,7 @@ section#stats {
 section.nsecure {
     background: #263238;
     box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.4);
-    width: 320px;
+    width: 340px;
     height: 35px;
     position: absolute;
     z-index: 9999;
@@ -247,7 +247,7 @@ section.nsecure {
         cursor: pointer;
     }
         section.nsecure .current-project > p {
-            font-size: 18px;
+            font-size: 17px;
             color: #40C4FF;
         }
         section.nsecure .current-project > b {
