@@ -381,10 +381,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     const tmpLocation = join(TMP, uniqueSlug());
     await mkdir(tmpLocation, { recursive: true });
 
-    const spinner = new Spinner({
-        spinner: "dots",
-        verbose
-    }).start(white().bold("Fetching all dependencies ..."));
+    const spinner = new Spinner({ spinner: "dots", verbose }).start(white().bold("Fetching all dependencies ..."));
 
     /** @type {Map<string, NodeSecure.Payload>} */
     const flattenedDeps = new Map();

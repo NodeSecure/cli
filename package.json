@@ -66,7 +66,7 @@
   },
   "dependencies": {
     "@polka/send-type": "^0.5.2",
-    "@slimio/async-cli-spinner": "^0.5.1",
+    "@slimio/async-cli-spinner": "^0.5.2",
     "@slimio/github": "^0.5.0",
     "@slimio/is": "^1.5.1",
     "@slimio/lock": "^0.4.0",

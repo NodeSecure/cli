@@ -21,8 +21,8 @@ test("should return runtime dependencies for one.js", () => {
     const { dependencies, isSuspect } = searchRuntimeDependencies(one);
 
     expect(isSuspect).toStrictEqual(false);
-    expect(dependencies).toStrictEqual(
-        new Set(["http", "net", "fs", "assert", "timers", "./aFile.js", "path"])
+    expect([...dependencies]).toStrictEqual(
+        ["http", "net", "fs", "assert", "timers", "./aFile.js", "path"]
     );
 });
 
@@ -30,26 +30,26 @@ test("should return runtime dependencies for two.js", () => {
     const { dependencies, isSuspect } = searchRuntimeDependencies(two);
 
     expect(isSuspect).toStrictEqual(false);
-    expect(dependencies).toStrictEqual(new Set(["http", "events"]));
+    expect([...dependencies]).toStrictEqual(["http", "events"]);
 });
 
 test("should return isSuspect = true for three.js", () => {
     const { dependencies, isSuspect } = searchRuntimeDependencies(three);
 
     expect(isSuspect).toStrictEqual(true);
-    expect(dependencies).toStrictEqual(new Set());
+    expect([...dependencies]).toStrictEqual([]);
 });
 
 test("should return runtime dependencies for five.js", () => {
     const { dependencies, isSuspect } = searchRuntimeDependencies(five);
 
     expect(isSuspect).toStrictEqual(false);
-    expect(dependencies).toStrictEqual(new Set(["http", "net-tcp", "barworld", "hello", "util"]));
+    expect([...dependencies]).toStrictEqual(["http", "net-tcp", "barworld", "hello", "util"]);
 });
 
 test("should support runtime analysis of ESM and return http", () => {
     const { dependencies, isSuspect } = searchRuntimeDependencies(esm, true);
 
     expect(isSuspect).toStrictEqual(false);
-    expect(dependencies).toStrictEqual(new Set(["http"]));
+    expect([...dependencies]).toStrictEqual(["http"]);
 });
