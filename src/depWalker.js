@@ -161,12 +161,13 @@ async function processPackageTarball(name, version, options) {
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
             const {
-                type = "script", description = "", author = {}, scripts = {}, dependencies = {}, devDependencies = {}
+                type = "script", description = "", author = {}, scripts = {},
+                dependencies = {}, devDependencies = {}, optionalDependencies = {}
             } = JSON.parse(packageStr);
             ref.description = description;
             ref.author = author;
             isProjectUsingESM = type === "module";
-            depsInLocalPackage = Object.keys(dependencies);
+            depsInLocalPackage = [...Object.keys(dependencies), ...Object.keys(optionalDependencies)];
             devDepsInLocalPackage = Object.keys(devDependencies);
 
             ref.flags.hasScript = [...Object.keys(scripts)].some((value) => NPM_SCRIPTS.has(value.toLowerCase()));
@@ -189,16 +190,17 @@ async function processPackageTarball(name, version, options) {
         for (const file of jsFiles) {
             try {
                 const str = await readFile(join(dest, file), "utf-8");
-                if (!file.includes(".min") && isMinified(str)) {
-                    ref.composition.minified.push(file);
-                }
 
                 const usingECMAModules = extname(file) === ".mjs" ? true : isProjectUsingESM;
-                const { dependencies: deps, isSuspect } = searchRuntimeDependencies(str, usingECMAModules);
+                const { dependencies: deps, isSuspect, isOneLineRequire } = searchRuntimeDependencies(str, usingECMAModules);
                 dependencies.push(...deps);
                 if (isSuspect) {
                     suspectFiles.push(file);
                     ref.flags.hasSuspectImport = isSuspect;
+                }
+
+                if (!isOneLineRequire && !file.includes(".min") && isMinified(str)) {
+                    ref.composition.minified.push(file);
                 }
             }
             catch (err) {

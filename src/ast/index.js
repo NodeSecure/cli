@@ -14,6 +14,7 @@ const kMainModuleStr = "process.mainModule.";
  * @typedef {object} ASTSummary
  * @property {Set<string>} dependencies
  * @property {boolean} isSuspect
+ * @property {boolean} isOneLineRequire
  */
 
 /**
@@ -36,8 +37,6 @@ function searchRuntimeDependencies(str, module = false) {
 
     walk(body, {
         enter(node) {
-            // console.log(JSON.stringify(node, null, 2));
-            // console.log("-------------------------");
             try {
                 if (!module && (helpers.isRequireStatment(node) || helpers.isRequireResolve(node))) {
                     const arg = node.arguments[0];
@@ -99,7 +98,8 @@ function searchRuntimeDependencies(str, module = false) {
 
     return {
         dependencies,
-        isSuspect
+        isSuspect,
+        isOneLineRequire: !module && body.length === 1 && dependencies.size === 1
     };
 }
 
