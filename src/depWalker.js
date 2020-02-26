@@ -419,7 +419,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     spinner.text = white().bold("Waiting to fetch all packages stats...");
     try {
         await Promise.all(promisesToWait);
-        const execTime = cyan().bold(ms(spinner.elapsedTime.toFixed(2)));
+        const execTime = cyan().bold(ms(Number(spinner.elapsedTime.toFixed(2))));
         spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime}`));
     }
     catch (err) {

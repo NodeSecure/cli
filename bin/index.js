@@ -103,7 +103,9 @@ async function hydrateCmd() {
     }).start();
     try {
         await hydrateDB();
-        spinner.succeed(white().bold(`Successfully hydrated vulnerabilities db in ${cyan(ms(spinner.elapsedTime))}`));
+
+        const elapsedTime = cyan(ms(Number(spinner.elapsedTime.toFixed(2))));
+        spinner.succeed(white().bold(`Successfully hydrated vulnerabilities db in ${elapsedTime}`));
     }
     catch (err) {
         spinner.failed(err.message);
@@ -136,9 +138,10 @@ async function fromCmd(packageName, opts) {
             registry: REGISTRY_DEFAULT_ADDR,
             ...token
         });
-        const elapsedTime = ms(spinner.elapsedTime.toFixed(2));
+
+        const elapsedTime = cyan().bold(ms(Number(spinner.elapsedTime.toFixed(2))));
         spinner.succeed(
-            white().bold(`Fetched ${yellow().bold(packageName)} manifest on npm in ${cyan(elapsedTime)}`)
+            white().bold(`Fetched ${yellow().bold(packageName)} manifest on npm in ${elapsedTime}`)
         );
     }
     catch (err) {
