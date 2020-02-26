@@ -427,7 +427,7 @@ async function depWalker(manifest, options = Object.create(null)) {
         spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime}`));
     }
     catch (err) {
-        spinner.fail(red().bold(err.message));
+        spinner.failed(red().bold(err.message));
 
         return null;
     }
