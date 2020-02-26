@@ -17,6 +17,7 @@ const VIEWS = join(__dirname, "..", "views");
 const PUBLIC = join(__dirname, "..", "public");
 const FLAGS = require("../flags/manifest.json");
 const flagsTitle = new Set(Object.values(FLAGS).map((flagDescriptor) => flagDescriptor.title));
+
 async function startHTTPServer(dataFilePath, configPort) {
     accessSync(dataFilePath, R_OK | W_OK);
     // Create HTTP Server and apply required middlewares!

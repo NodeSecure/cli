@@ -6,8 +6,9 @@ require("make-promises-safe");
 require("dotenv").config();
 
 // Require Node.js Dependencies
-const { writeFileSync } = require("fs");
+const { writeFileSync, promises: { unlink } } = require("fs");
 const { join, extname } = require("path");
+const { once } = require("events");
 
 // Require Third-party Dependencies
 const { yellow, grey, white, green, cyan, red } = require("kleur");
@@ -45,13 +46,15 @@ function logAndWrite(payload, output = "nsecure-result") {
     if (payload === null) {
         console.log("No dependencies to proceed !");
 
-        return;
+        return null;
     }
 
     const ret = JSON.stringify(Object.fromEntries(payload), null, 2);
     const filePath = join(process.cwd(), extname(output) === ".json" ? filenamify(output) : `${filenamify(output)}.json`);
     writeFileSync(filePath, ret);
     console.log(white().bold(`Successfully writed .json file at: ${green().bold(filePath)}`));
+
+    return filePath;
 }
 
 async function checkHydrateDB() {
@@ -85,6 +88,7 @@ prog
 prog
     .command("auto [package]")
     .option("-d, --depth", "maximum dependencies depth to fetch", 4)
+    .option("-k, --keep", "keep the nsecure-result.json file on the system after execution", false)
     .describe("Run security analysis on cwd or a given package and automatically open the web interface")
     .action(autoCmd);
 
@@ -113,8 +117,16 @@ async function hydrateCmd() {
 }
 
 async function autoCmd(packageName, opts) {
-    await (typeof packageName === "string" ? fromCmd(packageName, opts) : cwdCmd(opts));
+    const keep = Boolean(opts.keep);
+    delete opts.keep;
+    delete opts.k;
+
+    const payloadFile = await (typeof packageName === "string" ? fromCmd(packageName, opts) : cwdCmd(opts));
     await httpCmd();
+    await once(process, "SIGINT");
+    if (!keep && payloadFile !== null) {
+        await unlink(payloadFile);
+    }
 }
 
 async function cwdCmd(opts) {
@@ -122,7 +134,8 @@ async function cwdCmd(opts) {
 
     await checkHydrateDB();
     const payload = await cwd(void 0, { verbose: true, maxDepth });
-    logAndWrite(payload, output);
+
+    return logAndWrite(payload, output);
 }
 
 async function fromCmd(packageName, opts) {
@@ -150,11 +163,18 @@ async function fromCmd(packageName, opts) {
 
     if (manifest !== null) {
         const payload = await depWalker(manifest, { verbose: true, maxDepth });
-        logAndWrite(payload, output);
+
+        return logAndWrite(payload, output);
     }
+
+    return null;
 }
 
 async function httpCmd(json = "nsecure-result.json") {
     const dataFilePath = join(process.cwd(), json);
-    await startHTTPServer(dataFilePath);
+    const httpServer = await startHTTPServer(dataFilePath);
+
+    for (const eventName of ["SIGINT", "SIGTERM"]) {
+        process.on(eventName, () => httpServer.server.close());
+    }
 }
