@@ -131,6 +131,8 @@ section#stats {
 
     div.global-stats {
         padding: 5px 10px;
+        max-height: 80vh;
+        overflow-y: auto;
     }
     div.global-stats ul li {
         display: flex;
