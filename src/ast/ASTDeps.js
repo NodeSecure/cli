@@ -12,6 +12,10 @@ class ASTDeps {
         };
     }
 
+    get size() {
+        return Object.keys(this.dependencies).length;
+    }
+
     * getDependenciesInTryStatement() {
         for (const [depName, props] of Object.entries(this.dependencies)) {
             if (props.inTry === true) {
