@@ -15,6 +15,7 @@ const one = readFileSync(join(FIXTURE_PATH, "one.js"), "utf-8");
 const two = readFileSync(join(FIXTURE_PATH, "two.js"), "utf-8");
 const three = readFileSync(join(FIXTURE_PATH, "three.js"), "utf-8");
 const five = readFileSync(join(FIXTURE_PATH, "five.js"), "utf-8");
+const six = readFileSync(join(FIXTURE_PATH, "six.js"), "utf-8");
 const esm = readFileSync(join(FIXTURE_PATH, "esm.js"), "utf-8");
 
 test("should return runtime dependencies for one.js", () => {
@@ -52,4 +53,18 @@ test("should support runtime analysis of ESM and return http", () => {
 
     expect(isSuspect).toStrictEqual(false);
     expect([...dependencies]).toStrictEqual(["http"]);
+});
+
+test("should detect that http is under a TryStatement", () => {
+    const { dependencies: deps } = searchRuntimeDependencies(six, false);
+
+    expect(Reflect.has(deps.dependencies, "http")).toStrictEqual(true);
+    expect(deps.dependencies.http.inTry).toStrictEqual(true);
+});
+
+test("should return isOneLineRequire true for a one liner CJS export", () => {
+    const { dependencies, isOneLineRequire } = searchRuntimeDependencies("module.exports = require('foo');", false);
+
+    expect(isOneLineRequire).toStrictEqual(true);
+    expect([...dependencies]).toStrictEqual(["foo"]);
 });
