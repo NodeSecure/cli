@@ -95,12 +95,7 @@ class Dependency {
     }
 
     set parent(value) {
-        if (value instanceof Dependency) {
-            this[SYM_PARENT] = { name: value.name, version: value.version };
-        }
-        else {
-            this[SYM_PARENT] = null;
-        }
+        this[SYM_PARENT] = value instanceof Dependency ? { name: value.name, version: value.version } : null;
     }
 
     get flags() {
@@ -112,9 +107,6 @@ class Dependency {
     }
 
     set hasMissingOrUnusedDependency(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasMissingOrUnusedDependency = value;
     }
 
@@ -123,9 +115,6 @@ class Dependency {
     }
 
     set hasOutdatedDependency(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasOutdatedDependency = value;
     }
 
@@ -134,9 +123,6 @@ class Dependency {
     }
 
     set hasManifest(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasManifest = value;
     }
 
@@ -145,9 +131,6 @@ class Dependency {
     }
 
     set isDeprecated(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].isDeprecated = value;
     }
 
@@ -156,9 +139,6 @@ class Dependency {
     }
 
     set hasSuspectImport(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasSuspectImport = value;
     }
 
@@ -167,9 +147,6 @@ class Dependency {
     }
 
     set hasLicense(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasLicense = value;
     }
 
@@ -178,9 +155,6 @@ class Dependency {
     }
 
     set hasIndirectDependencies(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasIndirectDependencies = value;
     }
 
@@ -189,9 +163,6 @@ class Dependency {
     }
 
     set hasMinifiedCode(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasMinifiedCode = value;
     }
 
@@ -200,9 +171,6 @@ class Dependency {
     }
 
     set hasCustomResolver(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasCustomResolver = value;
     }
 
@@ -211,9 +179,6 @@ class Dependency {
     }
 
     set hasScript(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasScript = value;
     }
 
@@ -222,9 +187,6 @@ class Dependency {
     }
 
     set hasDependencies(value) {
-        if (typeof value !== "boolean") {
-            throw new TypeError("value must be typeof boolean");
-        }
         this[SYM_FLAGS].hasDependencies = value;
     }
 }

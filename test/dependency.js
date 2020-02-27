@@ -23,6 +23,8 @@ test("Dependency class should act as expected by assertions", () => {
     expect(dep.hasScript).toStrictEqual(false);
     expect(dep.hasDependencies).toStrictEqual(false);
     expect(dep.hasIndirectDependencies).toStrictEqual(false);
+    expect(dep.hasOutdatedDependency).toStrictEqual(false);
+    expect(dep.hasMissingOrUnusedDependency).toStrictEqual(false);
     expect(Reflect.ownKeys(dep)).toHaveLength(6);
 
     const flagOne = dep.flags;
@@ -72,6 +74,7 @@ test("Set all flags on one given Dependency", () => {
     semverDep.isDeprecated = true;
     semverDep.hasLicense = true;
     semverDep.hasIndirectDependencies = true;
+    semverDep.hasMissingOrUnusedDependency = true;
 
     const flatSemver = semverDep.flatten(void 0);
     expect(flatSemver["1.0.0"].flags).toMatchObject({
@@ -85,6 +88,8 @@ test("Set all flags on one given Dependency", () => {
         isDeprecated: true,
         hasLicense: true,
         hasIndirectDependencies: true,
-        hasExternalCapacity: false
+        hasExternalCapacity: false,
+        hasMissingOrUnusedDependency: true,
+        hasOutdatedDependency: false
     });
 });
