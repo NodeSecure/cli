@@ -70,8 +70,10 @@ function getColor(id, flags) {
     return C_NORMAL;
 }
 
-function getFlags(flags, metadata, vulnerabilities = []) {
+function getFlags(flags, options = {}) {
+    const { metadata, vulnerabilities = [], versions } = options;
     const flagList = [];
+
     if (flags.isGit) {
         flagList.push("☁️");
     }
@@ -116,6 +118,9 @@ function getFlags(flags, metadata, vulnerabilities = []) {
     }
     if (vulnerabilities.length > 0) {
         flagList.push("🚨");
+    }
+    if (versions.length > 1) {
+        flagList.push("🎭");
     }
 
     return flagList.reduce((acc, cur) => `${acc} ${cur}`, "");
@@ -191,7 +196,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 indirectDependenciesCount++;
             }
             totalSize += size;
-            const flagStr = getFlags(flags, metadata, vulnerabilities);
+            const flagStr = getFlags(flags, { metadata, vulnerabilities, versions });
             {
                 const content = `<p>${flagStr.replace(/\s/g, "")} ${packageName}</p><b>${currVersion}</b>`;
                 dataListElement.insertAdjacentHTML("beforeend", `<div class="package hide" data-value="${id}">${content}</div>`);
@@ -307,7 +312,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             const currentNode = params.nodes[0];
             const selectedNode = linker.get(Number(currentNode));
             const { name, version, author, flags, composition } = selectedNode;
-            const { metadata, vulnerabilities } = data[name];
+            const { metadata, versions, vulnerabilities } = data[name];
 
             const btnShow = clone.getElementById("btn_showOrHide");
             const btnVuln = clone.getElementById("btn_vuln");
@@ -410,7 +415,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
             {
                 const flagsElement = clone.querySelector(".flags");
-                const textContent = getFlags(flags, metadata);
+                const textContent = getFlags(flags, { metadata, versions, vulnerabilities });
                 if (textContent === "") {
                     flagsElement.style.display = "none";
                 }
