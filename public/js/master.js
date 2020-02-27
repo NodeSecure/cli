@@ -60,7 +60,7 @@ function getColor(id, flags) {
     if (id === 0) {
         return C_MAIN;
     }
-    else if (flags.hasSuspectImport || flags.hasMinifiedCode) {
+    else if (flags.hasWarnings || flags.hasMinifiedCode) {
         return C_WARN;
     }
     else if (flags.hasIndirectDependencies) {
@@ -80,7 +80,7 @@ function getFlags(flags, options = {}) {
     if (flags.hasIndirectDependencies) {
         flagList.push("🌲");
     }
-    if (flags.hasSuspectImport) {
+    if (flags.hasWarnings) {
         flagList.push("⚠️");
     }
     if (flags.hasCustomResolver) {

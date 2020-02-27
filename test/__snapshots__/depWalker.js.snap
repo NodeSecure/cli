@@ -35,7 +35,7 @@ Object {
         "hasMultipleLicenses": false,
         "hasOutdatedDependency": false,
         "hasScript": false,
-        "hasSuspectImport": false,
+        "hasWarnings": false,
         "isDeprecated": false,
         "isGit": false,
       },
@@ -80,6 +80,7 @@ Object {
         ],
       },
       "usedBy": Object {},
+      "warnings": Array [],
     },
     "metadata": Object {
       "author": "SlimIO",

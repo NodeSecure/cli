@@ -13,12 +13,13 @@ class Dependency {
         this.version = version;
         this.gitUrl = null;
         this.dependencyCount = 0;
+        this.warnings = [];
 
         const flags = {
             isGit: false,
             hasManifest: true,
             isDeprecated: false,
-            hasSuspectImport: false,
+            hasWarnings: false,
             hasLicense: false,
             hasMultipleLicenses: false,
             hasIndirectDependencies: false,
@@ -51,6 +52,7 @@ class Dependency {
 
     flatten(customId) {
         const parent = this.parent;
+        this.hasWarnings = this.warnings.length > 0;
 
         return {
             [this.version]: {
@@ -60,6 +62,7 @@ class Dependency {
                 description: "",
                 size: 0,
                 author: "N/A",
+                warnings: this.warnings,
                 composition: {
                     extensions: [],
                     files: [],
@@ -102,6 +105,14 @@ class Dependency {
         return cloneDeep(this[SYM_FLAGS]);
     }
 
+    get hasWarnings() {
+        return this[SYM_FLAGS].hasWarnings;
+    }
+
+    set hasWarnings(value) {
+        this[SYM_FLAGS].hasWarnings = value;
+    }
+
     get hasMissingOrUnusedDependency() {
         return this[SYM_FLAGS].hasMissingOrUnusedDependency;
     }
@@ -132,14 +143,6 @@ class Dependency {
 
     set isDeprecated(value) {
         this[SYM_FLAGS].isDeprecated = value;
-    }
-
-    get hasSuspectImport() {
-        return this[SYM_FLAGS].hasSuspectImport;
-    }
-
-    set hasSuspectImport(value) {
-        this[SYM_FLAGS].hasSuspectImport = value;
     }
 
     get hasLicense() {

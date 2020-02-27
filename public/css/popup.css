@@ -93,6 +93,15 @@
     border-bottom: 2px solid var(--primary-color);
     margin-bottom: 1rem;
 }
+.flags-description-container h2 {
+    color: var(--primary-color);
+    height: 24px;
+    font-size: 18px;
+    border-bottom: 1px solid var(--primary-color);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
 .flags-description-container p {
     text-align: justify;
     line-height: 1.20;

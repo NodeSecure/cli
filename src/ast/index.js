@@ -49,83 +49,78 @@ function searchRuntimeDependencies(str, options = Object.create(null)) {
 
     walk(body, {
         enter(node) {
-            try {
-                if (node.type === "TryStatement") {
-                    dependencies.isInTryStmt = true;
-                }
-                else if (node.type === "CatchClause") {
-                    dependencies.isInTryStmt = false;
-                }
+            if (node.type === "TryStatement") {
+                dependencies.isInTryStmt = true;
+            }
+            else if (node.type === "CatchClause") {
+                dependencies.isInTryStmt = false;
+            }
 
-                if (helpers.isLiteralRegex(node)) {
-                    if (!safeRegex(node.regex.pattern)) {
-                        warnings.push(warn("regex", node.loc));
-                    }
+            if (helpers.isLiteralRegex(node)) {
+                if (!safeRegex(node.regex.pattern)) {
+                    warnings.push(warn("regex", node.loc));
                 }
-                else if (helpers.isRegexConstructor(node)) {
-                    const arg = node.arguments[0];
-                    const pattern = helpers.isLiteralRegex(arg) ? arg.regex.pattern : arg.value;
+            }
+            else if (helpers.isRegexConstructor(node)) {
+                const arg = node.arguments[0];
+                const pattern = helpers.isLiteralRegex(arg) ? arg.regex.pattern : arg.value;
 
-                    if (!safeRegex(pattern)) {
-                        warnings.push(warn("regex", node.loc));
-                    }
+                if (!safeRegex(pattern)) {
+                    warnings.push(warn("regex", node.loc));
                 }
+            }
 
-                if (helpers.isVariableDeclarator(node)) {
-                    identifiers.set(node.id.name, node.init.value);
-                }
+            if (helpers.isVariableDeclarator(node)) {
+                identifiers.set(node.id.name, node.init.value);
+            }
 
-                if (!module && (helpers.isRequireStatment(node) || helpers.isRequireResolve(node))) {
-                    const arg = node.arguments[0];
-                    if (arg.type === "Identifier") {
-                        if (identifiers.has(arg.name)) {
-                            dependencies.add(identifiers.get(arg.name));
-                        }
-                        else {
-                            warnings.push(warn("require", node.loc));
-                        }
-                    }
-                    else if (arg.type === "Literal") {
-                        dependencies.add(arg.value);
-                    }
-                    else if (arg.type === "ArrayExpression") {
-                        const value = helpers.arrExprToString(arg.elements, identifiers);
-                        if (value.trim() === "") {
-                            warnings.push(warn("require", node.loc));
-                        }
-                        else {
-                            dependencies.add(value);
-                        }
-                    }
-                    else if (arg.type === "BinaryExpression" && arg.operator === "+") {
-                        const value = helpers.concatBinaryExpr(arg, identifiers);
-                        if (value === null) {
-                            warnings.push(warn("require", node.loc));
-                        }
-                        else {
-                            dependencies.add(value);
-                        }
+            if (!module && (helpers.isRequireStatment(node) || helpers.isRequireResolve(node))) {
+                const arg = node.arguments[0];
+                if (arg.type === "Identifier") {
+                    if (identifiers.has(arg.name)) {
+                        dependencies.add(identifiers.get(arg.name));
                     }
                     else {
                         warnings.push(warn("require", node.loc));
                     }
                 }
-                else if (module && node.type === "ImportDeclaration") {
-                    const source = node.source;
-
-                    if (source.type === "Literal") {
-                        dependencies.add(source.value);
+                else if (arg.type === "Literal") {
+                    dependencies.add(arg.value);
+                }
+                else if (arg.type === "ArrayExpression") {
+                    const value = helpers.arrExprToString(arg.elements, identifiers);
+                    if (value.trim() === "") {
+                        warnings.push(warn("require", node.loc));
+                    }
+                    else {
+                        dependencies.add(value);
                     }
                 }
-                else if (node.type === "MemberExpression") {
-                    const memberName = helpers.getMemberExprName(node);
-                    if (memberName.startsWith(kMainModuleStr)) {
-                        dependencies.add(memberName.slice(kMainModuleStr.length));
+                else if (arg.type === "BinaryExpression" && arg.operator === "+") {
+                    const value = helpers.concatBinaryExpr(arg, identifiers);
+                    if (value === null) {
+                        warnings.push(warn("require", node.loc));
                     }
+                    else {
+                        dependencies.add(value);
+                    }
+                }
+                else {
+                    warnings.push(warn("require", node.loc));
                 }
             }
-            catch (err) {
-                // Ignore
+            else if (module && node.type === "ImportDeclaration") {
+                const source = node.source;
+
+                if (source.type === "Literal") {
+                    dependencies.add(source.value);
+                }
+            }
+            else if (node.type === "MemberExpression") {
+                const memberName = helpers.getMemberExprName(node);
+                if (memberName.startsWith(kMainModuleStr)) {
+                    dependencies.add(memberName.slice(kMainModuleStr.length));
+                }
             }
         }
     });

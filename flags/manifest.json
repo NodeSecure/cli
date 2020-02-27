@@ -4,8 +4,8 @@
         "tooltipDescription": "The package use at least one Node.js dependency capable to communicate outside or to establish a listening server."
     },
     "⚠": {
-        "title": "hasSuspectImport",
-        "tooltipDescription": "The package has suspicious imports."
+        "title": "hasWarnings",
+        "tooltipDescription": "The AST analysis has detected warnings (suspect import, unsafe regex ..)"
     },
     "💎": {
         "title": "hasCustomResolver",

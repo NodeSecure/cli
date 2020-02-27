@@ -39,7 +39,7 @@ declare namespace NodeSecure {
         hasManifest: boolean;
         hasOutdatedDependency: boolean;
         isDeprecated: boolean;
-        hasSuspectImport: boolean;
+        hasWarnings: boolean;
         hasLicense: boolean;
         hasMultipleLicenses: boolean;
         hasMissingOrUnusedDependency: boolean;
@@ -81,6 +81,14 @@ declare namespace NodeSecure {
         coordinating_vendor: string;
     }
 
+    interface Warning {
+        file: string;
+        type: "require" | "regex" | "ast-error";
+        reason?: string;
+        start: { line: number; column: number };
+        end: { line: number; column: number };
+    }
+
     interface VersionDescriptor {
         metadata: {
             dependencyCount: number;
@@ -104,6 +112,7 @@ declare namespace NodeSecure {
             size: number;
             description: string;
             author: string | Author;
+            warnings: Warning[];
             composition: {
                 extensions: string[];
                 files: string[];
@@ -112,7 +121,6 @@ declare namespace NodeSecure {
                 required_builtin: string[];
                 unused: string[];
                 missing: string[];
-                suspectFiles?: string[];
             };
             license: string | License[];
             flags: Flags;

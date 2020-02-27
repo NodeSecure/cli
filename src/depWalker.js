@@ -186,7 +186,6 @@ async function processPackageTarball(name, version, options) {
         const jsFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));
         const dependencies = [];
         const inTryDeps = new Set();
-        const suspectFiles = [];
 
         for (const file of jsFiles) {
             try {
@@ -199,20 +198,20 @@ async function processPackageTarball(name, version, options) {
                 [...ASTAnalysis.dependencies.getDependenciesInTryStatement()]
                     .forEach((depName) => inTryDeps.add(depName));
 
-                if (ASTAnalysis.warnings.length > 0) {
-                    suspectFiles.push(file);
-                    ref.flags.hasSuspectImport = true;
-                }
-
                 if (!ASTAnalysis.isOneLineRequire && !file.includes(".min") && isMinified(str)) {
                     ref.composition.minified.push(file);
                 }
+                ref.warnings.push(...ASTAnalysis.warnings.map((curr) => Object.assign({}, curr, { file })));
             }
             catch (err) {
-                // Ignore
+                ref.warnings.push({
+                    file, type: "ast-error", reason: err.stack
+                });
+                ref.flags.hasWarnings = true;
             }
         }
 
+        ref.flags.hasWarnings = ref.warnings.length > 0;
         const required = [...new Set(dependencies)];
 
         if (depsInLocalPackage !== null) {
@@ -237,9 +236,6 @@ async function processPackageTarball(name, version, options) {
         ref.flags.hasExternalCapacity = hasExternal;
 
         ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
-        if (ref.flags.hasSuspectImport) {
-            ref.composition.suspectFiles = suspectFiles;
-        }
 
         await new Promise((resolve) => setImmediate(resolve));
         const licenses = await ntlp(dest);

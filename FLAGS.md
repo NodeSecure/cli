@@ -40,7 +40,7 @@ Indirect dependencies are dangerous for many reasons and you may found useful in
 - [Angular vs React: the security risk of indirect dependencies](https://snyk.io/blog/angular-vs-react-the-security-risk-of-indirect-dependencies/)
 </details>
 
-<details><summary>⚠️ hasSuspectImport</summary>
+<details><summary>⚠️ hasWarnings</summary>
 <br />
 
 This mean that AST (Abstract Syntax Tree) analysis of one of the JavaScript code of the package has failed because the code was to complicated. For example if your package contains a .js file with the following content:

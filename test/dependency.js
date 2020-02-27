@@ -17,7 +17,7 @@ test("Dependency class should act as expected by assertions", () => {
     expect(dep.hasManifest).toStrictEqual(true);
     expect(dep.hasCustomResolver).toStrictEqual(false);
     expect(dep.isDeprecated).toStrictEqual(false);
-    expect(dep.hasSuspectImport).toStrictEqual(false);
+    expect(dep.hasWarnings).toStrictEqual(false);
     expect(dep.hasLicense).toStrictEqual(false);
     expect(dep.hasMinifiedCode).toStrictEqual(false);
     expect(dep.hasScript).toStrictEqual(false);
@@ -25,7 +25,7 @@ test("Dependency class should act as expected by assertions", () => {
     expect(dep.hasIndirectDependencies).toStrictEqual(false);
     expect(dep.hasOutdatedDependency).toStrictEqual(false);
     expect(dep.hasMissingOrUnusedDependency).toStrictEqual(false);
-    expect(Reflect.ownKeys(dep)).toHaveLength(6);
+    expect(Reflect.ownKeys(dep)).toHaveLength(7);
 
     const flagOne = dep.flags;
     const flagTwo = dep.flags;
@@ -65,12 +65,12 @@ test("Create a GIT Dependency (flags.isGit must be set to true)", () => {
 test("Set all flags on one given Dependency", () => {
     const semverDep = new Dependency("semver", "1.0.0");
 
+    semverDep.warnings.push({});
     semverDep.hasCustomResolver = true;
     semverDep.hasScript = true;
     semverDep.hasDependencies = true;
     semverDep.hasMinifiedCode = true;
     semverDep.hasManifest = false;
-    semverDep.hasSuspectImport = true;
     semverDep.isDeprecated = true;
     semverDep.hasLicense = true;
     semverDep.hasIndirectDependencies = true;
@@ -84,7 +84,7 @@ test("Set all flags on one given Dependency", () => {
         hasDependencies: true,
         hasMinifiedCode: true,
         hasManifest: false,
-        hasSuspectImport: true,
+        hasWarnings: true,
         isDeprecated: true,
         hasLicense: true,
         hasIndirectDependencies: true,
