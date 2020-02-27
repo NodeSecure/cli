@@ -78,9 +78,9 @@ async function getCleanDependencyName([depName, range]) {
  * @param {depConfiguration} [options={}] options
  * @returns {AsyncIterableIterator<NodeSecure.Dependency>}
  */
-async function* searchDeepDependencies(packageName, gitURL, options = {}) {
+async function* searchDeepDependencies(packageName, gitURL, options) {
     const isGit = typeof gitURL === "string";
-    const { exclude = new Map(), currDepth = 0, parent, maxDepth = 4 } = options;
+    const { exclude, currDepth = 0, parent, maxDepth } = options;
     parent.dependencyCount++;
 
     const { name, version, deprecated, ...pkg } = await pacote.manifest(isGit ? gitURL : packageName, {
@@ -332,7 +332,7 @@ async function searchPackageAuthors(name, ref) {
  * @param {Map<any, any>} [options.exclude] exclude
  * @returns {AsyncIterableIterator<Dependency>}
  */
-async function* getRootDependencies(manifest, options = Object.create(null)) {
+async function* getRootDependencies(manifest, options) {
     const { maxDepth = 4, exclude } = options;
 
     const { dependencies, customResolvers } = mergeDependencies(manifest, void 0);
@@ -425,6 +425,7 @@ async function depWalker(manifest, options = Object.create(null)) {
         spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime}`));
     }
     catch (err) {
+        /* istanbul ignore next */
         spinner.failed(red().bold(err.message));
 
         return null;
@@ -457,6 +458,7 @@ async function depWalker(manifest, options = Object.create(null)) {
         await rmdir(tmpLocation, { recursive: true });
     }
     catch (err) {
+        /* istanbul ignore next */
         console.log(red().bold(`Failed to remove directory ${yellow().bold(tmpLocation)}`));
     }
     if (verbose) {

@@ -40,6 +40,7 @@
     }
   },
   "jest": {
+    "setupFilesAfterEnv": ["./jest.setup.js"],
     "collectCoverageFrom": [
       "**/src/**/*.js"
     ],

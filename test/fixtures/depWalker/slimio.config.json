@@ -1,0 +1,36 @@
+{
+    "name": "@slimio/config",
+    "version": "0.16.0",
+    "description": "SlimIO Reactive JSON Config loaded",
+    "main": "index.js",
+    "homepage": "https://github.com/SlimIO/Config#readme",
+    "devDependencies": {
+      "@commitlint/cli": "^8.3.5",
+      "@commitlint/config-conventional": "^8.3.4",
+      "@escommunity/minami": "^1.0.0",
+      "@slimio/eslint-config": "^4.0.0",
+      "@slimio/psp": "^0.11.0",
+      "@types/lodash.clonedeep": "^4.5.6",
+      "@types/lodash.get": "^4.4.6",
+      "@types/lodash.set": "^4.3.6",
+      "@types/zen-observable": "^0.8.0",
+      "ava": "^3.2.0",
+      "conventional-changelog-cli": "^2.0.31",
+      "cross-env": "^7.0.0",
+      "eslint": "^6.8.0",
+      "husky": "^4.2.1",
+      "jsdoc": "^3.6.3",
+      "nyc": "^15.0.0",
+      "pkg-ok": "^2.3.1"
+    },
+    "dependencies": {
+      "@iarna/toml": "^2.2.3",
+      "@slimio/is": "^1.5.1",
+      "ajv": "^6.11.0",
+      "lodash.clonedeep": "^4.5.0",
+      "lodash.get": "^4.4.2",
+      "lodash.set": "^4.3.2",
+      "node-watch": "^0.6.3",
+      "zen-observable": "^0.8.15"
+    }
+  }

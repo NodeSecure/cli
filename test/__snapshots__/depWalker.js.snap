@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should return null for depWalker of @slimio/is 1`] = `
+exports[`execute depWalker on @slimio/is 1`] = `
 Object {
   "@slimio/is": Object {
     "1.5.1": Object {
@@ -107,3 +107,5 @@ Object {
   },
 }
 `;
+
+exports[`fetch payload of pacote on the npm registry 1`] = `Array []`;
