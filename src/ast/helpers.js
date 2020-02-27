@@ -15,6 +15,18 @@ function isRequireStatment(node) {
     return node.type === "CallExpression" && node.callee.name === "require";
 }
 
+function isRegexConstructor(node) {
+    if (node.type !== "NewExpression" || node.callee.type !== "Identifier") {
+        return false;
+    }
+
+    return node.callee.name === "RegExp";
+}
+
+function isLiteralRegex(node) {
+    return node.type === "Literal" && Reflect.has(node, "regex");
+}
+
 function isVariableDeclarator(node) {
     if (node.type !== "VariableDeclarator" ||
         node.init === null ||
@@ -107,6 +119,8 @@ function getMemberExprName(node) {
 module.exports = {
     isRequireResolve,
     isRequireStatment,
+    isLiteralRegex,
+    isRegexConstructor,
     isVariableDeclarator,
     concatBinaryExpr,
     arrExprToString,

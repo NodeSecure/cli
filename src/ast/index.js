@@ -3,6 +3,7 @@
 // Require Third-party Dependencies
 const { walk } = require("estree-walker");
 const meriyah = require("meriyah");
+const safeRegex = require("safe-regex");
 
 // Require Internal Dependencies
 const helpers = require("./helpers");
@@ -11,10 +12,14 @@ const ASTDeps = require("./ASTDeps");
 // CONSTANTS
 const kMainModuleStr = "process.mainModule.";
 
+function warn(kind = "require", { start, end }) {
+    return { kind, start, end };
+}
+
 /**
  * @typedef {object} ASTSummary
  * @property {ASTDeps} dependencies
- * @property {boolean} isSuspect
+ * @property {any[]} warnings
  * @property {boolean} isOneLineRequire
  */
 
@@ -22,23 +27,54 @@ const kMainModuleStr = "process.mainModule.";
  * @function searchRuntimeDependencies
  * @description Parse a script, get an AST and search for require occurence!
  * @param {!string} str file content (encoded as utf-8)
- * @param {boolean} [module=false] enable sourceType module
+ * @param {object} [options]
+ * @param {boolean} [options.module=false] enable sourceType module
  * @returns {ASTSummary}
  */
-function searchRuntimeDependencies(str, module = false) {
+function searchRuntimeDependencies(str, options = Object.create(null)) {
+    const { module = false } = options;
     const identifiers = new Map();
     const dependencies = new ASTDeps();
-    let isSuspect = false;
+    const warnings = [];
 
     if (str.charAt(0) === "#") {
         // eslint-disable-next-line
         str = str.slice(str.indexOf("\n"));
     }
-    const { body } = meriyah.parseScript(str, { next: true, module });
+    const { body } = meriyah.parseScript(str, {
+        next: true,
+        module: Boolean(module),
+        loc: true
+    });
 
     walk(body, {
         enter(node) {
             try {
+                if (node.type === "TryStatement") {
+                    dependencies.isInTryStmt = true;
+                }
+                else if (node.type === "CatchClause") {
+                    dependencies.isInTryStmt = false;
+                }
+
+                if (helpers.isLiteralRegex(node)) {
+                    if (!safeRegex(node.regex.pattern)) {
+                        warnings.push(warn("regex", node.loc));
+                    }
+                }
+                else if (helpers.isRegexConstructor(node)) {
+                    const arg = node.arguments[0];
+                    const pattern = helpers.isLiteralRegex(arg) ? arg.regex.pattern : arg.value;
+
+                    if (!safeRegex(pattern)) {
+                        warnings.push(warn("regex", node.loc));
+                    }
+                }
+
+                if (helpers.isVariableDeclarator(node)) {
+                    identifiers.set(node.id.name, node.init.value);
+                }
+
                 if (!module && (helpers.isRequireStatment(node) || helpers.isRequireResolve(node))) {
                     const arg = node.arguments[0];
                     if (arg.type === "Identifier") {
@@ -46,7 +82,7 @@ function searchRuntimeDependencies(str, module = false) {
                             dependencies.add(identifiers.get(arg.name));
                         }
                         else {
-                            isSuspect = true;
+                            warnings.push(warn("require", node.loc));
                         }
                     }
                     else if (arg.type === "Literal") {
@@ -55,7 +91,7 @@ function searchRuntimeDependencies(str, module = false) {
                     else if (arg.type === "ArrayExpression") {
                         const value = helpers.arrExprToString(arg.elements, identifiers);
                         if (value.trim() === "") {
-                            isSuspect = true;
+                            warnings.push(warn("require", node.loc));
                         }
                         else {
                             dependencies.add(value);
@@ -64,21 +100,15 @@ function searchRuntimeDependencies(str, module = false) {
                     else if (arg.type === "BinaryExpression" && arg.operator === "+") {
                         const value = helpers.concatBinaryExpr(arg, identifiers);
                         if (value === null) {
-                            isSuspect = true;
+                            warnings.push(warn("require", node.loc));
                         }
                         else {
                             dependencies.add(value);
                         }
                     }
                     else {
-                        isSuspect = true;
+                        warnings.push(warn("require", node.loc));
                     }
-                }
-                else if (node.type === "TryStatement") {
-                    dependencies.isInTryStmt = true;
-                }
-                else if (node.type === "CatchClause") {
-                    dependencies.isInTryStmt = false;
                 }
                 else if (module && node.type === "ImportDeclaration") {
                     const source = node.source;
@@ -93,9 +123,6 @@ function searchRuntimeDependencies(str, module = false) {
                         dependencies.add(memberName.slice(kMainModuleStr.length));
                     }
                 }
-                else if (helpers.isVariableDeclarator(node)) {
-                    identifiers.set(node.id.name, node.init.value);
-                }
             }
             catch (err) {
                 // Ignore
@@ -105,7 +132,7 @@ function searchRuntimeDependencies(str, module = false) {
 
     return {
         dependencies,
-        isSuspect,
+        warnings,
         isOneLineRequire: !module && body.length === 1 && dependencies.size === 1
     };
 }

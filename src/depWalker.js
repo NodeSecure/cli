@@ -193,17 +193,18 @@ async function processPackageTarball(name, version, options) {
                 const str = await readFile(join(dest, file), "utf-8");
 
                 const usingECMAModules = extname(file) === ".mjs" ? true : isProjectUsingESM;
-                const { dependencies: ASTDeps, isSuspect, isOneLineRequire } = searchRuntimeDependencies(str, usingECMAModules);
-                ASTDeps.removeByName(name);
-                dependencies.push(...ASTDeps);
-                [...ASTDeps.getDependenciesInTryStatement()].forEach((depName) => inTryDeps.add(depName));
+                const ASTAnalysis = searchRuntimeDependencies(str, { module: usingECMAModules });
+                ASTAnalysis.dependencies.removeByName(name);
+                dependencies.push(...ASTAnalysis.dependencies);
+                [...ASTAnalysis.dependencies.getDependenciesInTryStatement()]
+                    .forEach((depName) => inTryDeps.add(depName));
 
-                if (isSuspect) {
+                if (ASTAnalysis.warnings.length > 0) {
                     suspectFiles.push(file);
-                    ref.flags.hasSuspectImport = isSuspect;
+                    ref.flags.hasSuspectImport = true;
                 }
 
-                if (!isOneLineRequire && !file.includes(".min") && isMinified(str)) {
+                if (!ASTAnalysis.isOneLineRequire && !file.includes(".min") && isMinified(str)) {
                     ref.composition.minified.push(file);
                 }
             }
