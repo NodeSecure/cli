@@ -84,7 +84,6 @@ Object {
     },
     "metadata": Object {
       "author": "SlimIO",
-      "authors": Array [],
       "dependencyCount": 0,
       "hasChangedAuthor": false,
       "hasManyPublishers": false,
@@ -92,10 +91,32 @@ Object {
       "homepage": "https://github.com/SlimIO/is#readme",
       "lastUpdateAt": "2019-06-11T06:41:41.590Z",
       "lastVersion": "1.5.1",
+      "maintainers": Array [
+        Object {
+          "email": "maxime.fery@outlook.fr",
+          "name": "rizou",
+        },
+        Object {
+          "email": "mickael.croquet@laposte.net",
+          "name": "mcroquet",
+        },
+        Object {
+          "email": "sebastien48criquet@gmail.com",
+          "name": "ahkrin",
+        },
+        Object {
+          "email": "gentilhomme.thomas@gmail.com",
+          "name": "fraxken",
+        },
+        Object {
+          "email": "alexandre.malaj@gmail.com",
+          "name": "alexandre.malaj",
+        },
+      ],
       "publishedCount": 7,
       "publishers": Array [
         Object {
-          "firstPublishAt": "2018-09-22T20:36:27.523Z",
+          "at": "2018-09-22T20:36:27.523Z",
           "name": "fraxken",
           "version": "1.0.0",
         },
