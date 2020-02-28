@@ -85,10 +85,10 @@ class Dependency {
                 hasChangedAuthor: false,
                 hasManyPublishers: false,
                 hasReceivedUpdateInOneYear: true,
-                homepage: "",
-                author: "N/A",
+                homepage: null,
+                author: null,
                 publishers: [],
-                authors: []
+                maintainers: []
             }
         };
     }

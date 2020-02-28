@@ -41,7 +41,7 @@ function createAvatar(name, desc) {
     aElement.href = desc.url || "#";
 
     const imgEl = document.createElement("img");
-    if (desc.email === null) {
+    if (!("email" in desc) || typeof desc.email === "undefined" || desc.email === null) {
         imgEl.src = "/img/avatar-default.png";
     }
     else {
@@ -219,4 +219,41 @@ async function updateDescription(title) {
     const flagDescriptionElement = document.getElementById("flag-description");
     const description = await (await fetch(`flags/description/${title}`)).text();
     flagDescriptionElement.innerHTML = description;
+}
+
+function authorRegex() {
+    return /^([^<(]+?)?[ \t]*(?:<([^>(]+?)>)?[ \t]*(?:\(([^)]+?)\)|$)/gm;
+}
+
+function parseAuthor(str) {
+    if (typeof str !== "string") {
+        throw new TypeError("expected author to be a string");
+    }
+
+    if (!str || !/\w/.test(str)) {
+        return {};
+    }
+
+    const match = authorRegex().exec(str);
+    if (!match) {
+        return {};
+    }
+    const author = Object.create(null);
+
+    if (match[1]) {
+        author.name = match[1];
+    }
+
+    for (let id = 2; id < match.length; id++) {
+        const val = match[id] || "";
+
+        if (val.includes("@")) {
+            author.email = val;
+        }
+        else if (val.includes("http")) {
+            author.url = val;
+        }
+    }
+
+    return author;
 }

@@ -168,6 +168,10 @@ document.addEventListener("DOMContentLoaded", async() => {
     for (const [packageName, descriptor] of dataEntries) {
         const { metadata, vulnerabilities, versions } = descriptor;
 
+        // for (const maintainer of metadata.maintainers) {
+        //     handleAuthor(maintainer);
+        // }
+
         for (const currVersion of versions) {
             const opt = descriptor[currVersion];
             const { id, usedBy, flags, size, license, author, composition } = opt;
@@ -560,32 +564,23 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
 
     function handleAuthor(author) {
-        if (author === "N/A") {
+        if (typeof author === "undefined" || author === null) {
             return;
         }
-        let name = null;
-        let email = null;
-        let url = null;
+        let user = { name: null };
 
         if (typeof author === "string") {
-            const match = /^(.*)<(.*)>/g.exec(author);
-            name = match === null ? author : match[1].trim();
-            email = match === null ? null : match[2].trim();
+            user = parseAuthor(author);
         }
-        else {
-            if (typeof author.name !== "string") {
-                return;
-            }
-            name = author.name;
-            email = author.email || null;
-            url = author.url || null;
+        else if (typeof author === "object" && typeof author.name === "string") {
+            user = author;
         }
 
-        if (authorsList.has(name)) {
-            authorsList.get(name).count++;
+        if (authorsList.has(user.name)) {
+            authorsList.get(user.name).count++;
         }
-        else {
-            authorsList.set(name, { email, url, count: 1 });
+        else if (user.name !== null) {
+            authorsList.set(user.name, Object.assign({}, user, { count: 1 }));
         }
     }
 });

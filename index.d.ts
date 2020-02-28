@@ -7,7 +7,7 @@ declare namespace NodeSecure {
     interface Publisher {
         name: string;
         version: string;
-        firstPublishAt: string;
+        at: string;
     }
 
     interface License {
@@ -22,10 +22,9 @@ declare namespace NodeSecure {
         from: string;
     }
 
-    interface Owner {
+    interface Maintainer {
         name: string;
-        at: string;
-        version: string;
+        email: string;
     }
 
     interface Author {
@@ -98,8 +97,9 @@ declare namespace NodeSecure {
             hasChangedAuthor: boolean;
             hasManyPublishers: boolean;
             hasReceivedUpdateInOneYear: boolean;
-            author: 'N/A' | string;
-            authors: Owner[];
+            author: string | null;
+            homepage: string | null;
+            maintainers: Maintainer[];
             publishers: Publisher[];
         };
         versions: string[];

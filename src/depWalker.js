@@ -20,6 +20,7 @@ const ntlp = require("ntlp");
 const iter = require("itertools");
 const ms = require("ms");
 const difference = require("lodash.difference");
+const is = require("@slimio/is");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
@@ -261,58 +262,39 @@ async function processPackageTarball(name, version, options) {
  */
 async function searchPackageAuthors(name, ref) {
     try {
+        const publishers = new Set();
+        const oneYearFromToday = new Date();
+        oneYearFromToday.setFullYear(oneYearFromToday.getFullYear() - 1);
+
         const pkg = await npmReg.package(name);
         ref.publishedCount = pkg.versions.length;
         ref.lastUpdateAt = pkg.publishedAt(pkg.lastVersion);
-        {
-            const oneYearFromToday = new Date();
-            oneYearFromToday.setFullYear(oneYearFromToday.getFullYear() - 1);
-            ref.hasReceivedUpdateInOneYear = !(oneYearFromToday > ref.lastUpdateAt);
-        }
+        ref.hasReceivedUpdateInOneYear = !(oneYearFromToday > ref.lastUpdateAt);
         ref.lastVersion = pkg.lastVersion;
-        ref.homepage = pkg.homepage || "";
-
-        if (typeof pkg.author === "undefined") {
-            return;
-        }
+        ref.homepage = pkg.homepage || null;
+        ref.maintainers = pkg.maintainers;
         ref.author = pkg.author.name || pkg.author;
 
-        const authors = [];
-        const publishers = new Set();
-
-        for (const verStr of pkg.versions) {
-            const version = pkg.version(verStr);
-            if (typeof version.npmUser !== "undefined") {
-                const npmUser = version.npmUser.name || version.npmUser;
-                if (!publishers.has(npmUser)) {
-                    publishers.add(npmUser);
-                    ref.publishers.push({
-                        name: npmUser,
-                        version: verStr,
-                        firstPublishAt: pkg.publishedAt(verStr)
-                    });
+        for (const version of pkg.versions) {
+            const { npmUser } = pkg.version(version);
+            if (!is.nullOrUndefined(npmUser)) {
+                const name = npmUser.name || version.npmUser;
+                if (!publishers.has(name)) {
+                    publishers.add(name);
+                    ref.publishers.push({ name, version, at: pkg.publishedAt(version) });
                 }
             }
 
-            if (typeof version.author === "undefined" || version.author.name === ref.author) {
+            if (is.nullOrUndefined(ref.author) || is.nullOrUndefined(version.author)) {
                 continue;
             }
+
             const name = version.author.name || version.author;
-            if (typeof name !== "string") {
-                continue;
+            if (is.string(name) && name !== ref.author) {
+                ref.hasChangedAuthor = true;
             }
-
-            ref.hasChangedAuthor = true;
-            authors.push({
-                name,
-                at: pkg.publishedAt(verStr),
-                version: verStr
-            });
         }
 
-        if (authors.length > 0) {
-            ref.authors = authors;
-        }
         ref.hasManyPublishers = publishers.size > 1;
     }
     catch (err) {
