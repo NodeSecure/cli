@@ -37,6 +37,7 @@ function createAvatar(name, desc) {
     divEl.appendChild(pElement);
 
     const aElement = document.createElement("a");
+    aElement.rel = "noopener";
     aElement.target = "_blank";
     aElement.href = desc.url || "#";
 
@@ -85,6 +86,7 @@ function createLicenseLine(tbody, license, { name, link }) {
 
     {
         const aElement = document.createElement("a");
+        aElement.rel = "noopener";
         aElement.setAttribute("target", "_blank");
         aElement.href = link;
         aElement.textContent = name;
@@ -107,6 +109,7 @@ function createLiField(title, value, options = {}) {
     liElement.appendChild(bElement);
     if (isLink) {
         const aElement = document.createElement("a");
+        aElement.rel = "noopener";
         aElement.href = value;
         aElement.target = "_blank";
 
