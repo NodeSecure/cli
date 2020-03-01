@@ -5,10 +5,11 @@ const os = require("os");
 const { join, extname } = require("path");
 const { mkdir, readFile, rmdir } = require("fs").promises;
 const repl = require("repl");
+const { EventEmitter } = require("events");
 
 // Require Third-party Dependencies
 const pacote = require("pacote");
-const { red, white, yellow, cyan } = require("kleur");
+const { red, white, yellow, cyan, gray, green } = require("kleur");
 const semver = require("semver");
 const Lock = require("@slimio/lock");
 const Spinner = require("@slimio/async-cli-spinner");
@@ -37,9 +38,9 @@ const TMP = os.tmpdir();
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 
 // Vars
-const tarballLocker = new Lock({ maxConcurrent: 5 });
 const npmReg = new Registry(REGISTRY_DEFAULT_ADDR);
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
+Spinner.DEFAULT_SPINNER = "dots";
 
 async function getExpectedSemVer(depName, range) {
     try {
@@ -62,23 +63,6 @@ async function getCleanDependencyName([depName, range]) {
     return [`${depName}@${range}`, `${depName}@${depVer}`, isLatest];
 }
 
-/**
- * @typedef {object} depConfiguration
- * @property {Map<string, Set<string>>} exclude
- * @property {number} currDepth
- * @property {number} maxDepth
- * @property {Dependency} parent
- */
-
-/**
- * @async
- * @generator
- * @function searchDeepDependencies
- * @param {!string} packageName packageName (and version)
- * @param {string} [gitURL]
- * @param {depConfiguration} [options={}] options
- * @returns {AsyncIterableIterator<NodeSecure.Dependency>}
- */
 async function* searchDeepDependencies(packageName, gitURL, options) {
     const isGit = typeof gitURL === "string";
     const { exclude, currDepth = 0, parent, maxDepth } = options;
@@ -131,18 +115,8 @@ async function* searchDeepDependencies(packageName, gitURL, options) {
     yield current;
 }
 
-/**
- * @async
- * @function processPackageTarball
- * @param {!string} name package name
- * @param {!string} version package version
- * @param {object} options
- * @param {*} [options.ref] version ref
- * @param {string} [options.tmpLocation] temp location
- * @returns {Promise<void>}
- */
 async function processPackageTarball(name, version, options) {
-    const { ref, tmpLocation } = options;
+    const { ref, tmpLocation, tarballLocker } = options;
 
     const dest = join(tmpLocation, `${name}@${version}`);
     const free = await tarballLocker.acquireOne();
@@ -253,14 +227,7 @@ async function processPackageTarball(name, version, options) {
     }
 }
 
-/**
- * @async
- * @function searchPackageAuthors
- * @param {!string} name package name
- * @param {*} ref ref
- * @returns {Promise<void>}
- */
-async function searchPackageAuthors(name, ref) {
+async function searchPackageAuthors(name, ref, regEE) {
     try {
         const publishers = new Set();
         const oneYearFromToday = new Date();
@@ -300,17 +267,11 @@ async function searchPackageAuthors(name, ref) {
     catch (err) {
         // Ignore
     }
+    finally {
+        regEE.emit("done");
+    }
 }
 
-/**
- * @async
- * @function getRootDependencies
- * @param {any} manifest package manifest
- * @param {object} options options
- * @param {number} [options.maxDepth=4] max depth
- * @param {Map<any, any>} [options.exclude] exclude
- * @returns {AsyncIterableIterator<Dependency>}
- */
 async function* getRootDependencies(manifest, options) {
     const { maxDepth = 4, exclude } = options;
 
@@ -361,53 +322,77 @@ async function depWalker(manifest, options = Object.create(null)) {
     const tmpLocation = join(TMP, uniqueSlug());
     await mkdir(tmpLocation, { recursive: true });
 
-    const spinner = new Spinner({ spinner: "dots", verbose }).start(white().bold("Fetching all dependencies ..."));
-
     /** @type {Map<string, NodeSecure.Payload>} */
     const flattenedDeps = new Map();
-    const promisesToWait = [];
-
     // We are dealing with an exclude Map to avoid checking a package more than one time in searchDeepDependencies
     const exclude = new Map();
 
-    for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude })) {
-        const { name, version } = currentDep;
-        const current = currentDep.flatten(name === manifest.name ? 0 : void 0);
+    {
+        const treeSpinner = new Spinner({ verbose })
+            .start(white().bold("Fetching and walking through all dependencies ..."));
+        const tarballSpinner = new Spinner({ verbose })
+            .start(white().bold("Waiting for tarball to analyze!"));
+        const regSpinner = new Spinner({ verbose })
+            .start(white().bold("Waiting for packages to fetch on npm registry !"));
 
-        // Note: These are not very well handled in my opinion (not so much lazy ...).
-        promisesToWait.push(searchPackageAuthors(name, current.metadata));
-        promisesToWait.push(processPackageTarball(name, version, {
-            ref: current[version],
-            tmpLocation
-        }));
+        let allDependencyCount = 0;
+        let processedTarballCount = 0;
+        let processedRegistryCount = 0;
+        const promisesToWait = [];
 
-        if (flattenedDeps.has(name)) {
-            // TODO: how to handle different metadata ?
-            const dep = flattenedDeps.get(name);
+        const tarballLocker = new Lock({ maxConcurrent: 5 });
+        const regEE = new EventEmitter();
+        regEE.on("done", () => {
+            processedRegistryCount++;
+            const stats = gray().bold(`[${yellow().bold(processedRegistryCount)}/${allDependencyCount}]`);
+            regSpinner.text = white().bold(`Fetched package metadata: ${stats}`);
+        });
+        tarballLocker.on("freeOne", () => {
+            processedTarballCount++;
+            const stats = gray().bold(`[${yellow().bold(processedTarballCount)}/${allDependencyCount}]`);
+            tarballSpinner.text = white().bold(`Analyzed npm tarballs: ${stats}`);
+        });
 
-            const currVersion = current.versions[0];
-            if (!Reflect.has(dep, currVersion)) {
-                dep[currVersion] = current[currVersion];
-                dep.versions.push(currVersion);
+        for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude })) {
+            allDependencyCount++;
+            const { name, version } = currentDep;
+            const current = currentDep.flatten(name === manifest.name ? 0 : void 0);
+
+            // Note: These are not very well handled in my opinion (not so much lazy ...).
+            promisesToWait.push(searchPackageAuthors(name, current.metadata, regEE));
+            promisesToWait.push(processPackageTarball(name, version, {
+                ref: current[version],
+                tmpLocation,
+                tarballLocker
+            }));
+
+            if (flattenedDeps.has(name)) {
+                // TODO: how to handle different metadata ?
+                const dep = flattenedDeps.get(name);
+
+                const currVersion = current.versions[0];
+                if (!Reflect.has(dep, currVersion)) {
+                    dep[currVersion] = current[currVersion];
+                    dep.versions.push(currVersion);
+                }
+            }
+            else {
+                flattenedDeps.set(name, current);
             }
         }
-        else {
-            flattenedDeps.set(name, current);
-        }
-    }
 
-    // Wait for all extraction to be done!
-    spinner.text = white().bold("Waiting to fetch all packages stats...");
-    try {
-        await Promise.all(promisesToWait);
-        const execTime = cyan().bold(ms(Number(spinner.elapsedTime.toFixed(2))));
-        spinner.succeed(white().bold(`Successfully fetched and processed all stats in ${execTime}`));
-    }
-    catch (err) {
-        /* istanbul ignore next */
-        spinner.failed(red().bold(err.message));
+        const execTree = cyan().bold(ms(Number(treeSpinner.elapsedTime.toFixed(2))));
+        treeSpinner.succeed(white().bold(
+            `Successfully navigated through the ${yellow().bold("dependency tree")} in ${execTree}`));
 
-        return null;
+        // Wait for all extraction to be done!
+        await Promise.allSettled(promisesToWait);
+        await new Promise((resolve) => setImmediate(resolve));
+
+        const execTarball = cyan().bold(ms(Number(tarballSpinner.elapsedTime.toFixed(2))));
+        tarballSpinner.succeed(white().bold(
+            `Successfully analyzed ${green().bold(allDependencyCount)} packages tarball in ${execTarball}`));
+        regSpinner.succeed(white().bold("Successfully fetched required metadata for all packages!"));
     }
 
     // Search for vulnerabilities in the local .json db
