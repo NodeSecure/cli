@@ -7,9 +7,22 @@
 
 @font-face{
     font-family: "mononoki";
-    src: url("font/mononoki/mononoki-Regular.eot");
+    src: url("../font/mononoki/mononoki-Regular.woff");
     font-style: normal;
 }
+
+@font-face{
+    font-family: "mononoki";
+    src: url("../font/mononoki/mononoki-Bold.woff");
+    font-style: bold;
+}
+
+@font-face{
+    font-family: "mononoki";
+    src: url("../font/mononoki/mononoki-Italic.woff");
+    font-style: italic;
+}
+
 
 body, html {
     height: 100%;
