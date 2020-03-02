@@ -130,6 +130,15 @@ The SlimIO [Security project](https://github.com/SlimIO/Security) use nsecure wi
 
 Flags and emojis legends are documented [here](./FLAGS.md).
 
+## FAQ
+
+### Why some nodes are red in the UI ?
+Nodes are red when the project/package has been flagged with 🔬 `hasMinifiedCode` or ⚠️ `hasWarnings`.
+
+### Why the node-secure package size is so different from Bundlephobia ?
+Node-secure will analyze the complete size of the npm tarball with no filters or particular optimization. Bundlephobia on the
+other side will bundle and remove most of the useless files from the tarball (like the documentation etc..).
+
 ## License
 MIT
 
