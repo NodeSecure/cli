@@ -4,11 +4,11 @@
     <b>kind</b> of warning:
 </p>
 <ul>
-    <li>(<b>require</b>) Unable to parse/detect a dependency name</li>
-    <li>(<b>regex</b>) Unsafe regex</li>
+    <li>(<b>unsafe-import</b>) Unable to parse/detect a dependency name</li>
+    <li>(<b>unsafe-regex</b>) Unsafe regex</li>
     <li>(<b>ast-error</b>) An error as occured in the AST Analysis</li>
 </ul>
-<h2>require</h2>
+<h2>unsafe-import</h2>
 <br />
 <p>
     Example if your package contains a .js file with the following content:
@@ -28,7 +28,7 @@
     This code require the core package http but the AST analysis is not capable
     to get it (not yet 😁). So the code will be flagged as "suspect".
 </p>
-<h2>regex</h2>
+<h2>unsafe-regex</h2>
 <p>
     RegEx are dangerous and could lead to ReDos attack. This warning is emitted when
     the package <a href="https://github.com/davisjam/safe-regex" target="_blank">safe-regex</a> return true.

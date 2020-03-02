@@ -147,3 +147,15 @@
     font-family: "mononoki";
     font-size: 20px;
 }
+.popup-licenses-container div.line {
+    display: flex;
+    height: 30px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+.popup-licenses-container div.line b {
+    margin-right: 20px;
+}
+.popup-licenses-container div.line a {
+    color: #26C6DA;
+}

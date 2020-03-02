@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             const clone = document.importNode(packageInfoTemplate.content, true);
             const currentNode = params.nodes[0];
             const selectedNode = linker.get(Number(currentNode));
-            const { name, version, author, flags, composition } = selectedNode;
+            const { name, version, author, flags, composition, warnings } = selectedNode;
             const { metadata, versions, vulnerabilities } = data[name];
 
             const btnShow = clone.getElementById("btn_showOrHide");
@@ -405,15 +405,44 @@ document.addEventListener("DOMContentLoaded", async() => {
                         }
                     });
                 };
+                // eslint-disable-next-line func-style
+                const warningsModal = () => {
+                    toggleModal("popup-warning", (clone) => {
+                        const warningLink = clone.getElementById("warning-link");
+                        warningLink.href = metadata.homepage;
+                        warningLink.textContent = metadata.homepage;
+
+                        const tbody = clone.querySelector("#warnings-table tbody");
+                        for (const { kind, file, error, start, end } of warnings) {
+                            const line = tbody.insertRow(0);
+
+                            line.insertCell(0).appendChild(document.createTextNode(kind));
+                            line.insertCell(1).appendChild(document.createTextNode(file));
+                            const errorCell = line.insertCell(2);
+                            const positionCell = line.insertCell(3);
+                            if (kind === "ast-error") {
+                                errorCell.appendChild(document.createTextNode(error));
+                            }
+                            else {
+                                const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
+                                positionCell.appendChild(document.createTextNode(position));
+                            }
+                        }
+                    });
+                };
 
                 const fieldsFragment = document.createDocumentFragment();
                 fieldsFragment.appendChild(createLiField("Author", fAuthor));
-                fieldsFragment.appendChild(createLiField("License", licenses, { modal: licenseModal }));
                 fieldsFragment.appendChild(createLiField("Size on (local) system", formatBytes(selectedNode.size)));
                 fieldsFragment.appendChild(createLiField("Homepage", metadata.homepage || "N/A", { isLink: true }));
                 fieldsFragment.appendChild(createLiField("Last release (version)", metadata.lastVersion));
                 fieldsFragment.appendChild(createLiField("Last release (date)", lastUpdate));
                 fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
+                if (warnings.length > 0) {
+                    fieldsFragment.appendChild(document.createElement("hr"));
+                    fieldsFragment.appendChild(createLiField("Warnings", warnings.length, { modal: warningsModal }));
+                }
+                fieldsFragment.appendChild(createLiField("License", licenses, { modal: licenseModal }));
                 fields.appendChild(fieldsFragment);
             }
 

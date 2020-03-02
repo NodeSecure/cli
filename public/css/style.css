@@ -281,6 +281,12 @@ section#show-info {
     position: absolute;
     top: 10px;
 }
+section#show-info hr {
+    height: 0;
+    outline: none;
+    border: none;
+    border-top: 2px dashed #37474F;
+}
 section#show-info > .line-title {
     display: flex;
     justify-content: center;

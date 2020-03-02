@@ -180,7 +180,8 @@ async function processPackageTarball(name, version, options) {
             }
             catch (err) {
                 ref.warnings.push({
-                    file, type: "ast-error", reason: err.stack
+                    file, type: "ast-error", error: err.stack,
+                    start: { line: 0, column: 0 }, end: { line: 0, column: 0 }
                 });
                 ref.flags.hasWarnings = true;
             }

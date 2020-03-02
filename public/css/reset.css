@@ -91,6 +91,7 @@ table {
 }
 
 table {
+    width: 100%;
     overflow: hidden;
     border-radius: 4px;
     box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.25);

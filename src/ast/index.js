@@ -12,7 +12,7 @@ const ASTDeps = require("./ASTDeps");
 // CONSTANTS
 const kMainModuleStr = "process.mainModule.";
 
-function warn(kind = "require", { start, end }) {
+function warn(kind = "unsafe-import", { start, end }) {
     return { kind, start, end };
 }
 
@@ -58,7 +58,7 @@ function searchRuntimeDependencies(str, options = Object.create(null)) {
 
             if (helpers.isLiteralRegex(node)) {
                 if (!safeRegex(node.regex.pattern)) {
-                    warnings.push(warn("regex", node.loc));
+                    warnings.push(warn("unsafe-regex", node.loc));
                 }
             }
             else if (helpers.isRegexConstructor(node)) {
@@ -66,7 +66,7 @@ function searchRuntimeDependencies(str, options = Object.create(null)) {
                 const pattern = helpers.isLiteralRegex(arg) ? arg.regex.pattern : arg.value;
 
                 if (!safeRegex(pattern)) {
-                    warnings.push(warn("regex", node.loc));
+                    warnings.push(warn("unsafe-regex", node.loc));
                 }
             }
 
@@ -81,7 +81,7 @@ function searchRuntimeDependencies(str, options = Object.create(null)) {
                         dependencies.add(identifiers.get(arg.name));
                     }
                     else {
-                        warnings.push(warn("require", node.loc));
+                        warnings.push(warn("unsafe-import", node.loc));
                     }
                 }
                 else if (arg.type === "Literal") {
@@ -90,7 +90,7 @@ function searchRuntimeDependencies(str, options = Object.create(null)) {
                 else if (arg.type === "ArrayExpression") {
                     const value = helpers.arrExprToString(arg.elements, identifiers);
                     if (value.trim() === "") {
-                        warnings.push(warn("require", node.loc));
+                        warnings.push(warn("unsafe-import", node.loc));
                     }
                     else {
                         dependencies.add(value);
@@ -99,14 +99,14 @@ function searchRuntimeDependencies(str, options = Object.create(null)) {
                 else if (arg.type === "BinaryExpression" && arg.operator === "+") {
                     const value = helpers.concatBinaryExpr(arg, identifiers);
                     if (value === null) {
-                        warnings.push(warn("require", node.loc));
+                        warnings.push(warn("unsafe-import", node.loc));
                     }
                     else {
                         dependencies.add(value);
                     }
                 }
                 else {
-                    warnings.push(warn("require", node.loc));
+                    warnings.push(warn("unsafe-import", node.loc));
                 }
             }
             else if (module && node.type === "ImportDeclaration") {
