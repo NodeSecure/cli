@@ -1,4 +1,7 @@
 # node-secure
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 ![ver](https://img.shields.io/github/package-json/v/ES-Community/node-secure?style=flat-square)
 ![license](https://img.shields.io/github/license/ES-Community/node-secure?style=flat-square)
 [![build status][travis-image]][travis-url]
@@ -159,3 +162,22 @@ MIT
 [travis-url]: https://travis-ci.com/ES-Community/node-secure
 [codecov-image]: https://img.shields.io/codecov/c/github/ES-Community/node-secure.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/ES-Community/node-secure
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://mickaelcroquet.fr"><img src="https://avatars2.githubusercontent.com/u/23740372?v=4" width="100px;" alt=""/><br /><sub><b>Haze</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=CroquetMickael" title="Code">💻</a> <a href="#design-CroquetMickael" title="Design">🎨</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
