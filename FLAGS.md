@@ -43,7 +43,15 @@ Indirect dependencies are dangerous for many reasons and you may found useful in
 <details><summary>⚠️ hasWarnings</summary>
 <br />
 
-This mean that AST (Abstract Syntax Tree) analysis of one of the JavaScript code of the package has failed because the code was to complicated. For example if your package contains a .js file with the following content:
+This mean that the AST (Abstract Syntax Tree) analysis as emitted one or many warnings ! There is many different **kind** of warning:
+
+- **unsafe-import** (Unable to parse/detect a dependency name)
+- **unsafe-regex** (Unsafe regex)
+- **ast-error** (An error as occured in the AST Analysis)
+
+### Unsafe-import
+
+Example if your package contains a .js file with the following content:
 
 ```js
 const { readFileSync } = require("fs");
@@ -66,6 +74,17 @@ evil(unhex("68747470")).request
 ```
 
 This code require the core package `http` but the AST analysis is not capable to get it (not yet 😁). So the code will be flagged as "suspect".
+
+### unsafe-regex
+
+RegEx are dangerous and could lead to ReDos attack. This warning is emitted when the package [safe-regex](https://github.com/davisjam/safe-regex) return true.
+
+- [How a RegEx can bring your Node.js service down](https://medium.com/@liran.tal/node-js-pitfalls-how-a-regex-can-bring-your-system-down-cbf1dc6c4e02)
+
+### ast-error
+
+The AST Analysis has failed (return the stack trace of nsecure). The JSON payload will contains an "error" field with the stack trace.
+
 </details>
 
 <details><summary>⛔️ isDeprecated</summary>
@@ -168,11 +187,23 @@ Vulnerabilities has been detected for the given package **version**. We are fetc
 The package has a missing dependency (in package.json) or a dependency that is not used in the code (this may happen if the AST Analysis fail!)
 </details>
 
-<details><summary>💀 isDead</summary>
+<details><summary>💀 isDead (hasReceivedUpdateInOneYear + hasOutdatedDependency)</summary>
 <br />
 
 The dependency (package) has not received update from at least one year and has at least one dependency that need to be updated. It probably
 means it's dangerous to use (or continue to) because the author doesn't seem to update the package anymore (even worst if you want him to implement a new version / security patch).
+</details>
+
+## Web UI Emojis
+
+Following emojis are only available in the node-secure UI:
+
+<details><summary>🎭 duplicate</summary>
+<br />
+
+Indicate that the package is already somewhere else in the dependency tree with a different version.
+
+<img src="https://res.cloudinary.com/practicaldev/image/fetch/s--CGzN_Iw6--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://i.imgur.com/70ynftT.png">
 </details>
 
 ## Notes

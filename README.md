@@ -6,7 +6,7 @@
 ![dep](https://img.shields.io/david/ES-Community/node-secure?style=flat-square)
 ![size](https://img.shields.io/github/languages/code-size/ES-Community/node-secure?style=flat-square)
 
-[Node.js](https://nodejs.org/en/) security Command Line Interface. The goal of the project is to a design a CLI/API that will fetch and deeply analyze the dependency tree of a given **npm** package (or a local project with a **package.json**) and output a **.json file** that will contains all metadata and flags about each packages.
+[Node.js](https://nodejs.org/en/) security Command Line Interface. The goal of the project is to a design a CLI/API that will fetch and deeply analyze the dependency tree of a given **npm** package (Or a local project with a **package.json**) and output a **.json file** that will contains all metadata and flags about each packages.
 
 The CLI allow to load the JSON into a Webpage that will draw a Network (with [vis.js](https://visjs.org/)) of all dependencies in a webpage (example in the screenshot below).
 
@@ -88,7 +88,7 @@ $ nsecure from express -d 10 -o express-security-report
 
 ## Private packages / registry
 
-Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contain a [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
+Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contains a [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
 
 > 👀 If you'r linking the package yourself you can create a `.env` file at the root of the project too.
 
@@ -100,7 +100,7 @@ $ npm config set "http://your-registry/"
 ```
 
 ## API
-Use nsecure as an API package to fetch and work with the generated JSON. The following example demonstrate how to retrieve the Payload for mocha, cacache and is-wsl packages. It's possible to use the **cwd** method if you want to achieve similar work on a local project.
+Use nsecure as an API package to fetch and work with the generated JSON. The following example demonstrates how to retrieve the Payload for mocha, cacache and is-wsl packages. It's possible to use the **cwd** method if you want to achieve similar work on a local project.
 
 ```js
 const { from } = require("nsecure");
@@ -137,7 +137,7 @@ Nodes are red when the project/package has been flagged with 🔬 `hasMinifiedCo
 
 ### Why the node-secure package size is so different from Bundlephobia ?
 Node-secure will analyze the complete size of the npm tarball with no filters or particular optimization. Bundlephobia on the
-other side will bundle and remove most of the useless files from the tarball (like the documentation etc..).
+other side will bundle and remove most of the useless files from the tarball (Like the documentation, etc.).
 
 ## License
 MIT
