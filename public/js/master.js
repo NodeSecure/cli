@@ -321,8 +321,8 @@ document.addEventListener("DOMContentLoaded", async() => {
             const btnShow = clone.getElementById("btn_showOrHide");
             const btnVuln = clone.getElementById("btn_vuln");
             btnShow.innerHTML = selectedNode.hidden ?
-                "<i class=\"icon-eye\"></i><p>Show childs</p>" :
-                "<i class=\"icon-eye-off\"></i><p>Hide childs</p>";
+                "<i class=\"icon-eye\"></i><p>Show children</p>" :
+                "<i class=\"icon-eye-off\"></i><p>Hide children</p>";
 
             if (metadata.dependencyCount === 0) {
                 btnShow.classList.add("disabled");
@@ -333,10 +333,10 @@ document.addEventListener("DOMContentLoaded", async() => {
                     currBtn.classList.toggle("active");
                     const hidden = !selectedNode.hidden;
                     if (hidden) {
-                        currBtn.innerHTML = "<i class=\"icon-eye\"></i><p>Show childs</p>";
+                        currBtn.innerHTML = "<i class=\"icon-eye\"></i><p>Show children</p>";
                     }
                     else {
-                        currBtn.innerHTML = "<i class=\"icon-eye-off\"></i><p>Hide childs</p>";
+                        currBtn.innerHTML = "<i class=\"icon-eye-off\"></i><p>Hide children</p>";
                     }
 
                     network.startSimulation();
