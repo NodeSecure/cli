@@ -28,6 +28,17 @@
         "doc",
         "design"
       ]
+    },
+    {
+      "login": "Xstoudi",
+      "name": "Xavier Stouder",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/2575182?v=4",
+      "profile": "https://stouder.io",
+      "contributions": [
+        "code",
+        "design",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
