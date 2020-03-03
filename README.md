@@ -18,7 +18,7 @@ The CLI allow to load the JSON into a Webpage that will draw a Network (with [vi
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/en/) version 12 or higher
+- [Node.js](https://nodejs.org/en/) version 12.12.0 or higher
 
 ## Getting Started
 

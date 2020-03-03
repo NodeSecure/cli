@@ -7,6 +7,9 @@
     "node-secure": "./bin/index.js",
     "nsecure": "./bin/index.js"
   },
+  "engines": {
+      "node": ">=12.12.0"
+  },
   "scripts": {
     "eslint": "eslint bin src test",
     "eslint-fix": "npm run eslint -- --fix",
