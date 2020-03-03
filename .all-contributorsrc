@@ -14,6 +14,20 @@
         "code",
         "design"
       ]
+    },
+    {
+      "login": "fraxken",
+      "name": "Gentilhomme",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4438263?v=4",
+      "profile": "https://www.linkedin.com/in/thomas-gentilhomme/",
+      "contributions": [
+        "code",
+        "bug",
+        "blog",
+        "test",
+        "doc",
+        "design"
+      ]
     }
   ],
   "contributorsPerLine": 7,
