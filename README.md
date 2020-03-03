@@ -4,17 +4,28 @@
 [![build status][travis-image]][travis-url]
 [![Test coverage][codecov-image]][codecov-url]
 ![dep](https://img.shields.io/david/ES-Community/node-secure?style=flat-square)
-![size](https://img.shields.io/github/languages/code-size/ES-Community/node-secure?style=flat-square)
+![size](https://img.shields.io/bundlephobia/min/nsecure?style=flat-square)
+![download](https://img.shields.io/npm/dw/nsecure?style=flat-square)
 
 [Node.js](https://nodejs.org/en/) security Command Line Interface. The goal of the project is to a design a CLI/API that will fetch and deeply analyze the dependency tree of a given **npm** package (Or a local project with a **package.json**) and output a **.json file** that will contains all metadata and flags about each packages.
 
-The CLI allow to load the JSON into a Webpage that will draw a Network (with [vis.js](https://visjs.org/)) of all dependencies in a webpage (example in the screenshot below).
+The CLI allow to load the JSON into a Webpage with the **open** command. The page will draw a Network of all dependencies with [vis.js](https://visjs.org/) (example in the screenshot below).
 
 - [NodeSecure G.Drive Design document](https://docs.google.com/document/d/1853Uwup9mityAYqAOnen1KSqSA6hlBgpKU0u0ygGY4Y/edit?usp=sharing)
 
 <p align="center">
-<img src="https://i.imgur.com/w9xynjJ.png">
+<img src="https://i.imgur.com/3xnTGBl.png">
 </p>
+
+## Features
+
+- Run an AST analysis on each .js/.mjs file in the packages tarball and sort out warnings (unsafe-regex, unsafe-import etc) and the complete list of required expr and statements (files, node.js module, etc.).
+- Return complete composition for each packages (extensions, files, tarball size, etc).
+- Packages metadata from the npm registry API (number of releases, last publish date, maintainers etc).
+- Search for licenses files in the tarball and return the SPDX expression conformance of each detected licenses.
+- Link vulnerabilities from the Security-WG repositories to the package version node.
+- Add flags to each packages versions to identify well known patterns and potential security threats easily.
+- Analyze npm packages and local Node.js projects.
 
 ## Requirements
 
@@ -35,12 +46,12 @@ $ npm ci
 $ npm link
 ```
 
-Then the **nsecure** binary will be available in your terminal. Give a try on [express](http://expressjs.com/).
+Then the **nsecure** binary will be available in your terminal. Give a try with the popular [express](http://expressjs.com/) package. This will automatically open the webpage in your default system browser.
 ```bash
 $ nsecure auto express
 ```
 
-> ⚠️ Setup an npm token to avoid hiting the maximum request limit on the npm registry.
+> ⚠️ Setup an [npm token](https://github.com/ES-Community/nsecure#private-packages--registry) to avoid hiting the maximum request limit of the npm registry API.
 
 ## Usage example
 
@@ -74,6 +85,8 @@ $ nsecure auto jest
 $ nsecure auto
 ```
 
+> 👀 By default with the auto command the .json file is deleted when the http server is closed. It's possible to disable this behavior by using the CLI option `--keep`, `-k`.
+
 ---
 Some options are available on both `cwd`, `from` and `auto` commands. The output option is not available for the `auto` command.
 
@@ -88,9 +101,9 @@ $ nsecure from express -d 10 -o express-security-report
 
 ## Private packages / registry
 
-Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contains a [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
+Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contains an [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
 
-> 👀 If you'r linking the package yourself you can create a `.env` file at the root of the project too.
+> 💬 If you link the package by yourself with npm you can create a `.env` file at the root of the project too.
 
 Nsecure is capable to work behind a custom private npm registry too by searching the default registry URL in your local npm configuration.
 
@@ -108,7 +121,7 @@ const { writeFile } = require("fs").promises;
 
 async function main() {
     const toFetch = ["mocha", "cacache", "is-wsl"];
-    const options = { verbose: false };
+    const options = { verbose: false }; // disable verbose to not show the spinners
 
     const payloads = await Promise.all(
         toFetch.map((name) => from(name, options))
@@ -119,7 +132,7 @@ async function main() {
         const data = JSON.stringify(payloads[i], null, 2);
         toWritePromise.push(writeFile(`${toFetch[i]}.json`, data));
     }
-    await Promise.all(toWritePromise);
+    await Promise.allSettled(toWritePromise);
 }
 main().catch(console.error);
 ```
