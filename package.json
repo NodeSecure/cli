@@ -8,7 +8,7 @@
     "nsecure": "./bin/index.js"
   },
   "engines": {
-      "node": ">=12.12.0"
+    "node": ">=12.12.0"
   },
   "scripts": {
     "eslint": "eslint bin src test",
@@ -81,7 +81,7 @@
     "dotenv": "^8.2.0",
     "estree-walker": "^2.0.1",
     "filenamify": "^4.1.0",
-    "get-port": "^5.1.0",
+    "get-port": "^5.1.1",
     "httpie": "^1.1.2",
     "is-minified-code": "^2.0.0",
     "itertools": "^1.6.0",
@@ -89,11 +89,11 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.difference": "^4.5.0",
     "make-promises-safe": "^5.1.0",
-    "meriyah": "^1.9.3",
+    "meriyah": "^1.9.8",
     "ms": "^2.1.2",
     "ntlp": "^1.1.2",
-    "open": "^7.0.0",
-    "pacote": "^11.0.0",
+    "open": "^7.0.2",
+    "pacote": "^11.1.0",
     "polka": "^0.5.2",
     "sade": "^1.7.3",
     "safe-regex": "^2.1.1",
