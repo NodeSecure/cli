@@ -1,6 +1,6 @@
 # node-secure
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 ![ver](https://img.shields.io/github/package-json/v/ES-Community/node-secure?style=flat-square)
 ![license](https://img.shields.io/github/license/ES-Community/node-secure?style=flat-square)
@@ -173,6 +173,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://mickaelcroquet.fr"><img src="https://avatars2.githubusercontent.com/u/23740372?v=4" width="100px;" alt=""/><br /><sub><b>Haze</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=CroquetMickael" title="Code">💻</a> <a href="#design-CroquetMickael" title="Design">🎨</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/thomas-gentilhomme/"><img src="https://avatars3.githubusercontent.com/u/4438263?v=4" width="100px;" alt=""/><br /><sub><b>Gentilhomme</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Code">💻</a> <a href="https://github.com/ES-Community/nsecure/issues?q=author%3Afraxken" title="Bug reports">🐛</a> <a href="#blog-fraxken" title="Blogposts">📝</a> <a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Tests">⚠️</a> <a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Documentation">📖</a> <a href="#design-fraxken" title="Design">🎨</a></td>
   </tr>
 </table>
 
