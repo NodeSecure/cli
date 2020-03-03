@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "CroquetMickael",
+      "name": "Haze",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/23740372?v=4",
+      "profile": "https://mickaelcroquet.fr",
+      "contributions": [
+        "code",
+        "design"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "nsecure",
+  "projectOwner": "ES-Community",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
