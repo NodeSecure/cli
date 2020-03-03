@@ -155,14 +155,6 @@ Nodes are red when the project/package has been flagged with 🔬 `hasMinifiedCo
 Node-secure will analyze the complete size of the npm tarball with no filters or particular optimization. Bundlephobia on the
 other side will bundle and remove most of the useless files from the tarball (Like the documentation, etc.).
 
-## License
-MIT
-
-[travis-image]: https://img.shields.io/travis/com/ES-Community/node-secure/master.svg?style=flat-square
-[travis-url]: https://travis-ci.com/ES-Community/node-secure
-[codecov-image]: https://img.shields.io/codecov/c/github/ES-Community/node-secure.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/ES-Community/node-secure
-
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -173,6 +165,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://mickaelcroquet.fr"><img src="https://avatars2.githubusercontent.com/u/23740372?v=4" width="100px;" alt=""/><br /><sub><b>Haze</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=CroquetMickael" title="Code">💻</a> <a href="#design-CroquetMickael" title="Design">🎨</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/thomas-gentilhomme/"><img src="https://avatars3.githubusercontent.com/u/4438263?v=4" width="100px;" alt=""/><br /><sub><b>fraxken</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Code">💻</a> <a href="https://github.com/ES-Community/nsecure/issues?q=author%3Afraxken" title="Bug reports">🐛</a> <a href="#blog-fraxken" title="Blogposts">📝</a> <a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Tests">⚠️</a> <a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Documentation">📖</a> <a href="#design-fraxken" title="Design">🎨</a></td>
     <td align="center"><a href="https://stouder.io"><img src="https://avatars2.githubusercontent.com/u/2575182?v=4" width="100px;" alt=""/><br /><sub><b>Xavier Stouder</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=Xstoudi" title="Code">💻</a> <a href="#design-Xstoudi" title="Design">🎨</a> <a href="https://github.com/ES-Community/nsecure/commits?author=Xstoudi" title="Documentation">📖</a></td>
   </tr>
 </table>
@@ -182,3 +175,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+## License
+MIT
+
+[travis-image]: https://img.shields.io/travis/com/ES-Community/node-secure/master.svg?style=flat-square
+[travis-url]: https://travis-ci.com/ES-Community/node-secure
+[codecov-image]: https://img.shields.io/codecov/c/github/ES-Community/node-secure.svg?style=flat-square
+[codecov-url]: https://codecov.io/github/ES-Community/node-secure
