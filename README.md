@@ -1,14 +1,12 @@
 # node-secure
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 ![ver](https://img.shields.io/github/package-json/v/ES-Community/node-secure?style=flat-square)
 ![license](https://img.shields.io/github/license/ES-Community/node-secure?style=flat-square)
 [![build status][travis-image]][travis-url]
 [![Test coverage][codecov-image]][codecov-url]
 ![dep](https://img.shields.io/david/ES-Community/node-secure?style=flat-square)
 ![size](https://img.shields.io/bundlephobia/min/nsecure?style=flat-square)
-![download](https://img.shields.io/npm/dw/nsecure?style=flat-square)
+![download](https://img.shields.io/npm/dw/nsecure?style=flat-square)<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section --> [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [Node.js](https://nodejs.org/en/) security Command Line Interface. The goal of the project is to a design a CLI/API that will fetch and deeply analyze the dependency tree of a given **npm** package (Or a local project with a **package.json**) and output a **.json file** that will contains all metadata and flags about each packages.
 
