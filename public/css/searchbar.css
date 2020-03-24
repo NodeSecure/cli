@@ -8,14 +8,34 @@ div.search-bar-container {
     display: flex;
     box-sizing: border-box;
 }
+    div.search-bar-container > div.search-items {
+        padding-left: 5px;
+        display: flex;
+        align-items: center;
+    }
+        div.search-bar-container > div.search-items div {
+            padding: 5px;
+            background: #37474F;
+            border-radius: 3px;
+            font-size: 13px;
+            font-family: "mononoki";
+            display: flex;
+        }
+            div.search-bar-container > div.search-items div p {
+                margin-left: 5px;
+            }
+        div.search-bar-container > div.search-items div + div {
+            margin-left: 5px;
+        }
+
     div.search-bar-container > input {
-        width: 245px;
+        width: 210px;
         background: none;
         border: none;
         outline: none;
         padding: 0 10px;
         color: #EEEEEE;
-        font-family: "Roboto";
+        font-family: "mononoki";
     }
     div.search-bar-container > input::placeholder {
         color: #BDBDBD;
@@ -29,7 +49,7 @@ div.search-bar-container {
     }
 
 div.search-result-background {
-    width: 300px;
+    width: 100%;
     position: absolute;
     top: 35px;
     right: 0;
@@ -40,18 +60,24 @@ div.search-result-background.show {
     display: flex;
 }
 
-    div.search-result-background > div.search-result-container {
+    div.search-result-background > div.search-result-pannel {
         display: flex;
         flex-direction: column;
         max-height: 70vh;
         overflow-y: auto;
     }
-    div.search-result-container > .helpers {
+    div.search-result-pannel > .helpers {
         display: flex;
         flex-direction: column;
+        border-bottom: 2px dashed #455A64;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
     }
-        div.search-result-container > .helpers > .title {
-            height: 25px;
+    div.search-result-pannel > .helpers.hide {
+        display: none;
+    }
+        div.search-result-pannel > .helpers > .title {
+            height: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -60,7 +86,31 @@ div.search-result-background.show {
             margin-bottom: 3px;
             color: #607D8B;
         }
-    div.search-result-container .package {
+        div.search-result-pannel > .helpers > .line {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            font-weight: bold;
+            border-radius: 4px;
+            padding: 5px;
+        }
+            div.search-result-pannel > .helpers > .line + .line {
+                margin-top: 2px;
+            }
+            div.search-result-pannel > .helpers > .line:hover {
+                cursor: pointer;
+                background: #37474F;
+            }
+            div.search-result-pannel > .helpers > .line b {
+                margin-right: 5px;
+                color: #CFD8DC;
+            }
+            div.search-result-pannel > .helpers > .line p {
+                color: #546E7A;
+            }
+
+    div.search-result-pannel .package {
         background: rgba(69, 90, 100, 0.198);
         align-items: center;
         border-radius: 2px;
@@ -72,24 +122,24 @@ div.search-result-background.show {
         letter-spacing: 0.7px;
         margin-right: 2px;
     }
-        div.search-result-container .package:hover {
+        div.search-result-pannel .package:hover {
             color: #E1F5FE;
             background: #01579B;
             cursor: pointer;
         }
 
-    div.search-result-container .package > p {
+    div.search-result-pannel .package > p {
         margin-right: 10px;
     }
-    div.search-result-container .package > b {
+    div.search-result-pannel .package > b {
         color: #ffeb3b;
         font-weight: bold;
         margin-left: auto;
     }
 
-    div.search-result-container .package.hide {
+    div.search-result-pannel .package.hide {
         display: none;
     }
-    div.search-result-container .package + .package {
+    div.search-result-pannel .package + .package {
         margin-top: 5px;
     }

@@ -75,13 +75,14 @@
         <p>Emojis Legends</p>
     </div>
     <div class="search-bar-container">
+        <div class="search-items">
+            <!-- <div><b>version:</b><p>1.0.0</p></div> -->
+        </div>
         <input type="text" placeholder="Search" id="search-bar-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" ></input>
         <i class="icon-search"></i>
         <div class="search-result-background dark-box-skin">
-            <div class="search-result-container" id="package-list">
-                <div class="helpers">
-                    <div class="title"><p>History</p></div>
-                </div>
+            <div class="search-result-pannel" id="package-list">
+                <div class="helpers"></div>
             </div>
         </div>
     </div>
@@ -215,4 +216,23 @@
             <tbody></tbody>
         </table>
     </div>
+</template>
+
+<template id="search_helpers_default">
+    <div class="title"><p>Options de recherche</p></div>
+    <div class="line" data-value="version:"><b>version:</b><p>semver</p></div>
+    <div class="line" data-value="package:"><b>package:</b><p>name</p></div>
+    <div class="line" data-value="package:"><b>license:</b><p>name</p></div>
+    <div class="line" data-value="package:"><b>ext:</b><p>extension</p></div>
+    <div class="line" data-value="package:"><b>builtin:</b><p>name</p></div>
+    <div class="line" data-value="package:"><b>author:</b><p>name</p></div>
+    <div class="line" data-value="package:"><b>flag:</b><p>kind</p></div>
+</template>
+
+<template id="search_helpers_license">
+    <div class="title"><p>Options de recherche</p></div>
+    <div class="line" data-value="MIT"><p>MIT</p></div>
+    <div class="line" data-value="ISC"><p>ISC</p></div>
+    <div class="line" data-value="Unknown"><p>Unknown</p></div>
+    <div class="line" data-value="BSD-3-Clause"><p>BSD-3-Clause</p></div>
 </template>
