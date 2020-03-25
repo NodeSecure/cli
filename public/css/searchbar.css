@@ -13,7 +13,20 @@ div.search-bar-container {
         display: flex;
         align-items: center;
     }
-        div.search-bar-container > div.search-items div {
+        div.search-bar-container > div.search-items div.cancel {
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 2px;
+            font-size: 14px;
+            font-family: "roboto";
+            color: #F44336;
+            font-weight: bold;
+        }
+        div.search-bar-container > div.search-items div:not(.cancel) {
             padding: 5px;
             background: #37474F;
             border-radius: 3px;
@@ -84,7 +97,7 @@ div.search-result-background.show {
             font-size: 14px;
             font-weight: bold;
             margin-bottom: 3px;
-            color: #607D8B;
+            color: #CFD8DC;
         }
         div.search-result-pannel > .helpers > .line {
             display: flex;
@@ -95,12 +108,18 @@ div.search-result-background.show {
             border-radius: 4px;
             padding: 5px;
         }
+            div.search-result-pannel > .helpers > .line.hide {
+                display: none;
+            }
             div.search-result-pannel > .helpers > .line + .line {
                 margin-top: 2px;
             }
             div.search-result-pannel > .helpers > .line:hover {
                 cursor: pointer;
-                background: #37474F;
+                background: var(--background-color);
+            }
+            div.search-result-pannel > .helpers > .line:hover p {
+                color: #FFF;
             }
             div.search-result-pannel > .helpers > .line b {
                 margin-right: 5px;
