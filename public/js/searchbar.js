@@ -2,6 +2,12 @@
 
 // CONSTANTS
 const kFiltersName = new Set(["package", "version", "flag", "license", "author", "ext", "builtin"]);
+const kHelpersTitleName = {
+    ext: "Extension des fichiers",
+    builtin: "Module core Node.js",
+    license: "Licenses disponible",
+    flag: "Flags disponible"
+};
 const kHelpersTemplateName = {
     flag: "search_helpers_flags",
     license(linker) {
@@ -25,6 +31,7 @@ const kHelpersTemplateName = {
         for (const { composition } of linker.values()) {
             composition.extensions.forEach((ext) => items.add(ext));
         }
+        items.delete("");
         [...items].forEach((value) => fragment.appendChild(createLineElement(value)));
 
         return fragment;
@@ -44,6 +51,16 @@ const kHelpersTemplateName = {
         const items = new Set();
         for (const { author } of linker.values()) {
             items.add(typeof author === "string" ? author : author.name);
+        }
+        [...items].forEach((value) => fragment.appendChild(createLineElement(value)));
+
+        return fragment;
+    },
+    version(linker) {
+        const fragment = document.createDocumentFragment();
+        const items = new Set();
+        for (const { version } of linker.values()) {
+            items.add(version);
         }
         [...items].forEach((value) => fragment.appendChild(createLineElement(value)));
 
@@ -92,6 +109,10 @@ class SearchBar {
                 return;
             }
 
+            if (currentInSearchKeyword === null) {
+                this.showHelperByInputText();
+            }
+
             if (event.key === ":" || this.inputUpdateValue) {
                 if (this.inputUpdateValue) {
                     setTimeout(() => (this.inputUpdateValue = false), 1);
@@ -120,6 +141,8 @@ class SearchBar {
             const text = exceptionalMatch ?
                 this.input.value.trim() :
                 this.input.value.slice(currentInSearchKeyword.length + 1).trim();
+
+            this.showHelperByInputText(text);
             if (text.length === 0) {
                 return;
             }
@@ -167,6 +190,8 @@ class SearchBar {
 
             return;
         }
+
+        document.querySelectorAll(".helpers > .line").forEach((element) => element.classList.add("hide"));
         this.helper.classList.remove("hide");
         const templateName = filterName === null ? "search_helpers_default" : kHelpersTemplateName[filterName];
 
@@ -195,7 +220,9 @@ class SearchBar {
             });
         });
 
-        this.helper.innerHTML = "<div class=\"title\"><p>Options de recherche</p></div>";
+        const titleText = Reflect.has(kHelpersTitleName, filterName) ? kHelpersTitleName[filterName] : "Options de recherche";
+        // eslint-disable-next-line max-len
+        this.helper.innerHTML = `<div class="title"><p>${titleText}</p><a href="https://github.com/ES-Community/nsecure" rel="noopener" target="_blank"><i class="icon-attention-circled"></i></a></div>`;
         this.helper.appendChild(clone);
     }
 
@@ -291,6 +318,15 @@ class SearchBar {
         }
     }
 
+    showHelperByInputText(text = this.input.value.trim()) {
+        const elements = document.querySelectorAll(".helpers > .line");
+
+        for (const pkgElement of elements) {
+            const dataValue = pkgElement.getAttribute("data-value");
+            pkgElement.classList[dataValue.match(text) ? "remove" : "add"]("hide");
+        }
+    }
+
     close() {
         this.background.classList.remove("show");
         this.allSearchPackages.forEach((element) => element.classList.add("hide"));
@@ -300,5 +336,6 @@ class SearchBar {
         this.input.value = "";
         this.input.blur();
         this.helper.classList.remove("hide");
+        this.showPannelHelper();
     }
 }
