@@ -35,35 +35,35 @@
 <section id="stats">
     <div class="btn platine-button-skin">
         <i class="icon-chart-pie" style="margin-bottom: 2px;"></i>
-        <p>Global Stats</p>
+        <p>[[=z.token('stats.title')]]</p>
         <div class="hiddenarea">
             <div class="global-stats dark-box-skin">
                 <ul>
                     <li>
                         <i class="icon-cubes"></i>
-                        <p>Total of packages</p>
+                        <p>[[=z.token('stats.total_packages')]]</p>
                         <b id="total-packages">0</b>
                     </li>
                     <li>
                         <i class="icon-archive"></i>
-                        <p>Total size</p>
+                        <p>[[=z.token('stats.total_size')]]</p>
                         <b id="total-size">0</b>
                     </li>
                     <li>
                         <i class="icon-sitemap"></i>
-                        <p>Packages with indirect dependencies</p>
+                        <p>[[=z.token('stats.indirect_deps')]]</p>
                         <b id="indirect-dependencies">0</b>
                     </li>
                     <li class="column">
-                        <p>Extensions</p>
+                        <p>[[=z.token('stats.extensions')]]</p>
                         <div class="stat-container" id="extensions-counts"></div>
                     </li>
                     <li class="column">
-                        <p>Licenses</p>
+                        <p>[[=z.token('stats.licenses')]]</p>
                         <div class="stat-container" id="license-counts"></div>
                     </li>
                     <li class="column">
-                        <p id="stat-maintainers-title">Maintainers</p>
+                        <p id="stat-maintainers-title">[[=z.token('stats.maintainers')]]</p>
                         <div class="stat-container" id="maintainers-list"></div>
                     </li>
                 </ul>
@@ -72,7 +72,7 @@
     </div>
     <div class="btn platine-button-skin" id="legend_popup_btn">
         <i class="icon-book-open"></i>
-        <p>Emojis Legends</p>
+        <p>[[=z.token('btn_emojis_legends')]]</p>
     </div>
     <div class="search-bar-container">
         <div class="search-items">
@@ -97,14 +97,14 @@
 
 <section id="show-info" class="dark-box-skin">
     <div class="select-project">
-        <p>click on a package to show a complete description here</p>
+        <p>[[=z.token('show_complete_desc')]]</p>
     </div>
 </section>
 
 <main id="network-graph"></main>
 <div id="network-loader">
-    <p>... Loading nodes ...</p>
-    <p>(Please wait)</p>
+    <p>[[=z.token('loading_nodes')]]</p>
+    <p>[[=z.token('please_wait')]]</p>
 </div>
 
 <template id="package-info">
@@ -121,36 +121,36 @@
     <div class="buttons">
         <div class="platine-button-skin" id="btn_showOrHide">
             <i class="icon-eye-off"></i>
-            <p>Hide children</p>
+            <p>[[=z.token('package_info.hide_children')]]</p>
         </div>
         <div class="platine-button-skin" id="btn_vuln">
             <i class="icon-attention-circled"></i>
-            <p>Vuln</p>
+            <p>[[=z.token('package_info.vuln')]]</p>
         </div>
     </div>
 
     <!-- package metadata -->
     <ul class="fields"></ul>
 
-    <p class="head-title">files extensions</p>
+    <p class="head-title">[[=z.token('package_info.files_extensions')]]</p>
     <div class="list-item" id="extensions"></div>
 
-    <p class="head-title">unused dependencies</p>
+    <p class="head-title">[[=z.token('package_info.unused_deps')]]</p>
     <div class="list-item line" id="unuseddep"></div>
 
-    <p class="head-title">missing dependencies</p>
+    <p class="head-title">[[=z.token('package_info.missing_deps')]]</p>
     <div class="list-item line" id="missingdep"></div>
 
-    <p class="head-title">minified files</p>
+    <p class="head-title">[[=z.token('package_info.minified_files')]]</p>
     <div class="list-item line" id="minifiedfiles"></div>
 
-    <p class="head-title">node.js dependencies</p>
+    <p class="head-title">[[=z.token('package_info.node_deps')]]</p>
     <div class="list-item" id="nodedep"></div>
 
-    <p class="head-title">third-party dependencies</p>
+    <p class="head-title">[[=z.token('package_info.third_party_deps')]]</p>
     <div class="list-item line" id="requireddep"></div>
 
-    <p class="head-title">required files</p>
+    <p class="head-title">[[=z.token('package_info.required_files')]]</p>
     <div class="list-item line" id="internaldep"></div>
 
     <!-- bundlephobia (package size) -->

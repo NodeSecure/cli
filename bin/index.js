@@ -6,8 +6,8 @@ require("make-promises-safe");
 require("dotenv").config();
 
 // Require Node.js Dependencies
-const { writeFileSync, promises: { unlink } } = require("fs");
-const { join, extname } = require("path");
+const { writeFileSync, promises: { unlink, readdir } } = require("fs");
+const { join, extname, basename } = require("path");
 const { once } = require("events");
 
 // Require Third-party Dependencies
@@ -18,9 +18,11 @@ const Spinner = require("@slimio/async-cli-spinner");
 const filenamify = require("filenamify");
 const semver = require("semver");
 const ms = require("ms");
+const qoa = require("qoa");
 
 // Require Internal Dependencies
 const startHTTPServer = require("../src/httpServer.js");
+const i18n = require("../src/i18n");
 const { getRegistryURL, loadNsecureCache, writeNsecureCache } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
 const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
@@ -34,17 +36,17 @@ const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: proce
 
 // Process script arguments
 const prog = sade("nsecure").version("0.4.0");
-console.log(grey().bold(`\n > Executing node-secure at: ${yellow().bold(process.cwd())}\n`));
+console.log(grey().bold(`\n > ${i18n.getToken("cli.executing_at")}: ${yellow().bold(process.cwd())}\n`));
 
 const currNodeSemVer = process.versions.node;
 if (semver.lt(currNodeSemVer, "12.10.0")) {
-    console.log(red().bold(" [!] node-secure require at least Node.js v12.10.0 to work! Please upgrade your Node.js version.\n"));
+    console.log(red().bold(` [!] ${i18n.getToken("cli.min_nodejs_version", "12.10.0")}\n`));
     process.exit(0);
 }
 
 function logAndWrite(payload, output = "nsecure-result") {
     if (payload === null) {
-        console.log("No dependencies to proceed !");
+        console.log(i18n.getToken("cli.no_dep_to_proceed"));
 
         return null;
     }
@@ -52,7 +54,7 @@ function logAndWrite(payload, output = "nsecure-result") {
     const ret = JSON.stringify(Object.fromEntries(payload), null, 2);
     const filePath = join(process.cwd(), extname(output) === ".json" ? filenamify(output) : `${filenamify(output)}.json`);
     writeFileSync(filePath, ret);
-    console.log(white().bold(`Successfully writed .json file at: ${green().bold(filePath)}`));
+    console.log(white().bold(i18n.getToken("cli.successfully_written_json", green().bold(filePath))));
 
     return filePath;
 }
@@ -68,34 +70,58 @@ async function checkHydrateDB() {
 
 prog
     .command("hydrate-db")
-    .describe("Hydrate the vulnerabilities db")
+    .describe(i18n.getToken("cli.commands.hydrate_db.desc"))
     .action(hydrateCmd);
 
 prog
     .command("cwd")
-    .describe("Run security analysis on the current working dir")
-    .option("-d, --depth", "maximum dependencies depth to fetch", 4)
-    .option("-o, --output", "json file output name", "nsecure-result")
+    .describe(i18n.getToken("cli.commands.cwd.desc"))
+    .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
+    .option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result")
     .action(cwdCmd);
 
 prog
     .command("from <package>")
-    .describe("Run security analysis on a given package from npm registry")
-    .option("-d, --depth", "maximum dependencies depth to fetch", 4)
-    .option("-o, --output", "json file output name", "nsecure-result")
+    .describe(i18n.getToken("cli.commands.from.desc"))
+    .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
+    .option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result")
     .action(fromCmd);
 
 prog
     .command("auto [package]")
-    .option("-d, --depth", "maximum dependencies depth to fetch", 4)
-    .option("-k, --keep", "keep the nsecure-result.json file on the system after execution", false)
-    .describe("Run security analysis on cwd or a given package and automatically open the web interface")
+    .describe(i18n.getToken("cli.commands.auto.desc"))
+    .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
+    .option("-k, --keep", i18n.getToken("cli.commands.auto.option_keep"), false)
     .action(autoCmd);
 
 prog
     .command("open [json]")
-    .describe("Run an HTTP Server with a given nsecure JSON file")
+    .describe(i18n.getToken("cli.commands.open.desc"))
     .action(httpCmd);
+
+prog
+    .command("lang")
+    .describe(i18n.getToken("cli.commands.lang.desc"))
+    .action(async() => {
+        const currentLang = i18n.getLocalLang();
+        const dirents = await readdir(join(__dirname, "../i18n"), { withFileTypes: true });
+        const langs = dirents
+            .filter((dirent) => dirent.isFile() && extname(dirent.name) === ".js")
+            .map((dirent) => basename(dirent.name, ".js"));
+
+        langs.splice(langs.indexOf(currentLang), 1);
+        langs.unshift(currentLang);
+
+        console.log("");
+        const { selectedLang } = await qoa.interactive({
+            query: green().bold(` ${i18n.getToken("cli.commands.lang.question_text")}`),
+            handle: "selectedLang",
+            menu: langs
+        });
+
+        await i18n.setLocalLang(selectedLang);
+        console.log(white().bold(`\n ${i18n.getToken("cli.commands.lang.new_selection", yellow().bold(selectedLang))}`));
+    });
 
 prog.parse(process.argv);
 
@@ -103,13 +129,13 @@ async function hydrateCmd() {
     deleteDB();
 
     const spinner = new Spinner({
-        text: white().bold(`Hydrating local vulnerabilities with '${yellow().bold("nodejs security-wg")} db'`)
+        text: white().bold(i18n.getToken("cli.commands.hydrate_db.running", yellow().bold("nodejs security-wg")))
     }).start();
     try {
         await hydrateDB();
 
         const elapsedTime = cyan(ms(Number(spinner.elapsedTime.toFixed(2))));
-        spinner.succeed(white().bold(`Successfully hydrated vulnerabilities db in ${elapsedTime}`));
+        spinner.succeed(white().bold(i18n.getToken("cli.commands.hydrate_db.success", elapsedTime)));
     }
     catch (err) {
         spinner.failed(err.message);
@@ -150,7 +176,7 @@ async function fromCmd(packageName, opts) {
 
     await checkHydrateDB();
     const spinner = new Spinner({
-        text: white().bold(`Searching for '${yellow().bold(packageName)}' manifest in the npm registry!`)
+        text: white().bold(i18n.getToken("cli.commands.from.searching", yellow().bold(packageName)))
     }).start();
     try {
         manifest = await pacote.manifest(packageName, {
@@ -160,7 +186,7 @@ async function fromCmd(packageName, opts) {
 
         const elapsedTime = cyan().bold(ms(Number(spinner.elapsedTime.toFixed(2))));
         spinner.succeed(
-            white().bold(`Fetched ${yellow().bold(packageName)} manifest on npm in ${elapsedTime}`)
+            white().bold(i18n.getToken("cli.commands.from.fetched", yellow().bold(packageName), elapsedTime))
         );
     }
     catch (err) {

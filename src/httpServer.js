@@ -1,7 +1,11 @@
 "use strict";
 
 // Require Node.js Dependencies
-const { createReadStream, accessSync, constants: { R_OK, W_OK } } = require("fs");
+const {
+    createReadStream, accessSync,
+    promises: { readFile },
+    constants: { R_OK, W_OK }
+} = require("fs");
 const { join } = require("path");
 const { pipeline } = require("stream");
 
@@ -12,6 +16,10 @@ const sirv = require("sirv");
 const open = require("open");
 const getPort = require("get-port");
 const kleur = require("kleur");
+const zup = require("zup");
+
+// Require Internal Dependencies
+const i18n = require("./i18n");
 
 // CONSTANTS
 const VIEWS = join(__dirname, "..", "views");
@@ -30,7 +38,9 @@ async function startHTTPServer(dataFilePath, configPort) {
             res.writeHead(200, {
                 "Content-Type": "text/html"
             });
-            createReadStream(join(VIEWS, "index.html")).pipe(res);
+            const HTMLStr = await readFile(join(VIEWS, "index.html"), "utf-8");
+            const templateStr = zup(HTMLStr)({ token: (tokenName) => i18n.getToken(`ui.${tokenName}`) });
+            res.end(templateStr);
         }
         catch (err) {
             send(res, 500, err.message);
@@ -66,7 +76,7 @@ async function startHTTPServer(dataFilePath, configPort) {
     const port = typeof configPort === "number" ? configPort : await getPort();
     httpServer.listen(port, () => {
         const link = `http://localhost:${port}`;
-        console.log(kleur.magenta().bold("HTTP Server started:"), kleur.cyan().bold(link));
+        console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
         if (typeof configPort === "undefined") {
             open(link);
         }

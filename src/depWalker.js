@@ -27,6 +27,7 @@ const is = require("@slimio/is");
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
 const { searchRuntimeDependencies } = require("./ast");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
+const i18n = require("./i18n");
 const Dependency = require("./dependency.class");
 
 // CONSTANTS
@@ -330,11 +331,11 @@ async function depWalker(manifest, options = Object.create(null)) {
 
     {
         const treeSpinner = new Spinner({ verbose })
-            .start(white().bold("Fetching and walking through all dependencies ..."));
+            .start(white().bold(i18n.getToken("depWalker.fetch_and_walk_deps")));
         const tarballSpinner = new Spinner({ verbose })
-            .start(white().bold("Waiting for tarball to analyze!"));
+            .start(white().bold(i18n.getToken("depWalker.waiting_tarball")));
         const regSpinner = new Spinner({ verbose })
-            .start(white().bold("Waiting for packages to fetch on npm registry !"));
+            .start(white().bold(i18n.getToken("depWalker.fetch_on_registry")));
 
         let allDependencyCount = 0;
         let processedTarballCount = 0;
@@ -346,12 +347,12 @@ async function depWalker(manifest, options = Object.create(null)) {
         regEE.on("done", () => {
             processedRegistryCount++;
             const stats = gray().bold(`[${yellow().bold(processedRegistryCount)}/${allDependencyCount}]`);
-            regSpinner.text = white().bold(`Fetched package metadata: ${stats}`);
+            regSpinner.text = white().bold(`${i18n.getToken("depWalker.fetch_metadata")} ${stats}`);
         });
         tarballLocker.on("freeOne", () => {
             processedTarballCount++;
             const stats = gray().bold(`[${yellow().bold(processedTarballCount)}/${allDependencyCount}]`);
-            tarballSpinner.text = white().bold(`Analyzed npm tarballs: ${stats}`);
+            tarballSpinner.text = white().bold(`${i18n.getToken("depWalker.analyzed_tarball")} ${stats}`);
         });
 
         for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude })) {
@@ -384,7 +385,7 @@ async function depWalker(manifest, options = Object.create(null)) {
 
         const execTree = cyan().bold(ms(Number(treeSpinner.elapsedTime.toFixed(2))));
         treeSpinner.succeed(white().bold(
-            `Successfully navigated through the ${yellow().bold("dependency tree")} in ${execTree}`));
+            i18n.getToken("depWalker.success_fetch_deptree", yellow().bold("dependency tree"), execTree)));
 
         // Wait for all extraction to be done!
         await Promise.allSettled(promisesToWait);
@@ -392,8 +393,8 @@ async function depWalker(manifest, options = Object.create(null)) {
 
         const execTarball = cyan().bold(ms(Number(tarballSpinner.elapsedTime.toFixed(2))));
         tarballSpinner.succeed(white().bold(
-            `Successfully analyzed ${green().bold(allDependencyCount)} packages tarball in ${execTarball}`));
-        regSpinner.succeed(white().bold("Successfully fetched required metadata for all packages!"));
+            i18n.getToken("depWalker.success_tarball", green().bold(allDependencyCount), execTarball)));
+        regSpinner.succeed(white().bold(i18n.getToken("depWalker.success_registry_metadata")));
     }
 
     // Search for vulnerabilities in the local .json db
@@ -424,7 +425,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
     catch (err) {
         /* istanbul ignore next */
-        console.log(red().bold(`Failed to remove directory ${yellow().bold(tmpLocation)}`));
+        console.log(red().bold(i18n.getToken("depWalker.failed_rmdir", yellow().bold(tmpLocation))));
     }
     if (verbose) {
         console.log("");
