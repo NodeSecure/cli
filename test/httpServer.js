@@ -6,9 +6,11 @@ const { join } = require("path");
 
 // Require Third-party Dependencies
 const { get } = require("httpie");
+const zup = require("zup");
 
 // Require Internal Dependencies
 const startHTTPServer = require("../src/httpServer");
+const i18n = require("../src/i18n");
 
 // CONSTANTS
 const HTTP_PORT = 1337;
@@ -32,7 +34,9 @@ test("'/' should return index.html HTML content", async() => {
 
     expect(result.statusCode).toStrictEqual(200);
     expect(result.headers["content-type"]).toStrictEqual("text/html");
-    expect(result.data).toStrictEqual(INDEX_HTML);
+
+    const templateStr = zup(INDEX_HTML)({ token: (tokenName) => i18n.getToken(`ui.${tokenName}`) });
+    expect(result.data).toStrictEqual(templateStr);
 });
 
 test("'/data' should return the fixture payload we expect", async() => {
