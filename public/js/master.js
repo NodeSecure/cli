@@ -242,11 +242,11 @@ document.addEventListener("DOMContentLoaded", async() => {
             if (licenseCount === 0) {
                 continue;
             }
-            const divEl = document.createElement("div");
-            divEl.classList.add("license");
-            divEl.classList.add("stat-case");
-            divEl.textContent = `${licenseName} (${licenseCount})`;
-            licenseFragment.appendChild(divEl);
+            const divElement = createDOMElement("div", {
+                classList: ["license", "stat-case"],
+                text: `${licenseName} (${licenseCount})`
+            });
+            licenseFragment.appendChild(divElement);
         }
         document.getElementById("license-counts").appendChild(licenseFragment);
     }
@@ -256,11 +256,11 @@ document.addEventListener("DOMContentLoaded", async() => {
         const extEntries = [...Object.entries(extensionsCount)].sort(([, left], [, right]) => right - left);
 
         for (const [extName, extCount] of extEntries) {
-            const divEl = document.createElement("div");
-            divEl.classList.add("ext");
-            divEl.classList.add("stat-case");
-            divEl.textContent = `${extName} (${extCount})`;
-            extFragment.appendChild(divEl);
+            const divElement = createDOMElement("div", {
+                classList: ["ext", "stat-case"],
+                text: `${extName} (${extCount})`
+            });
+            extFragment.appendChild(divElement);
         }
         document.getElementById("extensions-counts").appendChild(extFragment);
     }

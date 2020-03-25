@@ -13,33 +13,54 @@ function formatBytes(bytes, decimals) {
     return parseFloat((bytes / Math.pow(1024, id)).toFixed(dm)) + " " + sizes[id];
 }
 
-function createTooltip(icon, description) {
-    const divElement = document.createElement("div");
-    divElement.classList.add("tooltip");
-    divElement.appendChild(document.createTextNode(icon));
+function createDOMElement(kind = "div", options = {}) {
+    const { classList = [], childs = [], attributes = {}, text = null } = options;
 
-    const spanElement = document.createElement("span");
-    spanElement.classList.add("tooltiptext");
-    spanElement.appendChild(document.createTextNode(description));
+    const el = document.createElement(kind);
+    classList.forEach((name) => el.classList.add(name));
+    childs.forEach((child) => el.appendChild(child));
 
-    divElement.appendChild(spanElement);
+    for (const [key, value] of Object.entries(attributes)) {
+        el.setAttribute(key, value);
+    }
 
-    return divElement;
+    if (text !== null) {
+        el.appendChild(document.createTextNode(String(text)));
+    }
+
+    return el;
 }
 
-function createAvatar(name, desc) {
-    const divEl = document.createElement("div");
-    divEl.classList.add("avatar");
-
-    const pElement = document.createElement("p");
-    pElement.classList.add("count");
-    pElement.appendChild(document.createTextNode(desc.count));
-    divEl.appendChild(pElement);
-
+function createLink(url, text = null) {
     const aElement = document.createElement("a");
     aElement.rel = "noopener";
     aElement.target = "_blank";
-    aElement.href = desc.url || "#";
+    aElement.href = url;
+    if (text !== null) {
+        aElement.appendChild(document.createTextNode(text));
+    }
+
+    return aElement;
+}
+
+function createTooltip(text, description) {
+    const spanElement = createDOMElement("span", {
+        classList: ["tooltiptext"], text: description
+    });
+
+    return createDOMElement("div", {
+        classList: ["tooltip"], text, childs: [spanElement]
+    });
+}
+
+function createAvatar(name, desc) {
+    const pElement = createDOMElement("p", {
+        classList: ["count"], text: desc.count
+    });
+    const aElement = createLink(desc.url || "#");
+    const divEl = createDOMElement("div", {
+        classList: ["avatar"], childs: [pElement, aElement]
+    });
 
     const imgEl = document.createElement("img");
     if (!("email" in desc) || typeof desc.email === "undefined" || desc.email === null) {
@@ -53,19 +74,19 @@ function createAvatar(name, desc) {
         };
     }
     imgEl.alt = name;
-
     aElement.appendChild(imgEl);
-    divEl.appendChild(aElement);
 
     return divEl;
 }
 
 function createLegend(icon, title) {
     const slicedTitle = title.length > 20 ? `${title.slice(0, 20)}..` : title;
-    const legendDivElement = document.createElement("div");
+    const PElement = createDOMElement("p", { text: `${icon} ${slicedTitle}` });
+    const legendDivElement = createDOMElement("div", {
+        classList: ["platine-button-skin"], childs: [PElement]
+    });
 
-    legendDivElement.classList.add("platine-button-skin");
-    legendDivElement.addEventListener("click", function legendClicked() {
+    legendDivElement.addEventListener("click", () => {
         if (activeLegendElement !== null) {
             activeLegendElement.classList.remove("active");
         }
@@ -74,24 +95,13 @@ function createLegend(icon, title) {
         updateDescription(title);
     });
 
-    const PElement = document.createElement("p");
-    PElement.appendChild(document.createTextNode(`${icon} ${slicedTitle}`));
-    legendDivElement.appendChild(PElement);
-
     return legendDivElement;
 }
 
 function createLicenseLine(tbody, license, { name, link }) {
     const line = tbody.insertRow(0);
 
-    {
-        const aElement = document.createElement("a");
-        aElement.rel = "noopener";
-        aElement.setAttribute("target", "_blank");
-        aElement.href = link;
-        aElement.textContent = name;
-        line.insertCell(0).appendChild(aElement);
-    }
+    line.insertCell(0).appendChild(createLink(link, name));
     line.insertCell(1).appendChild(document.createTextNode(license.spdx.osi ? "✔️" : "❌"));
     line.insertCell(2).appendChild(document.createTextNode(license.spdx.fsf ? "✔️" : "❌"));
     line.insertCell(3).appendChild(document.createTextNode(license.spdx.fsfAndOsi ? "✔️" : "❌"));
@@ -102,35 +112,25 @@ function createLicenseLine(tbody, license, { name, link }) {
 function createLiField(title, value, options = {}) {
     const { isLink = false, modal = null } = options;
 
-    const liElement = document.createElement("li");
-    const bElement = document.createElement("b");
-    bElement.appendChild(document.createTextNode(title));
+    const bElement = createDOMElement("b", { text: title });
+    const liElement = createDOMElement("li", { childs: [bElement] });
+    let elementToAppend;
 
-    liElement.appendChild(bElement);
     if (isLink) {
-        const aElement = document.createElement("a");
-        aElement.rel = "noopener";
-        aElement.href = value;
-        aElement.target = "_blank";
-
         const textValue = value.length > 26 ? `${value.slice(0, 26)}...` : value;
-        aElement.appendChild(document.createTextNode(textValue));
-        liElement.appendChild(aElement);
+        elementToAppend = createLink(value, textValue);
     }
     else {
-        const pElement = document.createElement("p");
-        pElement.appendChild(document.createTextNode(value));
+        elementToAppend = createDOMElement("p", { text: value });
 
         if (modal !== null) {
-            const iElement = document.createElement("i");
-            iElement.classList.add("icon-eye");
-            pElement.appendChild(iElement);
+            elementToAppend.appendChild(createDOMElement("i", { classList: ["icon-eye"] }));
 
             liElement.classList.add("clickable");
             liElement.addEventListener("click", modal);
         }
-        liElement.appendChild(pElement);
     }
+    liElement.appendChild(elementToAppend);
 
     return liElement;
 }
@@ -153,7 +153,7 @@ function renderItemsList(node, items = [], onclick = null, handleHidden = false)
             continue;
         }
 
-        const span = document.createElement("span");
+        const span = createDOMElement("span", { text: elem });
         if (handleHidden && id >= 5) {
             span.classList.add("hidden");
         }
@@ -161,15 +161,19 @@ function renderItemsList(node, items = [], onclick = null, handleHidden = false)
             span.classList.add("clickable");
             span.addEventListener("click", (event) => onclick(event, elem));
         }
-        span.appendChild(document.createTextNode(elem));
         fragment.appendChild(span);
     }
-    node.appendChild(fragment);
 
     if (handleHidden && items.length >= 5) {
-        const span = document.createElement("span");
-        span.setAttribute("data-value", "closed");
-        span.addEventListener("click", function spanClick() {
+        const iElement = createDOMElement("i", { classList: ["icon-plus-squared-alt"] });
+        const pElement = createDOMElement("p", { text: "show more" });
+        const span = createDOMElement("span", {
+            classList: ["expandable"],
+            childs: [iElement, pElement],
+            attributes: { "data-value": "closed" }
+        });
+
+        span.addEventListener("click", function itemListClickAction() {
             const isClosed = this.getAttribute("data-value") === "closed";
             {
                 const innerI = this.querySelector("i");
@@ -191,18 +195,10 @@ function renderItemsList(node, items = [], onclick = null, handleHidden = false)
                 }
             }
         });
-        span.classList.add("expandable");
 
-        const iElement = document.createElement("i");
-        iElement.classList.add("icon-plus-squared-alt");
-        span.appendChild(iElement);
-
-        const pElement = document.createElement("p");
-        pElement.appendChild(document.createTextNode("show more"));
-        span.appendChild(pElement);
-
-        node.appendChild(span);
+        fragment.appendChild(span);
     }
+    node.appendChild(fragment);
 }
 
 async function request(path, customHeaders = Object.create(null)) {

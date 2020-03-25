@@ -9,6 +9,10 @@ const kHelpersTemplateName = {
         const items = new Set();
 
         for (const { license } of linker.values()) {
+            if (typeof license === "string") {
+                items.add("Unknown");
+                continue;
+            }
             license.uniqueLicenseIds.forEach((ext) => items.add(ext));
         }
         [...items].forEach((value) => fragment.appendChild(createLineElement(value)));
@@ -48,15 +52,13 @@ const kHelpersTemplateName = {
 };
 
 function createLineElement(text) {
-    const div = document.createElement("div");
-    div.classList.add("line");
-    div.setAttribute("data-value", text);
+    const pElement = createDOMElement("p", { text });
 
-    const pElement = document.createElement("p");
-    pElement.appendChild(document.createTextNode(text));
-    div.appendChild(pElement);
-
-    return div;
+    return createDOMElement("div", {
+        classList: ["line"],
+        childs: [pElement],
+        attributes: { "data-value": text }
+    });
 }
 
 class SearchBar {
@@ -84,20 +86,20 @@ class SearchBar {
 
         this.input.addEventListener("keyup", (event) => {
             if ((this.input.value === null || this.input.value === "") && this.activeKeywords.size === 0) {
-                this.reset();
+                this.allSearchPackages.forEach((element) => element.classList.add("hide"));
+                this.showPannelHelper();
 
                 return;
             }
 
             if (event.key === ":" || this.inputUpdateValue) {
-                this.inputUpdateValue = false;
+                if (this.inputUpdateValue) {
+                    setTimeout(() => (this.inputUpdateValue = false), 1);
+                }
                 const keyword = this.input.value.slice(0, -1);
                 if (kFiltersName.has(keyword)) {
                     currentInSearchKeyword = keyword;
-                    this.toggleHelpers(currentInSearchKeyword);
-                }
-                else {
-                    event.preventDefault();
+                    this.showPannelHelper(currentInSearchKeyword);
                 }
             }
 
@@ -109,7 +111,7 @@ class SearchBar {
 
                 currentInSearchKeyword = "package";
                 exceptionalMatch = true;
-                this.toggleHelpers();
+                this.showPannelHelper();
             }
             else if (currentInSearchKeyword === null) {
                 return;
@@ -124,43 +126,42 @@ class SearchBar {
             const matchingIds = this.computeText(currentInSearchKeyword, text);
 
             if (event.key === "Enter") {
-                event.preventDefault();
                 this.input.value = "";
-
-                const activeKeywordsSize = this.activeKeywords.size;
-                this.addItem(currentInSearchKeyword, text, matchingIds);
-                if (activeKeywordsSize === 0) {
-                    const div = document.createElement("div");
-                    div.addEventListener("click", () => {
-                        this.close(false);
-                        setTimeout(() => {
-                            this.input.focus();
-                        }, 5);
-                    });
-                    div.classList.add("cancel");
-                    div.textContent = "x";
-
-                    this.itemsContainer.appendChild(div);
-                }
-                this.toggleHelpers();
+                this.appendCancelButton();
+                this.addSearchBarItem(currentInSearchKeyword, text, matchingIds);
+                this.showPannelHelper();
                 currentInSearchKeyword = null;
 
                 if (!exceptionalMatch) {
                     return;
                 }
             }
-            this.toggle(matchingIds);
+            this.showResultsByIds(matchingIds);
         });
 
         document.addEventListener("click", (event) => {
-            if (!this.container.contains(event.target) && this.background.classList.contains("show")) {
+            if (!this.container.contains(event.target) && this.background.classList.contains("show") && !this.inputUpdateValue) {
                 this.close();
             }
         });
-        this.toggleHelpers();
+        this.showPannelHelper();
     }
 
-    toggleHelpers(filterName = null) {
+    appendCancelButton() {
+        if (this.activeKeywords.size > 0) {
+            return;
+        }
+
+        const divElement = createDOMElement("div", { classList: ["cancel"], text: "x" });
+        divElement.addEventListener("click", () => {
+            this.close();
+            setTimeout(() => this.input.focus(), 5);
+        });
+
+        this.itemsContainer.appendChild(divElement);
+    }
+
+    showPannelHelper(filterName = null) {
         if (filterName !== null && !Reflect.has(kHelpersTemplateName, filterName)) {
             this.helper.classList.add("hide");
 
@@ -198,22 +199,15 @@ class SearchBar {
         this.helper.appendChild(clone);
     }
 
-    addItem(filterName, value, ids) {
-        const div = document.createElement("div");
-        const bElement = document.createElement("b");
-        bElement.appendChild(document.createTextNode(`${filterName}:`));
-        const pElement = document.createElement("p");
-        pElement.appendChild(document.createTextNode(value));
+    addSearchBarItem(filterName, text, ids) {
+        const bElement = createDOMElement("b", { text: `${filterName}:` });
+        const pElement = createDOMElement("p", { text });
 
-        div.appendChild(bElement);
-        div.appendChild(pElement);
-
-        this.activeKeywords.set(filterName, {
-            textValue: value,
-            htmlElement: div,
-            ids: [...ids]
-        });
-        this.itemsContainer.appendChild(div);
+        const element = this.itemsContainer.children[this.itemsContainer.children.length - 1];
+        this.itemsContainer.insertBefore(
+            createDOMElement("div", { childs: [bElement, pElement] }), element
+        );
+        this.activeKeywords.set(filterName, { text, ids: [...ids] });
     }
 
     computeText(filterName, inputValue) {
@@ -283,35 +277,28 @@ class SearchBar {
     resultRowClick(dataValue) {
         this.delayOpenSearchBar = false;
         this.network.emit("click", { nodes: [dataValue] });
-
         this.close();
+
         setTimeout(() => {
             this.delayOpenSearchBar = true;
         }, 5);
     }
 
-    reset() {
-        this.allSearchPackages.forEach((element) => element.classList.add("hide"));
-        this.toggleHelpers();
-    }
-
-    toggle(ids = new Set()) {
+    showResultsByIds(ids = new Set()) {
         for (const pkgElement of this.allSearchPackages) {
             const isMatching = ids.has(pkgElement.getAttribute("data-value"));
             pkgElement.classList[isMatching ? "remove" : "add"]("hide");
         }
     }
 
-    close(blur = true) {
+    close() {
         this.background.classList.remove("show");
         this.allSearchPackages.forEach((element) => element.classList.add("hide"));
 
         this.itemsContainer.innerHTML = "";
         this.activeKeywords = new Map();
         this.input.value = "";
-        if (blur) {
-            this.input.blur();
-        }
+        this.input.blur();
         this.helper.classList.remove("hide");
     }
 }
