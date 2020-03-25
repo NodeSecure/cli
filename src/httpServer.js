@@ -3,6 +3,7 @@
 // Require Node.js Dependencies
 const { createReadStream, accessSync, constants: { R_OK, W_OK } } = require("fs");
 const { join } = require("path");
+const { pipeline } = require("stream");
 
 // Require Third-party Dependencies
 const polka = require("polka");
@@ -38,7 +39,11 @@ async function startHTTPServer(dataFilePath, configPort) {
 
     httpServer.get("/data", (req, res) => {
         res.writeHead(200, { "Content-Type": "application/json" });
-        createReadStream(dataFilePath).pipe(res);
+        pipeline(createReadStream(dataFilePath), res, (err) => {
+            if (err) {
+                console.error(err);
+            }
+        });
     });
 
     httpServer.get("/flags", (req, res) => {
@@ -50,14 +55,18 @@ async function startHTTPServer(dataFilePath, configPort) {
     httpServer.get("/flags/description/:title", (req, res) => {
         if (flagsTitle.has(req.params.title)) {
             const flagDescription = join(__dirname, `../flags/${req.params.title}.html`);
-            createReadStream(flagDescription).pipe(res);
+            pipeline(createReadStream(flagDescription), res, (err) => {
+                if (err) {
+                    console.error(err);
+                }
+            });
         }
     });
 
     const port = typeof configPort === "number" ? configPort : await getPort();
     httpServer.listen(port, () => {
         const link = `http://localhost:${port}`;
-        console.log(kleur.green().bold(" HTTP Server started at "), kleur.cyan().bold(link));
+        console.log(kleur.magenta().bold("HTTP Server started:"), kleur.cyan().bold(link));
         if (typeof configPort === "undefined") {
             open(link);
         }

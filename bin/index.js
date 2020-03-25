@@ -122,10 +122,16 @@ async function autoCmd(packageName, opts) {
     delete opts.k;
 
     const payloadFile = await (typeof packageName === "string" ? fromCmd(packageName, opts) : cwdCmd(opts));
-    await httpCmd();
-    await once(process, "SIGINT");
-    if (!keep && payloadFile !== null) {
-        await unlink(payloadFile);
+    try {
+        if (payloadFile !== null) {
+            await httpCmd();
+            await once(process, "SIGINT");
+        }
+    }
+    finally {
+        if (!keep && payloadFile !== null) {
+            await unlink(payloadFile);
+        }
     }
 }
 
@@ -159,6 +165,8 @@ async function fromCmd(packageName, opts) {
     }
     catch (err) {
         spinner.failed(err.message);
+
+        return null;
     }
 
     if (manifest !== null) {
