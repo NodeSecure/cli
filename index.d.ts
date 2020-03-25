@@ -82,7 +82,7 @@ declare namespace NodeSecure {
 
     interface Warning {
         file: string;
-        type: "unsafe-import" | "unsafe-regex" | "ast-error";
+        kind: "unsafe-import" | "unsafe-regex" | "ast-error";
         error?: string;
         start: { line: number; column: number };
         end: { line: number; column: number };

@@ -44,6 +44,8 @@
 
     .modal .modal-content > .infobox {
         display: flex;
+        max-height: 80vh;
+        overflow-y: auto;
     }
         .modal .modal-content > .infobox .flags-legend {
             display: flex;
