@@ -23,6 +23,7 @@ async function readVulnJSONFile(path) {
         return JSON.parse(buf.toString());
     }
     catch (err) {
+        /* istanbul ignore next */
         return null;
     }
 }
@@ -53,9 +54,6 @@ async function hydrateDB() {
 
         const data = JSON.stringify(Object.fromEntries(payload));
         await writeFile(VULN_FILE_PATH, data);
-    }
-    catch (error) {
-        throw error;
     }
     finally {
         await rmdir(location, { recursive: true });

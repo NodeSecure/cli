@@ -84,6 +84,7 @@ async function startHTTPServer(dataFilePath, configPort) {
         }
     });
 
+    /* istanbul ignore next */
     const port = typeof configPort === "number" ? configPort : await getPort();
     httpServer.listen(port, () => {
         const link = `http://localhost:${port}`;

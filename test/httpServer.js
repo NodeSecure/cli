@@ -58,6 +58,17 @@ test("'/flags/description/isGit' should return the isGit HTML description", asyn
     expect(result.data).toStrictEqual(IS_GIT_HTML);
 });
 
+test("'/flags/description/foobar' should return a 404 error", async() => {
+    expect.assertions(2);
+    try {
+        await get(new URL("/flags/description/foobar", HTTP_URL));
+    }
+    catch (error) {
+        expect(error.statusCode).toStrictEqual(404);
+        expect(error.data).toStrictEqual("Not Found");
+    }
+});
+
 test("'/data' should return the fixture payload we expect", async() => {
     const result = await get(new URL("/data", HTTP_URL));
 

@@ -190,6 +190,7 @@ function getRegistryURL(force = false) {
         return localNPMRegistry;
     }
     catch (error) {
+        /* istanbul ignore next */
         return REGISTRY_DEFAULT_ADDR;
     }
 }
