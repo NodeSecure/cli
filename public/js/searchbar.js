@@ -87,12 +87,16 @@ class SearchBar {
         this.itemsContainer = document.querySelector(".search-bar-container > .search-items");
         this.allSearchPackages = document.querySelectorAll(".search-result-pannel > .package");
 
-        this.delayOpenSearchBar = true;
         this.network = network;
-        this.activeKeywords = new Map();
         this.linker = linker;
+
+        this.delayOpenSearchBar = true;
+        this.activeQuery = new Set();
+        this.queries = [];
         this.inputUpdateValue = false;
-        let currentInSearchKeyword = null;
+        this.forceNewItem = false;
+        let confirmBackspace = false;
+        let currentActiveQueryName = null;
 
         this.container.addEventListener("click", () => {
             if (!this.background.classList.contains("show") && this.delayOpenSearchBar) {
@@ -102,60 +106,93 @@ class SearchBar {
         });
 
         this.input.addEventListener("keyup", (event) => {
-            if ((this.input.value === null || this.input.value === "") && this.activeKeywords.size === 0) {
-                this.allSearchPackages.forEach((element) => element.classList.add("hide"));
+            if ((this.input.value === null || this.input.value === "")) {
+                // we always want to show the default helpers when the input is empty!
                 this.showPannelHelper();
+
+                // hide all results if there is no active queries!
+                if (this.activeQuery.size === 0) {
+                    this.allSearchPackages.forEach((element) => element.classList.add("hide"));
+                }
+
+                // if backspace is received and that we have active queries
+                // then we want the query to be re-inserted in the input field!
+                else if (event.key === "Backspace") {
+                    if (confirmBackspace) {
+                        this.removeSearchBarItem();
+                        currentActiveQueryName = null;
+                    }
+                    else {
+                        confirmBackspace = true;
+                    }
+                }
 
                 return;
             }
+            confirmBackspace = false;
 
-            if (currentInSearchKeyword === null) {
+            // if there is no active query filter name, then we want to filter the helper
+            if (currentActiveQueryName === null) {
                 this.showHelperByInputText();
             }
 
+            // inputUpdateValue is used to force a re-hydratation of the input
             if (event.key === ":" || this.inputUpdateValue) {
                 if (this.inputUpdateValue) {
                     setTimeout(() => (this.inputUpdateValue = false), 1);
                 }
-                const keyword = this.input.value.slice(0, -1);
+
+                // here .split is important because we may have to re-proceed complete search string like 'filter: text'.
+                const [keyword] = this.input.value.split(":");
                 if (kFiltersName.has(keyword)) {
-                    currentInSearchKeyword = keyword;
-                    this.showPannelHelper(currentInSearchKeyword);
+                    currentActiveQueryName = keyword;
+                    this.showPannelHelper(currentActiveQueryName);
                 }
+
+                // TODO: we may want to implement a else here to generate an invalid keyword error!
             }
 
-            let exceptionalMatch = false;
-            if (!this.activeKeywords.has("package") && currentInSearchKeyword === null && event.key === "Enter") {
+            // In case there is no active package query and the enter key is pressed, then:
+            // - we fallback the current query to "package".
+            let isPackageSearch = false;
+            if (!this.activeQuery.has("package") && currentActiveQueryName === null && event.key === "Enter") {
                 if (this.input.value.trim() === "") {
                     return;
                 }
 
-                currentInSearchKeyword = "package";
-                exceptionalMatch = true;
+                currentActiveQueryName = "package";
+                isPackageSearch = true;
                 this.showPannelHelper();
             }
-            else if (currentInSearchKeyword === null) {
+            else if (currentActiveQueryName === null) {
                 return;
             }
 
-            const text = exceptionalMatch ?
+            // fetch the search text
+            const text = isPackageSearch ?
                 this.input.value.trim() :
-                this.input.value.slice(currentInSearchKeyword.length + 1).trim();
+                this.input.value.slice(currentActiveQueryName.length + 1).trim();
 
             this.showHelperByInputText(text);
             if (text.length === 0) {
                 return;
             }
-            const matchingIds = this.computeText(currentInSearchKeyword, text);
 
-            if (event.key === "Enter") {
-                this.input.value = "";
+            // fetch matching result ids!
+            const matchingIds = this.computeText(currentActiveQueryName, text);
+
+            if (event.key === "Enter" || this.forceNewItem) {
+                if (this.forceNewItem) {
+                    setTimeout(() => (this.forceNewItem = false), 1);
+                }
+
                 this.appendCancelButton();
-                this.addSearchBarItem(currentInSearchKeyword, text, matchingIds);
+                this.addSearchBarItem(currentActiveQueryName, text, matchingIds);
                 this.showPannelHelper();
-                currentInSearchKeyword = null;
+                currentActiveQueryName = null;
+                this.input.value = "";
 
-                if (!exceptionalMatch) {
+                if (!isPackageSearch && !this.forceNewItem) {
                     return;
                 }
             }
@@ -163,7 +200,9 @@ class SearchBar {
         });
 
         document.addEventListener("click", (event) => {
-            if (!this.container.contains(event.target) && this.background.classList.contains("show") && !this.inputUpdateValue) {
+            if (!this.container.contains(event.target)
+                && this.background.classList.contains("show")
+                && !this.inputUpdateValue && !this.forceNewItem) {
                 this.close();
             }
         });
@@ -171,7 +210,7 @@ class SearchBar {
     }
 
     appendCancelButton() {
-        if (this.activeKeywords.size > 0) {
+        if (this.activeQuery.size > 0) {
             return;
         }
 
@@ -211,6 +250,7 @@ class SearchBar {
                     this.input.value = element.getAttribute("data-value");
                 }
                 else {
+                    this.forceNewItem = true;
                     this.input.value += element.getAttribute("data-value");
                     this.helper.classList.add("hide");
                 }
@@ -226,21 +266,39 @@ class SearchBar {
         this.helper.appendChild(clone);
     }
 
+    removeSearchBarItem() {
+        const [fullQuery, divElement] = this.queries.pop();
+        const [filterName] = fullQuery.split(":");
+        this.activeQuery.delete(filterName);
+        this.itemsContainer.removeChild(divElement);
+        if (this.activeQuery.size === 0) {
+            while (this.itemsContainer.firstChild) {
+                this.itemsContainer.removeChild(this.itemsContainer.lastChild);
+            }
+        }
+
+        this.input.value = fullQuery;
+        this.inputUpdateValue = true;
+        this.input.focus();
+        this.input.dispatchEvent(new Event("keyup"));
+    }
+
     addSearchBarItem(filterName, text, ids) {
         const bElement = createDOMElement("b", { text: `${filterName}:` });
         const pElement = createDOMElement("p", { text });
 
         const element = this.itemsContainer.children[this.itemsContainer.children.length - 1];
-        this.itemsContainer.insertBefore(
-            createDOMElement("div", { childs: [bElement, pElement] }), element
-        );
-        this.activeKeywords.set(filterName, { text, ids: [...ids] });
+        const divElement = createDOMElement("div", { childs: [bElement, pElement] });
+        this.itemsContainer.insertBefore(divElement, element);
+
+        this.activeQuery.add(filterName);
+        this.queries.push([`${filterName}:${text}`, divElement, [...ids]]);
     }
 
     computeText(filterName, inputValue) {
         const matchingIds = new Set();
         const storedIds = new Set();
-        for (const { ids } of this.activeKeywords.values()) {
+        for (const [,, ids] of this.queries) {
             ids.forEach((id) => storedIds.add(id));
         }
 
@@ -332,7 +390,8 @@ class SearchBar {
         this.allSearchPackages.forEach((element) => element.classList.add("hide"));
 
         this.itemsContainer.innerHTML = "";
-        this.activeKeywords = new Map();
+        this.activeQuery = new Set();
+        this.queries = [];
         this.input.value = "";
         this.input.blur();
         this.helper.classList.remove("hide");
