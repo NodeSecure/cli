@@ -22,10 +22,10 @@ const iter = require("itertools");
 const ms = require("ms");
 const difference = require("lodash.difference");
 const is = require("@slimio/is");
+const { searchRuntimeDependencies } = require("js-x-ray");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
-const { searchRuntimeDependencies } = require("./ast");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
 const i18n = require("./i18n");
 const Dependency = require("./dependency.class");

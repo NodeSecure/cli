@@ -43,6 +43,7 @@ async function startHTTPServer(dataFilePath, configPort) {
             res.end(templateStr);
         }
         catch (err) {
+            /* istanbul ignore next */
             send(res, 500, err.message);
         }
     });
@@ -50,6 +51,7 @@ async function startHTTPServer(dataFilePath, configPort) {
     httpServer.get("/data", (req, res) => {
         res.writeHead(200, { "Content-Type": "application/json" });
         pipeline(createReadStream(dataFilePath), res, (err) => {
+            /* istanbul ignore next */
             if (err) {
                 console.error(err);
             }
@@ -64,12 +66,21 @@ async function startHTTPServer(dataFilePath, configPort) {
 
     httpServer.get("/flags/description/:title", (req, res) => {
         if (flagsTitle.has(req.params.title)) {
+            res.writeHead(200, {
+                "Content-Type": "text/html"
+            });
+
             const flagDescription = join(__dirname, `../flags/${req.params.title}.html`);
             pipeline(createReadStream(flagDescription), res, (err) => {
+                /* istanbul ignore next */
                 if (err) {
                     console.error(err);
                 }
             });
+        }
+        else {
+            res.writeHead(404);
+            res.end("Not Found");
         }
     });
 
@@ -77,6 +88,7 @@ async function startHTTPServer(dataFilePath, configPort) {
     httpServer.listen(port, () => {
         const link = `http://localhost:${port}`;
         console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
+        /* istanbul ignore next */
         if (typeof configPort === "undefined") {
             open(link);
         }

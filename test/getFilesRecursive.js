@@ -19,8 +19,6 @@ test("should return all files contained in the project", async() => {
 
     const expected = [
         "bin/index.js",
-        "src/ast/index.js",
-        "src/ast/helpers.js",
         "src/depWalker.js",
         "src/httpServer.js",
         "src/utils.js"

@@ -16,7 +16,9 @@ const i18n = require("../src/i18n");
 const HTTP_PORT = 1337;
 const HTTP_URL = new URL(`http://localhost:${HTTP_PORT}`);
 const JSON_PATH = join(__dirname, "fixtures", "httpServer", "payload.json");
+
 const INDEX_HTML = readFileSync(join(__dirname, "..", "views", "index.html"), "utf-8");
+const IS_GIT_HTML = readFileSync(join(__dirname, "..", "flags", "isGit.html"), "utf-8");
 
 // VARS
 let httpServer;
@@ -37,6 +39,23 @@ test("'/' should return index.html HTML content", async() => {
 
     const templateStr = zup(INDEX_HTML)({ token: (tokenName) => i18n.getToken(`ui.${tokenName}`) });
     expect(result.data).toStrictEqual(templateStr);
+});
+
+test("'/flags' should return the flags list as JSON", async() => {
+    const result = await get(new URL("/flags", HTTP_URL));
+
+    expect(result.statusCode).toStrictEqual(200);
+    expect(result.headers["content-type"]).toStrictEqual("application/json");
+    expect(result.data).toMatchSnapshot();
+});
+
+test("'/flags/description/isGit' should return the isGit HTML description", async() => {
+    const result = await get(new URL("/flags/description/isGit", HTTP_URL));
+
+    expect(result.statusCode).toStrictEqual(200);
+    expect(result.headers["content-type"]).toStrictEqual("text/html");
+
+    expect(result.data).toStrictEqual(IS_GIT_HTML);
 });
 
 test("'/data' should return the fixture payload we expect", async() => {
