@@ -1,25 +1,14 @@
-declare namespace NodeSecure {
-    interface ParentNode {
-        name: string;
-        version: string;
-    }
+/// <reference types="js-x-ray"/>
+/// <reference types="ntlp"/>
 
+import { Warning } from "js-x-ray";
+import { license as License } from "ntlp";
+
+declare namespace NodeSecure {
     interface Publisher {
         name: string;
         version: string;
         at: string;
-    }
-
-    interface License {
-        uniqueLicenseIds: string[];
-        spdxLicenseLinks: string[];
-        spdx: {
-            osi: boolean;
-            fsf: boolean;
-            fsfAndOsi: boolean;
-            includesDeprecated: boolean;
-        };
-        from: string;
     }
 
     interface Maintainer {
@@ -53,7 +42,10 @@ declare namespace NodeSecure {
     interface Dependency {
         name: string;
         version: string;
-        parent: ParentNode | null;
+        parent?: {
+            name: string;
+            version: string;
+        };
         flags: Flags;
     }
 
@@ -78,14 +70,6 @@ declare namespace NodeSecure {
         cvss_vector: string;
         cvss_score: number;
         coordinating_vendor: string;
-    }
-
-    interface Warning {
-        file: string;
-        kind: "unsafe-import" | "unsafe-regex" | "ast-error";
-        error?: string;
-        start: { line: number; column: number };
-        end: { line: number; column: number };
     }
 
     interface VersionDescriptor {
@@ -138,7 +122,7 @@ declare namespace NodeSecure {
         }
     }
 
-    interface VerifyReport {
+    interface VerifyPayload {
         files: {
             list: string[];
             extensions: string[];
@@ -153,13 +137,13 @@ declare namespace NodeSecure {
     }
 
     interface Options {
-        verbose?: boolean;
-        maxDepth?: number;
+        readonly verbose?: boolean;
+        readonly maxDepth?: number;
     }
 
     export function cwd(path: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
     export function from(packageName: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
-    export function verify(packageName: string): Promise<NodeSecure.VerifyReport>;
+    export function verify(packageName: string): Promise<NodeSecure.VerifyPayload>;
 }
 
 export = NodeSecure;
