@@ -12,7 +12,6 @@ const uniqueSlug = require("unique-slug");
 const { searchRuntimeDependencies } = require("js-x-ray");
 const ntlp = require("ntlp");
 const isMinified = require("is-minified-code");
-const clonedeep = require("lodash.clonedeep");
 
 // Require Internal Dependencies
 const { depWalker } = require("./src/depWalker");
@@ -77,13 +76,13 @@ async function verify(packageName) {
         const allFilesContent = (await Promise.allSettled(JSFiles.map((file) => readJSFile(dest, file))))
             .filter((_p) => _p.status === "fulfilled").map((_p) => _p.value);
 
-        // TODO: 1) add dependency location, 2) handle dependency by file to not loose data.
+        // TODO: 2) handle dependency by file to not loose data.
         for (const [file, str] of allFilesContent) {
             const ASTAnalysis = searchRuntimeDependencies(str, {
                 module: extname(file) === ".mjs" ? true : isProjectUsingESM
             });
             ASTAnalysis.dependencies.removeByName(packageName);
-            Object.assign(dependencies, clonedeep(ASTAnalysis.dependencies.dependencies));
+            dependencies[file] = ASTAnalysis.dependencies.dependencies;
             warnings.push(...ASTAnalysis.warnings);
 
             if (!ASTAnalysis.isOneLineRequire && !file.includes(".min") && isMinified(str)) {
@@ -92,11 +91,13 @@ async function verify(packageName) {
         }
 
         await nextTick();
-        const licenses = await ntlp(dest);
+        const { uniqueLicenseIds, licenses } = await ntlp(dest);
 
         return {
-            files: { list: files, extensions: ext, minified },
-            directorySize: size, licenses,
+            files: { list: files, extensions: [...ext], minified },
+            directorySize: size,
+            uniqueLicenseIds,
+            licenses,
             ast: { dependencies, warnings }
         };
     }

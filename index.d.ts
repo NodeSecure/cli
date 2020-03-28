@@ -1,7 +1,7 @@
 /// <reference types="js-x-ray"/>
 /// <reference types="ntlp"/>
 
-import { Warning } from "js-x-ray";
+import { Warning, Dependencies } from "js-x-ray";
 import { license as License } from "ntlp";
 
 declare namespace NodeSecure {
@@ -116,12 +116,6 @@ declare namespace NodeSecure {
         [packageName: string]: VersionDescriptor;
     }
 
-    interface VerifyDependenciesObject {
-        [depName: string]: {
-            inTry: boolean;
-        }
-    }
-
     interface VerifyPayload {
         files: {
             list: string[];
@@ -129,9 +123,12 @@ declare namespace NodeSecure {
             minified: string[];
         };
         directorySize: number;
-        licenses: string | License[];
+        uniqueLicenseIds: string[];
+        licenses: License[];
         ast: {
-            dependencies: VerifyDependenciesObject;
+            dependencies: {
+                [fileName: string]: Dependencies;
+            };
             warnings: Warning[];
         };
     }
