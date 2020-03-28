@@ -132,6 +132,26 @@ declare namespace NodeSecure {
         [packageName: string]: VersionDescriptor;
     }
 
+    interface VerifyDependenciesObject {
+        [depName: string]: {
+            inTry: boolean;
+        }
+    }
+
+    interface VerifyReport {
+        files: {
+            list: string[];
+            extensions: string[];
+            minified: string[];
+        };
+        directorySize: number;
+        licenses: string | License[];
+        ast: {
+            dependencies: VerifyDependenciesObject;
+            warnings: Warning[];
+        };
+    }
+
     interface Options {
         verbose?: boolean;
         maxDepth?: number;
@@ -139,6 +159,7 @@ declare namespace NodeSecure {
 
     export function cwd(path: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
     export function from(packageName: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
+    export function verify(packageName: string): Promise<NodeSecure.VerifyReport>;
 }
 
 export = NodeSecure;

@@ -34,6 +34,10 @@ module.exports = {
             open: {
                 desc: "Run an HTTP Server with a given nsecure JSON file."
             },
+            verify: {
+                desc: "Run a complete advanced analysis for a given npm package!",
+                option_json: "Stdout the analysis payload"
+            },
             lang: {
                 desc: "Configure the CLI default language.",
                 question_text: "What language do you want?",

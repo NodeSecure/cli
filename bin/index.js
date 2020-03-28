@@ -26,7 +26,7 @@ const i18n = require("../src/i18n");
 const { getRegistryURL, loadNsecureCache, writeNsecureCache } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
 const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
-const { cwd } = require("../index");
+const { cwd, verify } = require("../index");
 
 // CONSTANTS
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
@@ -98,6 +98,22 @@ prog
     .command("open [json]")
     .describe(i18n.getToken("cli.commands.open.desc"))
     .action(httpCmd);
+
+prog
+    .command("verify <package>")
+    .describe(i18n.getToken("cli.commands.verify.desc"))
+    .option("-j, --json", i18n.getToken("cli.commands.verify.option_json"), true)
+    .action(async(packageName, options) => {
+        const returnJSON = Boolean(options.json);
+
+        const payload = await verify(packageName);
+        if (returnJSON) {
+            return console.log(JSON.stringify(payload, null, 2));
+        }
+        console.log("CLI MODE: Not Implemented Yet!");
+
+        return void 0;
+    });
 
 prog
     .command("lang")
