@@ -63,3 +63,4 @@ typings/
 nsecure-result.json
 vuln.json
 tmp/
+dist/

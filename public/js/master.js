@@ -1,5 +1,9 @@
 "use strict";
 
+import * as utils from "./utils.js";
+import vis from "vis";
+import SearchBar from "./searchbar.js";
+
 // CONSTANTS (for nodes colors)
 const C_MAIN = "#01579B";
 const C_INDIRECT = "rgba(100, 200, 200, 0.30)";
@@ -136,7 +140,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         toggleModal("popup-legends");
         const legendsFlagsFragment = document.createDocumentFragment();
         for (const [flagName, { title }] of Object.entries(FLAGS)) {
-            legendsFlagsFragment.appendChild(createLegend(flagName, title));
+            legendsFlagsFragment.appendChild(utils.createLegend(flagName, title));
         }
         document.getElementById("flag-legends").appendChild(legendsFlagsFragment);
     });
@@ -153,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     const linker = new Map();
 
     const [data, FLAGS] = await Promise.all([
-        request("/data"), request("/flags")
+        utils.request("/data"), utils.request("/flags")
     ]);
     const dataEntries = Object.entries(data);
 
@@ -205,7 +209,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 const content = `<p>${flagStr.replace(/\s/g, "")} ${packageName}</p><b>${currVersion}</b>`;
                 dataListElement.insertAdjacentHTML("beforeend", `<div class="package hide" data-value="${id}">${content}</div>`);
             }
-            const label = `${packageName}@${currVersion}${flagStr}\n<b>[${formatBytes(size)}]</b>`;
+            const label = `${packageName}@${currVersion}${flagStr}\n<b>[${utils.formatBytes(size)}]</b>`;
             const color = getColor(id, flags);
 
             linker.set(Number(id), opt);
@@ -233,7 +237,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     // Setup global stats
     document.getElementById("total-packages").innerHTML = dataEntries.length;
     document.getElementById("indirect-dependencies").innerHTML = indirectDependenciesCount;
-    document.getElementById("total-size").innerHTML = formatBytes(totalSize);
+    document.getElementById("total-size").innerHTML = utils.formatBytes(totalSize);
     {
         const licenseFragment = document.createDocumentFragment();
         const licensesEntries = [...Object.entries(licensesCount)].sort(([, left], [, right]) => right - left);
@@ -242,7 +246,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             if (licenseCount === 0) {
                 continue;
             }
-            const divElement = createDOMElement("div", {
+            const divElement = utils.createDOMElement("div", {
                 classList: ["license", "stat-case"],
                 text: `${licenseName} (${licenseCount})`
             });
@@ -256,7 +260,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         const extEntries = [...Object.entries(extensionsCount)].sort(([, left], [, right]) => right - left);
 
         for (const [extName, extCount] of extEntries) {
-            const divElement = createDOMElement("div", {
+            const divElement = utils.createDOMElement("div", {
                 classList: ["ext", "stat-case"],
                 text: `${extName} (${extCount})`
             });
@@ -269,7 +273,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         document.getElementById("stat-maintainers-title").textContent = `${authorsList.size} Maintainers`;
         const authorsFragment = document.createDocumentFragment();
         for (const [name, desc] of authorsList.entries()) {
-            authorsFragment.appendChild(createAvatar(name, desc));
+            authorsFragment.appendChild(utils.createAvatar(name, desc));
         }
         document.getElementById("maintainers-list").appendChild(authorsFragment);
     }
@@ -400,7 +404,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                                 const link = Reflect.has(license.spdxLicenseLinks, id) ?
                                     license.spdxLicenseLinks[id] : license.spdxLicenseLinks[0];
 
-                                createLicenseLine(tbody, license, { name, link });
+                                utils.createLicenseLine(tbody, license, { name, link });
                             }
                         }
                     });
@@ -432,17 +436,17 @@ document.addEventListener("DOMContentLoaded", async() => {
                 };
 
                 const fieldsFragment = document.createDocumentFragment();
-                fieldsFragment.appendChild(createLiField("Author", fAuthor));
-                fieldsFragment.appendChild(createLiField("Size on (local) system", formatBytes(selectedNode.size)));
-                fieldsFragment.appendChild(createLiField("Homepage", metadata.homepage || "N/A", { isLink: true }));
-                fieldsFragment.appendChild(createLiField("Last release (version)", metadata.lastVersion));
-                fieldsFragment.appendChild(createLiField("Last release (date)", lastUpdate));
-                fieldsFragment.appendChild(createLiField("Number of published releases", metadata.publishedCount));
+                fieldsFragment.appendChild(utils.createLiField("Author", fAuthor));
+                fieldsFragment.appendChild(utils.createLiField("Size on (local) system", utils.formatBytes(selectedNode.size)));
+                fieldsFragment.appendChild(utils.createLiField("Homepage", metadata.homepage || "N/A", { isLink: true }));
+                fieldsFragment.appendChild(utils.createLiField("Last release (version)", metadata.lastVersion));
+                fieldsFragment.appendChild(utils.createLiField("Last release (date)", lastUpdate));
+                fieldsFragment.appendChild(utils.createLiField("Number of published releases", metadata.publishedCount));
                 if (warnings.length > 0) {
                     fieldsFragment.appendChild(document.createElement("hr"));
-                    fieldsFragment.appendChild(createLiField("Warnings", warnings.length, { modal: warningsModal }));
+                    fieldsFragment.appendChild(utils.createLiField("Warnings", warnings.length, { modal: warningsModal }));
                 }
-                fieldsFragment.appendChild(createLiField("License", licenses, { modal: licenseModal }));
+                fieldsFragment.appendChild(utils.createLiField("License", licenses, { modal: licenseModal }));
                 fields.appendChild(fieldsFragment);
             }
 
@@ -456,7 +460,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                     const flagsFragment = document.createDocumentFragment();
                     for (const icon of textContent) {
                         if (Reflect.has(FLAGS, icon)) {
-                            flagsFragment.appendChild(createTooltip(icon, FLAGS[icon].tooltipDescription));
+                            flagsFragment.appendChild(utils.createTooltip(icon, FLAGS[icon].tooltipDescription));
                         }
                     }
                     flagsElement.appendChild(flagsFragment);
@@ -469,7 +473,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 const thirdParty = requiredDeps.filter((name) => !name.startsWith("."));
                 const internal = requiredDeps.filter((name) => name.startsWith("."));
 
-                renderItemsList(clone.getElementById("nodedep"), composition.required_builtin, (event, coreLib) => {
+                utils.renderItemsList(clone.getElementById("nodedep"), composition.required_builtin, (event, coreLib) => {
                     window.open(`https://nodejs.org/dist/latest/docs/api/${coreLib}.html`, "_blank").focus();
                 });
 
@@ -482,12 +486,12 @@ document.addEventListener("DOMContentLoaded", async() => {
                     const cleanedFile = fileName.startsWith("./") ? fileName.slice(2) : fileName;
                     window.open(`${WhatWGHomepage.origin}${WhatWGHomepage.pathname}/blob/master/${cleanedFile}`).focus();
                 };
-                renderItemsList(clone.getElementById("extensions"), composition.extensions);
-                renderItemsList(clone.getElementById("minifiedfiles"), composition.minified,
+                utils.renderItemsList(clone.getElementById("extensions"), composition.extensions);
+                utils.renderItemsList(clone.getElementById("minifiedfiles"), composition.minified,
                     WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null, true);
-                renderItemsList(clone.getElementById("unuseddep"), composition.unused);
-                renderItemsList(clone.getElementById("missingdep"), composition.missing, null);
-                renderItemsList(clone.getElementById("requireddep"), thirdParty, (event, packageName) => {
+                utils.renderItemsList(clone.getElementById("unuseddep"), composition.unused);
+                utils.renderItemsList(clone.getElementById("missingdep"), composition.missing, null);
+                utils.renderItemsList(clone.getElementById("requireddep"), thirdParty, (event, packageName) => {
                     let wantedId = null;
                     for (const [id, opt] of linker) {
                         if (opt.name === packageName) {
@@ -499,7 +503,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                     }
                 }, true);
 
-                renderItemsList(clone.getElementById("internaldep"), internal,
+                utils.renderItemsList(clone.getElementById("internaldep"), internal,
                     WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null, true);
             }
 
@@ -509,12 +513,12 @@ document.addEventListener("DOMContentLoaded", async() => {
             try {
                 const {
                     gzip, size, dependencySizes
-                } = await request(`https://bundlephobia.com/api/size?package=${name}@${version}`);
+                } = await utils.request(`https://bundlephobia.com/api/size?package=${name}@${version}`);
                 const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
 
-                document.querySelector(".size-gzip").textContent = formatBytes(gzip);
-                document.querySelector(".size-min").textContent = formatBytes(size);
-                document.querySelector(".size-full").textContent = formatBytes(fullSize);
+                document.querySelector(".size-gzip").textContent = utils.formatBytes(gzip);
+                document.querySelector(".size-min").textContent = utils.formatBytes(size);
+                document.querySelector(".size-full").textContent = utils.formatBytes(fullSize);
             }
             catch (err) {
                 // ignore
@@ -599,7 +603,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         let user = { name: null };
 
         if (typeof author === "string") {
-            user = parseAuthor(author);
+            user = utils.parseAuthor(author);
         }
         else if (typeof author === "object" && typeof author.name === "string") {
             user = author;

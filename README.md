@@ -44,6 +44,7 @@ or
 $ git clone https://github.com/ES-Community/nsecure.git
 $ cd nsecure
 $ npm ci
+$ npm run build
 $ npm link
 ```
 

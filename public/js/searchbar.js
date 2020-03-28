@@ -1,5 +1,7 @@
 "use strict";
 
+import { createDOMElement } from "./utils.js";
+
 // CONSTANTS
 const kFiltersName = new Set(["package", "version", "flag", "license", "author", "ext", "builtin"]);
 const kHelpersTitleName = {
@@ -78,7 +80,7 @@ function createLineElement(text) {
     });
 }
 
-class SearchBar {
+export default class SearchBar {
     constructor(network, linker) {
         this.container = document.querySelector(".search-bar-container");
         this.background = document.querySelector(".search-result-background");

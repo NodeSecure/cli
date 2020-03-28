@@ -1,8 +1,8 @@
-"use strict";
+import gravatarURL from "gravatar-url";
 
 let activeLegendElement = null;
 
-function formatBytes(bytes, decimals) {
+export function formatBytes(bytes, decimals) {
     if (bytes === 0) {
         return "0 B";
     }
@@ -13,7 +13,7 @@ function formatBytes(bytes, decimals) {
     return parseFloat((bytes / Math.pow(1024, id)).toFixed(dm)) + " " + sizes[id];
 }
 
-function createDOMElement(kind = "div", options = {}) {
+export function createDOMElement(kind = "div", options = {}) {
     const { classList = [], childs = [], attributes = {}, text = null } = options;
 
     const el = document.createElement(kind);
@@ -31,7 +31,7 @@ function createDOMElement(kind = "div", options = {}) {
     return el;
 }
 
-function createLink(url, text = null) {
+export function createLink(url, text = null) {
     const aElement = document.createElement("a");
     aElement.rel = "noopener";
     aElement.target = "_blank";
@@ -43,7 +43,7 @@ function createLink(url, text = null) {
     return aElement;
 }
 
-function createTooltip(text, description) {
+export function createTooltip(text, description) {
     const spanElement = createDOMElement("span", {
         classList: ["tooltiptext"], text: description
     });
@@ -53,7 +53,7 @@ function createTooltip(text, description) {
     });
 }
 
-function createAvatar(name, desc) {
+export function createAvatar(name, desc) {
     const pElement = createDOMElement("p", {
         classList: ["count"], text: desc.count
     });
@@ -67,8 +67,7 @@ function createAvatar(name, desc) {
         imgEl.src = "/img/avatar-default.png";
     }
     else {
-        const hash = md5(desc.email);
-        imgEl.src = `https://gravatar.com/avatar/${hash}?&d=404`;
+        imgEl.src = gravatarURL(desc.email);
         imgEl.onerror = () => {
             imgEl.src = "/img/avatar-default.png";
         };
@@ -79,7 +78,7 @@ function createAvatar(name, desc) {
     return divEl;
 }
 
-function createLegend(icon, title) {
+export function createLegend(icon, title) {
     const slicedTitle = title.length > 20 ? `${title.slice(0, 20)}..` : title;
     const PElement = createDOMElement("p", { text: `${icon} ${slicedTitle}` });
     const legendDivElement = createDOMElement("div", {
@@ -98,7 +97,13 @@ function createLegend(icon, title) {
     return legendDivElement;
 }
 
-function createLicenseLine(tbody, license, { name, link }) {
+async function updateDescription(title) {
+    const flagDescriptionElement = document.getElementById("flag-description");
+    const description = await (await fetch(`flags/description/${title}`)).text();
+    flagDescriptionElement.innerHTML = description;
+}
+
+export function createLicenseLine(tbody, license, { name, link }) {
     const line = tbody.insertRow(0);
 
     line.insertCell(0).appendChild(createLink(link, name));
@@ -109,7 +114,7 @@ function createLicenseLine(tbody, license, { name, link }) {
     line.insertCell(5).appendChild(document.createTextNode(license.from));
 }
 
-function createLiField(title, value, options = {}) {
+export function createLiField(title, value, options = {}) {
     const { isLink = false, modal = null } = options;
 
     const bElement = createDOMElement("b", { text: title });
@@ -136,7 +141,7 @@ function createLiField(title, value, options = {}) {
 }
 
 // eslint-disable-next-line max-params
-function renderItemsList(node, items = [], onclick = null, handleHidden = false) {
+export function renderItemsList(node, items = [], onclick = null, handleHidden = false) {
     if (items.length === 0) {
         const previousNode = node.previousElementSibling;
         if (previousNode !== null) {
@@ -201,7 +206,7 @@ function renderItemsList(node, items = [], onclick = null, handleHidden = false)
     node.appendChild(fragment);
 }
 
-async function request(path, customHeaders = Object.create(null)) {
+export async function request(path, customHeaders = Object.create(null)) {
     const headers = {
         Accept: "application/json"
     };
@@ -214,17 +219,11 @@ async function request(path, customHeaders = Object.create(null)) {
     return raw.json();
 }
 
-async function updateDescription(title) {
-    const flagDescriptionElement = document.getElementById("flag-description");
-    const description = await (await fetch(`flags/description/${title}`)).text();
-    flagDescriptionElement.innerHTML = description;
-}
-
 function authorRegex() {
     return /^([^<(]+?)?[ \t]*(?:<([^>(]+?)>)?[ \t]*(?:\(([^)]+?)\)|$)/gm;
 }
 
-function parseAuthor(str) {
+export function parseAuthor(str) {
     if (typeof str !== "string") {
         throw new TypeError("expected author to be a string");
     }

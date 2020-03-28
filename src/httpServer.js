@@ -23,7 +23,7 @@ const i18n = require("./i18n");
 
 // CONSTANTS
 const VIEWS = join(__dirname, "..", "views");
-const PUBLIC = join(__dirname, "..", "public");
+const PUBLIC = join(__dirname, "..", "dist");
 const FLAGS = require("../flags/manifest.json");
 const flagsTitle = new Set(Object.values(FLAGS).map((flagDescriptor) => flagDescriptor.title));
 
