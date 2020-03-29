@@ -15,7 +15,8 @@ const kDefaultLanguage = "english";
 
 // VARS
 const TOKENS = {
-    english: require("../i18n/english.js")
+    english: require("../i18n/english.js"),
+    french: require("../i18n/french.js")
 };
 const CONSTANTS = Object.seal({
     CACHE_PATH: kCachePath,
