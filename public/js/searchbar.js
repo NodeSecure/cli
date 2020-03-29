@@ -1,6 +1,7 @@
 "use strict";
 
 import { createDOMElement } from "./utils.js";
+import semver from "semver";
 
 // CONSTANTS
 const kFiltersName = new Set(["package", "version", "flag", "license", "author", "ext", "builtin"]);

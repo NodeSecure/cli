@@ -5,6 +5,7 @@
 const { taggedString: tS } = require("../src/utils");
 
 module.exports = {
+    lang: "en",
     cli: {
         executing_at: "Executing node-secure at",
         min_nodejs_version: tS`node-secure require at least Node.js ${0} to work! Please upgrade your Node.js version.`,
@@ -77,6 +78,23 @@ module.exports = {
             third_party_deps: "third-party dependencies",
             required_files: "required files"
         },
+        popups: {
+            licenses: {
+                title: "Licenses",
+                name: "Name",
+                from: "from (file)"
+            },
+            warnings: {
+                title: "Warnings",
+                homepage: "Homepage",
+                linkhere: "link here",
+                type: "type",
+                file: "file",
+                errorMsg: "error message",
+                position: "position"
+            }
+        },
+        searchbar_placeholder: "Search",
         btn_emojis_legends: "Emojis Legends",
         show_complete_desc: "click on a package to show a complete description here",
         loading_nodes: "... Loading nodes ...",

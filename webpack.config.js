@@ -26,7 +26,7 @@ module.exports = {
     },
     mode: "production",
     optimization: {
-        usedExports: false
+        usedExports: true
     },
     module: {
         rules: [

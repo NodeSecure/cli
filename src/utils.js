@@ -27,29 +27,6 @@ const REGISTRY_DEFAULT_ADDR = "https://registry.npmjs.org/";
 // VARS
 let localNPMRegistry = null;
 
-// TYPEDEF
-
-/**
- * @typedef {object} mergedDep
- * @property {Map<string, string>} dependencies
- * @property {Map<string, string>} customResolvers
- */
-
-/**
- * @typedef {object} tarballComposition
- * @property {Set<string>} ext all files extension
- * @property {number} size size in bytes
- * @property {string[]} files complete list of files retrieved in the tarball
- */
-
-/**
- * @async
- * @generator
- * @function getFilesRecursive
- * @memberof Utils#
- * @param {!string} dir root directory
- * @returns {AsyncIterableIterator<string>}
- */
 async function* getFilesRecursive(dir) {
     const dirents = await opendir(dir);
 
@@ -69,14 +46,6 @@ async function* getFilesRecursive(dir) {
     }
 }
 
-/**
- * @async
- * @function getTarballComposition
- * @description Get the size and the file(s) and directorie(s) composition of a given extracted npm tarball
- * @memberof Utils#
- * @param {!string} tarballDir tarball dir
- * @returns {Promise<tarballComposition>}
- */
 async function getTarballComposition(tarballDir) {
     const ext = new Set();
     const files = [];
@@ -113,14 +82,6 @@ async function getTarballComposition(tarballDir) {
     };
 }
 
-/**
- * @function mergeDependencies
- * @description Merge all kinds (dep, devDep etc..) of dependencies section of npm Manifest (package.json)
- * @memberof Utils#
- * @param {!object} manifest manifest
- * @param {string[]} [types] dependencies types to merge
- * @returns {mergedDep}
- */
 function mergeDependencies(manifest, types = ["dependencies"]) {
     const dependencies = new Map();
     const customResolvers = new Map();
@@ -145,21 +106,6 @@ function mergeDependencies(manifest, types = ["dependencies"]) {
     return { dependencies, customResolvers };
 }
 
-/**
- * @function cleanRange
- * @description Clean up range (as possible).
- * @memberof Utils#
- * @param {!string} version version
- * @returns {string}
- *
- * @example
- * const assert = require("assert").strict;
- *
- * const ret = cleanRange("^1.0.0");
- * assert.equal(ret, "1.0.0");
- *
- * @see https://github.com/npm/node-semver#ranges
- */
 function cleanRange(version) {
     // TODO: how do we handle complicated range like pkg-name@1 || 2 or pkg-name@2.1.2 < 3
     const firstChar = version.charAt(0);
@@ -170,13 +116,6 @@ function cleanRange(version) {
     return version;
 }
 
-/**
- * @function getRegistryURL
- * @description retrieve the local npm registry URL (or return the default registry url if there is nothing in local).
- * @memberof Utils#
- * @param {boolean} [force=false] force spawn execution
- * @returns {string}
- */
 function getRegistryURL(force = false) {
     if (localNPMRegistry !== null && !force) {
         return localNPMRegistry;

@@ -23,11 +23,6 @@ const CONSTANTS = Object.seal({
     CURRENT_LANG: kDefaultLanguage
 });
 
-/**
- * @async
- * @function getLocalLang
- * @returns {string}
- */
 function getLocalLang() {
     if (CONSTANTS.LANG_UPDATED) {
         try {
@@ -48,15 +43,6 @@ async function setLocalLang(selectedLang) {
     await cacache.put(kCachePath, "cli-lang", selectedLang);
 }
 
-/**
- * @function getToken
- * @param {string} token lang token
- * @param {any[]} params
- * @returns {string}
- *
- * @throws {TypeError}
- * @throws {Error}
- */
 function getToken(token, ...params) {
     if (typeof token !== "string") {
         throw new TypeError("token must be a string");

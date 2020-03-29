@@ -39,7 +39,10 @@ async function startHTTPServer(dataFilePath, configPort) {
                 "Content-Type": "text/html"
             });
             const HTMLStr = await readFile(join(VIEWS, "index.html"), "utf-8");
-            const templateStr = zup(HTMLStr)({ token: (tokenName) => i18n.getToken(`ui.${tokenName}`) });
+            const templateStr = zup(HTMLStr)({
+                lang: i18n.getToken("lang"),
+                token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
+            });
             res.end(templateStr);
         }
         catch (err) {

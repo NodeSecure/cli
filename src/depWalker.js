@@ -308,15 +308,6 @@ async function* getRootDependencies(manifest, options) {
     yield parent;
 }
 
-/**
- * @async
- * @function depWalker
- * @param {object} manifest manifest (package.json)
- * @param {object} options options
- * @param {boolean} [options.verbose=true] enable verbose mode
- * @param {number} [options.maxDepth=2] max depth
- * @returns {Promise<null|Map<string, NodeSecure.Dependency>>}
- */
 async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true } = options;
 

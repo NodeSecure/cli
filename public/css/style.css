@@ -507,7 +507,7 @@ section#show-info > div.select-project {
     .tooltip + .tooltip {
         margin-left: 5px;
     }
-    .tooltip > .tooltiptext {
+    .tooltip > span {
         visibility: hidden;
         width: 280px;
         background-color: var(--background-color);
@@ -526,7 +526,7 @@ section#show-info > div.select-project {
         z-index: 99999999;
     }
 
-    .tooltip > .tooltiptext::after {
+    .tooltip > span::after {
         content: "";
         position: absolute;
         bottom: 100%;
@@ -537,6 +537,6 @@ section#show-info > div.select-project {
         border-color: transparent transparent var(--background-color) transparent;
     }
 
-    .tooltip:hover .tooltiptext {
+    .tooltip:hover span {
         visibility: visible;
     }

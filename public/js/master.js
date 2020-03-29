@@ -1,5 +1,6 @@
 "use strict";
 
+import prettyBytes from "pretty-bytes";
 import * as utils from "./utils.js";
 import vis from "vis";
 import SearchBar from "./searchbar.js";
@@ -11,8 +12,6 @@ const C_WARN = "rgba(210, 115, 115, 0.30)";
 const C_NORMAL = "rgba(150, 200, 200, 0.15)";
 const C_SELECTED = "rgba(170, 100, 200, 0.50)";
 const C_TRS = "rgba(150, 150, 150, 0.02)";
-
-const LEFT_MENU_DESC = "click on a package to show a complete description here";
 let toggleModal;
 
 const networkGraphOptions = {
@@ -157,7 +156,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     const linker = new Map();
 
     const [data, FLAGS] = await Promise.all([
-        utils.request("/data"), utils.request("/flags")
+        utils.getJSON("/data"), utils.getJSON("/flags")
     ]);
     const dataEntries = Object.entries(data);
 
@@ -209,7 +208,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 const content = `<p>${flagStr.replace(/\s/g, "")} ${packageName}</p><b>${currVersion}</b>`;
                 dataListElement.insertAdjacentHTML("beforeend", `<div class="package hide" data-value="${id}">${content}</div>`);
             }
-            const label = `${packageName}@${currVersion}${flagStr}\n<b>[${utils.formatBytes(size)}]</b>`;
+            const label = `${packageName}@${currVersion}${flagStr}\n<b>[${prettyBytes(size)}]</b>`;
             const color = getColor(id, flags);
 
             linker.set(Number(id), opt);
@@ -237,7 +236,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     // Setup global stats
     document.getElementById("total-packages").innerHTML = dataEntries.length;
     document.getElementById("indirect-dependencies").innerHTML = indirectDependenciesCount;
-    document.getElementById("total-size").innerHTML = utils.formatBytes(totalSize);
+    document.getElementById("total-size").innerHTML = prettyBytes(totalSize);
     {
         const licenseFragment = document.createDocumentFragment();
         const licensesEntries = [...Object.entries(licensesCount)].sort(([, left], [, right]) => right - left);
@@ -324,9 +323,11 @@ document.addEventListener("DOMContentLoaded", async() => {
 
             const btnShow = clone.getElementById("btn_showOrHide");
             const btnVuln = clone.getElementById("btn_vuln");
-            btnShow.innerHTML = selectedNode.hidden ?
-                "<i class=\"icon-eye\"></i><p>Show children</p>" :
-                "<i class=\"icon-eye-off\"></i><p>Hide children</p>";
+            {
+                btnShow.innerHTML = "";
+                const template = document.getElementById(selectedNode.hidden ? "show-children" : "hide-children");
+                btnShow.appendChild(document.importNode(template.content, true));
+            }
 
             if (metadata.dependencyCount === 0) {
                 btnShow.classList.add("disabled");
@@ -336,12 +337,10 @@ document.addEventListener("DOMContentLoaded", async() => {
                     const currBtn = document.getElementById("btn_showOrHide");
                     currBtn.classList.toggle("active");
                     const hidden = !selectedNode.hidden;
-                    if (hidden) {
-                        currBtn.innerHTML = "<i class=\"icon-eye\"></i><p>Show children</p>";
-                    }
-                    else {
-                        currBtn.innerHTML = "<i class=\"icon-eye-off\"></i><p>Hide children</p>";
-                    }
+
+                    currBtn.innerHTML = "";
+                    const template = document.getElementById(hidden ? "show-children" : "hide-children");
+                    currBtn.appendChild(document.importNode(template.content, true));
 
                     network.startSimulation();
                     nodes.update([...searchForNeighbourIds(currentNode)].map((id) => ({ id, hidden })));
@@ -437,7 +436,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
                 const fieldsFragment = document.createDocumentFragment();
                 fieldsFragment.appendChild(utils.createLiField("Author", fAuthor));
-                fieldsFragment.appendChild(utils.createLiField("Size on (local) system", utils.formatBytes(selectedNode.size)));
+                fieldsFragment.appendChild(utils.createLiField("Size on (local) system", prettyBytes(selectedNode.size)));
                 fieldsFragment.appendChild(utils.createLiField("Homepage", metadata.homepage || "N/A", { isLink: true }));
                 fieldsFragment.appendChild(utils.createLiField("Last release (version)", metadata.lastVersion));
                 fieldsFragment.appendChild(utils.createLiField("Last release (date)", lastUpdate));
@@ -473,7 +472,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 const thirdParty = requiredDeps.filter((name) => !name.startsWith("."));
                 const internal = requiredDeps.filter((name) => name.startsWith("."));
 
-                utils.renderItemsList(clone.getElementById("nodedep"), composition.required_builtin, (event, coreLib) => {
+                utils.createItemsList(clone.getElementById("nodedep"), composition.required_builtin, (event, coreLib) => {
                     window.open(`https://nodejs.org/dist/latest/docs/api/${coreLib}.html`, "_blank").focus();
                 });
 
@@ -486,12 +485,12 @@ document.addEventListener("DOMContentLoaded", async() => {
                     const cleanedFile = fileName.startsWith("./") ? fileName.slice(2) : fileName;
                     window.open(`${WhatWGHomepage.origin}${WhatWGHomepage.pathname}/blob/master/${cleanedFile}`).focus();
                 };
-                utils.renderItemsList(clone.getElementById("extensions"), composition.extensions);
-                utils.renderItemsList(clone.getElementById("minifiedfiles"), composition.minified,
+                utils.createItemsList(clone.getElementById("extensions"), composition.extensions);
+                utils.createItemsList(clone.getElementById("minifiedfiles"), composition.minified,
                     WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null, true);
-                utils.renderItemsList(clone.getElementById("unuseddep"), composition.unused);
-                utils.renderItemsList(clone.getElementById("missingdep"), composition.missing, null);
-                utils.renderItemsList(clone.getElementById("requireddep"), thirdParty, (event, packageName) => {
+                utils.createItemsList(clone.getElementById("unuseddep"), composition.unused);
+                utils.createItemsList(clone.getElementById("missingdep"), composition.missing, null);
+                utils.createItemsList(clone.getElementById("requireddep"), thirdParty, (event, packageName) => {
                     let wantedId = null;
                     for (const [id, opt] of linker) {
                         if (opt.name === packageName) {
@@ -503,7 +502,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                     }
                 }, true);
 
-                utils.renderItemsList(clone.getElementById("internaldep"), internal,
+                utils.createItemsList(clone.getElementById("internaldep"), internal,
                     WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null, true);
             }
 
@@ -513,19 +512,21 @@ document.addEventListener("DOMContentLoaded", async() => {
             try {
                 const {
                     gzip, size, dependencySizes
-                } = await utils.request(`https://bundlephobia.com/api/size?package=${name}@${version}`);
+                } = await utils.getJSON(`https://bundlephobia.com/api/size?package=${name}@${version}`);
                 const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
 
-                document.querySelector(".size-gzip").textContent = utils.formatBytes(gzip);
-                document.querySelector(".size-min").textContent = utils.formatBytes(size);
-                document.querySelector(".size-full").textContent = utils.formatBytes(fullSize);
+                document.querySelector(".size-gzip").textContent = prettyBytes(gzip);
+                document.querySelector(".size-min").textContent = prettyBytes(size);
+                document.querySelector(".size-full").textContent = prettyBytes(fullSize);
             }
             catch (err) {
                 // ignore
             }
         }
         else {
-            showInfoElem.innerHTML = `<div class="select-project"><p>${LEFT_MENU_DESC}</p></div>`;
+            const template = document.getElementById("left-menu-desc");
+            showInfoElem.innerHTML = "";
+            showInfoElem.appendChild(document.importNode(template.content, true));
         }
     }
 

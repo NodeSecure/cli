@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="[[=z.lang]]">
 
 <!-- Headers -->
 <meta charset="UTF-8" />
@@ -68,7 +68,7 @@
         <div class="search-items">
             <!-- <div><b>version:</b><p>1.0.0</p></div> -->
         </div>
-        <input type="text" placeholder="Search" id="search-bar-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" ></input>
+        <input type="text" placeholder="[[=z.token('searchbar_placeholder')]]" id="search-bar-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" ></input>
         <i class="icon-search"></i>
         <div class="search-result-background dark-box-skin">
             <div class="search-result-pannel" id="package-list">
@@ -96,6 +96,20 @@
     <p>[[=z.token('loading_nodes')]]</p>
     <p>[[=z.token('please_wait')]]</p>
 </div>
+
+<template id="left-menu-desc">
+    <div class="select-project">
+        <p>[[=z.token('show_complete_desc')]]</p>
+    </div>
+</template>
+
+<template id="show-children">
+    <i class="icon-eye"></i><p>Show children</p>
+</template>
+
+<template id="hide-children">
+    <i class="icon-eye-off"></i><p>Hide children</p>
+</template>
 
 <template id="package-info">
     <span class="line-title">
@@ -170,16 +184,16 @@
 
 <template id="popup-license">
     <div class="popup-licenses-container">
-        <h1>Licenses</h1>
+        <h1>[[=z.token('popups.licenses.title')]]</h1>
         <table id="licenses-table">
             <thead>
                 <tr>
-                    <td>Name</td>
+                    <td>[[=z.token('popups.licenses.name')]]</td>
                     <td>osi</td>
                     <td>fsf</td>
                     <td>fsfAndOsi</td>
                     <td>includesDeprecated</td>
-                    <td>from (file)</td>
+                    <td>[[=z.token('popups.licenses.from')]]</td>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -189,18 +203,18 @@
 
 <template id="popup-warning">
     <div class="popup-licenses-container">
-        <h1>Warnings</h1>
+        <h1>[[=z.token('popups.warnings.title')]]</h1>
         <div class="line">
-            <b>Homepage</b>
-            <a href="" target="_blank" rel="noopener" id="warning-link">link here</a>
+            <b>[[=z.token('popups.warnings.homepage')]]</b>
+            <a href="" target="_blank" rel="noopener" id="warning-link">[[=z.token('popups.warnings.linkhere')]]</a>
         </div>
         <table id="warnings-table">
             <thead>
                 <tr>
-                    <td>type</td>
-                    <td>file</td>
-                    <td>error message</td>
-                    <td>position</td>
+                    <td>[[=z.token('popups.warnings.type')]]</td>
+                    <td>[[=z.token('popups.warnings.file')]]</td>
+                    <td>[[=z.token('popups.warnings.errorMsg')]]</td>
+                    <td>[[=z.token('popups.warnings.position')]]</td>
                 </tr>
             </thead>
             <tbody></tbody>

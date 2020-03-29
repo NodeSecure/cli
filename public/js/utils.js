@@ -1,17 +1,6 @@
 import gravatarURL from "gravatar-url";
 
-let activeLegendElement = null;
-
-export function formatBytes(bytes, decimals) {
-    if (bytes === 0) {
-        return "0 B";
-    }
-    const dm = decimals <= 0 ? 0 : decimals || 2;
-    const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    const id = Math.floor(Math.log(bytes) / Math.log(1024));
-
-    return parseFloat((bytes / Math.pow(1024, id)).toFixed(dm)) + " " + sizes[id];
-}
+window.activeLegendElement = null;
 
 export function createDOMElement(kind = "div", options = {}) {
     const { classList = [], childs = [], attributes = {}, text = null } = options;
@@ -31,22 +20,16 @@ export function createDOMElement(kind = "div", options = {}) {
     return el;
 }
 
-export function createLink(url, text = null) {
-    const aElement = document.createElement("a");
-    aElement.rel = "noopener";
-    aElement.target = "_blank";
-    aElement.href = url;
-    if (text !== null) {
-        aElement.appendChild(document.createTextNode(text));
-    }
+export function createLink(href, text = null) {
+    const attributes = {
+        rel: "noopener", target: "_blank", href
+    };
 
-    return aElement;
+    return createDOMElement("a", { text, attributes });
 }
 
 export function createTooltip(text, description) {
-    const spanElement = createDOMElement("span", {
-        classList: ["tooltiptext"], text: description
-    });
+    const spanElement = createDOMElement("span", { text: description });
 
     return createDOMElement("div", {
         classList: ["tooltip"], text, childs: [spanElement]
@@ -85,22 +68,19 @@ export function createLegend(icon, title) {
         classList: ["platine-button-skin"], childs: [PElement]
     });
 
-    legendDivElement.addEventListener("click", () => {
-        if (activeLegendElement !== null) {
-            activeLegendElement.classList.remove("active");
+    legendDivElement.addEventListener("click", async() => {
+        if (window.activeLegendElement !== null) {
+            window.activeLegendElement.classList.remove("active");
         }
-        activeLegendElement = legendDivElement;
-        activeLegendElement.classList.add("active");
-        updateDescription(title);
+        window.activeLegendElement = legendDivElement;
+        window.activeLegendElement.classList.add("active");
+
+        const flagDescriptionElement = document.getElementById("flag-description");
+        const description = await (await fetch(`flags/description/${title}`)).text();
+        flagDescriptionElement.innerHTML = description;
     });
 
     return legendDivElement;
-}
-
-async function updateDescription(title) {
-    const flagDescriptionElement = document.getElementById("flag-description");
-    const description = await (await fetch(`flags/description/${title}`)).text();
-    flagDescriptionElement.innerHTML = description;
 }
 
 export function createLicenseLine(tbody, license, { name, link }) {
@@ -140,8 +120,7 @@ export function createLiField(title, value, options = {}) {
     return liElement;
 }
 
-// eslint-disable-next-line max-params
-export function renderItemsList(node, items = [], onclick = null, handleHidden = false) {
+export function createItemsList(node, items = [], onclick = null, handleHidden = false) {
     if (items.length === 0) {
         const previousNode = node.previousElementSibling;
         if (previousNode !== null) {
@@ -206,7 +185,7 @@ export function renderItemsList(node, items = [], onclick = null, handleHidden =
     node.appendChild(fragment);
 }
 
-export async function request(path, customHeaders = Object.create(null)) {
+export async function getJSON(path, customHeaders = Object.create(null)) {
     const headers = {
         Accept: "application/json"
     };
@@ -219,10 +198,6 @@ export async function request(path, customHeaders = Object.create(null)) {
     return raw.json();
 }
 
-function authorRegex() {
-    return /^([^<(]+?)?[ \t]*(?:<([^>(]+?)>)?[ \t]*(?:\(([^)]+?)\)|$)/gm;
-}
-
 export function parseAuthor(str) {
     if (typeof str !== "string") {
         throw new TypeError("expected author to be a string");
@@ -232,7 +207,7 @@ export function parseAuthor(str) {
         return {};
     }
 
-    const match = authorRegex().exec(str);
+    const match = /^([^<(]+?)?[ \t]*(?:<([^>(]+?)>)?[ \t]*(?:\(([^)]+?)\)|$)/gm.exec(str);
     if (!match) {
         return {};
     }
