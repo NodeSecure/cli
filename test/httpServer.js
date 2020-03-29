@@ -37,7 +37,10 @@ test("'/' should return index.html HTML content", async() => {
     expect(result.statusCode).toStrictEqual(200);
     expect(result.headers["content-type"]).toStrictEqual("text/html");
 
-    const templateStr = zup(INDEX_HTML)({ token: (tokenName) => i18n.getToken(`ui.${tokenName}`) });
+    const templateStr = zup(INDEX_HTML)({
+        lang: i18n.getToken("lang"),
+        token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
+    });
     expect(result.data).toStrictEqual(templateStr);
 });
 
