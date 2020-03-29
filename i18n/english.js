@@ -47,6 +47,7 @@ module.exports = {
         }
     },
     depWalker: {
+        dep_tree: "dependency tree",
         fetch_and_walk_deps: "Fetching and walking through all dependencies ...",
         fetch_on_registry: "Waiting for packages to fetch from npm registry!",
         waiting_tarball: "Waiting tarballs to be analyzed!",
@@ -68,6 +69,7 @@ module.exports = {
             maintainers: "Maintainers"
         },
         package_info: {
+            show_children: "Show children",
             hide_children: "Hide children",
             vuln: "Vuln",
             files_extensions: "files extensions",

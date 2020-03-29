@@ -376,7 +376,7 @@ async function depWalker(manifest, options = Object.create(null)) {
 
         const execTree = cyan().bold(ms(Number(treeSpinner.elapsedTime.toFixed(2))));
         treeSpinner.succeed(white().bold(
-            i18n.getToken("depWalker.success_fetch_deptree", yellow().bold("dependency tree"), execTree)));
+            i18n.getToken("depWalker.success_fetch_deptree", yellow().bold(i18n.getToken("depWalker.dep_tree")), execTree)));
 
         // Wait for all extraction to be done!
         await Promise.allSettled(promisesToWait);
