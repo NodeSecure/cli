@@ -6,10 +6,10 @@ import semver from "semver";
 // CONSTANTS
 const kFiltersName = new Set(["package", "version", "flag", "license", "author", "ext", "builtin"]);
 const kHelpersTitleName = {
-    ext: "Extension des fichiers",
-    builtin: "Module core Node.js",
-    license: "Licenses disponible",
-    flag: "Flags disponible"
+    ext: "File extensions",
+    builtin: "Node.js core modules",
+    license: "Available licenses",
+    flag: "Available flags"
 };
 const kHelpersTemplateName = {
     flag: "search_helpers_flags",
@@ -54,16 +54,6 @@ const kHelpersTemplateName = {
         const items = new Set();
         for (const { author } of linker.values()) {
             items.add(typeof author === "string" ? author : author.name);
-        }
-        [...items].forEach((value) => fragment.appendChild(createLineElement(value)));
-
-        return fragment;
-    },
-    version(linker) {
-        const fragment = document.createDocumentFragment();
-        const items = new Set();
-        for (const { version } of linker.values()) {
-            items.add(version);
         }
         [...items].forEach((value) => fragment.appendChild(createLineElement(value)));
 
@@ -307,10 +297,14 @@ export default class SearchBar {
 
         for (const [id, opt] of this.linker) {
             switch (filterName) {
-                case "version":
+                case "version": {
+                    if (semver.satisfies(opt.version, inputValue)) {
+                        matchingIds.add(String(id));
+                    }
+                    break;
+                }
                 case "package": {
-                    const inputRegex = new RegExp(`^${inputValue}`, "gi");
-                    if (inputRegex.test(filterName === "package" ? opt.name : opt.version)) {
+                    if (new RegExp(`^${inputValue}`, "gi").test(opt.name)) {
                         matchingIds.add(String(id));
                     }
                     break;
