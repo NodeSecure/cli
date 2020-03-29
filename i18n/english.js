@@ -26,7 +26,7 @@ module.exports = {
             from: {
                 desc: "Run security analysis on a given package from npm registry",
                 searching: tS`Searching for '${0}' manifest in the npm registry!`,
-                fetched: tS`Fetched ${0} manifest on npm in ${1}`
+                fetched: tS`Fetched ${0} manifest from npm in ${1}`
             },
             auto: {
                 desc: "Run security analysis on cwd or a given package and automatically open the web interface",
@@ -48,8 +48,8 @@ module.exports = {
     },
     depWalker: {
         fetch_and_walk_deps: "Fetching and walking through all dependencies ...",
-        fetch_on_registry: "Waiting for packages to fetch on npm registry!",
-        waiting_tarball: "Waiting for tarball to analyze!",
+        fetch_on_registry: "Waiting for packages to fetch from npm registry!",
+        waiting_tarball: "Waiting tarballs to be analyzed!",
         fetch_metadata: "Fetched package metadata:",
         analyzed_tarball: "Analyzed npm tarballs:",
         success_fetch_deptree: tS`Successfully navigated through the ${0} in ${1}`,
