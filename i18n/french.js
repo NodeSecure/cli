@@ -92,7 +92,7 @@ module.exports = {
                 linkhere: "lien ici",
                 type: "type",
                 file: "fichier",
-                errorMsg: "message d'erreur",
+                errorMsg: "valeur incriminé",
                 position: "position"
             }
         },

@@ -175,14 +175,14 @@ async function processPackageTarball(name, version, options) {
                 [...ASTAnalysis.dependencies.getDependenciesInTryStatement()]
                     .forEach((depName) => inTryDeps.add(depName));
 
-                if (!ASTAnalysis.isOneLineRequire && !file.includes(".min") && isMinified(str)) {
+                if (!ASTAnalysis.isOneLineRequire && (file.includes(".min") || isMinified(str))) {
                     ref.composition.minified.push(file);
                 }
                 ref.warnings.push(...ASTAnalysis.warnings.map((curr) => Object.assign({}, curr, { file })));
             }
             catch (err) {
                 ref.warnings.push({
-                    file, kind: "ast-error", error: err.stack,
+                    file, kind: "ast-error", value: err.message,
                     start: { line: 0, column: 0 }, end: { line: 0, column: 0 }
                 });
                 ref.flags.hasWarnings = true;

@@ -416,20 +416,19 @@ document.addEventListener("DOMContentLoaded", async() => {
                         warningLink.textContent = metadata.homepage;
 
                         const tbody = clone.querySelector("#warnings-table tbody");
-                        for (const { kind, file, error, start, end } of warnings) {
+                        for (const { kind, file, value = null, start, end } of warnings) {
                             const line = tbody.insertRow(0);
 
                             line.insertCell(0).appendChild(document.createTextNode(kind));
                             line.insertCell(1).appendChild(document.createTextNode(file));
                             const errorCell = line.insertCell(2);
+                            errorCell.style.maxWidth = "200px";
                             const positionCell = line.insertCell(3);
-                            if (kind === "ast-error") {
-                                errorCell.appendChild(document.createTextNode(error));
+                            if (value !== null) {
+                                errorCell.appendChild(document.createTextNode(value));
                             }
-                            else {
-                                const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
-                                positionCell.appendChild(document.createTextNode(position));
-                            }
+                            const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
+                            positionCell.appendChild(document.createTextNode(position));
                         }
                     });
                 };
