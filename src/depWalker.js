@@ -167,7 +167,8 @@ async function processPackageTarball(name, version, options) {
             try {
                 const str = await readFile(join(dest, file), "utf-8");
 
-                const usingECMAModules = extname(file) === ".mjs" ? true : isProjectUsingESM;
+                const usingECMAModules = extname(file) === ".mjs" || file.includes("jsnext") ?
+                    true : isProjectUsingESM;
                 const ASTAnalysis = searchRuntimeDependencies(str, { module: usingECMAModules });
                 ASTAnalysis.dependencies.removeByName(name);
                 dependencies.push(...ASTAnalysis.dependencies);
