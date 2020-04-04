@@ -43,11 +43,14 @@ Indirect dependencies are dangerous for many reasons and you may found useful in
 <details><summary>⚠️ hasWarnings</summary>
 <br />
 
-This mean that the AST (Abstract Syntax Tree) analysis as emitted one or many warnings ! There is many different **kind** of warning:
+This means that the AST (abstract syntax tree) analysis as emitted one or many warnings! There is many different **kind** of warning:
 
 - **unsafe-import** (Unable to parse/detect a dependency name)
 - **unsafe-regex** (Unsafe regex)
 - **ast-error** (An error as occured in the AST Analysis)
+- **short-ids** (The file contains a lot of short identifiers)
+- **suspicious-string** (The file contain one or many suspicious string)
+- **hexa-value** (The file contain an hexa value as Literal).
 
 ### Unsafe-import
 
@@ -85,6 +88,10 @@ RegEx are dangerous and could lead to ReDos attack. This warning is emitted when
 
 The AST Analysis has failed (return the stack trace of nsecure). The JSON payload will contains an "error" field with the stack trace.
 
+---
+
+More can be learning on the README of the [JS-X-Ray](https://github.com/fraxken/js-x-ray) package.
+
 </details>
 
 <details><summary>⛔️ isDeprecated</summary>
@@ -101,8 +108,6 @@ For more information on deprecation please check the official [npm documentation
 This flag mean that we have not detected any licenses in the npm Tarball (or something went wrong in the detection) For detecting licenses we are reading the **package.json** and searching for local files that contain the word "license".
 
 For more information on how license must be described in the package.json, please check the [npm documentation](https://docs.npmjs.com/files/package.json#license).
-
-> ⚠️ we are working to stabilize this flag !
 
 </details>
 
@@ -127,7 +132,8 @@ function cleanRange(version){const firstChar=version.charAt(0);if(firstChar==="^
 return version}
 ```
 
-> ⚠️ sometimes one line file are considered minified (we are working to fix this in the future).
+Some files may be considered as "minified" if they contains only short identifiers (there is a warning for this). A good example of code considered as minified because all identifiers are under 1.5 of length in average: [code](https://badjs.org/posts/smith-and-wesson-skimmer/#heading-modrrnize.js).
+
 </details>
 
 <details><summary>💎 hasCustomResolver</summary>
@@ -147,8 +153,9 @@ The package use a Node.js core package that allow to access the network. These c
 - net
 - http2
 - dgram
+- child_process
 
-This flag only work if the AST analysis as successfully retrieved all dependencies as expected.
+> ⚠️ This flag only work if the AST analysis as successfully retrieved all dependencies as expected.
 
 </details>
 
@@ -156,6 +163,15 @@ This flag only work if the AST analysis as successfully retrieved all dependenci
 <br />
 
 The package has pre and/or post script in the **package.json** file. These script will be executed before or after the installation of a dependency (this is useful for example to build native addons or similar things). However these script may be used to execute malicious code on your system.
+
+Exemple:
+```json
+{
+    "scripts": {
+        "preinstall": "./maliciousScript.js"
+    }
+}
+```
 
 - [Package install scripts vulnerability](https://blog.npmjs.org/post/141702881055/package-install-scripts-vulnerability)
 - [10 npm Security Best Practices](https://snyk.io/blog/ten-npm-security-best-practices/)
@@ -184,7 +200,10 @@ Vulnerabilities has been detected for the given package **version**. We are fetc
 <details><summary>👀 hasMissingOrUnusedDependency</summary>
 <br />
 
-The package has a missing dependency (in package.json) or a dependency that is not used in the code (this may happen if the AST Analysis fail!)
+The package has a missing dependency (in package.json) or a dependency that is not used in the code (this may happen if the AST Analysis fail!).
+
+> However stay alert with this flag.. There is a lot of patterns for requiring dependencies that we fail to get right (IOC etc).
+
 </details>
 
 <details><summary>💀 isDead (hasReceivedUpdateInOneYear + hasOutdatedDependency)</summary>
