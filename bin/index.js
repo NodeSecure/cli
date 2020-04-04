@@ -51,7 +51,7 @@ function logAndWrite(payload, output = "nsecure-result") {
         return null;
     }
 
-    const ret = JSON.stringify(Object.fromEntries(payload), null, 2);
+    const ret = JSON.stringify(payload, null, 2);
     const filePath = join(process.cwd(), extname(output) === ".json" ? filenamify(output) : `${filenamify(output)}.json`);
     writeFileSync(filePath, ret);
     console.log(white().bold(i18n.getToken("cli.successfully_written_json", green().bold(filePath))));

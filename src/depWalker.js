@@ -313,11 +313,16 @@ async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true } = options;
 
     // Create TMP directory
-    const tmpLocation = join(TMP, uniqueSlug());
+    const id = uniqueSlug();
+    const tmpLocation = join(TMP, id);
     await mkdir(tmpLocation, { recursive: true });
 
-    /** @type {Map<string, NodeSecure.Payload>} */
-    const flattenedDeps = new Map();
+    const payload = {
+        id,
+        rootDepencyName: manifest.name,
+        dependencies: new Map()
+    };
+
     // We are dealing with an exclude Map to avoid checking a package more than one time in searchDeepDependencies
     const exclude = new Map();
 
@@ -360,9 +365,9 @@ async function depWalker(manifest, options = Object.create(null)) {
                 tarballLocker
             }));
 
-            if (flattenedDeps.has(name)) {
+            if (payload.dependencies.has(name)) {
                 // TODO: how to handle different metadata ?
-                const dep = flattenedDeps.get(name);
+                const dep = payload.dependencies.get(name);
 
                 const currVersion = current.versions[0];
                 if (!Reflect.has(dep, currVersion)) {
@@ -371,7 +376,7 @@ async function depWalker(manifest, options = Object.create(null)) {
                 }
             }
             else {
-                flattenedDeps.set(name, current);
+                payload.dependencies.set(name, current);
             }
         }
 
@@ -390,11 +395,11 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     // Search for vulnerabilities in the local .json db
-    await hydrateNodeSecurePayload(flattenedDeps);
+    await hydrateNodeSecurePayload(payload.dependencies);
 
     // We do this because it "seem" impossible to link all dependencies in the first walk.
     // Because we are dealing with package only one time it may happen sometimes.
-    for (const [packageName, descriptor] of flattenedDeps) {
+    for (const [packageName, descriptor] of payload.dependencies) {
         for (const verStr of descriptor.versions) {
             const fullName = `${packageName}@${verStr}`;
             const usedDeps = exclude.get(fullName) || new Set();
@@ -423,7 +428,9 @@ async function depWalker(manifest, options = Object.create(null)) {
         console.log("");
     }
 
-    return flattenedDeps;
+    payload.dependencies = Object.fromEntries(payload.dependencies);
+
+    return payload;
 }
 
 module.exports = { depWalker };

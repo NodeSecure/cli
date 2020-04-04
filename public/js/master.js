@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     const [data, FLAGS] = await Promise.all([
         utils.getJSON("/data"), utils.getJSON("/flags")
     ]);
-    const dataEntries = Object.entries(data);
+    const dataEntries = Object.entries(data.dependencies);
 
     let indirectDependenciesCount = 0;
     let totalSize = 0;
@@ -215,10 +215,11 @@ document.addEventListener("DOMContentLoaded", async() => {
             nodesDataArr.push({ id, label, color, font: { multi: "html" } });
 
             for (const [name, version] of Object.entries(usedBy)) {
-                edgesDataArr.push({ from: id, to: data[name][version].id });
+                edgesDataArr.push({ from: id, to: data.dependencies[name][version].id });
             }
         }
     }
+
     {
         const { name, version } = linker.get(0);
         const nameElement = document.getElementById("main-project-name");
