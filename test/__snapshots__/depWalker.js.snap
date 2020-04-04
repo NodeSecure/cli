@@ -130,4 +130,11 @@ Object {
 }
 `;
 
-exports[`fetch payload of pacote on the npm registry 1`] = `Array []`;
+exports[`fetch payload of pacote on the npm registry 1`] = `
+Array [
+  "id",
+  "rootDepencyName",
+  "warnings",
+  "dependencies",
+]
+`;
