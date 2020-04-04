@@ -22,7 +22,7 @@ const iter = require("itertools");
 const ms = require("ms");
 const difference = require("lodash.difference");
 const is = require("@slimio/is");
-const { searchRuntimeDependencies } = require("js-x-ray");
+const { runASTAnalysis } = require("js-x-ray");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
@@ -169,7 +169,7 @@ async function processPackageTarball(name, version, options) {
 
                 const usingECMAModules = extname(file) === ".mjs" || file.includes("jsnext") ?
                     true : isProjectUsingESM;
-                const ASTAnalysis = searchRuntimeDependencies(str, { module: usingECMAModules });
+                const ASTAnalysis = runASTAnalysis(str, { module: usingECMAModules });
                 ASTAnalysis.dependencies.removeByName(name);
                 dependencies.push(...ASTAnalysis.dependencies);
                 [...ASTAnalysis.dependencies.getDependenciesInTryStatement()]

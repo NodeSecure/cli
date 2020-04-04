@@ -9,7 +9,7 @@ const { promisify } = require("util");
 // Require Third-party Dependencies
 const pacote = require("pacote");
 const uniqueSlug = require("unique-slug");
-const { searchRuntimeDependencies } = require("js-x-ray");
+const { runASTAnalysis } = require("js-x-ray");
 const ntlp = require("ntlp");
 const isMinified = require("is-minified-code");
 
@@ -78,7 +78,7 @@ async function verify(packageName) {
 
         // TODO: 2) handle dependency by file to not loose data.
         for (const [file, str] of allFilesContent) {
-            const ASTAnalysis = searchRuntimeDependencies(str, {
+            const ASTAnalysis = runASTAnalysis(str, {
                 module: extname(file) === ".mjs" ? true : isProjectUsingESM
             });
             ASTAnalysis.dependencies.removeByName(packageName);
