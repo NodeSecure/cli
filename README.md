@@ -145,6 +145,24 @@ The SlimIO [Security project](https://github.com/SlimIO/Security) use nsecure wi
 
 Flags and emojis legends are documented [here](./FLAGS.md).
 
+## Searchbar filters
+
+Since version 0.6.0 of Node-secure the UI include a brand new searchbar that allow to search anything on the tree (graph) by multiple criteria (filters). The current available filters are:
+
+- package (**the default filter if there is none**).
+- version (take a semver range as an argument).
+- flag (list of available flags in the current payload/tree).
+- license (list of available licenses in the current payload/tree).
+- author (author name/email/url).
+- ext (list of available file extensions in the current payload/tree).
+- builtin (available Node.js core module name).
+
+Exemple of query:
+
+```
+version: >=1.2 | 2, ext: .js, builtin: fs
+```
+
 ## FAQ
 
 ### Why some nodes are red in the UI ?
