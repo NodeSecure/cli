@@ -320,7 +320,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             const currentNode = params.nodes[0];
             const selectedNode = linker.get(Number(currentNode));
             const { name, version, author, flags, composition, warnings } = selectedNode;
-            const { metadata, versions, vulnerabilities } = data[name];
+            const { metadata, versions, vulnerabilities } = data.dependencies[name];
 
             const btnShow = clone.getElementById("btn_showOrHide");
             const btnVuln = clone.getElementById("btn_vuln");
