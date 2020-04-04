@@ -32,7 +32,7 @@ const Dependency = require("./dependency.class");
 
 // CONSTANTS
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
-const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram"]);
+const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram", "child_process"]);
 const NPM_SCRIPTS = new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]);
 const NODE_CORE_LIBS = new Set([...repl._builtinLibs, "timers", "module"]);
 const TMP = os.tmpdir();
