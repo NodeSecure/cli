@@ -89,6 +89,7 @@
     "@slimio/is": "^1.5.1",
     "@slimio/lock": "^0.5.0",
     "@slimio/npm-registry": "^0.5.0",
+    "ban-sensitive-files": "^1.9.7",
     "cacache": "^15.0.0",
     "combine-async-iterators": "^1.1.2",
     "dotenv": "^8.2.0",

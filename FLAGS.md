@@ -194,6 +194,12 @@ The dependency (package) has not received update from at least one year and has 
 means it's dangerous to use (or continue to) because the author doesn't seem to update the package anymore (even worst if you want him to implement a new version / security patch).
 </details>
 
+<details><summary>⚔️ hasBannedFile</summary>
+<br />
+
+The project has at least one sensitive file (or a file with sensitive information in it). The list complete list of patterns and files can be checked [here](https://github.com/bahmutov/ban-sensitive-files).
+</details>
+
 ## Web UI Emojis
 
 Following emojis are only available in the node-secure UI:

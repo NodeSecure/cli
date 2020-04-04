@@ -23,6 +23,7 @@ const ms = require("ms");
 const difference = require("lodash.difference");
 const is = require("@slimio/is");
 const { runASTAnalysis } = require("js-x-ray");
+const isBanned = require("ban-sensitive-files");
 
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
@@ -160,6 +161,7 @@ async function processPackageTarball(name, version, options) {
         ref.size = size;
         ref.composition.extensions.push(...ext);
         ref.composition.files.push(...files);
+        ref.flags.hasBannedFile = files.map((name) => join(dest, name)).some((path) => isBanned(path));
 
         // Search for minified and runtime dependencies
         const jsFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));

@@ -12,6 +12,10 @@ Object {
     "title": "isGit",
     "tooltipDescription": "The package (project) is a git repository",
   },
+  "⚔️": Object {
+    "title": "hasBannedFile",
+    "tooltipDescription": "The project has at least one sensitive file.",
+  },
   "⚠": Object {
     "title": "hasWarnings",
     "tooltipDescription": "The AST analysis has detected warnings (suspect import, unsafe regex ..)",

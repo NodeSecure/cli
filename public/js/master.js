@@ -86,6 +86,9 @@ function getFlags(flags, options = {}) {
     if (flags.hasWarnings) {
         flagList.push("⚠️");
     }
+    if (flags.hasBannedFile) {
+        flagList.push("⚔️");
+    }
     if (flags.hasCustomResolver) {
         flagList.push("💎");
     }

@@ -24,6 +24,7 @@ Object {
       },
       "description": "SlimIO is (JavaScript Primitives &amp; Objects type checker)",
       "flags": Object {
+        "hasBannedFile": false,
         "hasCustomResolver": false,
         "hasDependencies": false,
         "hasExternalCapacity": false,

@@ -58,5 +58,9 @@
     "💀": {
         "title": "isDead",
         "tooltipDescription": "The dependency has not received update from at least one year!"
+    },
+    "⚔️": {
+        "title": "hasBannedFile",
+        "tooltipDescription": "The project has at least one sensitive file."
     }
 }

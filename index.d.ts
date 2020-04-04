@@ -37,6 +37,7 @@ declare namespace NodeSecure {
         hasDependencies: boolean;
         hasExternalCapacity: boolean;
         hasScript: boolean;
+        hasBannedFile: boolean;
     }
 
     interface Dependency {
