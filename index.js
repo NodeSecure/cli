@@ -28,6 +28,7 @@ const nextTick = promisify(setImmediate);
 async function cwd(cwd = process.cwd(), options) {
     const packagePath = join(cwd, "package.json");
     const str = await readFile(packagePath, "utf-8");
+    options.forceRootAnalysis = true;
 
     return depWalker(JSON.parse(str), options);
 }

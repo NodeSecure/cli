@@ -120,16 +120,18 @@ async function* searchDeepDependencies(packageName, gitURL, options) {
 async function processPackageTarball(name, version, options) {
     const { ref, tmpLocation, tarballLocker } = options;
 
-    const dest = join(tmpLocation, `${name}@${version}`);
+    const dest = tmpLocation === null ? process.cwd() : join(tmpLocation, `${name}@${version}`);
     const free = await tarballLocker.acquireOne();
 
     try {
-        await pacote.extract(ref.flags.isGit ? ref.gitUrl : `${name}@${version}`, dest, {
-            ...token,
-            registry: REGISTRY_DEFAULT_ADDR,
-            cache: `${process.env.HOME}/.npm`
-        });
-        await new Promise((resolve) => setImmediate(resolve));
+        if (tmpLocation !== null) {
+            await pacote.extract(ref.flags.isGit ? ref.gitUrl : `${name}@${version}`, dest, {
+                ...token,
+                registry: REGISTRY_DEFAULT_ADDR,
+                cache: `${process.env.HOME}/.npm`
+            });
+            await new Promise((resolve) => setImmediate(resolve));
+        }
         let isProjectUsingESM = false;
         let depsInLocalPackage = null;
         let devDepsInLocalPackage = [];
@@ -311,7 +313,7 @@ async function* getRootDependencies(manifest, options) {
 }
 
 async function depWalker(manifest, options = Object.create(null)) {
-    const { verbose = true } = options;
+    const { verbose = true, forceRootAnalysis = false } = options;
 
     // Create TMP directory
     const id = uniqueSlug();
@@ -363,7 +365,7 @@ async function depWalker(manifest, options = Object.create(null)) {
             promisesToWait.push(searchPackageAuthors(name, current.metadata, regEE));
             promisesToWait.push(processPackageTarball(name, version, {
                 ref: current[version],
-                tmpLocation,
+                tmpLocation: forceRootAnalysis && name === manifest.name ? null : tmpLocation,
                 tarballLocker
             }));
 
