@@ -73,6 +73,17 @@ body {
 .platine-button-skin + .platine-button-skin {
     margin-left: 10px;
 }
+.platine-button-skin.warning {
+    background: #D32F2F;
+    border-left: 1px solid #F44336;
+    border-top: 1px solid #F44336;
+}
+.platine-button-skin.warning > p {
+    color: #FFCDD2;
+}
+.platine-button-skin.warning:hover {
+    background: #F44336;
+}
 
 .dark-box-skin {
     position: relative;
@@ -147,6 +158,22 @@ section#stats {
         max-height: 80vh;
         overflow-y: auto;
     }
+
+    div.global-stats .warning {
+        padding: 5px;
+    }
+    div.global-stats .warning > p {
+        text-align: justify;
+        font-family: "mononoki";
+        font-size: 14px;
+        color: #CFD8DC;
+        padding-top: 5px;
+    }
+    div.global-stats .warning + .warning {
+        margin-top: 5px;
+        border-top: 1px dashed #455A64;
+    }
+
     div.global-stats ul li {
         display: flex;
         color: #b0bec5;

@@ -27,6 +27,7 @@ const { runASTAnalysis } = require("js-x-ray");
 // Require Internal Dependencies
 const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL } = require("./utils");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
+const applyWarnings = require("./warnings");
 const i18n = require("./i18n");
 const Dependency = require("./dependency.class");
 
@@ -320,6 +321,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     const payload = {
         id,
         rootDepencyName: manifest.name,
+        warnings: [],
         dependencies: new Map()
     };
 
@@ -414,6 +416,9 @@ async function depWalker(manifest, options = Object.create(null)) {
             Object.assign(descriptor[verStr].usedBy, usedBy);
         }
     }
+
+    // Apply warnings!
+    payload.warnings = applyWarnings(payload.dependencies);
 
     // Cleanup tmpLocation dir
     try {

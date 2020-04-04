@@ -167,6 +167,21 @@ document.addEventListener("DOMContentLoaded", async() => {
     const extensionsCount = {};
     const authorsList = new Map();
 
+    // Setup warnings
+    if (data.warnings.length === 0) {
+        document.getElementById("global_warnings").style.display = "none";
+    }
+    else {
+        const fragment = document.createDocumentFragment();
+        for (const text of data.warnings) {
+            const pElement = utils.createDOMElement("p", { text });
+            fragment.appendChild(utils.createDOMElement("div", { childs: [pElement] }));
+        }
+
+        document.querySelector("#global_warnings > p").textContent = data.warnings.length;
+        document.getElementById("warnings_box").appendChild(fragment);
+    }
+
     // Generate network!
     for (const [packageName, descriptor] of dataEntries) {
         const { metadata, vulnerabilities, versions } = descriptor;

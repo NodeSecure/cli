@@ -23,6 +23,13 @@
 </section>
 
 <section id="stats">
+    <div class="btn platine-button-skin warning" id="global_warnings">
+        <i class="icon-attention-circled"></i>
+        <p style="padding-right: 5px;">0</p>
+        <div class="hiddenarea">
+            <div class="global-stats dark-box-skin" id="warnings_box"></div>
+        </div>
+    </div>
     <div class="btn platine-button-skin">
         <i class="icon-chart-pie" style="margin-bottom: 2px;"></i>
         <p>[[=z.token('stats.title')]]</p>
@@ -65,9 +72,7 @@
         <p>[[=z.token('btn_emojis_legends')]]</p>
     </div>
     <div class="search-bar-container">
-        <div class="search-items">
-            <!-- <div><b>version:</b><p>1.0.0</p></div> -->
-        </div>
+        <div class="search-items"></div>
         <input type="text" placeholder="[[=z.token('searchbar_placeholder')]]" id="search-bar-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" ></input>
         <i class="icon-search"></i>
         <div class="search-result-background dark-box-skin">
