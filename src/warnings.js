@@ -4,7 +4,8 @@ function applyWarnings(dependencies) {
     const warnings = [];
 
     if (dependencies.has("@scarf/scarf")) {
-        warnings.push("The dependency @scarf/scarf has been detected in the dependency Tree.");
+        // eslint-disable-next-line
+        warnings.push("The dependency '@scarf/scarf' has been detected in the dependency Tree. This dependency could collect data against your will so think to disable it with the env var: SCARF_ANALYTICS");
     }
 
     return warnings;

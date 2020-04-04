@@ -161,6 +161,7 @@ section#stats {
 
     div.global-stats .warning {
         padding: 5px;
+        text-align: justify;
     }
     div.global-stats .warning > p {
         text-align: justify;
@@ -168,6 +169,7 @@ section#stats {
         font-size: 14px;
         color: #CFD8DC;
         padding-top: 5px;
+        letter-spacing: 0.7px;
     }
     div.global-stats .warning + .warning {
         margin-top: 5px;

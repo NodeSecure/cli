@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         const fragment = document.createDocumentFragment();
         for (const text of data.warnings) {
             const pElement = utils.createDOMElement("p", { text });
-            fragment.appendChild(utils.createDOMElement("div", { childs: [pElement] }));
+            fragment.appendChild(utils.createDOMElement("div", { classList: ["warning"], childs: [pElement] }));
         }
 
         document.querySelector("#global_warnings > p").textContent = data.warnings.length;
