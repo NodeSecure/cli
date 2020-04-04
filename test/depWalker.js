@@ -26,7 +26,7 @@ function cleanupPayload(payload) {
 
 test("execute depWalker on @slimio/is", async() => {
     const result = await depWalker(is, { verbose: false });
-    const resultAsJSON = JSON.parse(JSON.stringify(Object.fromEntries(result), null, 2));
+    const resultAsJSON = JSON.parse(JSON.stringify(result.dependencies, null, 2));
     cleanupPayload(resultAsJSON);
 
     expect(resultAsJSON).toMatchSnapshot();
@@ -34,7 +34,7 @@ test("execute depWalker on @slimio/is", async() => {
 
 test("execute depWalker on @slimio/config", async() => {
     const result = await depWalker(config, { verbose: false });
-    const resultAsJSON = JSON.parse(JSON.stringify(Object.fromEntries(result), null, 2));
+    const resultAsJSON = JSON.parse(JSON.stringify(result.dependencies, null, 2));
 
     const packages = Object.keys(resultAsJSON).sort();
     expect(packages).toEqual([
