@@ -25,6 +25,7 @@ module.exports = {
         path: kDistDir
     },
     mode: "production",
+    devtool: "sourcemap",
     optimization: {
         usedExports: true
     },
