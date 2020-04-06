@@ -204,7 +204,8 @@ async function processPackageTarball(name, version, options) {
                 .filter((name) => !devDepsInLocalPackage.includes(name))
                 .filter((name) => !inTryDeps.has(name));
 
-            const unusedDeps = difference(depsInLocalPackage, thirdPartyDependencies);
+            const unusedDeps = difference(
+                depsInLocalPackage.filter((name) => !name.startsWith("@types")), thirdPartyDependencies);
             const missingDeps = difference(thirdPartyDependencies, depsInLocalPackage);
             ref.flags.hasMissingOrUnusedDependency = unusedDeps.length > 0 || missingDeps.length > 0;
             ref.composition.unused.push(...unusedDeps);
