@@ -4,7 +4,6 @@
 const os = require("os");
 const { join, extname } = require("path");
 const { mkdir, readFile, rmdir } = require("fs").promises;
-const repl = require("repl");
 const { EventEmitter } = require("events");
 
 // Require Third-party Dependencies
@@ -21,6 +20,7 @@ const ntlp = require("ntlp");
 const iter = require("itertools");
 const ms = require("ms");
 const difference = require("lodash.difference");
+const builtins = require("builtins");
 const is = require("@slimio/is");
 const { runASTAnalysis } = require("js-x-ray");
 const isBanned = require("ban-sensitive-files");
@@ -36,7 +36,7 @@ const Dependency = require("./dependency.class");
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
 const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram", "child_process"]);
 const NPM_SCRIPTS = new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]);
-const NODE_CORE_LIBS = new Set([...repl._builtinLibs, "timers", "module"]);
+const NODE_CORE_LIBS = new Set(builtins());
 const TMP = os.tmpdir();
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 
