@@ -133,7 +133,6 @@ async function processPackageTarball(name, version, options) {
             });
             await new Promise((resolve) => setImmediate(resolve));
         }
-        let isProjectUsingESM = false;
         let depsInLocalPackage = null;
         let devDepsInLocalPackage = [];
 
@@ -141,12 +140,11 @@ async function processPackageTarball(name, version, options) {
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
             const {
-                type = "script", description = "", author = {}, scripts = {},
+                description = "", author = {}, scripts = {},
                 dependencies = {}, devDependencies = {}
             } = JSON.parse(packageStr);
             ref.description = description;
             ref.author = author;
-            isProjectUsingESM = type === "module";
             depsInLocalPackage = [...Object.keys(dependencies)];
             devDepsInLocalPackage = Object.keys(devDependencies);
 
@@ -171,26 +169,27 @@ async function processPackageTarball(name, version, options) {
         for (const file of jsFiles) {
             try {
                 const str = await readFile(join(dest, file), "utf-8");
+                const isMin = file.includes(".min") || isMinified(str);
 
-                const usingECMAModules = extname(file) === ".mjs" || file.includes("jsnext") ?
-                    true : isProjectUsingESM;
-                const ASTAnalysis = runASTAnalysis(str, { module: usingECMAModules });
+                const ASTAnalysis = runASTAnalysis(str, { isMinified: isMin });
                 ASTAnalysis.dependencies.removeByName(name);
                 dependencies.push(...ASTAnalysis.dependencies);
                 [...ASTAnalysis.dependencies.getDependenciesInTryStatement()]
                     .forEach((depName) => inTryDeps.add(depName));
 
-                if (!ASTAnalysis.isOneLineRequire && (file.includes(".min") || isMinified(str))) {
+                if (!ASTAnalysis.isOneLineRequire && isMin) {
                     ref.composition.minified.push(file);
                 }
                 ref.warnings.push(...ASTAnalysis.warnings.map((curr) => Object.assign({}, curr, { file })));
             }
             catch (err) {
-                ref.warnings.push({
-                    file, kind: "ast-error", value: err.message,
-                    start: { line: 0, column: 0 }, end: { line: 0, column: 0 }
-                });
-                ref.flags.hasWarnings = true;
+                if (!Reflect.has(err, "code")) {
+                    ref.warnings.push({
+                        file, kind: "ast-error", value: err.message,
+                        start: { line: 0, column: 0 }, end: { line: 0, column: 0 }
+                    });
+                    ref.flags.hasWarnings = true;
+                }
             }
         }
 
