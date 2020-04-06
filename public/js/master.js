@@ -456,6 +456,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 fieldsFragment.appendChild(utils.createLiField("Author", fAuthor));
                 fieldsFragment.appendChild(utils.createLiField("Size on (local) system", prettyBytes(selectedNode.size)));
                 fieldsFragment.appendChild(utils.createLiField("Homepage", metadata.homepage || "N/A", { isLink: true }));
+                fieldsFragment.appendChild(utils.createLiField("npm page", `https://www.npmjs.com/package/${name}/v/${version}`, { isLink: true }));
                 fieldsFragment.appendChild(utils.createLiField("Last release (version)", metadata.lastVersion));
                 fieldsFragment.appendChild(utils.createLiField("Last release (date)", lastUpdate));
                 fieldsFragment.appendChild(utils.createLiField("Number of published releases", metadata.publishedCount));
