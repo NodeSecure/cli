@@ -172,7 +172,15 @@ async function autoCmd(packageName, opts) {
     }
     finally {
         if (!keep && payloadFile !== null) {
-            await unlink(payloadFile);
+            try {
+                await unlink(payloadFile);
+            }
+            catch (error) {
+                if (error.code !== "ENOENT") {
+                    // eslint-disable-next-line no-unsafe-finally
+                    throw error;
+                }
+            }
         }
     }
 }
