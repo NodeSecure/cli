@@ -8,14 +8,13 @@ const { promisify } = require("util");
 
 // Require Third-party Dependencies
 const pacote = require("pacote");
-const uniqueSlug = require("unique-slug");
 const { runASTAnalysis } = require("js-x-ray");
 const ntlp = require("ntlp");
 const isMinified = require("is-minified-code");
 
 // Require Internal Dependencies
 const { depWalker } = require("./src/depWalker");
-const { getRegistryURL, getTarballComposition } = require("./src/utils");
+const { getRegistryURL, getTarballComposition, uniqueSlug } = require("./src/utils");
 
 // CONSTANTS
 const TMP = os.tmpdir();

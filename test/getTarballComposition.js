@@ -25,5 +25,5 @@ test("should return the composition of a directory", async() => {
         size
     });
     expect(composition.files).toHaveLength(4);
-    expect(composition.files[0]).toMatch(/one(\/|\\)README/);
+    expect(composition.files.sort()[0]).toMatch(/one(\/|\\)README/);
 });

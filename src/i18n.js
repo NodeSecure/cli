@@ -7,7 +7,9 @@ const { join } = require("path");
 
 // Require Third-party Depedencies
 const cacache = require("cacache");
-const get = require("lodash.get");
+
+// Require Internal Dependencies
+const { get } = require("./utils");
 
 // CONSTANTS
 const kCachePath = join(os.tmpdir(), "nsecure-cli");

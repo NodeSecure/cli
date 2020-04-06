@@ -13,9 +13,6 @@ const {
 const { extname, join, relative } = require("path");
 const { spawnSync } = require("child_process");
 
-// Require Third-party Dependencies
-const cloneDeep = require("lodash.clonedeep");
-
 // SYMBOLS
 const SYM_FILE = Symbol("symTypeFile");
 const SYM_DIR = Symbol("symTypeDir");
@@ -143,7 +140,7 @@ function loadNsecureCache(defaultPayload = {}) {
         return JSON.parse(buf.toString());
     }
 
-    const payload = Object.assign({}, cloneDeep(defaultPayload), {
+    const payload = Object.assign({}, JSON.parse(JSON.stringify(defaultPayload)), {
         lastUpdated: Date.now() - (3600000 * 48)
     });
     writeFileSync(filePath, JSON.stringify(payload));
@@ -175,7 +172,76 @@ function taggedString(chaines, ...cles) {
     };
 }
 
+const ALPHANUM = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+function uniqueSlug(size) {
+    let slug = "";
+
+    for (let idx = size; idx--;) {
+        slug += ALPHANUM[(Math.random() * ALPHANUM.lentgth | 0)];
+    }
+
+    return slug;
+}
+
+// eslint-disable-next-line
+const FORBIDDEN_FILENAME_CHAR_REG = /[<>:"\/\\|?*\x00-\x1F]/g;
+
+function filenamify(filename, replacement = "!") {
+    return filename.replace(FORBIDDEN_FILENAME_CHAR_REG, replacement);
+}
+
+// from https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_get
+function get(obj, path, defaultValue) {
+    function travel(regexp) {
+        return String.prototype.split
+            .call(path, regexp)
+            .filter(Boolean)
+            .reduce((res, key) => (res !== null && res !== undefined ? res[key] : res), obj);
+    }
+
+    const result = travel(/[,[\]]+?/) || travel(/[,[\].]+?/);
+
+    return result === undefined || result === obj ? defaultValue : result;
+}
+
+function checkPortAvailability(port) {
+    return new Promise((resolve, reject) => {
+        const tester = net.createServer()
+            .once("error", (error) => {
+                if (error.message.match(/EADDRINUSE/)) {
+                    resolve(false);
+                }
+                else {
+                    reject(error);
+                }
+            })
+            .once("listening", () => {
+                tester.once("close", () => resolve(true)).close();
+            })
+            .listen(port);
+    });
+}
+
+async function getPort(portNumber) {
+    let idx = portNumber;
+
+    while (idx < 65535) {
+        if (await checkPortAvailability(idx)) {
+            return idx;
+        }
+
+        idx++;
+    }
+
+    throw new Error("No available port found");
+}
+
 module.exports = Object.freeze({
+    uniqueSlug,
+    filenamify,
+    get,
+    getPort,
     loadNsecureCache,
     writeNsecureCache,
     getFilesRecursive,

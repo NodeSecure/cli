@@ -14,12 +14,12 @@ const polka = require("polka");
 const send = require("@polka/send-type");
 const sirv = require("sirv");
 const open = require("open");
-const getPort = require("get-port");
 const kleur = require("kleur");
 const zup = require("zup");
 
 // Require Internal Dependencies
 const i18n = require("./i18n");
+const { getPort } = require("./utils");
 
 // CONSTANTS
 const VIEWS = join(__dirname, "..", "views");

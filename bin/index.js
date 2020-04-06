@@ -2,7 +2,11 @@
 
 "use strict";
 
-require("make-promises-safe");
+process.on("unhandledRejection", function unhandledRejection(error) {
+    console.error(error);
+    process.exit(1);
+});
+
 require("dotenv").config();
 
 // Require Node.js Dependencies
@@ -15,7 +19,6 @@ const { yellow, grey, white, green, cyan, red } = require("kleur");
 const sade = require("sade");
 const pacote = require("pacote");
 const Spinner = require("@slimio/async-cli-spinner");
-const filenamify = require("filenamify");
 const semver = require("semver");
 const ms = require("ms");
 const qoa = require("qoa");
@@ -23,7 +26,7 @@ const qoa = require("qoa");
 // Require Internal Dependencies
 const startHTTPServer = require("../src/httpServer.js");
 const i18n = require("../src/i18n");
-const { getRegistryURL, loadNsecureCache, writeNsecureCache } = require("../src/utils");
+const { getRegistryURL, loadNsecureCache, writeNsecureCache, filenamify } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
 const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
 const { cwd, verify } = require("../index");
