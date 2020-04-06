@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     function* searchForNeighbourIds(selectedNode) {
         const { name, version } = linker.get(selectedNode);
-        for (const descriptor of Object.values(data)) {
+        for (const descriptor of Object.values(data.dependencies)) {
             for (const currVersion of descriptor.versions) {
                 const { id, usedBy } = descriptor[currVersion];
                 if (Reflect.has(usedBy, name) && usedBy[name] === version) {
