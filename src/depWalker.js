@@ -74,7 +74,7 @@ async function* searchDeepDependencies(packageName, gitURL, options) {
     const { name, version, deprecated, ...pkg } = await pacote.manifest(isGit ? gitURL : packageName, {
         ...token,
         registry: REGISTRY_DEFAULT_ADDR,
-        cache: `${process.env.HOME}/.npm`
+        cache: `${os.homedir()}/.npm`
     });
     const { dependencies, customResolvers } = mergeDependencies(pkg);
     if (dependencies.size > 0) {
@@ -129,7 +129,7 @@ async function processPackageTarball(name, version, options) {
             await pacote.extract(ref.flags.isGit ? ref.gitUrl : `${name}@${version}`, dest, {
                 ...token,
                 registry: REGISTRY_DEFAULT_ADDR,
-                cache: `${process.env.HOME}/.npm`
+                cache: `${os.homedir()}/.npm`
             });
             await new Promise((resolve) => setImmediate(resolve));
         }

@@ -53,7 +53,7 @@ async function verify(packageName) {
 
     try {
         await pacote.extract(packageName, dest, {
-            ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${process.env.HOME}/.npm`
+            ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
         });
 
         // Read the package.json file inside the extracted directory.
