@@ -337,7 +337,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             const clone = document.importNode(packageInfoTemplate.content, true);
             const currentNode = params.nodes[0];
             const selectedNode = linker.get(Number(currentNode));
-            const { name, version, author, flags, composition, warnings } = selectedNode;
+            const { name, version, author, flags, composition, warnings, usedBy } = selectedNode;
             const { metadata, versions, vulnerabilities } = data.dependencies[name];
 
             const btnShow = clone.getElementById("btn_showOrHide");
@@ -510,6 +510,17 @@ document.addEventListener("DOMContentLoaded", async() => {
                 utils.createItemsList(clone.getElementById("unuseddep"), composition.unused);
                 utils.createItemsList(clone.getElementById("missingdep"), composition.missing, null);
                 utils.createItemsList(clone.getElementById("requireddep"), thirdParty, (event, packageName) => {
+                    let wantedId = null;
+                    for (const [id, opt] of linker) {
+                        if (opt.name === packageName) {
+                            wantedId = id;
+                        }
+                    }
+                    if (wantedId !== null) {
+                        network.emit("click", { nodes: [wantedId] });
+                    }
+                }, true);
+                utils.createItemsList(clone.getElementById("usedby"), Object.keys(usedBy), (event, packageName) => {
                     let wantedId = null;
                     for (const [id, opt] of linker) {
                         if (opt.name === packageName) {

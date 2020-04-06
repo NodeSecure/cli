@@ -78,7 +78,8 @@ module.exports = {
             minified_files: "minified files",
             node_deps: "node.js dependencies",
             third_party_deps: "third-party dependencies",
-            required_files: "required files"
+            required_files: "required files",
+            used_by: "used by"
         },
         popups: {
             licenses: {
