@@ -25,7 +25,14 @@ const is = require("@slimio/is");
 const { runASTAnalysis } = require("js-x-ray");
 
 // Require Internal Dependencies
-const { getTarballComposition, mergeDependencies, cleanRange, getRegistryURL, isSensitiveFile } = require("./utils");
+const {
+    getTarballComposition,
+    mergeDependencies,
+    cleanRange,
+    getRegistryURL,
+    isSensitiveFile,
+    getPackageName
+} = require("./utils");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
 const applyWarnings = require("./warnings");
 const i18n = require("./i18n");
@@ -197,7 +204,7 @@ async function processPackageTarball(name, version, options) {
 
         if (depsInLocalPackage !== null) {
             const thirdPartyDependencies = required
-                .map((name) => (depsInLocalPackage.includes(name) ? name : name.split("/", 1)[0]))
+                .map((name) => (depsInLocalPackage.includes(name) ? name : getPackageName(name)))
                 .filter((name) => !name.startsWith("."))
                 .filter((name) => !NODE_CORE_LIBS.has(name))
                 .filter((name) => !devDepsInLocalPackage.includes(name))
@@ -205,7 +212,8 @@ async function processPackageTarball(name, version, options) {
 
             const unusedDeps = difference(
                 depsInLocalPackage.filter((name) => !name.startsWith("@types")), thirdPartyDependencies);
-            const missingDeps = difference(thirdPartyDependencies, depsInLocalPackage);
+            const missingDeps = new Set(difference(thirdPartyDependencies, depsInLocalPackage));
+
             ref.flags.hasMissingOrUnusedDependency = unusedDeps.length > 0 || missingDeps.length > 0;
             ref.composition.unused.push(...unusedDeps);
             ref.composition.missing.push(...missingDeps);

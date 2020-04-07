@@ -185,7 +185,14 @@ function isSensitiveFile(fileName) {
     return SENSITIVE_EXT.has(extname(fileName));
 }
 
+function getPackageName(name) {
+    const parts = name.split("/");
+
+    return name.startsWith("@") ? `${parts[0]}/${parts[1]}` : parts[0];
+}
+
 module.exports = Object.freeze({
+    getPackageName,
     isSensitiveFile,
     loadNsecureCache,
     writeNsecureCache,
