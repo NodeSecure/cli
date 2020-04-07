@@ -498,45 +498,33 @@ document.addEventListener("DOMContentLoaded", async() => {
                     window.open(`https://nodejs.org/dist/latest/docs/api/${coreLib}.html`, "_blank").focus();
                 });
 
-                const WhatWGHomepage = metadata.homepage ? new URL(metadata.homepage) : null;
                 // eslint-disable-next-line func-style
                 const listener = (event, fileName) => {
                     if (fileName === "../" || fileName === "./") {
                         return;
                     }
                     const cleanedFile = fileName.startsWith("./") ? fileName.slice(2) : fileName;
-                    window.open(`${WhatWGHomepage.origin}${WhatWGHomepage.pathname}/blob/master/${cleanedFile}`).focus();
+                    window.open(`https://unpkg.com/${name}@${version}/${cleanedFile}`, "_blank").focus();
                 };
                 utils.createItemsList(clone.getElementById("extensions"), composition.extensions);
-                utils.createItemsList(clone.getElementById("minifiedfiles"), composition.minified,
-                    WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null, true);
+                utils.createItemsList(clone.getElementById("minifiedfiles"), composition.minified, listener, true);
                 utils.createItemsList(clone.getElementById("unuseddep"), composition.unused);
                 utils.createItemsList(clone.getElementById("missingdep"), composition.missing, null);
-                utils.createItemsList(clone.getElementById("requireddep"), thirdParty, (event, packageName) => {
-                    let wantedId = null;
-                    for (const [id, opt] of linker) {
-                        if (opt.name === packageName) {
-                            wantedId = id;
-                        }
-                    }
-                    if (wantedId !== null) {
-                        network.emit("click", { nodes: [wantedId] });
-                    }
-                }, true);
-                utils.createItemsList(clone.getElementById("usedby"), Object.keys(usedBy), (event, packageName) => {
-                    let wantedId = null;
-                    for (const [id, opt] of linker) {
-                        if (opt.name === packageName) {
-                            wantedId = id;
-                        }
-                    }
-                    if (wantedId !== null) {
-                        network.emit("click", { nodes: [wantedId] });
-                    }
-                }, true);
 
-                utils.createItemsList(clone.getElementById("internaldep"), internal,
-                    WhatWGHomepage !== null && WhatWGHomepage.hostname === "github.com" ? listener : null, true);
+                const graphDepListener = (event, packageName) => {
+                    let wantedId = null;
+                    for (const [id, opt] of linker) {
+                        if (opt.name === packageName) {
+                            wantedId = id;
+                        }
+                    }
+                    if (wantedId !== null) {
+                        network.emit("click", { nodes: [wantedId] });
+                    }
+                }
+                utils.createItemsList(clone.getElementById("requireddep"), thirdParty, graphDepListener, true);
+                utils.createItemsList(clone.getElementById("usedby"), Object.keys(usedBy), graphDepListener, true);
+                utils.createItemsList(clone.getElementById("internaldep"), internal, listener, true);
             }
 
             showInfoElem.appendChild(clone);
