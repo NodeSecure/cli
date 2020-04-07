@@ -97,7 +97,7 @@
     "httpie": "^1.1.2",
     "is-minified-code": "^2.0.0",
     "itertools": "^1.6.0",
-    "js-x-ray": "^1.6.0",
+    "js-x-ray": "^1.7.0",
     "kleur": "^3.0.3",
     "lodash.clonedeep": "^4.5.0",
     "lodash.difference": "^4.5.0",
