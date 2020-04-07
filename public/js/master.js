@@ -89,6 +89,9 @@ function getFlags(flags, options = {}) {
     if (flags.hasBannedFile) {
         flagList.push("⚔️");
     }
+    if (flags.isOutdated) {
+        flagList.push("⌚️");
+    }
     if (flags.hasCustomResolver) {
         flagList.push("💎");
     }

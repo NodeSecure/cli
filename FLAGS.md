@@ -220,7 +220,19 @@ The project has at least one sensitive file (or a file with sensitive informatio
 
 - .npmrc
 - .env
-- file with .key or .pem extensions
+- file with **.key** or **.pem** extensions
+
+</details>
+
+<details><summary>⌚️ isOutdated</summary>
+<br />
+
+The current package version is not equal to the latest version of the package (that we fetch on the npm registry). It can also mean that the package uses a tag such as:
+
+- alpha
+- beta
+- next
+- etc..
 
 </details>
 

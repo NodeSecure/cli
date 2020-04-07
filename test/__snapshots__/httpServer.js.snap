@@ -8,6 +8,10 @@ Object {
 
 exports[`'/flags' should return the flags list as JSON 1`] = `
 Object {
+  "⌚️": Object {
+    "title": "isOutdated",
+    "tooltipDescription": "The current package version is not equal to the package latest version!",
+  },
   "☁️": Object {
     "title": "isGit",
     "tooltipDescription": "The package (project) is a git repository",

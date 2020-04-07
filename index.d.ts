@@ -24,9 +24,10 @@ declare namespace NodeSecure {
 
     interface Flags {
         isGit: boolean;
+        isDeprecated: boolean;
+        isOutdated: boolean;
         hasManifest: boolean;
         hasOutdatedDependency: boolean;
-        isDeprecated: boolean;
         hasWarnings: boolean;
         hasLicense: boolean;
         hasMultipleLicenses: boolean;

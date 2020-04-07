@@ -242,20 +242,23 @@ async function processPackageTarball(name, version, options) {
     }
 }
 
-async function searchPackageAuthors(name, ref, regEE) {
+async function searchPackageAuthors(name, version, options) {
+    const { ref, regEE } = options;
+
     try {
         const publishers = new Set();
         const oneYearFromToday = new Date();
         oneYearFromToday.setFullYear(oneYearFromToday.getFullYear() - 1);
 
         const pkg = await npmReg.package(name);
-        ref.publishedCount = pkg.versions.length;
-        ref.lastUpdateAt = pkg.publishedAt(pkg.lastVersion);
-        ref.hasReceivedUpdateInOneYear = !(oneYearFromToday > ref.lastUpdateAt);
-        ref.lastVersion = pkg.lastVersion;
-        ref.homepage = pkg.homepage || null;
-        ref.maintainers = pkg.maintainers;
-        ref.author = pkg.author.name || pkg.author;
+        ref[version].flags.isOutdated = semver.neq(version, pkg.lastVersion);
+        ref.metadata.publishedCount = pkg.versions.length;
+        ref.metadata.lastUpdateAt = pkg.publishedAt(pkg.lastVersion);
+        ref.metadata.hasReceivedUpdateInOneYear = !(oneYearFromToday > ref.metadata.lastUpdateAt);
+        ref.metadata.lastVersion = pkg.lastVersion;
+        ref.metadata.homepage = pkg.homepage || null;
+        ref.metadata.maintainers = pkg.maintainers;
+        ref.metadata.author = pkg.author.name || pkg.author;
 
         for (const version of pkg.versions) {
             const { npmUser } = pkg.version(version);
@@ -263,21 +266,21 @@ async function searchPackageAuthors(name, ref, regEE) {
                 const name = npmUser.name || version.npmUser;
                 if (!publishers.has(name)) {
                     publishers.add(name);
-                    ref.publishers.push({ name, version, at: pkg.publishedAt(version) });
+                    ref.metadata.publishers.push({ name, version, at: pkg.publishedAt(version) });
                 }
             }
 
-            if (is.nullOrUndefined(ref.author) || is.nullOrUndefined(version.author)) {
+            if (is.nullOrUndefined(ref.metadata.author) || is.nullOrUndefined(version.author)) {
                 continue;
             }
 
             const name = version.author.name || version.author;
-            if (is.string(name) && name !== ref.author) {
-                ref.hasChangedAuthor = true;
+            if (is.string(name) && name !== ref.metadata.author) {
+                ref.metadata.hasChangedAuthor = true;
             }
         }
 
-        ref.hasManyPublishers = publishers.size > 1;
+        ref.metadata.hasManyPublishers = publishers.size > 1;
     }
     catch (err) {
         // Ignore
@@ -371,7 +374,7 @@ async function depWalker(manifest, options = Object.create(null)) {
             const current = currentDep.flatten(name === manifest.name ? 0 : void 0);
 
             // Note: These are not very well handled in my opinion (not so much lazy ...).
-            promisesToWait.push(searchPackageAuthors(name, current.metadata, regEE));
+            promisesToWait.push(searchPackageAuthors(name, version, { ref: current, regEE }));
             promisesToWait.push(processPackageTarball(name, version, {
                 ref: current[version],
                 tmpLocation: forceRootAnalysis && name === manifest.name ? null : tmpLocation,

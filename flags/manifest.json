@@ -62,5 +62,9 @@
     "⚔️": {
         "title": "hasBannedFile",
         "tooltipDescription": "The project has at least one sensitive file."
+    },
+    "⌚️": {
+        "title": "isOutdated",
+        "tooltipDescription": "The current package version is not equal to the package latest version!"
     }
 }

@@ -39,6 +39,7 @@ Object {
         "hasWarnings": false,
         "isDeprecated": false,
         "isGit": false,
+        "isOutdated": false,
       },
       "gitUrl": null,
       "id": 0,
