@@ -7,7 +7,7 @@ const { join } = require("path");
 
 // Require Internal Dependencies
 const {
-    cleanRange, taggedString, writeNsecureCache, loadNsecureCache, getRegistryURL
+    cleanRange, taggedString, writeNsecureCache, loadNsecureCache, getRegistryURL, isSensitiveFile
 } = require("../src/utils");
 
 test("should return cleaned SemVer range", () => {
@@ -46,4 +46,9 @@ test("getRegistryURL should return the npm registry URL", async() => {
     const result = getRegistryURL();
     expect(result).toStrictEqual("https://registry.npmjs.org/");
     expect(getRegistryURL()).toStrictEqual("https://registry.npmjs.org/");
+});
+
+test("isSensitiveFile", () => {
+    expect(isSensitiveFile(".npmrc")).toBe(true);
+    expect(isSensitiveFile("lol.key")).toBe(true);
 });
