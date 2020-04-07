@@ -216,7 +216,12 @@ means it's dangerous to use (or continue to) because the author doesn't seem to 
 <details><summary>⚔️ hasBannedFile</summary>
 <br />
 
-The project has at least one sensitive file (or a file with sensitive information in it). The list complete list of patterns and files can be checked [here](https://github.com/bahmutov/ban-sensitive-files).
+The project has at least one sensitive file (or a file with sensitive information in it). A sensitive file can be detected by his complete name or by his extension.
+
+- .npmrc
+- .env
+- file with .key or .pem extensions
+
 </details>
 
 ## Web UI Emojis

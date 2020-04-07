@@ -10,7 +10,7 @@ const {
     existsSync, readFileSync, writeFileSync,
     promises: { stat, opendir }
 } = require("fs");
-const { extname, join, relative } = require("path");
+const { extname, join, relative, basename } = require("path");
 const { spawnSync } = require("child_process");
 
 // Require Third-party Dependencies
@@ -22,6 +22,8 @@ const SYM_DIR = Symbol("symTypeDir");
 
 // CONSTANTS
 const EXCLUDE_DIRS = new Set(["node_modules", ".vscode", ".git"]);
+const SENSITIVE_FILES = new Set([".npmrc", ".env"]);
+const SENSITIVE_EXT = new Set([".key", ".pem"]);
 const REGISTRY_DEFAULT_ADDR = "https://registry.npmjs.org/";
 
 // VARS
@@ -175,7 +177,16 @@ function taggedString(chaines, ...cles) {
     };
 }
 
+function isSensitiveFile(fileName) {
+    if (SENSITIVE_FILES.has(basename(fileName))) {
+        return true;
+    }
+
+    return SENSITIVE_EXT.has(extname(fileName));
+}
+
 module.exports = Object.freeze({
+    isSensitiveFile,
     loadNsecureCache,
     writeNsecureCache,
     getFilesRecursive,
