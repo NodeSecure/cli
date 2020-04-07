@@ -20,6 +20,7 @@ function cleanupPayload(payload) {
             pkg[versionName].composition.extensions.sort();
             delete pkg[versionName].size;
             delete pkg[versionName].composition.files;
+            delete pkg[versionName].composition.required_files;
         }
     }
 }
