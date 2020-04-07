@@ -14,7 +14,6 @@ const polka = require("polka");
 const send = require("@polka/send-type");
 const sirv = require("sirv");
 const open = require("open");
-const getPort = require("get-port");
 const kleur = require("kleur");
 const zup = require("zup");
 
@@ -88,9 +87,8 @@ async function startHTTPServer(dataFilePath, configPort) {
     });
 
     /* istanbul ignore next */
-    const port = typeof configPort === "number" ? configPort : await getPort();
-    httpServer.listen(port, () => {
-        const link = `http://localhost:${port}`;
+    httpServer.listen(typeof configPort === "number" ? configPort : 0, () => {
+        const link = `http://localhost:${httpServer.server.address().port}`;
         console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
         /* istanbul ignore next */
         if (typeof configPort === "undefined") {

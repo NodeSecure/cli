@@ -95,7 +95,6 @@
     "combine-async-iterators": "^1.1.2",
     "dotenv": "^8.2.0",
     "filenamify": "^4.1.0",
-    "get-port": "^5.1.1",
     "httpie": "^1.1.2",
     "is-minified-code": "^2.0.0",
     "itertools": "^1.6.0",
