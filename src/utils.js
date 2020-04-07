@@ -13,6 +13,9 @@ const {
 const { extname, join, relative } = require("path");
 const { spawnSync } = require("child_process");
 
+// Require Third-party Dependencies
+const cloneDeep = require("lodash.clonedeep");
+
 // SYMBOLS
 const SYM_FILE = Symbol("symTypeFile");
 const SYM_DIR = Symbol("symTypeDir");
@@ -140,7 +143,7 @@ function loadNsecureCache(defaultPayload = {}) {
         return JSON.parse(buf.toString());
     }
 
-    const payload = Object.assign({}, JSON.parse(JSON.stringify(defaultPayload)), {
+    const payload = Object.assign({}, cloneDeep(defaultPayload), {
         lastUpdated: Date.now() - (3600000 * 48)
     });
     writeFileSync(filePath, JSON.stringify(payload));
@@ -224,6 +227,9 @@ function checkPortAvailability(port) {
 }
 
 async function getPort(portNumber) {
+    if (portNumber <= 1024) {
+        throw new Error("Invalid port number");
+    }
     let idx = portNumber;
 
     while (idx < 65535) {

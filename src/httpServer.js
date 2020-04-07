@@ -88,7 +88,7 @@ async function startHTTPServer(dataFilePath, configPort) {
     });
 
     /* istanbul ignore next */
-    const port = typeof configPort === "number" ? configPort : await getPort();
+    const port = typeof configPort === "number" ? configPort : await getPort(8080);
     httpServer.listen(port, () => {
         const link = `http://localhost:${port}`;
         console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
