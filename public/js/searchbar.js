@@ -304,7 +304,7 @@ export default class SearchBar {
                     break;
                 }
                 case "package": {
-                    if (new RegExp(`^${inputValue}`, "gi").test(opt.name)) {
+                    if (new RegExp(inputValue, "gi").test(opt.name)) {
                         matchingIds.add(String(id));
                     }
                     break;
