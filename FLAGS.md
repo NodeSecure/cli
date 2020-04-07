@@ -216,7 +216,7 @@ means it's dangerous to use (or continue to) because the author doesn't seem to 
 <details><summary>⚔️ hasBannedFile</summary>
 <br />
 
-The project has at least one sensitive file (or a file with sensitive information in it). A sensitive file can be detected by his complete name or by his extension.
+The project has at least one sensitive file (or a file with sensitive information in it). A sensitive file can be detected by its complete name or by its extension.
 
 - .npmrc
 - .env
