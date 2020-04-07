@@ -43,7 +43,7 @@ const kHelpersTemplateName = {
         const fragment = document.createDocumentFragment();
         const items = new Set();
         for (const { composition } of linker.values()) {
-            composition.required_builtin.forEach((ext) => items.add(ext));
+            composition.required_nodejs.forEach((ext) => items.add(ext));
         }
         [...items].forEach((value) => fragment.appendChild(createLineElement(value)));
 
@@ -328,7 +328,7 @@ export default class SearchBar {
                     break;
                 }
                 case "builtin": {
-                    const hasMatchingBuiltin = opt.composition.required_builtin
+                    const hasMatchingBuiltin = opt.composition.required_nodejs
                         .some((value) => new RegExp(inputValue, "gi").test(value));
                     if (hasMatchingBuiltin) {
                         matchingIds.add(String(id));

@@ -2,7 +2,7 @@
 
 // Require Node.js Dependencies
 const os = require("os");
-const { join, extname } = require("path");
+const { join, extname, dirname } = require("path");
 const { mkdir, readFile, rmdir } = require("fs").promises;
 const { EventEmitter } = require("events");
 
@@ -42,6 +42,7 @@ const Dependency = require("./dependency.class");
 const JS_EXTENSIONS = new Set([".js", ".mjs"]);
 const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram", "child_process"]);
 const NPM_SCRIPTS = new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]);
+const DIRECT_PATH = new Set([".", "..", "./", "../"]);
 const NODE_CORE_LIBS = new Set(builtins());
 const TMP = os.tmpdir();
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
@@ -170,6 +171,7 @@ async function processPackageTarball(name, version, options) {
         // Search for minified and runtime dependencies
         const jsFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));
         const dependencies = [];
+        const filesDependencies = new Set();
         const inTryDeps = new Set();
 
         for (const file of jsFiles) {
@@ -179,7 +181,16 @@ async function processPackageTarball(name, version, options) {
 
                 const ASTAnalysis = runASTAnalysis(str, { isMinified: isMin });
                 ASTAnalysis.dependencies.removeByName(name);
-                dependencies.push(...ASTAnalysis.dependencies);
+                for (const depName of ASTAnalysis.dependencies) {
+                    // eslint-disable-next-line max-depth
+                    if (depName.startsWith(".")) {
+                        const indexName = DIRECT_PATH.has(depName) ? join(depName, "index.js") : join(dirname(file), depName);
+                        filesDependencies.add(indexName);
+                    }
+                    else {
+                        dependencies.push(depName);
+                    }
+                }
                 [...ASTAnalysis.dependencies.getDependenciesInTryStatement()]
                     .forEach((depName) => inTryDeps.add(depName));
 
@@ -209,6 +220,7 @@ async function processPackageTarball(name, version, options) {
                 .filter((name) => !NODE_CORE_LIBS.has(name))
                 .filter((name) => !devDepsInLocalPackage.includes(name))
                 .filter((name) => !inTryDeps.has(name));
+            ref.composition.required_thirdparty = thirdPartyDependencies;
 
             const unusedDeps = difference(
                 depsInLocalPackage.filter((name) => !name.startsWith("@types")), thirdPartyDependencies);
@@ -219,12 +231,14 @@ async function processPackageTarball(name, version, options) {
             ref.composition.missing.push(...missingDeps);
         }
 
-        ref.composition.required.push(...required);
-        ref.composition.required_builtin = required.filter((name) => NODE_CORE_LIBS.has(name));
-
-        const hasExternal = ref.composition.required_builtin.some((depName) => EXT_DEPS.has(depName));
-        ref.flags.hasExternalCapacity = hasExternal;
-
+        ref.composition.required_files = [...filesDependencies]
+            .filter((depName) => depName.trim() !== "")
+            // .map((depName) => {
+            //     return files.includes(depName) ? depName : join(depName, "index.js");
+            // })
+            .map((depName) => (extname(depName) === "" ? `${depName}.js` : depName));
+        ref.composition.required_nodejs = required.filter((name) => NODE_CORE_LIBS.has(name));
+        ref.flags.hasExternalCapacity = ref.composition.required_nodejs.some((depName) => EXT_DEPS.has(depName));
         ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
 
         await new Promise((resolve) => setImmediate(resolve));

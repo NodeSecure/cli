@@ -70,8 +70,9 @@ class Dependency {
                     minified: [],
                     unused: [],
                     missing: [],
-                    required: [],
-                    required_builtin: []
+                    required_files: [],
+                    required_nodejs: [],
+                    required_thirdparty: []
                 },
                 license: "unkown license",
                 gitUrl: this.gitUrl

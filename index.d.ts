@@ -103,8 +103,9 @@ declare namespace NodeSecure {
                 extensions: string[];
                 files: string[];
                 minified: string[];
-                required: string[];
-                required_builtin: string[];
+                required_files: string[];
+                required_thirdparty: string[];
+                required_nodejs: string[];
                 unused: string[];
                 missing: string[];
             };

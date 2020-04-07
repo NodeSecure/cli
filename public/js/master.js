@@ -489,12 +489,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             }
 
             {
-                const builtInDeps = new Set(composition.required_builtin);
-                const requiredDeps = [...composition.required.filter((name) => !builtInDeps.has(name))];
-                const thirdParty = requiredDeps.filter((name) => !name.startsWith("."));
-                const internal = requiredDeps.filter((name) => name.startsWith("."));
-
-                utils.createItemsList(clone.getElementById("nodedep"), composition.required_builtin, (event, coreLib) => {
+                utils.createItemsList(clone.getElementById("nodedep"), composition.required_nodejs, (event, coreLib) => {
                     window.open(`https://nodejs.org/dist/latest/docs/api/${coreLib}.html`, "_blank").focus();
                 });
 
@@ -522,9 +517,9 @@ document.addEventListener("DOMContentLoaded", async() => {
                         network.emit("click", { nodes: [wantedId] });
                     }
                 }
-                utils.createItemsList(clone.getElementById("requireddep"), thirdParty, graphDepListener, true);
+                utils.createItemsList(clone.getElementById("requireddep"), composition.required_thirdparty, graphDepListener, true);
                 utils.createItemsList(clone.getElementById("usedby"), Object.keys(usedBy), graphDepListener, true);
-                utils.createItemsList(clone.getElementById("internaldep"), internal, listener, true);
+                utils.createItemsList(clone.getElementById("internaldep"), composition.required_files, listener, true);
             }
 
             showInfoElem.appendChild(clone);
