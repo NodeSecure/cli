@@ -46,7 +46,7 @@ export function createAvatar(name, desc) {
     });
 
     const imgEl = document.createElement("img");
-    if (!("email" in desc) || typeof desc.email === "undefined" || desc.email === null) {
+    if (!("email" in desc) || typeof desc.email === "undefined" || desc.email === null || desc.email === "") {
         imgEl.src = "/img/avatar-default.png";
     }
     else {
