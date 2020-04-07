@@ -16,10 +16,11 @@ Object {
         ],
         "minified": Array [],
         "missing": Array [],
-        "required": Array [
-          "./src/utils",
+        "required_files": Array [
+          "src\\\\utils.js",
         ],
-        "required_builtin": Array [],
+        "required_nodejs": Array [],
+        "required_thirdparty": Array [],
         "unused": Array [],
       },
       "description": "SlimIO is (JavaScript Primitives &amp; Objects type checker)",
