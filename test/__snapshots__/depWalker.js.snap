@@ -16,9 +16,6 @@ Object {
         ],
         "minified": Array [],
         "missing": Array [],
-        "required_files": Array [
-          "src\\\\utils.js",
-        ],
         "required_nodejs": Array [],
         "required_thirdparty": Array [],
         "unused": Array [],

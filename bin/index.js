@@ -11,7 +11,7 @@ const { join, extname, basename } = require("path");
 const { once } = require("events");
 
 // Require Third-party Dependencies
-const { yellow, grey, white, green, cyan, red } = require("kleur");
+const { yellow, grey, white, green, cyan, red, magenta } = require("kleur");
 const sade = require("sade");
 const pacote = require("pacote");
 const Spinner = require("@slimio/async-cli-spinner");
@@ -19,11 +19,12 @@ const filenamify = require("filenamify");
 const semver = require("semver");
 const ms = require("ms");
 const qoa = require("qoa");
+const ui = require("cliui")();
 
 // Require Internal Dependencies
 const startHTTPServer = require("../src/httpServer.js");
 const i18n = require("../src/i18n");
-const { getRegistryURL, loadNsecureCache, writeNsecureCache } = require("../src/utils");
+const { getRegistryURL, loadNsecureCache, writeNsecureCache, formatBytes } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
 const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
 const { cwd, verify } = require("../index");
@@ -102,18 +103,8 @@ prog
 prog
     .command("verify <package>")
     .describe(i18n.getToken("cli.commands.verify.desc"))
-    .option("-j, --json", i18n.getToken("cli.commands.verify.option_json"), true)
-    .action(async(packageName, options) => {
-        const returnJSON = Boolean(options.json);
-
-        const payload = await verify(packageName);
-        if (returnJSON) {
-            return console.log(JSON.stringify(payload, null, 2));
-        }
-        console.log("CLI MODE: Not Implemented Yet!");
-
-        return void 0;
-    });
+    .option("-j, --json", i18n.getToken("cli.commands.verify.option_json"), false)
+    .action(verifyCmd);
 
 prog
     .command("lang")
@@ -140,6 +131,112 @@ prog
     });
 
 prog.parse(process.argv);
+
+async function verifyCmd(packageName, options) {
+    const payload = await verify(packageName);
+    if (options.json) {
+        return console.log(JSON.stringify(payload, null, 2));
+    }
+    const { files, directorySize, uniqueLicenseIds, ast } = payload;
+
+    ui.div(
+        { text: cyan().bold("directory size:"), width: 20 },
+        { text: yellow().bold(formatBytes(directorySize)), width: 10 }
+    );
+    ui.div(
+        { text: cyan().bold("unique licenses:"), width: 20 },
+        { text: white().bold(uniqueLicenseIds.join(", ")), width: 10 }
+    );
+    console.log(`${ui.toString()}\n`);
+    ui.resetOutput();
+
+    {
+        ui.div(
+            { text: white().bold("files"), width: 50, align: "center" },
+            { text: white().bold("ext"), width: 10, align: "center" },
+            { text: white().bold("minified files"), width: 30, align: "center" }
+        );
+        ui.div(
+            { text: grey().bold("------"), width: 50, align: "center" },
+            { text: grey().bold("------"), width: 10, align: "center" },
+            { text: grey().bold("------"), width: 30, align: "center" }
+        );
+
+        const maxLen = files.list.length > files.extensions.length ? files.list.length : files.extensions.length;
+        const divArray = Array.from(Array(maxLen), () => ["", "", ""]);
+        files.list.forEach((value, index) => (divArray[index][0] = value));
+        files.extensions.forEach((value, index) => (divArray[index][1] = value));
+        files.minified.forEach((value, index) => (divArray[index][2] = value));
+
+        for (const [file, ext, min] of divArray) {
+            ui.div(
+                { text: file, width: 50 },
+                { text: cyan().bold(ext), width: 10 },
+                { text: red().bold(min), width: 30 }
+            );
+        }
+    }
+    console.log(`${ui.toString()}\n`);
+    ui.resetOutput();
+
+    ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+    ui.div({ text: cyan().bold("Required dependency and files"), width: 70, align: "center" });
+    ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+    ui.div({ text: "\n", width: 70, align: "center" });
+
+    for (const [fileName, deps] of Object.entries(ast.dependencies)) {
+        ui.div({ text: magenta().bold(fileName), width: 70, align: "center" });
+        ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+        ui.div(
+            { text: white().bold("name"), width: 20, align: "center" },
+            { text: white().bold("unsafe"), width: 12, align: "center" },
+            { text: white().bold("try/catch"), width: 12, align: "center" },
+            { text: white().bold("source location"), width: 26, align: "center" }
+        );
+        for (const [depName, infos] of Object.entries(deps)) {
+            const { start, end } = infos.location;
+            const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
+
+            ui.div(
+                { text: depName, width: 20 },
+                { text: (infos.unsafe ? green : red)().bold(infos.unsafe), width: 12, align: "center" },
+                { text: (infos.inTry ? green : red)().bold(infos.inTry), width: 12, align: "center" },
+                { text: grey().bold(position), width: 26, align: "center" }
+            );
+        }
+        ui.div({ text: "", width: 64, align: "center" });
+        console.log(`${ui.toString()}`);
+        ui.resetOutput();
+    }
+
+    ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+    ui.div({ text: cyan().bold("AST Warnings"), width: 70, align: "center" });
+    ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+    ui.div({ text: "", width: 70, align: "center" });
+
+    ui.div(
+        { text: white().bold("kind"), width: 17, align: "center" },
+        { text: white().bold("file"), width: 30, align: "center" },
+        { text: white().bold("location"), width: 23, align: "center" }
+    );
+    for (const warning of ast.warnings) {
+        const { start, end } = warning;
+        const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
+
+        ui.div(
+            { text: yellow().bold(warning.kind), width: 17, align: "center" },
+            { text: warning.file || "", width: 30, align: "center" },
+            { text: grey().bold(position), width: 23, align: "center" }
+        );
+        if (warning.value) {
+            ui.div({ text: cyan().bold(warning.value), width: 70, align: "center" });
+        }
+    }
+    console.log(`${ui.toString()}`);
+    ui.resetOutput();
+
+    return void 0;
+}
 
 async function hydrateCmd() {
     deleteDB();

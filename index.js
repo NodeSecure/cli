@@ -93,6 +93,7 @@ async function verify(packageName) {
 
         await nextTick();
         const { uniqueLicenseIds, licenses } = await ntlp(dest);
+        ext.delete("");
 
         return {
             files: { list: files, extensions: [...ext], minified },
