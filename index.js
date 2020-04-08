@@ -84,7 +84,11 @@ async function verify(packageName) {
             });
             ASTAnalysis.dependencies.removeByName(packageName);
             dependencies[file] = ASTAnalysis.dependencies.dependencies;
-            warnings.push(...ASTAnalysis.warnings);
+            warnings.push(...ASTAnalysis.warnings.map((warn) => {
+                warn.file = file;
+
+                return warn;
+            }));
 
             if (!ASTAnalysis.isOneLineRequire && !file.includes(".min") && isMinified(str)) {
                 minified.push(file);

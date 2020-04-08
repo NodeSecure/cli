@@ -152,26 +152,21 @@ async function verifyCmd(packageName, options) {
 
     {
         ui.div(
-            { text: white().bold("files"), width: 50, align: "center" },
-            { text: white().bold("ext"), width: 10, align: "center" },
-            { text: white().bold("minified files"), width: 30, align: "center" }
-        );
-        ui.div(
-            { text: grey().bold("------"), width: 50, align: "center" },
-            { text: grey().bold("------"), width: 10, align: "center" },
-            { text: grey().bold("------"), width: 30, align: "center" }
+            { text: white().bold("ext"), width: 15, align: "center" },
+            { text: white().bold("files"), width: 45 },
+            { text: white().bold("minified files"), width: 30 }
         );
 
         const maxLen = files.list.length > files.extensions.length ? files.list.length : files.extensions.length;
         const divArray = Array.from(Array(maxLen), () => ["", "", ""]);
-        files.list.forEach((value, index) => (divArray[index][0] = value));
-        files.extensions.forEach((value, index) => (divArray[index][1] = value));
+        files.extensions.forEach((value, index) => (divArray[index][0] = value));
+        files.list.forEach((value, index) => (divArray[index][1] = value));
         files.minified.forEach((value, index) => (divArray[index][2] = value));
 
-        for (const [file, ext, min] of divArray) {
+        for (const [ext, file, min] of divArray) {
             ui.div(
-                { text: file, width: 50 },
-                { text: cyan().bold(ext), width: 10 },
+                { text: cyan().bold(ext), width: 15, align: "center" },
+                { text: file, width: 45 },
                 { text: red().bold(min), width: 30 }
             );
         }
@@ -179,17 +174,16 @@ async function verifyCmd(packageName, options) {
     console.log(`${ui.toString()}\n`);
     ui.resetOutput();
 
-    ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+    ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
     ui.div({ text: cyan().bold("Required dependency and files"), width: 70, align: "center" });
-    ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+    ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
     ui.div({ text: "\n", width: 70, align: "center" });
 
     for (const [fileName, deps] of Object.entries(ast.dependencies)) {
         ui.div({ text: magenta().bold(fileName), width: 70, align: "center" });
-        ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+        ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
         ui.div(
-            { text: white().bold("name"), width: 20, align: "center" },
-            { text: white().bold("unsafe"), width: 12, align: "center" },
+            { text: white().bold("required stmt"), width: 32, align: "left" },
             { text: white().bold("try/catch"), width: 12, align: "center" },
             { text: white().bold("source location"), width: 26, align: "center" }
         );
@@ -198,39 +192,40 @@ async function verifyCmd(packageName, options) {
             const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
 
             ui.div(
-                { text: depName, width: 20 },
-                { text: (infos.unsafe ? green : red)().bold(infos.unsafe), width: 12, align: "center" },
+                { text: depName, width: 32 },
                 { text: (infos.inTry ? green : red)().bold(infos.inTry), width: 12, align: "center" },
                 { text: grey().bold(position), width: 26, align: "center" }
             );
         }
-        ui.div({ text: "", width: 64, align: "center" });
+        ui.div({ text: "", width: 70, align: "center" });
         console.log(`${ui.toString()}`);
         ui.resetOutput();
     }
 
-    ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+    ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
     ui.div({ text: cyan().bold("AST Warnings"), width: 70, align: "center" });
-    ui.div({ text: grey("------------------------------------------------------------"), width: 70, align: "center" });
+    ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
     ui.div({ text: "", width: 70, align: "center" });
 
     ui.div(
-        { text: white().bold("kind"), width: 17, align: "center" },
-        { text: white().bold("file"), width: 30, align: "center" },
-        { text: white().bold("location"), width: 23, align: "center" }
+        { text: white().bold("file"), width: 30 },
+        { text: white().bold("kind"), width: 15, align: "center" },
+        { text: white().bold("source location"), width: 25, align: "center" }
     );
     for (const warning of ast.warnings) {
         const { start, end } = warning;
         const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
 
         ui.div(
-            { text: yellow().bold(warning.kind), width: 17, align: "center" },
-            { text: warning.file || "", width: 30, align: "center" },
-            { text: grey().bold(position), width: 23, align: "center" }
+            { text: warning.file || grey().bold("NONE"), width: 30 },
+            { text: magenta().bold(warning.kind), width: 15, align: "center" },
+            { text: grey().bold(position), width: 25, align: "center" }
         );
         if (warning.value) {
-            ui.div({ text: cyan().bold(warning.value), width: 70, align: "center" });
+            ui.div({ text: "", width: 70, align: "center" });
+            ui.div({ text: yellow().bold(warning.value), width: 70, align: "center" });
         }
+        ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
     }
     console.log(`${ui.toString()}`);
     ui.resetOutput();
