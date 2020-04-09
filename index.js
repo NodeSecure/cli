@@ -29,6 +29,9 @@ async function cwd(cwd = process.cwd(), options) {
     const packagePath = join(cwd, "package.json");
     const str = await readFile(packagePath, "utf-8");
     options.forceRootAnalysis = true;
+    if (!Reflect.has(options, "usePackageLock")) {
+        options.usePackageLock = true;
+    }
 
     return depWalker(JSON.parse(str), options);
 }

@@ -8,7 +8,7 @@
 const os = require("os");
 const {
     existsSync, readFileSync, writeFileSync,
-    promises: { stat, opendir }
+    promises: { stat, opendir, readFile }
 } = require("fs");
 const { extname, join, relative, basename } = require("path");
 const { spawnSync } = require("child_process");
@@ -202,7 +202,26 @@ function formatBytes(bytes, decimals) {
     return parseFloat((bytes / Math.pow(1024, id)).toFixed(dm)) + " " + sizes[id];
 }
 
+function* deepReadPackageLock(dependencies) {
+    for (const [depName, infos] of Object.entries(dependencies)) {
+        if (!infos.dev) {
+            yield [depName, infos];
+            if (Reflect.has(infos, "dependencies")) {
+                yield* deepReadPackageLock(infos.dependencies);
+            }
+        }
+    }
+}
+
+async function* readPackageLock(filePath = join(process.cwd(), "package-lock.json")) {
+    const buf = await readFile(filePath);
+    const { dependencies = {} } = JSON.parse(buf.toString());
+
+    yield* deepReadPackageLock(dependencies);
+}
+
 module.exports = Object.freeze({
+    readPackageLock,
     formatBytes,
     getPackageName,
     isSensitiveFile,

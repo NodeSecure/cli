@@ -30,7 +30,8 @@ class Dependency {
             hasMissingOrUnusedDependency: false,
             hasOutdatedDependency: false,
             hasScript: false,
-            hasBannedFile: false
+            hasBannedFile: false,
+            hasValidIntegrity: true
         };
         Object.preventExtensions(flags);
 
@@ -114,6 +115,15 @@ class Dependency {
     set hasWarnings(value) {
         this[SYM_FLAGS].hasWarnings = value;
     }
+
+    get hasValidIntegrity() {
+        return this[SYM_FLAGS].hasValidIntegrity;
+    }
+
+    set hasValidIntegrity(value) {
+        this[SYM_FLAGS].hasValidIntegrity = value;
+    }
+
 
     get hasBannedFile() {
         return this[SYM_FLAGS].hasBannedFile;

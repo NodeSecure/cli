@@ -21,7 +21,8 @@ module.exports = {
                 success: tS`Base de vulnérabilités mise à jour avec succès en ${0}`
             },
             cwd: {
-                desc: "Démarre une analyse de sécurité sur le cwd"
+                desc: "Démarre une analyse de sécurité sur le cwd",
+                option_nolock: "déactivation de l'utilisation du package-lock.json"
             },
             from: {
                 desc: "Démarre une analyse de sécurité sur un package donné du registre npm",

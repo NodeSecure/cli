@@ -31,7 +31,8 @@ const {
     cleanRange,
     getRegistryURL,
     isSensitiveFile,
-    getPackageName
+    getPackageName,
+    readPackageLock
 } = require("./utils");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
 const applyWarnings = require("./warnings");
@@ -305,22 +306,43 @@ async function searchPackageAuthors(name, version, options) {
 }
 
 async function* getRootDependencies(manifest, options) {
-    const { maxDepth = 4, exclude } = options;
+    const { maxDepth = 4, exclude, usePackageLock } = options;
 
     const { dependencies, customResolvers } = mergeDependencies(manifest, void 0);
     const parent = new Dependency(manifest.name, manifest.version);
     parent.hasCustomResolver = customResolvers.size > 0;
     parent.hasDependencies = dependencies.size > 0;
 
-    const configRef = { exclude, maxDepth, parent };
-    const iterators = [
-        ...iter.filter(customResolvers.entries(), ([, valueStr]) => valueStr.startsWith("git+"))
-            .map(([depName, valueStr]) => searchDeepDependencies(depName, valueStr.slice(4), configRef)),
-        ...iter.map(dependencies.entries(), ([name, ver]) => searchDeepDependencies(`${name}@${ver}`, void 0, configRef))
-    ];
+    if (usePackageLock) {
+        for await (const [depName, infos] of readPackageLock()) {
+            const { version, integrity, requires = null } = infos;
+            const dependenciesCount = requires === null ? 0 : Object.keys(requires).length;
 
-    for await (const dep of combineAsyncIterators(...iterators)) {
-        yield dep;
+            const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${depName}@${version}`, {
+                ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
+            });
+            const { customResolvers } = mergeDependencies(pkg);
+
+            const current = new Dependency(depName, version, dependencies.has(depName) ? parent : void 0);
+            current.dependencyCount = dependenciesCount;
+            current.hasValidIntegrity = _integrity === integrity;
+            current.isDeprecated = deprecated === true;
+            current.hasDependencies = dependenciesCount > 0;
+            current.hasCustomResolver = customResolvers.size > 0;
+
+            yield current;
+        }
+    }
+    else {
+        const configRef = { exclude, maxDepth, parent };
+        const iterators = [
+            ...iter.filter(customResolvers.entries(), ([, valueStr]) => valueStr.startsWith("git+"))
+                .map(([depName, valueStr]) => searchDeepDependencies(depName, valueStr.slice(4), configRef)),
+            ...iter.map(dependencies.entries(), ([name, ver]) => searchDeepDependencies(`${name}@${ver}`, void 0, configRef))
+        ];
+        for await (const dep of combineAsyncIterators(...iterators)) {
+            yield dep;
+        }
     }
 
     // Add root dependencies to the exclude Map (because the parent is not handled by searchDeepDependencies)
@@ -339,7 +361,7 @@ async function* getRootDependencies(manifest, options) {
 }
 
 async function depWalker(manifest, options = Object.create(null)) {
-    const { verbose = true, forceRootAnalysis = false } = options;
+    const { verbose = true, forceRootAnalysis = false, usePackageLock = false } = options;
 
     // Create TMP directory
     const id = uniqueSlug();
@@ -382,7 +404,7 @@ async function depWalker(manifest, options = Object.create(null)) {
             tarballSpinner.text = white().bold(`${i18n.getToken("depWalker.analyzed_tarball")} ${stats}`);
         });
 
-        for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude })) {
+        for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude, usePackageLock })) {
             allDependencyCount++;
             const { name, version } = currentDep;
             const current = currentDep.flatten(name === manifest.name ? 0 : void 0);
@@ -426,6 +448,19 @@ async function depWalker(manifest, options = Object.create(null)) {
 
     // Search for vulnerabilities in the local .json db
     await hydrateNodeSecurePayload(payload.dependencies);
+
+    // In case we walk with the package-lock we need to re-create all link between dependencies
+    // We need to do it here because the package-lock is not ordered
+    if (usePackageLock) {
+        for await (const [depName, infos] of readPackageLock()) {
+            for (const [name, range] of Object.entries(infos.requires || {})) {
+                const currDep = payload.dependencies.get(name);
+                currDep.versions
+                    .filter((version) => semver.satisfies(version, range))
+                    .forEach((version) => (currDep[version].usedBy[depName] = infos.version));
+            }
+        }
+    }
 
     // We do this because it "seem" impossible to link all dependencies in the first walk.
     // Because we are dealing with package only one time it may happen sometimes.

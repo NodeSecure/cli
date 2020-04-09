@@ -21,7 +21,8 @@ module.exports = {
                 success: tS`Successfully hydrated vulnerabilities database in ${0}`
             },
             cwd: {
-                desc: "Run security analysis on the current working dir"
+                desc: "Run security analysis on the current working dir",
+                option_nolock: "disable usage of package-lock.json"
             },
             from: {
                 desc: "Run security analysis on a given package from npm registry",
