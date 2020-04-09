@@ -13,7 +13,7 @@
   "scripts": {
     "eslint": "eslint bin src test",
     "eslint-fix": "npm run eslint -- --fix",
-    "prepublishOnly": "pkg-ok",
+    "prepublishOnly": "npm run build && pkg-ok",
     "build": "webpack",
     "test": "npm run test-only && npm run eslint",
     "test-only": "jest --coverage"
