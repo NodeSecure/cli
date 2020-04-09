@@ -305,6 +305,25 @@ async function searchPackageAuthors(name, version, options) {
     }
 }
 
+async function* createLockDependency(depName, infos, parent) {
+    const { version, integrity, requires = null } = infos;
+    const dependenciesCount = requires === null ? 0 : Object.keys(requires).length;
+
+    const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${depName}@${version}`, {
+        ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
+    });
+    const { customResolvers } = mergeDependencies(pkg);
+
+    const current = new Dependency(depName, version, parent);
+    current.dependencyCount = dependenciesCount;
+    current.hasValidIntegrity = _integrity === integrity;
+    current.isDeprecated = deprecated === true;
+    current.hasDependencies = dependenciesCount > 0;
+    current.hasCustomResolver = customResolvers.size > 0;
+
+    yield current;
+}
+
 async function* getRootDependencies(manifest, options) {
     const { maxDepth = 4, exclude, usePackageLock } = options;
 
@@ -313,36 +332,23 @@ async function* getRootDependencies(manifest, options) {
     parent.hasCustomResolver = customResolvers.size > 0;
     parent.hasDependencies = dependencies.size > 0;
 
+    let iterators = [];
     if (usePackageLock) {
         for await (const [depName, infos] of readPackageLock()) {
-            const { version, integrity, requires = null } = infos;
-            const dependenciesCount = requires === null ? 0 : Object.keys(requires).length;
-
-            const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${depName}@${version}`, {
-                ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
-            });
-            const { customResolvers } = mergeDependencies(pkg);
-
-            const current = new Dependency(depName, version, dependencies.has(depName) ? parent : void 0);
-            current.dependencyCount = dependenciesCount;
-            current.hasValidIntegrity = _integrity === integrity;
-            current.isDeprecated = deprecated === true;
-            current.hasDependencies = dependenciesCount > 0;
-            current.hasCustomResolver = customResolvers.size > 0;
-
-            yield current;
+            const parentNode = dependencies.has(depName) ? parent : void 0;
+            iterators.push(createLockDependency(depName, infos, parentNode));
         }
     }
     else {
         const configRef = { exclude, maxDepth, parent };
-        const iterators = [
+        iterators = [
             ...iter.filter(customResolvers.entries(), ([, valueStr]) => valueStr.startsWith("git+"))
                 .map(([depName, valueStr]) => searchDeepDependencies(depName, valueStr.slice(4), configRef)),
             ...iter.map(dependencies.entries(), ([name, ver]) => searchDeepDependencies(`${name}@${ver}`, void 0, configRef))
         ];
-        for await (const dep of combineAsyncIterators(...iterators)) {
-            yield dep;
-        }
+    }
+    for await (const dep of combineAsyncIterators(...iterators)) {
+        yield dep;
     }
 
     // Add root dependencies to the exclude Map (because the parent is not handled by searchDeepDependencies)
