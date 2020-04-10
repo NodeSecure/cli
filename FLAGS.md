@@ -47,12 +47,13 @@ This means that the AST (abstract syntax tree) analysis as emitted one or many w
 
 - **unsafe-import** (Unable to parse/detect a dependency name)
 - **unsafe-regex** (Unsafe regex)
+- **unsafe-stmt** (Unsafe stmt like `eval()` or `Function("return this")()`).
 - **ast-error** (An error as occured in the AST Analysis)
 - **short-ids** (The file contains a lot of short identifiers)
 - **suspicious-string** (The file contain one or many suspicious string)
 - **hexa-value** (The file contain an hexa value as Literal).
 
-### Unsafe-import
+### unsafe-import
 
 Example if your package contains a .js file with the following content:
 
@@ -62,7 +63,9 @@ const { join } = require("path");
 const myLib = require("./lib");
 ```
 
-Then the AST analysis will return `fs`, `path` and `./lib` as required dependencies. The code will not be considered suspicious ! But if we take a malicious code:
+Then the AST analysis will return `fs`, `path` and `./lib` as required dependencies. The code will not be considered suspicious!
+
+But if we take a malicious code:
 
 ```js
 function unhex(r) {
@@ -76,7 +79,7 @@ const evil = p["mainMod" + "ule"][unhex("72657175697265")];
 evil(unhex("68747470")).request
 ```
 
-This code require the core package `http` but the AST analysis is not capable to get it (not yet 😁). So the code will be flagged as "suspect".
+This code require the core package `http` but the AST analysis will flag it as "suspect".
 
 ### unsafe-regex
 
@@ -84,9 +87,52 @@ RegEx are dangerous and could lead to ReDos attack. This warning is emitted when
 
 - [How a RegEx can bring your Node.js service down](https://medium.com/@liran.tal/node-js-pitfalls-how-a-regex-can-bring-your-system-down-cbf1dc6c4e02)
 
+### unsafe-stmt
+Unsafe stmt like
+```js
+const g = eval("this");
+```
+
+or
+```js
+const g = Function("return this")();
+```
+
+### short-ids
+When a file contains more than **5 identifiers** and the **average length** of these is less than **1.5**. Example:
+
+```js
+var a = 0, b, c, d;
+for (let i = 0; i < 10; i++) {
+    a += i;
+}
+let de = "foo";
+let x, z;
+```
+
+### suspicious-string
+
+This warning is only created when the sum of all **Literal node** suspicious score is higher or equal to **3**. How do we calculate the score of a string? (js implementation).
+```js
+function strSuspectScore(str) {
+    if (str.length < 45) {
+        return 0;
+    }
+
+    const includeSpace = str.includes(" ");
+    const includeSpaceAtStart = includeSpace ? str.slice(0, 45).includes(" ") : false;
+    let suspectScore = includeSpaceAtStart ? 0 : 1;
+    if (str.length > 200) {
+        suspectScore += Math.floor(str.length / 750);
+    }
+
+    return strCharDiversity(str) >= 70 ? suspectScore + 2 : suspectScore;
+}
+```
+
 ### ast-error
 
-The AST Analysis has failed (return the stack trace of nsecure). The JSON payload will contains an "error" field with the stack trace.
+The AST Analysis has failed and has throw an Error. The JSON payload will contains a value field with the JavaScript error message. **Please feel free to open an issue on Node-secure to report these errors.**
 
 ---
 
