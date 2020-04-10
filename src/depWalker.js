@@ -3,7 +3,7 @@
 // Require Node.js Dependencies
 const os = require("os");
 const { join, extname, dirname } = require("path");
-const { mkdir, readFile, rmdir } = require("fs").promises;
+const { mkdtemp, readFile, rmdir } = require("fs").promises;
 const { EventEmitter } = require("events");
 
 // Require Third-party Dependencies
@@ -15,7 +15,6 @@ const Spinner = require("@slimio/async-cli-spinner");
 const isMinified = require("is-minified-code");
 const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
-const uniqueSlug = require("unique-slug");
 const ntlp = require("ntlp");
 const iter = require("itertools");
 const ms = require("ms");
@@ -370,9 +369,8 @@ async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true, forceRootAnalysis = false, usePackageLock = false } = options;
 
     // Create TMP directory
-    const id = uniqueSlug();
-    const tmpLocation = join(TMP, id);
-    await mkdir(tmpLocation, { recursive: true });
+    const tmpLocation = await mkdtemp(join(TMP, "/"));
+    const id = tmpLocation.slice(-6);
 
     const payload = {
         id,

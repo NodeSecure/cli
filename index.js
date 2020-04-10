@@ -3,12 +3,11 @@
 // Require Node.js Dependencies
 const os = require("os");
 const { join, extname } = require("path");
-const { readFile, rmdir } = require("fs").promises;
+const { mkdtemp, readFile, rmdir } = require("fs").promises;
 const { promisify } = require("util");
 
 // Require Third-party Dependencies
 const pacote = require("pacote");
-const uniqueSlug = require("unique-slug");
 const { runASTAnalysis } = require("js-x-ray");
 const ntlp = require("ntlp");
 const isMinified = require("is-minified-code");
@@ -51,7 +50,7 @@ async function readJSFile(dest, file) {
 
 async function verify(packageName) {
     const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
-    const tmpLocation = join(TMP, uniqueSlug());
+    const tmpLocation = await mkdtemp(join(TMP, "/"));
     const dest = join(tmpLocation, packageName);
 
     try {
