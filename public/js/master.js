@@ -442,12 +442,20 @@ document.addEventListener("DOMContentLoaded", async() => {
                             const line = tbody.insertRow(0);
 
                             line.insertCell(0).appendChild(document.createTextNode(kind));
-                            line.insertCell(1).appendChild(document.createTextNode(file));
+                            const fileCell = line.insertCell(1);
+                            fileCell.addEventListener("click", () => {
+                                window.open(`https://unpkg.com/${name}@${version}/${file}`, "_blank").focus();
+                            });
+                            fileCell.classList.add("clickable");
+                            fileCell.appendChild(document.createTextNode(file));
+
                             const errorCell = line.insertCell(2);
-                            errorCell.style.maxWidth = "200px";
+                            errorCell.classList.add("highlight");
                             const positionCell = line.insertCell(3);
                             if (value !== null) {
+                                errorCell.classList.add("clickable");
                                 errorCell.appendChild(document.createTextNode(value));
+                                errorCell.addEventListener("click", () => utils.copyToClipboard(value));
                             }
                             const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
                             positionCell.appendChild(document.createTextNode(position));
