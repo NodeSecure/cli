@@ -48,7 +48,7 @@ class Dependency {
         return this;
     }
 
-    flatten(customId) {
+    exportAsPlainObject(customId) {
         const parent = this.parent;
         this.hasWarnings = this.warnings.length > 0;
 

@@ -411,7 +411,7 @@ async function depWalker(manifest, options = Object.create(null)) {
         for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude, usePackageLock })) {
             allDependencyCount++;
             const { name, version } = currentDep;
-            const current = currentDep.flatten(name === manifest.name ? 0 : void 0);
+            const current = currentDep.exportAsPlainObject(name === manifest.name ? 0 : void 0);
 
             // Note: These are not very well handled in my opinion (not so much lazy ...).
             promisesToWait.push(searchPackageAuthors(name, version, { ref: current, regEE }));
