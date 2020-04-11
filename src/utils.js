@@ -6,12 +6,12 @@
 
 // Require Node.js Dependencies
 const os = require("os");
+const { extname, join, relative, basename } = require("path");
+const { spawnSync } = require("child_process");
 const {
     existsSync, readFileSync, writeFileSync,
     promises: { stat, opendir, readFile }
 } = require("fs");
-const { extname, join, relative, basename } = require("path");
-const { spawnSync } = require("child_process");
 
 // SYMBOLS
 const SYM_FILE = Symbol("symTypeFile");
@@ -232,6 +232,9 @@ module.exports = Object.freeze({
     getRegistryURL,
     constants: Object.freeze({
         FILE: SYM_FILE,
-        DIRECTORY: SYM_DIR
+        DIRECTORY: SYM_DIR,
+        NPM_SCRIPTS: new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]),
+        EXT_DEPS: new Set(["http", "https", "net", "http2", "dgram", "child_process"]),
+        EXT_JS: new Set([".js", ".mjs"])
     })
 });

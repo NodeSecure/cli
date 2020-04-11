@@ -1,50 +1,41 @@
 "use strict";
 
 // Require Node.js Dependencies
-const os = require("os");
 const { join, extname, dirname } = require("path");
 const { mkdtemp, readFile, rmdir } = require("fs").promises;
 const { EventEmitter } = require("events");
+const os = require("os");
 
 // Require Third-party Dependencies
-const pacote = require("pacote");
 const { red, white, yellow, cyan, gray, green } = require("kleur");
-const semver = require("semver");
-const Lock = require("@slimio/lock");
-const Spinner = require("@slimio/async-cli-spinner");
-const isMinified = require("is-minified-code");
-const Registry = require("@slimio/npm-registry");
 const combineAsyncIterators = require("combine-async-iterators");
-const ntlp = require("ntlp");
-const iter = require("itertools");
-const ms = require("ms");
+const Spinner = require("@slimio/async-cli-spinner");
+const Registry = require("@slimio/npm-registry");
 const difference = require("lodash.difference");
+const isMinified = require("is-minified-code");
+const Lock = require("@slimio/lock");
 const builtins = require("builtins");
+const iter = require("itertools");
+const pacote = require("pacote");
+const semver = require("semver");
+const ntlp = require("ntlp");
+const ms = require("ms");
 const is = require("@slimio/is");
 const { runASTAnalysis } = require("js-x-ray");
 
 // Require Internal Dependencies
 const {
-    getTarballComposition,
-    mergeDependencies,
-    cleanRange,
-    getRegistryURL,
-    isSensitiveFile,
-    getPackageName,
-    readPackageLock
+    getTarballComposition, mergeDependencies, cleanRange, getRegistryURL,
+    isSensitiveFile, getPackageName, readPackageLock, constants
 } = require("./utils");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
+const Dependency = require("./dependency.class");
 const applyWarnings = require("./warnings");
 const i18n = require("./i18n");
-const Dependency = require("./dependency.class");
 
 // CONSTANTS
-const JS_EXTENSIONS = new Set([".js", ".mjs"]);
-const EXT_DEPS = new Set(["http", "https", "net", "http2", "dgram", "child_process"]);
-const NPM_SCRIPTS = new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]);
 const DIRECT_PATH = new Set([".", "..", "./", "../"]);
 const NODE_CORE_LIBS = new Set(builtins());
-const TMP = os.tmpdir();
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 
 // Vars
@@ -155,7 +146,7 @@ async function processPackageTarball(name, version, options) {
             depsInLocalPackage = [...Object.keys(dependencies)];
             devDepsInLocalPackage = Object.keys(devDependencies);
 
-            ref.flags.hasScript = [...Object.keys(scripts)].some((value) => NPM_SCRIPTS.has(value.toLowerCase()));
+            ref.flags.hasScript = [...Object.keys(scripts)].some((value) => constants.NPM_SCRIPTS.has(value.toLowerCase()));
         }
         catch (err) {
             ref.flags.hasManifest = false;
@@ -169,7 +160,7 @@ async function processPackageTarball(name, version, options) {
         ref.flags.hasBannedFile = files.some((path) => isSensitiveFile(path));
 
         // Search for minified and runtime dependencies
-        const jsFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));
+        const jsFiles = files.filter((name) => constants.EXT_JS.has(extname(name)));
         const dependencies = [];
         const filesDependencies = new Set();
         const inTryDeps = new Set();
@@ -238,7 +229,8 @@ async function processPackageTarball(name, version, options) {
             // })
             .map((depName) => (extname(depName) === "" ? `${depName}.js` : depName));
         ref.composition.required_nodejs = required.filter((name) => NODE_CORE_LIBS.has(name));
-        ref.flags.hasExternalCapacity = ref.composition.required_nodejs.some((depName) => EXT_DEPS.has(depName));
+        ref.flags.hasExternalCapacity = ref.composition.required_nodejs
+            .some((depName) => constants.EXT_DEPS.has(depName));
         ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
 
         await new Promise((resolve) => setImmediate(resolve));
@@ -369,7 +361,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     const { verbose = true, forceRootAnalysis = false, usePackageLock = false } = options;
 
     // Create TMP directory
-    const tmpLocation = await mkdtemp(join(TMP, "/"));
+    const tmpLocation = await mkdtemp(join(os.tmpdir(), "/"));
     const id = tmpLocation.slice(-6);
 
     const payload = {
