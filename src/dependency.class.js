@@ -1,7 +1,7 @@
 "use strict";
 
 // Require Third-party Dependencies
-const cloneDeep = require("lodash.clonedeep");
+const cloneDeep = require("klona");
 
 // Symbols
 const SYM_PARENT = Symbol("symDependencyParent");

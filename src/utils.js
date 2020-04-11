@@ -13,9 +13,6 @@ const {
 const { extname, join, relative, basename } = require("path");
 const { spawnSync } = require("child_process");
 
-// Require Third-party Dependencies
-const cloneDeep = require("lodash.clonedeep");
-
 // SYMBOLS
 const SYM_FILE = Symbol("symTypeFile");
 const SYM_DIR = Symbol("symTypeDir");
@@ -136,7 +133,7 @@ function getRegistryURL(force = false) {
     }
 }
 
-function loadNsecureCache(defaultPayload = {}) {
+function loadNsecureCache(defaultPayload = Object.create(null)) {
     const filePath = join(os.tmpdir(), "nsecure-cache.json");
 
     if (existsSync(filePath)) {
@@ -145,7 +142,7 @@ function loadNsecureCache(defaultPayload = {}) {
         return JSON.parse(buf.toString());
     }
 
-    const payload = Object.assign({}, cloneDeep(defaultPayload), {
+    const payload = Object.assign({}, JSON.parse(JSON.stringify(defaultPayload)), {
         lastUpdated: Date.now() - (3600000 * 48)
     });
     writeFileSync(filePath, JSON.stringify(payload));
