@@ -296,3 +296,30 @@ Indicate that the package is already somewhere else in the dependency tree with 
 
 ## Notes
 In the JSON payload some flags are linked to a given package version while other are linked to the package in general. For example **hasManyPublishers** and **hasChangedAuthor** are package flags.
+
+## Add a new flag
+
+The purpose of this section is to describe the addition of a flag to the Node-secure project. This could be useful in order to maintain and evolve the project without having to review the entire code.
+
+### Back-end
+
+Most of the time the flags start their lives within the file `src/dependency.class.js`. You just need to add the new flag in the private property `#flags` and add a new pair of getter/setter for it (Only if there is a need to update the flag before export).
+
+Sometimes the flags are updated after the export via the functions **processPackageTarball** and **searchPackageAuthors**. In this case, you just have to complete the exported object from the Dependency class.
+
+Adding a new flag means changing the returned payload in the API.. That's why we're also going to have to update the `index.d.ts`, TypeScript **Flags** interface which contains all the flags.
+
+### Documentation
+
+The new flag must be added and properly documented in the following files:
+
+- FLAGS.md
+- flags/manifest.json
+
+> ⚠️ Adding the flag in the manifest file is an important step for the front-end.
+
+### Front-end
+
+A new HTML file must be created in the **flags** directory with the name of the flag. It will be used to document the flag in the UI (in the emojis legends popup).
+
+Then update the **getFlags** method in the file `public/js/master.js` to add your own flag with the right emoji.
