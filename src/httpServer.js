@@ -2,19 +2,17 @@
 
 // Require Node.js Dependencies
 const {
-    createReadStream, accessSync,
-    promises: { readFile },
-    constants: { R_OK, W_OK }
+    createReadStream, accessSync, promises: { readFile }, constants: { R_OK, W_OK }
 } = require("fs");
 const { join } = require("path");
 const { pipeline } = require("stream");
 
 // Require Third-party Dependencies
-const polka = require("polka");
 const send = require("@polka/send-type");
+const kleur = require("kleur");
+const polka = require("polka");
 const sirv = require("sirv");
 const open = require("open");
-const kleur = require("kleur");
 const zup = require("zup");
 
 // Require Internal Dependencies
@@ -46,7 +44,7 @@ async function startHTTPServer(dataFilePath, configPort) {
         }
         catch (err) {
             /* istanbul ignore next */
-            send(res, 500, err.message);
+            send(res, 500, { error: err.message });
         }
     });
 
@@ -60,30 +58,21 @@ async function startHTTPServer(dataFilePath, configPort) {
         });
     });
 
-    httpServer.get("/flags", (req, res) => {
-        res.writeHead(200, { "Content-Type": "application/json" });
-
-        res.end(JSON.stringify(FLAGS));
-    });
-
+    httpServer.get("/flags", (req, res) => send(res, 200, FLAGS));
     httpServer.get("/flags/description/:title", (req, res) => {
-        if (flagsTitle.has(req.params.title)) {
-            res.writeHead(200, {
-                "Content-Type": "text/html"
-            });
+        if (!flagsTitle.has(req.params.title)) {
+            return send(res, 404, { error: "Not Found" });
+        }
 
-            const flagDescription = join(__dirname, `../flags/${req.params.title}.html`);
-            pipeline(createReadStream(flagDescription), res, (err) => {
-                /* istanbul ignore next */
-                if (err) {
-                    console.error(err);
-                }
-            });
-        }
-        else {
-            res.writeHead(404);
-            res.end("Not Found");
-        }
+        res.writeHead(200, { "Content-Type": "text/html" });
+        const flagDescription = join(__dirname, `../flags/${req.params.title}.html`);
+
+        return pipeline(createReadStream(flagDescription), res, (err) => {
+            /* istanbul ignore next */
+            if (err) {
+                console.error(err);
+            }
+        });
     });
 
     /* istanbul ignore next */

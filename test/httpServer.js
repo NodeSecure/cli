@@ -48,7 +48,7 @@ test("'/flags' should return the flags list as JSON", async() => {
     const result = await get(new URL("/flags", HTTP_URL));
 
     expect(result.statusCode).toStrictEqual(200);
-    expect(result.headers["content-type"]).toStrictEqual("application/json");
+    expect(result.headers["content-type"]).toStrictEqual("application/json;charset=utf-8");
     expect(result.data).toMatchSnapshot();
 });
 
@@ -68,7 +68,7 @@ test("'/flags/description/foobar' should return a 404 error", async() => {
     }
     catch (error) {
         expect(error.statusCode).toStrictEqual(404);
-        expect(error.data).toStrictEqual("Not Found");
+        expect(error.data.error).toStrictEqual("Not Found");
     }
 });
 
