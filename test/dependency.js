@@ -26,7 +26,7 @@ test("Dependency class should act as expected by assertions", () => {
     expect(dep.hasOutdatedDependency).toStrictEqual(false);
     expect(dep.hasMissingOrUnusedDependency).toStrictEqual(false);
     expect(dep.hasBannedFile).toStrictEqual(false);
-    expect(Reflect.ownKeys(dep)).toHaveLength(7);
+    expect(Reflect.ownKeys(dep)).toHaveLength(5);
 
     const flagOne = dep.flags;
     const flagTwo = dep.flags;

@@ -1,42 +1,38 @@
+/* eslint-disable lines-between-class-members */
 "use strict";
 
 // Require Third-party Dependencies
 const cloneDeep = require("klona");
 
-// Symbols
-const SYM_PARENT = Symbol("symDependencyParent");
-const SYM_FLAGS = Symbol("symDependencyFlags");
-
 class Dependency {
+    gitUrl = null;
+    dependencyCount = 0;
+    warnings = [];
+
+    #parent = null;
+    #flags = Object.preventExtensions({
+        isGit: false,
+        hasManifest: true,
+        isDeprecated: false,
+        hasWarnings: false,
+        hasLicense: false,
+        hasMultipleLicenses: false,
+        hasIndirectDependencies: false,
+        hasMinifiedCode: false,
+        hasCustomResolver: false,
+        hasDependencies: false,
+        hasExternalCapacity: false,
+        hasMissingOrUnusedDependency: false,
+        hasOutdatedDependency: false,
+        hasScript: false,
+        hasBannedFile: false,
+        hasValidIntegrity: true
+    });
+
     constructor(name, version, parent = null) {
         this.name = name;
         this.version = version;
-        this.gitUrl = null;
-        this.dependencyCount = 0;
-        this.warnings = [];
-
-        const flags = {
-            isGit: false,
-            hasManifest: true,
-            isDeprecated: false,
-            hasWarnings: false,
-            hasLicense: false,
-            hasMultipleLicenses: false,
-            hasIndirectDependencies: false,
-            hasMinifiedCode: false,
-            hasCustomResolver: false,
-            hasDependencies: false,
-            hasExternalCapacity: false,
-            hasMissingOrUnusedDependency: false,
-            hasOutdatedDependency: false,
-            hasScript: false,
-            hasBannedFile: false,
-            hasValidIntegrity: true
-        };
-        Object.preventExtensions(flags);
-
-        Object.defineProperty(this, SYM_PARENT, { value: parent, writable: true, configurable: true });
-        Object.defineProperty(this, SYM_FLAGS, { value: flags });
+        this.#parent = parent;
     }
 
     get fullName() {
@@ -44,7 +40,7 @@ class Dependency {
     }
 
     isGit(url) {
-        this[SYM_FLAGS].isGit = true;
+        this.#flags.isGit = true;
         if (typeof url === "string") {
             this.gitUrl = url;
         }
@@ -97,120 +93,120 @@ class Dependency {
     }
 
     get parent() {
-        return this[SYM_PARENT] === null ? null : cloneDeep(this[SYM_PARENT]);
+        return this.#parent === null ? null : cloneDeep(this.#parent);
     }
 
     set parent(value) {
-        this[SYM_PARENT] = value instanceof Dependency ? { name: value.name, version: value.version } : null;
+        this.#parent = value instanceof Dependency ? { name: value.name, version: value.version } : null;
     }
 
     get flags() {
-        return cloneDeep(this[SYM_FLAGS]);
+        return cloneDeep(this.#flags);
     }
 
     get hasWarnings() {
-        return this[SYM_FLAGS].hasWarnings;
+        return this.#flags.hasWarnings;
     }
 
     set hasWarnings(value) {
-        this[SYM_FLAGS].hasWarnings = value;
+        this.#flags.hasWarnings = value;
     }
 
     get hasValidIntegrity() {
-        return this[SYM_FLAGS].hasValidIntegrity;
+        return this.#flags.hasValidIntegrity;
     }
 
     set hasValidIntegrity(value) {
-        this[SYM_FLAGS].hasValidIntegrity = value;
+        this.#flags.hasValidIntegrity = value;
     }
 
 
     get hasBannedFile() {
-        return this[SYM_FLAGS].hasBannedFile;
+        return this.#flags.hasBannedFile;
     }
 
     set hasBannedFile(value) {
-        this[SYM_FLAGS].hasBannedFile = value;
+        this.#flags.hasBannedFile = value;
     }
 
     get hasMissingOrUnusedDependency() {
-        return this[SYM_FLAGS].hasMissingOrUnusedDependency;
+        return this.#flags.hasMissingOrUnusedDependency;
     }
 
     set hasMissingOrUnusedDependency(value) {
-        this[SYM_FLAGS].hasMissingOrUnusedDependency = value;
+        this.#flags.hasMissingOrUnusedDependency = value;
     }
 
     get hasOutdatedDependency() {
-        return this[SYM_FLAGS].hasOutdatedDependency;
+        return this.#flags.hasOutdatedDependency;
     }
 
     set hasOutdatedDependency(value) {
-        this[SYM_FLAGS].hasOutdatedDependency = value;
+        this.#flags.hasOutdatedDependency = value;
     }
 
     get hasManifest() {
-        return this[SYM_FLAGS].hasManifest;
+        return this.#flags.hasManifest;
     }
 
     set hasManifest(value) {
-        this[SYM_FLAGS].hasManifest = value;
+        this.#flags.hasManifest = value;
     }
 
     get isDeprecated() {
-        return this[SYM_FLAGS].isDeprecated;
+        return this.#flags.isDeprecated;
     }
 
     set isDeprecated(value) {
-        this[SYM_FLAGS].isDeprecated = value;
+        this.#flags.isDeprecated = value;
     }
 
     get hasLicense() {
-        return this[SYM_FLAGS].hasLicense;
+        return this.#flags.hasLicense;
     }
 
     set hasLicense(value) {
-        this[SYM_FLAGS].hasLicense = value;
+        this.#flags.hasLicense = value;
     }
 
     get hasIndirectDependencies() {
-        return this[SYM_FLAGS].hasIndirectDependencies;
+        return this.#flags.hasIndirectDependencies;
     }
 
     set hasIndirectDependencies(value) {
-        this[SYM_FLAGS].hasIndirectDependencies = value;
+        this.#flags.hasIndirectDependencies = value;
     }
 
     get hasMinifiedCode() {
-        return this[SYM_FLAGS].hasMinifiedCode;
+        return this.#flags.hasMinifiedCode;
     }
 
     set hasMinifiedCode(value) {
-        this[SYM_FLAGS].hasMinifiedCode = value;
+        this.#flags.hasMinifiedCode = value;
     }
 
     get hasCustomResolver() {
-        return this[SYM_FLAGS].hasCustomResolver;
+        return this.#flags.hasCustomResolver;
     }
 
     set hasCustomResolver(value) {
-        this[SYM_FLAGS].hasCustomResolver = value;
+        this.#flags.hasCustomResolver = value;
     }
 
     get hasScript() {
-        return this[SYM_FLAGS].hasScript;
+        return this.#flags.hasScript;
     }
 
     set hasScript(value) {
-        this[SYM_FLAGS].hasScript = value;
+        this.#flags.hasScript = value;
     }
 
     get hasDependencies() {
-        return this[SYM_FLAGS].hasDependencies;
+        return this.#flags.hasDependencies;
     }
 
     set hasDependencies(value) {
-        this[SYM_FLAGS].hasDependencies = value;
+        this.#flags.hasDependencies = value;
     }
 }
 
