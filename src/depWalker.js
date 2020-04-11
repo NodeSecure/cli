@@ -256,7 +256,7 @@ async function processPackageTarball(name, version, options) {
     }
 }
 
-async function searchPackageAuthors(name, version, options) {
+async function fetchPackageMetadata(name, version, options) {
     const { ref, regEE } = options;
 
     try {
@@ -414,7 +414,7 @@ async function depWalker(manifest, options = Object.create(null)) {
             const current = currentDep.exportAsPlainObject(name === manifest.name ? 0 : void 0);
 
             // Note: These are not very well handled in my opinion (not so much lazy ...).
-            promisesToWait.push(searchPackageAuthors(name, version, { ref: current, regEE }));
+            promisesToWait.push(fetchPackageMetadata(name, version, { ref: current, regEE }));
             promisesToWait.push(processPackageTarball(name, version, {
                 ref: current[version],
                 tmpLocation: forceRootAnalysis && name === manifest.name ? null : tmpLocation,
