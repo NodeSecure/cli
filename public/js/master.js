@@ -2,7 +2,7 @@
 
 import prettyBytes from "pretty-bytes";
 import * as utils from "./utils.js";
-import vis from "vis";
+import { Network, DataSet } from "vis-network/standalone/esm/index.js";
 import SearchBar from "./searchbar.js";
 
 // CONSTANTS (for nodes colors)
@@ -300,11 +300,11 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
 
     // Create required DataSet for the Network Graph
-    const nodes = new vis.DataSet(nodesDataArr);
-    const edges = new vis.DataSet(edgesDataArr);
+    const nodes = new DataSet(nodesDataArr);
+    const edges = new DataSet(edgesDataArr);
 
     // Initialize vis Network
-    const network = new vis.Network(networkElement, { nodes, edges }, networkGraphOptions);
+    const network = new Network(networkElement, { nodes, edges }, networkGraphOptions);
     network.on("stabilizationIterationsDone", () => {
         networkLoaderElement.style.display = "none";
         network.stopSimulation();
