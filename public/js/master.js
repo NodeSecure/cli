@@ -409,6 +409,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 second: "numeric"
             }).format(new Date(metadata.lastUpdateAt));
 
+            const npmHomePageURL = `https://www.npmjs.com/package/${name}/v/${version}`;
             {
                 const licenses = selectedNode.license === "unkown license" ?
                     "unkown license" : selectedNode.license.uniqueLicenseIds.join(", ");
@@ -434,9 +435,15 @@ document.addEventListener("DOMContentLoaded", async() => {
                 // eslint-disable-next-line func-style
                 const warningsModal = () => {
                     toggleModal("popup-warning", (clone) => {
-                        const warningLink = clone.getElementById("warning-link");
-                        warningLink.href = metadata.homepage;
-                        warningLink.textContent = metadata.homepage;
+                        const openLink = (link) => {
+                            return () => window.open(link).focus();
+                        }
+                        const unpkgRootURL = `https://unpkg.com/${name}@${version}/`;
+                        const homePageBtn = clone.getElementById("warning-link-homepage")
+                        homePageBtn.addEventListener("click", openLink(metadata.homepage));
+                        homePageBtn.querySelector("span").textContent = metadata.homepage;
+                        clone.getElementById("warning-link-npm").addEventListener("click", openLink(npmHomePageURL));
+                        clone.getElementById("warning-link-unpkg").addEventListener("click", openLink(unpkgRootURL));
 
                         const tbody = clone.querySelector("#warnings-table tbody");
                         for (const { kind, file, value = null, start, end } of warnings) {
@@ -445,7 +452,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                             line.insertCell(0).appendChild(document.createTextNode(kind));
                             const fileCell = line.insertCell(1);
                             fileCell.addEventListener("click", () => {
-                                window.open(`https://unpkg.com/${name}@${version}/${file}`, "_blank").focus();
+                                window.open(`${unpkgRootURL}${file}`, "_blank").focus();
                             });
                             fileCell.classList.add("clickable");
                             fileCell.appendChild(document.createTextNode(file));
@@ -468,7 +475,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 fieldsFragment.appendChild(utils.createLiField("Author", fAuthor));
                 fieldsFragment.appendChild(utils.createLiField("Size on (local) system", prettyBytes(selectedNode.size)));
                 fieldsFragment.appendChild(utils.createLiField("Homepage", metadata.homepage || "N/A", { isLink: true }));
-                fieldsFragment.appendChild(utils.createLiField("npm page", `https://www.npmjs.com/package/${name}/v/${version}`, { isLink: true }));
+                fieldsFragment.appendChild(utils.createLiField("npm page", npmHomePageURL, { isLink: true }));
                 fieldsFragment.appendChild(utils.createLiField("Last release (version)", metadata.lastVersion));
                 fieldsFragment.appendChild(utils.createLiField("Last release (date)", lastUpdate));
                 fieldsFragment.appendChild(utils.createLiField("Number of published releases", metadata.publishedCount));

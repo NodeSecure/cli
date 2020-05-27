@@ -149,6 +149,7 @@
     font-family: "mononoki";
     font-size: 20px;
 }
+
 .popup-licenses-container div.line {
     display: flex;
     height: 30px;
@@ -161,3 +162,43 @@
 .popup-licenses-container div.line a {
     color: #26C6DA;
 }
+
+.popup-licenses-container .buttons-line {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-left: -5px;
+    margin-top: -5px;
+}
+    .popup-licenses-container .buttons-line .btn {
+        background: #37474F;
+        padding-left: 10px;
+        height: 30px;
+        border-radius: 4px;
+        box-sizing: border-box;
+        border: 1px solid #78909C;
+        margin-left: 5px;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+    }
+    .popup-licenses-container .buttons-line .btn:hover {
+        cursor: pointer;
+        border-color: var(--primary-color);
+    }
+    .popup-licenses-container .buttons-line .btn > p {
+        margin-right: 10px;
+    }
+    .popup-licenses-container .buttons-line .btn > img {
+        height: 20px;
+        margin-right: 10px;
+    }
+    .popup-licenses-container .buttons-line .btn > span {
+        background: rgba(20, 20, 20, 0.25);
+        height: 30px;
+        display: flex;
+        align-items: center;
+        color: #40C4FF;
+        padding: 0 10px;
+    }

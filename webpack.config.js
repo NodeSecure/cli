@@ -54,9 +54,11 @@ module.exports = {
     },
     plugins: [
         new ExtractTextPlugin("main.min.css"),
-        new CopyWebpackPlugin([
-            { from: join(kPublicDir, "img"), to: join(kDistDir, "img") },
-            { from: join(kPublicDir, "favicon.ico"), to: join(kDistDir, "favicon.ico") }
-        ])
+        new CopyWebpackPlugin({
+            patterns: [
+                { from: join(kPublicDir, "img"), to: join(kDistDir, "img") },
+                { from: join(kPublicDir, "favicon.ico"), to: join(kDistDir, "favicon.ico") }
+            ]
+        })
     ]
 };

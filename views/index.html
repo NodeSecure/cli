@@ -212,9 +212,12 @@
 <template id="popup-warning">
     <div class="popup-licenses-container">
         <h1>[[=z.token('popups.warnings.title')]]</h1>
-        <div class="line">
-            <b>[[=z.token('popups.warnings.homepage')]]</b>
-            <a href="" target="_blank" rel="noopener" id="warning-link">[[=z.token('popups.warnings.linkhere')]]</a>
+        <div class="buttons-line">
+            <div class="btn" id="warning-link-homepage">
+                <p>[[=z.token('popups.warnings.homepage')]]</p><span></span>
+            </div>
+            <div class="btn" id="warning-link-npm"><img src="img/npm-icon.svg"><p>package page</p></div>
+            <div class="btn" id="warning-link-unpkg"><p>unpkg root</p></div>
         </div>
         <table id="warnings-table">
             <thead>
