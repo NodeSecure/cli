@@ -147,6 +147,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         for (const [flagName, { title }] of Object.entries(FLAGS)) {
             legendsFlagsFragment.appendChild(utils.createLegend(flagName, title));
         }
+        legendsFlagsFragment.appendChild(utils.createLegend("🎭", "isDuplicate"));
         document.getElementById("flag-legends").appendChild(legendsFlagsFragment);
     });
     document.querySelector(".close-button").addEventListener("click", () => toggleModal());

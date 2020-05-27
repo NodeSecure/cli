@@ -282,10 +282,6 @@ The current package version is not equal to the latest version of the package (t
 
 </details>
 
-## Web UI Emojis
-
-Following emojis are only available in the node-secure UI:
-
 <details><summary>🎭 duplicate</summary>
 <br />
 

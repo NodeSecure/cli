@@ -60,7 +60,7 @@ async function startHTTPServer(dataFilePath, configPort) {
 
     httpServer.get("/flags", (req, res) => send(res, 200, FLAGS));
     httpServer.get("/flags/description/:title", (req, res) => {
-        if (!flagsTitle.has(req.params.title)) {
+        if (req.params.title !== "isDuplicate" && !flagsTitle.has(req.params.title)) {
             return send(res, 404, { error: "Not Found" });
         }
 
