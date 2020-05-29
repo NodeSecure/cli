@@ -102,19 +102,24 @@ table {
     table thead {
         background: rgba(25, 25, 25, 0.25);
     }
-        table thead tr td {
+        table thead tr th {
             font-weight: bold;
             color: #FFF;
+            height: 40px;
+            cursor: pointer;
+            line-height: 40px;
         }
 
     table tr td {
+        height: 30px;
+        line-height: 30px;
+    }
+    table tr td, table tr th {
         font-size: 14px;
         font-family: "mononoki";
         color: #FFF;
         border: 2px solid rgba(55, 71, 79, 0.30);
         text-align: center;
-        height: 40px;
-        line-height: 40px;
         letter-spacing: 0.5px;
         word-wrap: break-word;
         padding: 0 10px;

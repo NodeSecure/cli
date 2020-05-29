@@ -196,12 +196,12 @@
         <table id="licenses-table">
             <thead>
                 <tr>
-                    <td>[[=z.token('popups.licenses.name')]]</td>
-                    <td>osi</td>
-                    <td>fsf</td>
-                    <td>fsfAndOsi</td>
-                    <td>includesDeprecated</td>
-                    <td>[[=z.token('popups.licenses.from')]]</td>
+                    <th>[[=z.token('popups.licenses.name')]]</th>
+                    <th>osi</th>
+                    <th>fsf</th>
+                    <th>fsfAndOsi</th>
+                    <th>includesDeprecated</th>
+                    <th>[[=z.token('popups.licenses.from')]]</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -210,7 +210,7 @@
 </template>
 
 <template id="popup-warning">
-    <div class="popup-licenses-container">
+    <div class="popup-licenses-container" id="warnings-container">
         <h1>[[=z.token('popups.warnings.title')]]</h1>
         <div class="buttons-line">
             <div class="btn" id="warning-link-homepage">
@@ -219,16 +219,21 @@
             <div class="btn" id="warning-link-npm"><img src="img/npm-icon.svg"><p>package page</p></div>
             <div class="btn" id="warning-link-unpkg"><p>unpkg root</p></div>
         </div>
+        <div class="search-line">
+            <i class="icon-search"></i>
+            <input class="search" placeholder="Search" />
+            <button class="sort" data-sort="type" style="margin-left: auto">Sort</button>
+        </div>
         <table id="warnings-table">
             <thead>
                 <tr>
-                    <td>[[=z.token('popups.warnings.type')]]</td>
-                    <td>[[=z.token('popups.warnings.file')]]</td>
-                    <td>[[=z.token('popups.warnings.errorMsg')]]</td>
-                    <td>[[=z.token('popups.warnings.position')]]</td>
+                    <th class="sort" data-sort="type">[[=z.token('popups.warnings.type')]]</th>
+                    <th class="sort" data-sort="file">[[=z.token('popups.warnings.file')]]</th>
+                    <th class="sort" data-sort="msg">[[=z.token('popups.warnings.errorMsg')]]</th>
+                    <th class="sort" data-sort="position">[[=z.token('popups.warnings.position')]]</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody class="list"></tbody>
         </table>
     </div>
 </template>

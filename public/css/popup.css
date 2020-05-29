@@ -150,18 +150,30 @@
     font-size: 20px;
 }
 
-.popup-licenses-container div.line {
+.popup-licenses-container .search-line {
     display: flex;
+    margin-bottom: 5px;
+    border-top: 1px solid #37474F;
+    padding-top: 5px;
     height: 30px;
-    margin-bottom: 10px;
+    flex-shrink: 0;
     align-items: center;
 }
-.popup-licenses-container div.line b {
-    margin-right: 20px;
-}
-.popup-licenses-container div.line a {
-    color: #26C6DA;
-}
+    .popup-licenses-container .search-line i {
+        margin-right: 5px;
+        font-size: 20px;
+    }
+    .popup-licenses-container .search-line input {
+        outline: none;
+        padding: 0 10px;
+        border-radius: 4px;
+        min-width: 30%;
+        border: none;
+        height: 28px;
+    }
+    .popup-licenses-container .search-line button {
+        height: 28px;
+    }
 
 .popup-licenses-container .buttons-line {
     display: flex;

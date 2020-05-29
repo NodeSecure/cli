@@ -75,6 +75,7 @@
     "gravatar-url": "^3.1.0",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
+    "list.js": "^1.5.0",
     "pkg-ok": "^2.3.1",
     "pretty-bytes": "^5.3.0",
     "style-loader": "^1.2.1",

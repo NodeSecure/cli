@@ -1,4 +1,5 @@
 import * as utils from "./utils.js";
+import List from "list.js";
 
 function licenseModal(clone, options) {
     const { licenses, selectedNode } = options;
@@ -35,25 +36,36 @@ function warningModal(clone, options) {
     for (const { kind, file, value = null, start, end } of warnings) {
         const line = tbody.insertRow(0);
 
-        line.insertCell(0).appendChild(document.createTextNode(kind));
+        const kindCell = line.insertCell(0)
+        kindCell.classList.add("type");
+        kindCell.appendChild(document.createTextNode(kind));
+
         const fileCell = line.insertCell(1);
         fileCell.addEventListener("click", () => {
             window.open(`${unpkgRootURL}${file}`, "_blank").focus();
         });
         fileCell.classList.add("clickable");
+        fileCell.classList.add("file");
         fileCell.appendChild(document.createTextNode(file));
 
         const errorCell = line.insertCell(2);
         errorCell.classList.add("highlight");
+        errorCell.classList.add("msg");
         const positionCell = line.insertCell(3);
+        positionCell.classList.add("position");
         if (value !== null) {
             errorCell.classList.add("clickable");
             errorCell.appendChild(document.createTextNode(value));
             errorCell.addEventListener("click", () => utils.copyToClipboard(value));
         }
+
         const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
         positionCell.appendChild(document.createTextNode(position));
     }
+
+    setTimeout(() => {
+        new List("warnings-container", { valueNames: ["type", "file", "msg", "position"] });
+    }, 1);
 }
 
 export function openLicenseModal(options = {}) {
