@@ -6,7 +6,7 @@ const is = require("@slimio/is");
 // Require Internal Dependencies
 const applyWarnings = require("../src/warnings");
 
-test("applyWarnings", () => {
+test("applyWarnings for '@scarf/scarf'", () => {
     const deps = new Map([
         ["@scarf/scarf", true]
     ]);
