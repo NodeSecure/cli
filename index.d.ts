@@ -92,9 +92,7 @@ declare namespace NodeSecure {
         vulnerabilities: Vulnerability[];
         [version: string]: {
             id: number;
-            usedBy: {
-                [packageName: string]: string;
-            };
+            usedBy: Record<string, string>;
             size: number;
             description: string;
             author: string | Author;
@@ -119,9 +117,7 @@ declare namespace NodeSecure {
         id: string;
         rootDependencyName: string;
         warnings: [],
-        dependencies: {
-            [packageName: string]: VersionDescriptor;
-        }
+        dependencies: Record<string, VersionDescriptor>;
     }
 
     interface VerifyPayload {
@@ -134,9 +130,7 @@ declare namespace NodeSecure {
         uniqueLicenseIds: string[];
         licenses: License[];
         ast: {
-            dependencies: {
-                [fileName: string]: Dependencies;
-            };
+            dependencies: Record<string, Dependencies>;
             warnings: Warning[];
         };
     }
@@ -144,6 +138,7 @@ declare namespace NodeSecure {
     interface Options {
         readonly verbose?: boolean;
         readonly maxDepth?: number;
+        readonly usePackageLock?: boolean;
     }
 
     export function cwd(path: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
