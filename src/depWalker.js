@@ -2,7 +2,7 @@
 
 // Require Node.js Dependencies
 const { join, extname, dirname } = require("path");
-const { mkdtemp, readFile, rmdir } = require("fs").promises;
+const { mkdtemp, readFile, rmdir, access } = require("fs").promises;
 const { EventEmitter } = require("events");
 const os = require("os");
 
@@ -337,7 +337,14 @@ async function* getRootDependencies(manifest, options) {
     let iterators = [];
     if (usePackageLock) {
         const arb = new Arborist({ ...token, registry: REGISTRY_DEFAULT_ADDR });
-        const tree = await arb.loadActual();
+        let tree;
+        try {
+            await access(join(process.cwd(), "node_modules"));
+            tree = await arb.loadActual();
+        }
+        catch {
+            tree = await arb.loadVirtual();
+        }
 
         for await (const dep of deepReadEdges(tree.edgesOut, parent)) {
             yield dep;
