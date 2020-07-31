@@ -88,15 +88,11 @@ Object {
       "dependencyCount": 0,
       "hasChangedAuthor": false,
       "hasManyPublishers": false,
-      "hasReceivedUpdateInOneYear": true,
+      "hasReceivedUpdateInOneYear": false,
       "homepage": "https://github.com/SlimIO/is#readme",
       "lastUpdateAt": "2019-06-11T06:41:41.590Z",
       "lastVersion": "1.5.1",
       "maintainers": Array [
-        Object {
-          "email": "maxime.fery@outlook.fr",
-          "name": "rizou",
-        },
         Object {
           "email": "mickael.croquet@laposte.net",
           "name": "mcroquet",
