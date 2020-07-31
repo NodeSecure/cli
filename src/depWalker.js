@@ -27,7 +27,7 @@ const { runASTAnalysis } = require("js-x-ray");
 // Require Internal Dependencies
 const {
     getTarballComposition, mergeDependencies, cleanRange, getRegistryURL,
-    isSensitiveFile, getPackageName, readPackageLock, constants
+    isSensitiveFile, getPackageName, constants
 } = require("./utils");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
 const Dependency = require("./dependency.class");
@@ -297,33 +297,33 @@ async function fetchPackageMetadata(name, version, options) {
     }
 }
 
-async function* deepReadEdges(edges, parent) {
-    for (const [packageName, { to }] of edges) {
-        if (to.dev) {
-            continue;
-        }
-        const { version, integrity = to.integrity } = to.package;
-        parent.dependencyCount++;
+async function* deepReadEdges(currentPackageName, { to, parent, store }) {
+    const { version, integrity = to.integrity } = to.package;
+    parent.dependencyCount++;
 
-        const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${packageName}@${version}`, {
-            ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
-        });
-        const { dependencies, customResolvers } = mergeDependencies(pkg);
-        if (dependencies.size > 0) {
-            parent.hasIndirectDependencies = true;
-        }
-
-        const current = new Dependency(packageName, version, parent);
-        current.hasValidIntegrity = _integrity === integrity;
-        current.isDeprecated = deprecated === true;
-        current.hasDependencies = to.edgesOut.size > 0;
-        current.hasCustomResolver = customResolvers.size > 0;
-
-        if (current.hasDependencies) {
-            yield* deepReadEdges(to.edgesOut, current);
-        }
-        yield current;
+    const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${currentPackageName}@${version}`, {
+        ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
+    });
+    const { dependencies, customResolvers } = mergeDependencies(pkg);
+    if (dependencies.size > 0) {
+        parent.hasIndirectDependencies = true;
     }
+
+    const current = new Dependency(currentPackageName, version, parent);
+    current.hasValidIntegrity = _integrity === integrity;
+    current.isDeprecated = deprecated === true;
+    current.hasDependencies = to.edgesOut.size > 0;
+    current.hasCustomResolver = customResolvers.size > 0;
+
+    for (const [packageName, { to: toNode }] of to.edgesOut) {
+        const fullPackageName = `${packageName}@${to.package.version}`;
+
+        if (!toNode.dev && !store.has(fullPackageName)) {
+            store.add(fullPackageName);
+            yield* deepReadEdges(packageName, { parent: current, to: toNode, store });
+        }
+    }
+    yield current;
 }
 
 async function* getRootDependencies(manifest, options) {
@@ -334,7 +334,7 @@ async function* getRootDependencies(manifest, options) {
     parent.hasCustomResolver = customResolvers.size > 0;
     parent.hasDependencies = dependencies.size > 0;
 
-    let iterators = [];
+    let iterators;
     if (usePackageLock) {
         const arb = new Arborist({ ...token, registry: REGISTRY_DEFAULT_ADDR });
         let tree;
@@ -346,9 +346,9 @@ async function* getRootDependencies(manifest, options) {
             tree = await arb.loadVirtual();
         }
 
-        for await (const dep of deepReadEdges(tree.edgesOut, parent)) {
-            yield dep;
-        }
+        const store = new Set();
+        iterators = iter.filter(tree.edgesOut.entries(), ([, { to }]) => !to.dev)
+            .map(([packageName, { to }]) => deepReadEdges(packageName, { to, parent, store }));
     }
     else {
         const configRef = { exclude, maxDepth, parent };
@@ -357,9 +357,9 @@ async function* getRootDependencies(manifest, options) {
                 .map(([depName, valueStr]) => searchDeepDependencies(depName, valueStr.slice(4), configRef)),
             ...iter.map(dependencies.entries(), ([name, ver]) => searchDeepDependencies(`${name}@${ver}`, void 0, configRef))
         ];
-        for await (const dep of combineAsyncIterators(...iterators)) {
-            yield dep;
-        }
+    }
+    for await (const dep of combineAsyncIterators(...iterators)) {
+        yield dep;
     }
 
     // Add root dependencies to the exclude Map (because the parent is not handled by searchDeepDependencies)
@@ -421,7 +421,6 @@ async function depWalker(manifest, options = Object.create(null)) {
         });
 
         for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude, usePackageLock })) {
-            allDependencyCount++;
             const { name, version } = currentDep;
             const current = currentDep.exportAsPlainObject(name === manifest.name ? 0 : void 0);
 
@@ -444,6 +443,7 @@ async function depWalker(manifest, options = Object.create(null)) {
                 }
             }
             else {
+                allDependencyCount++;
                 payload.dependencies.set(name, current);
             }
         }
@@ -464,19 +464,6 @@ async function depWalker(manifest, options = Object.create(null)) {
 
     // Search for vulnerabilities in the local .json db
     await hydrateNodeSecurePayload(payload.dependencies);
-
-    // In case we walk with the package-lock we need to re-create all link between dependencies
-    // We need to do it here because the package-lock is not ordered
-    if (usePackageLock) {
-        for await (const [depName, infos] of readPackageLock()) {
-            for (const [name, range] of Object.entries(infos.requires || {})) {
-                const currDep = payload.dependencies.get(name);
-                currDep.versions
-                    .filter((version) => semver.satisfies(version, range))
-                    .forEach((version) => (currDep[version].usedBy[depName] = infos.version));
-            }
-        }
-    }
 
     // We do this because it "seem" impossible to link all dependencies in the first walk.
     // Because we are dealing with package only one time it may happen sometimes.
