@@ -336,7 +336,7 @@ async function* getRootDependencies(manifest, options) {
 
     let iterators = [];
     if (usePackageLock) {
-        const arb = new Arborist();
+        const arb = new Arborist({ ...token, registry: REGISTRY_DEFAULT_ADDR });
         const tree = await arb.loadActual();
 
         for await (const dep of deepReadEdges(tree.edgesOut, parent)) {
