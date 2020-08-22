@@ -1,4 +1,6 @@
 # node-secure
+[![Security Responsible Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md
+)
 ![ver](https://img.shields.io/github/package-json/v/ES-Community/node-secure?style=flat-square)
 ![license](https://img.shields.io/github/license/ES-Community/node-secure?style=flat-square)
 [![build status][travis-image]][travis-url]
