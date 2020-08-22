@@ -80,6 +80,7 @@ prog
     .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
     .option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result")
     .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
+    .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
     .action(cwdCmd);
 
 prog
@@ -279,10 +280,10 @@ async function autoCmd(packageName, opts) {
 }
 
 async function cwdCmd(opts) {
-    const { depth: maxDepth = 4, output, nolock } = opts;
+    const { depth: maxDepth = 4, output, nolock, full } = opts;
 
     await checkHydrateDB();
-    const payload = await cwd(void 0, { verbose: true, maxDepth, usePackageLock: !nolock });
+    const payload = await cwd(void 0, { verbose: true, maxDepth, usePackageLock: !nolock, fullLockMode: full });
 
     return logAndWrite(payload, output);
 }

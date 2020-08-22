@@ -22,7 +22,8 @@ module.exports = {
             },
             cwd: {
                 desc: "Run security analysis on the current working dir",
-                option_nolock: "disable usage of package-lock.json"
+                option_nolock: "disable usage of package-lock.json",
+                option_full: "enable full analysis of packages in the package-lock.json file"
             },
             from: {
                 desc: "Run security analysis on a given package from npm registry",

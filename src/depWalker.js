@@ -250,7 +250,8 @@ async function processPackageTarball(name, version, options) {
 }
 
 async function fetchPackageMetadata(name, version, options) {
-    const { ref, regEE } = options;
+    const { ref, metadataLocker } = options;
+    const free = await metadataLocker.acquireOne();
 
     try {
         const publishers = new Set();
@@ -293,32 +294,38 @@ async function fetchPackageMetadata(name, version, options) {
         // Ignore
     }
     finally {
-        regEE.emit("done");
+        free();
     }
 }
 
-async function* deepReadEdges(currentPackageName, { to, parent, store }) {
+async function* deepReadEdges(currentPackageName, { to, parent, store, fullLockMode }) {
     const { version, integrity = to.integrity } = to.package;
     parent.dependencyCount++;
 
-    const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${currentPackageName}@${version}`, {
-        ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
-    });
-    const { dependencies, customResolvers } = mergeDependencies(pkg);
-    if (dependencies.size > 0) {
+    const current = new Dependency(currentPackageName, version, parent);
+    if (fullLockMode) {
+        const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${currentPackageName}@${version}`, {
+            ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
+        });
+        const { customResolvers } = mergeDependencies(pkg);
+
+        current.hasValidIntegrity = _integrity === integrity;
+        current.isDeprecated = deprecated === true;
+        current.hasCustomResolver = customResolvers.size > 0;
+    }
+
+    current.hasDependencies = to.edgesOut.size > 0;
+    if (current.hasDependencies) {
         parent.hasIndirectDependencies = true;
     }
 
-    const current = new Dependency(currentPackageName, version, parent);
-    current.hasValidIntegrity = _integrity === integrity;
-    current.isDeprecated = deprecated === true;
-    current.hasDependencies = to.edgesOut.size > 0;
-    current.hasCustomResolver = customResolvers.size > 0;
-
     for (const [packageName, { to: toNode }] of to.edgesOut) {
+        if (toNode.dev) {
+            continue;
+        }
         const fullPackageName = `${packageName}@${to.package.version}`;
 
-        if (!toNode.dev && !store.has(fullPackageName)) {
+        if (!store.has(fullPackageName)) {
             store.add(fullPackageName);
             yield* deepReadEdges(packageName, { parent: current, to: toNode, store });
         }
@@ -327,7 +334,7 @@ async function* deepReadEdges(currentPackageName, { to, parent, store }) {
 }
 
 async function* getRootDependencies(manifest, options) {
-    const { maxDepth = 4, exclude, usePackageLock } = options;
+    const { maxDepth = 4, exclude, usePackageLock, fullLockMode } = options;
 
     const { dependencies, customResolvers } = mergeDependencies(manifest, void 0);
     const parent = new Dependency(manifest.name, manifest.version);
@@ -348,7 +355,7 @@ async function* getRootDependencies(manifest, options) {
 
         const store = new Set();
         iterators = iter.filter(tree.edgesOut.entries(), ([, { to }]) => !to.dev)
-            .map(([packageName, { to }]) => deepReadEdges(packageName, { to, parent, store }));
+            .map(([packageName, { to }]) => deepReadEdges(packageName, { to, parent, fullLockMode, store }));
     }
     else {
         const configRef = { exclude, maxDepth, parent };
@@ -378,7 +385,7 @@ async function* getRootDependencies(manifest, options) {
 }
 
 async function depWalker(manifest, options = Object.create(null)) {
-    const { verbose = true, forceRootAnalysis = false, usePackageLock = false } = options;
+    const { verbose = true, forceRootAnalysis = false, usePackageLock = false, fullLockMode = false } = options;
 
     // Create TMP directory
     const tmpLocation = await mkdtemp(join(os.tmpdir(), "/"));
@@ -408,8 +415,8 @@ async function depWalker(manifest, options = Object.create(null)) {
         const promisesToWait = [];
 
         const tarballLocker = new Lock({ maxConcurrent: 5 });
-        const regEE = new EventEmitter();
-        regEE.on("done", () => {
+        const metadataLocker = new Lock({ maxConcurrent: 10 });
+        metadataLocker.on("freeOne", () => {
             processedRegistryCount++;
             const stats = gray().bold(`[${yellow().bold(processedRegistryCount)}/${allDependencyCount}]`);
             regSpinner.text = white().bold(`${i18n.getToken("depWalker.fetch_metadata")} ${stats}`);
@@ -420,31 +427,37 @@ async function depWalker(manifest, options = Object.create(null)) {
             tarballSpinner.text = white().bold(`${i18n.getToken("depWalker.analyzed_tarball")} ${stats}`);
         });
 
-        for await (const currentDep of getRootDependencies(manifest, { maxDepth: options.maxDepth, exclude, usePackageLock })) {
+        const rootDepsOptions = { maxDepth: options.maxDepth, exclude, usePackageLock, fullLockMode };
+        for await (const currentDep of getRootDependencies(manifest, rootDepsOptions)) {
             const { name, version } = currentDep;
             const current = currentDep.exportAsPlainObject(name === manifest.name ? 0 : void 0);
-
-            // Note: These are not very well handled in my opinion (not so much lazy ...).
-            promisesToWait.push(fetchPackageMetadata(name, version, { ref: current, regEE }));
-            promisesToWait.push(processPackageTarball(name, version, {
-                ref: current[version],
-                tmpLocation: forceRootAnalysis && name === manifest.name ? null : tmpLocation,
-                tarballLocker
-            }));
+            let processDep = true;
 
             if (payload.dependencies.has(name)) {
                 // TODO: how to handle different metadata ?
                 const dep = payload.dependencies.get(name);
 
                 const currVersion = current.versions[0];
-                if (!Reflect.has(dep, currVersion)) {
+                if (Reflect.has(dep, currVersion)) {
+                    processDep = false;
+                }
+                else {
                     dep[currVersion] = current[currVersion];
                     dep.versions.push(currVersion);
                 }
             }
             else {
-                allDependencyCount++;
                 payload.dependencies.set(name, current);
+            }
+
+            if (processDep) {
+                allDependencyCount++;
+                promisesToWait.push(fetchPackageMetadata(name, version, { ref: current, metadataLocker }));
+                promisesToWait.push(processPackageTarball(name, version, {
+                    ref: current[version],
+                    tmpLocation: forceRootAnalysis && name === manifest.name ? null : tmpLocation,
+                    tarballLocker
+                }));
             }
         }
 

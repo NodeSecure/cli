@@ -22,7 +22,8 @@ module.exports = {
             },
             cwd: {
                 desc: "Démarre une analyse de sécurité sur le cwd",
-                option_nolock: "déactivation de l'utilisation du package-lock.json"
+                option_nolock: "déactivation de l'utilisation du package-lock.json",
+                option_full: "active l'analyse complète des packages présent dans le package-lock.json"
             },
             from: {
                 desc: "Démarre une analyse de sécurité sur un package donné du registre npm",
