@@ -79,7 +79,7 @@
     "pkg-ok": "^2.3.1",
     "pretty-bytes": "^5.3.0",
     "style-loader": "^1.2.1",
-    "vis-network": "^7.10.2",
+    "vis-network": "^8.2.0",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   },
