@@ -192,10 +192,7 @@ async function processPackageTarball(name, version, options) {
             }
             catch (err) {
                 if (!Reflect.has(err, "code")) {
-                    ref.warnings.push({
-                        file, kind: "ast-error", value: err.message,
-                        start: { line: 0, column: 0 }, end: { line: 0, column: 0 }
-                    });
+                    ref.warnings.push({ file, kind: "parsing-error", value: err.message, location: [[0, 0], [0, 0]] });
                     ref.flags.hasWarnings = true;
                 }
             }

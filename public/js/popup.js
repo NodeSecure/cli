@@ -19,6 +19,13 @@ function licenseModal(clone, options) {
     }
 }
 
+function locationToString(location) {
+    const start = `${location[0][0]}:${location[0][1]}`;
+    const end = `${location[1][0]}:${location[1][1]}`;
+
+    return `[${start}] - [${end}]`;
+}
+
 function warningModal(clone, options) {
     const { name, version, npmHomePageURL, homepage, warnings } = options;
 
@@ -33,7 +40,7 @@ function warningModal(clone, options) {
     clone.getElementById("warning-link-unpkg").addEventListener("click", openLink(unpkgRootURL));
 
     const tbody = clone.querySelector("#warnings-table tbody");
-    for (const { kind, file, value = null, start, end } of warnings) {
+    for (const { kind, file, value = null, location } of warnings) {
         const line = tbody.insertRow(0);
 
         const kindCell = line.insertCell(0)
@@ -59,8 +66,13 @@ function warningModal(clone, options) {
             errorCell.addEventListener("click", () => utils.copyToClipboard(value));
         }
 
-        const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
-        positionCell.appendChild(document.createTextNode(position));
+        if (kind === "encoded-literal") {
+            const text = location.map((loc) => locationToString(loc)).join(" // ");
+            positionCell.appendChild(document.createTextNode(text));
+        }
+        else {
+            positionCell.appendChild(document.createTextNode(locationToString(location)));
+        }
     }
 
     setTimeout(() => {
