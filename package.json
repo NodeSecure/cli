@@ -102,7 +102,7 @@
     "itertools": "^1.6.0",
     "js-x-ray": "^1.7.0",
     "kleur": "^4.0.2",
-    "klona": "^1.1.1",
+    "klona": "^2.0.3",
     "lodash.difference": "^4.5.0",
     "lodash.get": "^4.4.2",
     "make-promises-safe": "^5.1.0",
