@@ -3,7 +3,6 @@
 // Require Node.js Dependencies
 const { join, extname, dirname } = require("path");
 const { mkdtemp, readFile, rmdir, access } = require("fs").promises;
-const { EventEmitter } = require("events");
 const os = require("os");
 
 // Require Third-party Dependencies

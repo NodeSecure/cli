@@ -2,7 +2,7 @@
 "use strict";
 
 // Require Third-party Dependencies
-const cloneDeep = require("klona");
+const { klona } = require("klona");
 
 class Dependency {
     gitUrl = null;
@@ -93,7 +93,7 @@ class Dependency {
     }
 
     get parent() {
-        return this.#parent === null ? null : cloneDeep(this.#parent);
+        return this.#parent === null ? null : klona(this.#parent);
     }
 
     set parent(value) {
@@ -101,7 +101,7 @@ class Dependency {
     }
 
     get flags() {
-        return cloneDeep(this.#flags);
+        return klona(this.#flags);
     }
 
     get hasWarnings() {
