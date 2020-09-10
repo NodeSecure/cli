@@ -36,7 +36,8 @@ const ONE_DAY = 3600000 * 24;
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
 // Process script arguments
-const prog = sade("nsecure").version("0.4.0");
+const version = require("../package.json").version;
+const prog = sade("nsecure").version(version);
 console.log(grey().bold(`\n > ${i18n.getToken("cli.executing_at")}: ${yellow().bold(process.cwd())}\n`));
 
 const currNodeSemVer = process.versions.node;
