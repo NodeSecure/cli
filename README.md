@@ -1,32 +1,44 @@
-# node-secure
-[![Security Responsible Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md
-)
-![ver](https://img.shields.io/github/package-json/v/ES-Community/node-secure?style=flat-square)
-![license](https://img.shields.io/github/license/ES-Community/node-secure?style=flat-square)
-[![build status][travis-image]][travis-url]
-[![Test coverage][codecov-image]][codecov-url]
-![dep](https://img.shields.io/david/ES-Community/node-secure?style=flat-square)
-![size](https://img.shields.io/bundlephobia/min/nsecure?style=flat-square)
-![download](https://img.shields.io/npm/dw/nsecure?style=flat-square)<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section --> [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+<p align="center"><h1 align="center">
+  🐢 Node-Secure 🚀
+</h1>
 
-[Node.js](https://nodejs.org/en/) security Command Line Interface. The goal of the project is to a design a CLI/API that will fetch and deeply analyze the dependency tree of a given **npm** package (Or a local project with a **package.json**) and output a **.json file** that will contains all metadata and flags about each packages.
+<p align="center">
+  a Node.js CLI to deeply analyze the dependency tree of a given package / directory
+</p>
 
-The CLI allow to load the JSON into a Webpage with the **open** command. The page will draw a Network of all dependencies with [vis.js](https://visjs.org/) (example in the screenshot below).
-
-- [NodeSecure G.Drive Design document](https://docs.google.com/document/d/1853Uwup9mityAYqAOnen1KSqSA6hlBgpKU0u0ygGY4Y/edit?usp=sharing)
+<p align="center">
+    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/package-json/v/ES-Community/node-secure?style=flat-square" alt="npm version"></a>
+    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/license/ES-Community/node-secure?style=flat-square" alt="license"></a>
+    <a href="https://travis-ci.com/ES-Community/node-secure"><img src="https://img.shields.io/travis/com/ES-Community/node-secure/master.svg?style=flat-square" alt="travis"></a>
+    <a href="https://codecov.io/github/ES-Community/node-secure"><img src="https://img.shields.io/codecov/c/github/ES-Community/node-secure.svg?style=flat-square" alt="codecov"></a>
+    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/david/ES-Community/node-secure?style=flat-square" alt="dependencies"></a>
+    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/bundlephobia/min/nsecure?style=flat-square" alt="size"></a>
+    <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg?style=flat-square" alt="Responsible Disclosure Policy" /></a>
+    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/npm/dw/nsecure?style=flat-square" alt="downloads"></a>
+    <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square" alt="all-contributors"></a>
+    <!-- ALL-CONTRIBUTORS-BADGE:END -->
+</p>
 
 <p align="center">
 <img src="https://i.imgur.com/3xnTGBl.png">
 </p>
+
+## About
+
+[Node.js](https://nodejs.org/en/) security Command Line Interface. The goal of the project is to a design a CLI/API that will fetch and deeply analyze the dependency tree of a given **npm** package (Or a local project with a **package.json**) and output a **.json file** that will contains all metadata and flags about each packages. All this data will allow to quickly identify different issues across projects and packages (related to security and quality).
+
+The CLI allow to load the JSON into a Webpage with the **open** command. The page will draw a Network of all dependencies with [vis.js](https://visjs.org/) (example in the screenshot above). We also wrote a little Google drive document a while ago that summarizes some of these points:
+
+- [NodeSecure G.Drive Design document](https://docs.google.com/document/d/1853Uwup9mityAYqAOnen1KSqSA6hlBgpKU0u0ygGY4Y/edit?usp=sharing)
 
 ## Features
 
 - Run an AST analysis on each .js/.mjs file in the packages tarball and sort out warnings (unsafe-regex, unsafe-import etc) and the complete list of required expr and statements (files, node.js module, etc.).
 - Return complete composition for each packages (extensions, files, tarball size, etc).
 - Packages metadata from the npm registry API (number of releases, last publish date, maintainers etc).
-- Search for licenses files in the tarball and return the SPDX expression conformance of each detected licenses.
-- Link vulnerabilities from the Security-WG repositories to the package version node.
+- Search for licenses files in the tarball and return the [SPDX](https://spdx.org/licenses/) expression conformance of each detected licenses.
+- Link vulnerabilities from the [Security-WG repository](https://github.com/nodejs/security-wg/tree/master/vuln/npm) to the package version node.
 - Add flags to each packages versions to identify well known patterns and potential security threats easily.
 - Analyze npm packages and local Node.js projects.
 
@@ -202,8 +214,3 @@ We have created [a trello](https://trello.com/b/IY6lQ1A1/node-secure) so that we
 
 ## License
 MIT
-
-[travis-image]: https://img.shields.io/travis/com/ES-Community/node-secure/master.svg?style=flat-square
-[travis-url]: https://travis-ci.com/ES-Community/node-secure
-[codecov-image]: https://img.shields.io/codecov/c/github/ES-Community/node-secure.svg?style=flat-square
-[codecov-url]: https://codecov.io/github/ES-Community/node-secure
