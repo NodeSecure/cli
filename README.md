@@ -158,6 +158,7 @@ Since version 0.6.0 of Node-secure the UI include a brand new searchbar that all
 - author (author name/email/url).
 - ext (list of available file extensions in the current payload/tree).
 - builtin (available Node.js core module name).
+- size
 
 Exemple of query:
 

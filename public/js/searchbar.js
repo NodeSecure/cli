@@ -2,9 +2,10 @@
 
 import { createDOMElement } from "./utils.js";
 import semver from "semver";
+import sizeSatisfies from "size-satisfies";
 
 // CONSTANTS
-const kFiltersName = new Set(["package", "version", "flag", "license", "author", "ext", "builtin"]);
+const kFiltersName = new Set(["package", "version", "flag", "license", "author", "ext", "builtin", "size"]);
 const kHelpersTitleName = {
     ext: "File extensions",
     builtin: "Node.js core modules",
@@ -322,6 +323,13 @@ export default class SearchBar {
                     const extensions = new Set(opt.composition.extensions);
                     const wantedExtension = inputValue.startsWith(".") ? inputValue : `.${inputValue}`;
                     if (extensions.has(wantedExtension.toLowerCase())) {
+                        matchingIds.add(String(id));
+                    }
+
+                    break;
+                }
+                case "size": {
+                    if (sizeSatisfies(inputValue, opt.size)) {
                         matchingIds.add(String(id));
                     }
 
