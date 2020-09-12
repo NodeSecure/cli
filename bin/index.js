@@ -104,7 +104,7 @@ prog
     .action(httpCmd);
 
 prog
-    .command("verify <package>")
+    .command("verify [package]")
     .describe(i18n.getToken("cli.commands.verify.desc"))
     .option("-j, --json", i18n.getToken("cli.commands.verify.option_json"), false)
     .action(verifyCmd);
@@ -142,7 +142,7 @@ function locationToString(location) {
     return `[${start}] - [${end}]`;
 }
 
-async function verifyCmd(packageName, options) {
+async function verifyCmd(packageName = null, options) {
     const payload = await verify(packageName);
     if (options.json) {
         return console.log(JSON.stringify(payload, null, 2));

@@ -48,43 +48,39 @@ async function readJSFile(dest, file) {
     return [file, str];
 }
 
-async function verify(packageName) {
-    const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
-    const tmpLocation = await mkdtemp(join(TMP, "/"));
-    const dest = join(tmpLocation, packageName);
-
-    try {
-        await pacote.extract(packageName, dest, {
-            ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
-        });
-
-        // Read the package.json file inside the extracted directory.
-        let isProjectUsingESM = false;
-        {
-            const packageStr = await readFile(join(dest, "package.json"), "utf-8");
-            const { type = "script" } = JSON.parse(packageStr);
-            isProjectUsingESM = type === "module";
+async function analyseGivenLocation(dest, packageName) {
+    // Read the package.json file inside the extracted directory.
+    let isProjectUsingESM = false;
+    let localPackageName = packageName;
+    {
+        const packageStr = await readFile(join(dest, "package.json"), "utf-8");
+        const { type = "script", name } = JSON.parse(packageStr);
+        isProjectUsingESM = type === "module";
+        if (localPackageName === null) {
+            localPackageName = name;
         }
+    }
 
-        // Get the tarball composition
-        await nextTick();
-        const { ext, files, size } = await getTarballComposition(dest);
+    // Get the tarball composition
+    await nextTick();
+    const { ext, files, size } = await getTarballComposition(dest);
 
-        // Search for runtime dependencies
-        const dependencies = Object.create(null);
-        const minified = [];
-        const warnings = [];
+    // Search for runtime dependencies
+    const dependencies = Object.create(null);
+    const minified = [];
+    const warnings = [];
 
-        const JSFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));
-        const allFilesContent = (await Promise.allSettled(JSFiles.map((file) => readJSFile(dest, file))))
-            .filter((_p) => _p.status === "fulfilled").map((_p) => _p.value);
+    const JSFiles = files.filter((name) => JS_EXTENSIONS.has(extname(name)));
+    const allFilesContent = (await Promise.allSettled(JSFiles.map((file) => readJSFile(dest, file))))
+        .filter((_p) => _p.status === "fulfilled").map((_p) => _p.value);
 
-        // TODO: 2) handle dependency by file to not loose data.
-        for (const [file, str] of allFilesContent) {
+    // TODO: 2) handle dependency by file to not loose data.
+    for (const [file, str] of allFilesContent) {
+        try {
             const ASTAnalysis = runASTAnalysis(str, {
                 module: extname(file) === ".mjs" ? true : isProjectUsingESM
             });
-            ASTAnalysis.dependencies.removeByName(packageName);
+            ASTAnalysis.dependencies.removeByName(localPackageName);
             dependencies[file] = ASTAnalysis.dependencies.dependencies;
             warnings.push(...ASTAnalysis.warnings.map((warn) => {
                 warn.file = file;
@@ -96,18 +92,44 @@ async function verify(packageName) {
                 minified.push(file);
             }
         }
+        catch (err) {
+            if (!Reflect.has(err, "code")) {
+                warnings.push({ file, kind: "parsing-error", value: err.message, location: [[0, 0], [0, 0]] });
+            }
+        }
+    }
 
-        await nextTick();
-        const { uniqueLicenseIds, licenses } = await ntlp(dest);
-        ext.delete("");
+    await nextTick();
+    const { uniqueLicenseIds, licenses } = await ntlp(dest);
+    ext.delete("");
 
-        return {
-            files: { list: files, extensions: [...ext], minified },
-            directorySize: size,
-            uniqueLicenseIds,
-            licenses,
-            ast: { dependencies, warnings }
-        };
+    return {
+        files: { list: files, extensions: [...ext], minified },
+        directorySize: size,
+        uniqueLicenseIds,
+        licenses,
+        ast: { dependencies, warnings }
+    };
+}
+
+async function verify(packageName = null) {
+    if (typeof packageName === "undefined" || packageName === null) {
+        const analysisPayload = await analyseGivenLocation(process.cwd());
+
+        return analysisPayload;
+    }
+
+    const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
+    const tmpLocation = await mkdtemp(join(TMP, "/"));
+    const dest = join(tmpLocation, packageName);
+
+    try {
+        await pacote.extract(packageName, dest, {
+            ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
+        });
+        const analysisPayload = await analyseGivenLocation(dest, packageName);
+
+        return analysisPayload;
     }
     finally {
         await nextTick();
