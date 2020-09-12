@@ -135,6 +135,13 @@ prog
 
 prog.parse(process.argv);
 
+function locationToString(location) {
+    const start = `${location[0][0]}:${location[0][1]}`;
+    const end = `${location[1][0]}:${location[1][1]}`;
+
+    return `[${start}] - [${end}]`;
+}
+
 async function verifyCmd(packageName, options) {
     const payload = await verify(packageName);
     if (options.json) {
@@ -215,9 +222,11 @@ async function verifyCmd(packageName, options) {
         { text: white().bold("kind"), width: 15, align: "center" },
         { text: white().bold("source location"), width: 25, align: "center" }
     );
+
     for (const warning of ast.warnings) {
-        const { start, end } = warning;
-        const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
+        const position = warning.kind === "encoded-literal" ?
+            warning.location.map((loc) => locationToString(loc)).join(" // ") :
+            locationToString(warning.location);
 
         ui.div(
             { text: warning.file || grey().bold("NONE"), width: 30 },
@@ -230,6 +239,7 @@ async function verifyCmd(packageName, options) {
         }
         ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
     }
+
     console.log(`${ui.toString()}`);
     ui.resetOutput();
 
