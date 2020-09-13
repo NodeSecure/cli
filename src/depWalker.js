@@ -294,7 +294,7 @@ async function fetchPackageMetadata(name, version, options) {
     }
 }
 
-async function* deepReadEdges(currentPackageName, { to, parent, store, fullLockMode }) {
+async function* deepReadEdges(currentPackageName, { to, parent, exclude, fullLockMode }) {
     const { version, integrity = to.integrity } = to.package;
     parent.dependencyCount++;
 
@@ -319,11 +319,14 @@ async function* deepReadEdges(currentPackageName, { to, parent, store, fullLockM
         if (toNode.dev) {
             continue;
         }
-        const fullPackageName = `${packageName}@${to.package.version}`;
+        const cleanName = `${packageName}@${toNode.package.version}`;
 
-        if (!store.has(fullPackageName)) {
-            store.add(fullPackageName);
-            yield* deepReadEdges(packageName, { parent: current, to: toNode, store });
+        if (exclude.has(cleanName)) {
+            exclude.get(cleanName).add(current.fullName);
+        }
+        else {
+            exclude.set(cleanName, new Set([current.fullName]));
+            yield* deepReadEdges(packageName, { parent: current, to: toNode, exclude });
         }
     }
     yield current;
@@ -349,9 +352,8 @@ async function* getRootDependencies(manifest, options) {
             tree = await arb.loadVirtual();
         }
 
-        const store = new Set();
         iterators = iter.filter(tree.edgesOut.entries(), ([, { to }]) => !to.dev)
-            .map(([packageName, { to }]) => deepReadEdges(packageName, { to, parent, fullLockMode, store }));
+            .map(([packageName, { to }]) => deepReadEdges(packageName, { to, parent, fullLockMode, exclude }));
     }
     else {
         const configRef = { exclude, maxDepth, parent };
