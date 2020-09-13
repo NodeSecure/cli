@@ -32,7 +32,24 @@
     "type": "git",
     "url": "git+https://github.com/ES-Community/node-secure.git"
   },
-  "keywords": [],
+  "keywords": [
+    "node",
+    "nodejs",
+    "security",
+    "cli",
+    "sast",
+    "scanner",
+    "static",
+    "code",
+    "analysis",
+    "node_modules",
+    "tree",
+    "npm",
+    "registry",
+    "graph",
+    "visualization",
+    "dependencies"
+  ],
   "author": "ES Community",
   "license": "MIT",
   "bugs": {
