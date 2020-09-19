@@ -152,6 +152,10 @@ table {
         max-width: 600px;
         right: 100px;
         bottom: 40px;
-        background: #B0BEC5;
+        background: #212121;
+        border: 1px solid #424242;
+        color: #E1F5FE;
         padding: 10px;
+        border-radius: 4px;
+        text-align: left;
     }

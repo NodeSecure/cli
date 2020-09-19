@@ -33,22 +33,15 @@ function getLineFromFile(code, location) {
     return lines[startLine - 1];
 }
 
-async function fetchCodeLine(event, name, version, file, location) {
+async function fetchCodeLine(event, url, location, cache) {
     const [target] = event.srcElement.getElementsByClassName('tooltip')
     target.innerText = "Loading ...";
 
-    const response = await fetch(`https://unpkg.com//${name}@${version}/${file}`);
-    const reader = await response.body.getReader();
-    let code = '';
-
-    while (true) {
-        const { value, done } = await reader.read();
-        if (done) {
-            break;
-        }
-        code += new TextDecoder("utf-8").decode(value);
+    const code = cache.get(url) || await fetch(url).then((response) => response.text());
+    
+    if (!cache.has(url)) {
+        cache.set(url, code);
     }
-    // TODO: we should cache each request
 
     if (code.length) {
         target.innerText = getLineFromFile(code, location);
@@ -59,6 +52,7 @@ async function fetchCodeLine(event, name, version, file, location) {
 
 function warningModal(clone, options) {
     const { name, version, npmHomePageURL, homepage, warnings } = options;
+    const cache = new Map();
 
     const openLink = (link) => {
         return () => window.open(link).focus();
@@ -73,6 +67,7 @@ function warningModal(clone, options) {
     const tbody = clone.querySelector("#warnings-table tbody");
     for (const { kind, file, value = null, location } of warnings) {
         const line = tbody.insertRow(0);
+        const unpkgFile = `${unpkgRootURL}${file}`;
 
         const kindCell = line.insertCell(0)
         kindCell.classList.add("type");
@@ -80,7 +75,7 @@ function warningModal(clone, options) {
 
         const fileCell = line.insertCell(1);
         fileCell.addEventListener("click", () => {
-            window.open(`${unpkgRootURL}${file}`, "_blank").focus();
+            window.open(unpkgFile, "_blank").focus();
         });
         fileCell.classList.add("clickable");
         fileCell.classList.add("file");
@@ -92,7 +87,9 @@ function warningModal(clone, options) {
 
         const positionCell = line.insertCell(3);
         positionCell.classList.add("position");
-        positionCell.addEventListener("mouseenter", (event) => fetchCodeLine(event, name, version, file, location))
+        if (kind !== "short-identifiers" && kind !== "obfuscated-code") {
+            positionCell.addEventListener("mouseenter", (event) => fetchCodeLine(event, unpkgFile, location, cache))
+        }
 
         if (value !== null) {
             errorCell.classList.add("clickable");
