@@ -138,3 +138,20 @@ table {
         font-weight: bold;
         font-family: "Roboto";
     }
+    table tr td.position {
+        cursor: pointer;
+    }
+    table tr td.position:hover .tooltip {
+        visibility: visible;
+    }
+    table tr td.position .tooltip {
+        visibility: hidden;
+        position: absolute;
+        z-index: 1;
+        min-width: 120px;
+        max-width: 600px;
+        right: 100px;
+        bottom: 40px;
+        background: #B0BEC5;
+        padding: 10px;
+    }

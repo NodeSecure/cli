@@ -26,6 +26,37 @@ function locationToString(location) {
     return `[${start}] - [${end}]`;
 }
 
+function getLineFromFile(code, location) {
+    const [[startLine]] = location;
+    const lines = code.split('\n');
+
+    return lines[startLine - 1];
+}
+
+async function fetchCodeLine(event, name, version, file, location) {
+    const [target] = event.srcElement.getElementsByClassName('tooltip')
+    target.innerText = "Loading ...";
+
+    const response = await fetch(`https://unpkg.com//${name}@${version}/${file}`);
+    const reader = await response.body.getReader();
+    let code = '';
+
+    while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+            break;
+        }
+        code += new TextDecoder("utf-8").decode(value);
+    }
+    // TODO: we should cache each request
+
+    if (code.length) {
+        target.innerText = getLineFromFile(code, location);
+    } else {
+        target.innerText = "Line not found ...";
+    }
+}
+
 function warningModal(clone, options) {
     const { name, version, npmHomePageURL, homepage, warnings } = options;
 
@@ -58,13 +89,19 @@ function warningModal(clone, options) {
         const errorCell = line.insertCell(2);
         errorCell.classList.add("highlight");
         errorCell.classList.add("msg");
+
         const positionCell = line.insertCell(3);
         positionCell.classList.add("position");
+        positionCell.addEventListener("mouseenter", (event) => fetchCodeLine(event, name, version, file, location))
+
         if (value !== null) {
             errorCell.classList.add("clickable");
             errorCell.appendChild(document.createTextNode(value));
             errorCell.addEventListener("click", () => utils.copyToClipboard(value));
         }
+
+        const tooltip = utils.createDOMElement('div');
+        tooltip.classList.add('tooltip');
 
         if (kind === "encoded-literal") {
             const text = location.map((loc) => locationToString(loc)).join(" // ");
@@ -73,6 +110,7 @@ function warningModal(clone, options) {
         else {
             positionCell.appendChild(document.createTextNode(locationToString(location)));
         }
+        positionCell.appendChild(tooltip);
     }
 
     setTimeout(() => {
