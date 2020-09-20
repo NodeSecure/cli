@@ -150,6 +150,8 @@ table {
         z-index: 1;
         min-width: 120px;
         max-width: 600px;
+        max-height: 300px;
+        overflow-y: auto;
         right: 100px;
         bottom: 40px;
         background: #212121;
