@@ -33,21 +33,19 @@ function getLineFromFile(code, location) {
     return lines[startLine - 1];
 }
 
-async function fetchCodeLine(event, url, location, cache) {
-    const [target] = event.srcElement.getElementsByClassName('tooltip')
+async function fetchCodeLine(element, url, location, cache, lineId) {
+    const [target] = element.getElementsByClassName('tooltip');
+
+    if (cache.has(lineId)) {
+        target.innerText = cache.get(lineId);
+        return;
+    }
+
     target.innerText = "Loading ...";
+    const code = await fetch(url).then((response) => response.text());
 
-    const code = cache.get(url) || await fetch(url).then((response) => response.text());
-    
-    if (!cache.has(url)) {
-        cache.set(url, code);
-    }
-
-    if (code.length) {
-        target.innerText = getLineFromFile(code, location);
-    } else {
-        target.innerText = "Line not found ...";
-    }
+    target.innerText = code.length ? getLineFromFile(code, location): "Line not found ...";
+    cache.set(lineId, target.innerText);
 }
 
 function warningModal(clone, options) {
@@ -67,6 +65,7 @@ function warningModal(clone, options) {
     const tbody = clone.querySelector("#warnings-table tbody");
     for (const { kind, file, value = null, location } of warnings) {
         const line = tbody.insertRow(0);
+        const lineId = Math.random().toString(36).slice(2);
         const unpkgFile = `${unpkgRootURL}${file}`;
 
         const kindCell = line.insertCell(0)
@@ -75,7 +74,7 @@ function warningModal(clone, options) {
 
         const fileCell = line.insertCell(1);
         fileCell.addEventListener("click", () => {
-            window.open(unpkgFile, "_blank").focus();
+            window.open(`${unpkgRootURL}${file}`, "_blank").focus();
         });
         fileCell.classList.add("clickable");
         fileCell.classList.add("file");
@@ -88,7 +87,7 @@ function warningModal(clone, options) {
         const positionCell = line.insertCell(3);
         positionCell.classList.add("position");
         if (kind !== "short-identifiers" && kind !== "obfuscated-code") {
-            positionCell.addEventListener("mouseenter", (event) => fetchCodeLine(event, unpkgFile, location, cache))
+            positionCell.addEventListener("mouseenter", (event) => fetchCodeLine(event.srcElement, unpkgFile, location, cache, lineId))
         }
 
         if (value !== null) {
