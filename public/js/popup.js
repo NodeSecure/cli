@@ -83,22 +83,18 @@ function warningModal(clone, options) {
         const errorCell = line.insertCell(2);
         errorCell.classList.add("highlight");
         errorCell.classList.add("msg");
-
-        const positionCell = line.insertCell(3);
-        positionCell.classList.add("position");
-        if (kind !== "short-identifiers" && kind !== "obfuscated-code") {
-            positionCell.addEventListener("mouseenter", (event) => fetchCodeLine(event.srcElement, unpkgFile, location, cache, lineId))
-        }
-
         if (value !== null) {
             errorCell.classList.add("clickable");
             errorCell.appendChild(document.createTextNode(value));
             errorCell.addEventListener("click", () => utils.copyToClipboard(value));
         }
 
-        const tooltip = utils.createDOMElement('div');
-        tooltip.classList.add('tooltip');
-
+        const positionCell = line.insertCell(3);
+        positionCell.classList.add("position");
+        if (!file.includes(".min") && kind !== "short-identifiers" && kind !== "obfuscated-code") {
+            const currLocation = kind === "encoded-literal" ? location[0] : location;
+            positionCell.addEventListener("mouseenter", (event) => fetchCodeLine(event.srcElement, unpkgFile, currLocation, cache, lineId))
+        }
         if (kind === "encoded-literal") {
             const text = location.map((loc) => locationToString(loc)).join(" // ");
             positionCell.appendChild(document.createTextNode(text));
@@ -106,6 +102,8 @@ function warningModal(clone, options) {
         else {
             positionCell.appendChild(document.createTextNode(locationToString(location)));
         }
+
+        const tooltip = utils.createDOMElement('div', { classList: ['tooltip'] });
         positionCell.appendChild(tooltip);
     }
 
