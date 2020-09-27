@@ -298,9 +298,10 @@ async function* deepReadEdges(currentPackageName, { to, parent, exclude, fullLoc
     const { version, integrity = to.integrity } = to.package;
     parent.dependencyCount++;
 
-    const current = new Dependency(currentPackageName, version, parent);
+    const updatedVersion = version === "*" || typeof version === "undefined" ? "latest" : version;
+    const current = new Dependency(currentPackageName, updatedVersion, parent);
     if (fullLockMode) {
-        const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${currentPackageName}@${version}`, {
+        const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${currentPackageName}@${updatedVersion}`, {
             ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
         });
         const { customResolvers } = mergeDependencies(pkg);
