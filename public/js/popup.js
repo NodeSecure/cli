@@ -1,6 +1,8 @@
 import * as utils from "./utils.js";
 import List from "list.js";
 
+const loadingMessage = "Loading ...";
+
 function licenseModal(clone, options) {
     const { licenses, selectedNode } = options;
     if (licenses === "unkown license") {
@@ -33,19 +35,36 @@ function getLineFromFile(code, location) {
     return lines[startLine - 1];
 }
 
-async function fetchCodeLine(element, url, location, cache, lineId) {
-    const [target] = element.getElementsByClassName('tooltip');
+async function fetchCodeLine(event, url, location, cache, lineId) {
+    const target = document.getElementById('tooltip');
+
+    target.style.visibility = 'visible';
 
     if (cache.has(lineId)) {
         target.innerText = cache.get(lineId);
+        event.stopPropagation();
         return;
     }
 
-    target.innerText = "Loading ...";
+    target.innerText = loadingMessage;
     const code = await fetch(url).then((response) => response.text());
 
     target.innerText = code.length ? getLineFromFile(code, location): "Line not found ...";
     cache.set(lineId, target.innerText);
+    event.stopPropagation();
+}
+
+function handleOutsideTooltipClick({ target }) {
+    const tooltip = document.getElementById('tooltip');
+    
+    if (!tooltip) {
+        return;
+    }
+    
+    if ((tooltip.innerHTML && tooltip.innerHTML !== loadingMessage) && !tooltip.contains(target) && tooltip.style.visibility === "visible") {
+        tooltip.style.visibility = "hidden";
+        tooltip.innerHTML = "";
+    }
 }
 
 function warningModal(clone, options) {
@@ -56,11 +75,12 @@ function warningModal(clone, options) {
         return () => window.open(link).focus();
     }
     const unpkgRootURL = `https://unpkg.com/${name}@${version}/`;
-    const homePageBtn = clone.getElementById("warning-link-homepage")
+    const homePageBtn = clone.getElementById("warning-link-homepage");
     homePageBtn.addEventListener("click", openLink(homepage));
     homePageBtn.querySelector("span").textContent = homepage;
     clone.getElementById("warning-link-npm").addEventListener("click", openLink(npmHomePageURL));
     clone.getElementById("warning-link-unpkg").addEventListener("click", openLink(unpkgRootURL));
+    document.addEventListener("click", handleOutsideTooltipClick);
 
     const tbody = clone.querySelector("#warnings-table tbody");
     for (const { kind, file, value = null, location } of warnings) {
@@ -93,7 +113,7 @@ function warningModal(clone, options) {
         positionCell.classList.add("position");
         if (!file.includes(".min") && kind !== "short-identifiers" && kind !== "obfuscated-code") {
             const currLocation = kind === "encoded-literal" ? location[0] : location;
-            positionCell.addEventListener("mouseenter", (event) => fetchCodeLine(event.srcElement, unpkgFile, currLocation, cache, lineId))
+            positionCell.addEventListener("click", (event) => fetchCodeLine(event, unpkgFile, currLocation, cache, lineId))
         }
         if (kind === "encoded-literal") {
             const text = location.map((loc) => locationToString(loc)).join(" // ");
@@ -102,9 +122,6 @@ function warningModal(clone, options) {
         else {
             positionCell.appendChild(document.createTextNode(locationToString(location)));
         }
-
-        const tooltip = utils.createDOMElement('div', { classList: ['tooltip'] });
-        positionCell.appendChild(tooltip);
     }
 
     setTimeout(() => {

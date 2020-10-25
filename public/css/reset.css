@@ -141,24 +141,3 @@ table {
     table tr td.position {
         cursor: pointer;
     }
-    table tr td.position:hover .tooltip {
-        visibility: visible;
-    }
-    table tr td.position .tooltip {
-        visibility: hidden;
-        position: absolute;
-        z-index: 1;
-        min-width: 120px;
-        max-width: 600px;
-        max-height: 300px;
-        overflow-y: auto;
-        top: 40px;
-        left: 50%;
-        transform: translate(-50%);
-        background: #212121;
-        border: 1px solid #424242;
-        color: #E1F5FE;
-        padding: 10px;
-        border-radius: 4px;
-        text-align: left;
-    }
