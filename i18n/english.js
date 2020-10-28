@@ -95,7 +95,8 @@ module.exports = {
                 type: "type",
                 file: "file",
                 errorMsg: "incrimined value",
-                position: "position"
+                position: "position",
+                inspect: "inspect"
             }
         },
         searchbar_placeholder: "Search",

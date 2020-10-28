@@ -37,7 +37,6 @@ function getLineFromFile(code, location) {
 
 async function fetchCodeLine(event, url, location, cache, lineId) {
     const target = document.getElementById('tooltip');
-
     target.style.visibility = 'visible';
 
     if (cache.has(lineId)) {
@@ -111,16 +110,20 @@ function warningModal(clone, options) {
 
         const positionCell = line.insertCell(3);
         positionCell.classList.add("position");
-        if (!file.includes(".min") && kind !== "short-identifiers" && kind !== "obfuscated-code") {
-            const currLocation = kind === "encoded-literal" ? location[0] : location;
-            positionCell.addEventListener("click", (event) => fetchCodeLine(event, unpkgFile, currLocation, cache, lineId))
-        }
         if (kind === "encoded-literal") {
             const text = location.map((loc) => locationToString(loc)).join(" // ");
             positionCell.appendChild(document.createTextNode(text));
         }
         else {
             positionCell.appendChild(document.createTextNode(locationToString(location)));
+        }
+
+        const inspectCell = line.insertCell(4);
+        inspectCell.innerHTML = "🔬";
+        inspectCell.classList.add("inspect");
+        if (!file.includes(".min") && kind !== "short-identifiers" && kind !== "obfuscated-code") {
+            const currLocation = kind === "encoded-literal" ? location[0] : location;
+            inspectCell.addEventListener("click", (event) => fetchCodeLine(event, unpkgFile, currLocation, cache, lineId));
         }
     }
 
@@ -130,9 +133,9 @@ function warningModal(clone, options) {
 }
 
 export function openLicenseModal(options = {}) {
-    return () => window.toggleModal("popup-license", (clone) => licenseModal(clone, options))
+    return () => window.toggleModal("popup-license", (clone) => licenseModal(clone, options));
 }
 
 export function openWarningsModal(options = {}) {
-    return () => window.toggleModal("popup-warning", (clone) => warningModal(clone, options))
+    return () => window.toggleModal("popup-warning", (clone) => warningModal(clone, options));
 }
