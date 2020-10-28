@@ -138,3 +138,6 @@ table {
         font-weight: bold;
         font-family: "Roboto";
     }
+    table tr td.inspect {
+        cursor: pointer;
+    }

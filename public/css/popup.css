@@ -59,6 +59,29 @@
             overflow-y: auto;
         }
 
+.modal .tooltip {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    min-width: 120px;
+    max-width: 600px;
+    max-height: 300px;
+    overflow-y: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%);
+    background: #212121;
+    border: 1px solid #424242;
+    color: #E1F5FE;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: left;
+    font-size: 14px;
+    font-family: "mononoki";
+    letter-spacing: 0.5px;
+    word-wrap: break-word;
+}
+
 .flags-legend-tags > .platine-button-skin {
     height: 30px;
     justify-content: start;
