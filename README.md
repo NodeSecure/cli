@@ -16,8 +16,8 @@
     <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg?style=flat-square" alt="Responsible Disclosure Policy" /></a>
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/npm/dw/nsecure?style=flat-square" alt="downloads"></a>
     <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square" alt="all-contributors"></a>
-    <!-- ALL-CONTRIBUTORS-BADGE:END -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
 
 <p align="center">
@@ -199,6 +199,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://mickaelcroquet.fr"><img src="https://avatars2.githubusercontent.com/u/23740372?v=4" width="100px;" alt=""/><br /><sub><b>Haze</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=CroquetMickael" title="Code">💻</a> <a href="#design-CroquetMickael" title="Design">🎨</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/thomas-gentilhomme/"><img src="https://avatars3.githubusercontent.com/u/4438263?v=4" width="100px;" alt=""/><br /><sub><b>fraxken</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Code">💻</a> <a href="https://github.com/ES-Community/nsecure/issues?q=author%3Afraxken" title="Bug reports">🐛</a> <a href="#blog-fraxken" title="Blogposts">📝</a> <a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Tests">⚠️</a> <a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Documentation">📖</a> <a href="#design-fraxken" title="Design">🎨</a></td>
     <td align="center"><a href="https://stouder.io"><img src="https://avatars2.githubusercontent.com/u/2575182?v=4" width="100px;" alt=""/><br /><sub><b>Xavier Stouder</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=Xstoudi" title="Code">💻</a> <a href="#design-Xstoudi" title="Design">🎨</a> <a href="https://github.com/ES-Community/nsecure/commits?author=Xstoudi" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://tonygo.dev"><img src="https://avatars0.githubusercontent.com/u/22824417?v=4" width="100px;" alt=""/><br /><sub><b>Tony Gorez</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=tony-go" title="Code">💻</a> <a href="https://github.com/ES-Community/nsecure/commits?author=tony-go" title="Documentation">📖</a> <a href="https://github.com/ES-Community/nsecure/pulls?q=is%3Apr+reviewed-by%3Atony-go" title="Reviewed Pull Requests">👀</a></td>
   </tr>
 </table>
 
