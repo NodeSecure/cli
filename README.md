@@ -15,10 +15,8 @@
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/bundlephobia/min/nsecure?style=flat-square" alt="size"></a>
     <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg?style=flat-square" alt="Responsible Disclosure Policy" /></a>
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/npm/dw/nsecure?style=flat-square" alt="downloads"></a>
-    <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 </p>
+
 
 <p align="center">
 <img src="https://i.imgur.com/3xnTGBl.png">
@@ -188,6 +186,10 @@ Node-secure will analyze the complete size of the npm tarball with no filters or
 other side will bundle and remove most of the useless files from the tarball (Like the documentation, etc.).
 
 ## Contributors ✨
+
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
