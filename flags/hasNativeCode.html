@@ -1,0 +1,13 @@
+<h1>hasNativeCode</h1>
+<p>
+    The package use native components (package, file, configuration) like <b>binding.gyp</b> or npm package for native addon like <b>node-addon-api</b>.
+</p>
+<br />
+<p>
+    The flag is set to true if:
+</p>
+<ul>
+    <li>- One of the package file has an extension like&nbsp;<span>.c</span>, <span>.cpp</span>, <span>.gyp</span> (etc..)</li>
+    <li>- One of the package dependency is known for building native addons.</li>
+    <li>- The package.json file has the property "gypfile" set to&nbsp;<b>true</b>.</li>
+</ul>

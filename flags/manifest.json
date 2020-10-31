@@ -7,6 +7,10 @@
         "title": "hasWarnings",
         "tooltipDescription": "The AST analysis has detected warnings (suspect import, unsafe regex ..)"
     },
+    "🐲": {
+        "title": "hasNativeCode",
+        "tooltipDescription": "The package use native components (package, file, configuration)."
+    },
     "💎": {
         "title": "hasCustomResolver",
         "tooltipDescription": "The package has dependencies that are not packages."

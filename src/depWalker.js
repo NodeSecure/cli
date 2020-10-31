@@ -35,6 +35,8 @@ const i18n = require("./i18n");
 
 // CONSTANTS
 const DIRECT_PATH = new Set([".", "..", "./", "../"]);
+const NATIVE_CODE_EXTENSIONS = new Set([".gyp", ".c", ".cpp", ".node", ".so", ".h"]);
+const NATIVE_NPM_PACKAGES = new Set(["node-gyp", "node-pre-gyp", "node-gyp-build", "node-addon-api"]);
 const NODE_CORE_LIBS = new Set(builtins());
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 
@@ -133,18 +135,20 @@ async function processPackageTarball(name, version, options) {
         }
         let depsInLocalPackage = null;
         let devDepsInLocalPackage = [];
+        let packageHasGypfileField = false;
 
         // Read the package.json file in the extracted tarball
         try {
             const packageStr = await readFile(join(dest, "package.json"), "utf-8");
             const {
                 description = "", author = {}, scripts = {},
-                dependencies = {}, devDependencies = {}
+                dependencies = {}, devDependencies = {}, gypfile = false
             } = JSON.parse(packageStr);
             ref.description = description;
             ref.author = author;
             depsInLocalPackage = [...Object.keys(dependencies)];
             devDepsInLocalPackage = Object.keys(devDependencies);
+            packageHasGypfileField = gypfile;
 
             ref.flags.hasScript = [...Object.keys(scripts)].some((value) => constants.NPM_SCRIPTS.has(value.toLowerCase()));
         }
@@ -198,6 +202,14 @@ async function processPackageTarball(name, version, options) {
             }
         }
 
+        // Search for native code
+        {
+            const hasNativeFile = files.some((file) => NATIVE_CODE_EXTENSIONS.has(extname(file)));
+            const hasNativePackage = hasNativeFile ? null : [
+                ...new Set([...devDepsInLocalPackage, ...(depsInLocalPackage || [])])
+            ].some((pkg) => NATIVE_NPM_PACKAGES.has(pkg));
+            ref.flags.hasNativeCode = (hasNativeFile || hasNativePackage) || packageHasGypfileField;
+        }
         ref.flags.hasWarnings = ref.warnings.length > 0;
         const required = [...new Set(dependencies)];
 
@@ -230,6 +242,7 @@ async function processPackageTarball(name, version, options) {
             .some((depName) => constants.EXT_DEPS.has(depName));
         ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
 
+        // License
         await new Promise((resolve) => setImmediate(resolve));
         const licenses = await ntlp(dest);
         ref.flags.hasLicense = licenses.uniqueLicenseIds.length > 0;

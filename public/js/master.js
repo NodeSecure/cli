@@ -81,6 +81,9 @@ function getFlags(flags, options = {}) {
     if (flags.isGit) {
         flagList.push("☁️");
     }
+    if (flags.hasNativeCode) {
+        flagList.push("🐲");
+    }
     if (flags.hasIndirectDependencies) {
         flagList.push("🌲");
     }
