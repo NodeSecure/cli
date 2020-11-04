@@ -12,8 +12,9 @@ class Dependency {
     #parent = null;
     #flags = Object.preventExtensions({
         isGit: false,
-        hasManifest: true,
         isDeprecated: false,
+        hasNativeCode: false,
+        hasManifest: true,
         hasWarnings: false,
         hasLicense: false,
         hasMultipleLicenses: false,
@@ -207,6 +208,14 @@ class Dependency {
 
     set hasDependencies(value) {
         this.#flags.hasDependencies = value;
+    }
+
+    get hasNativeCode() {
+        return this.#flags.hasNativeCode;
+    }
+
+    set hasNativeCode(value) {
+        this.#flags.hasNativeCode = value;
     }
 }
 

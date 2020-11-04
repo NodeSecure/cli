@@ -32,6 +32,7 @@ Object {
         "hasMinifiedCode": false,
         "hasMissingOrUnusedDependency": false,
         "hasMultipleLicenses": false,
+        "hasNativeCode": false,
         "hasOutdatedDependency": false,
         "hasScript": false,
         "hasValidIntegrity": true,

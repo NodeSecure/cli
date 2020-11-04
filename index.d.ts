@@ -26,6 +26,7 @@ declare namespace NodeSecure {
         isGit: boolean;
         isDeprecated: boolean;
         isOutdated: boolean;
+        hasNativeCode: boolean;
         hasManifest: boolean;
         hasOutdatedDependency: boolean;
         hasWarnings: boolean;

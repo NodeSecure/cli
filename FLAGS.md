@@ -40,6 +40,17 @@ Indirect dependencies are dangerous for many reasons and you may found useful in
 - [Angular vs React: the security risk of indirect dependencies](https://snyk.io/blog/angular-vs-react-the-security-risk-of-indirect-dependencies/)
 </details>
 
+<details><summary>🐲 hasNativeCode</summary>
+<br />
+
+The package use native components (package, file, configuration) like **binding.gyp** or npm package for native addon like `node-addon-api`.
+
+The flag is set to true if:
+- One of the package file has an extension like `.c`, `.cpp`, `.gyp` (etc..)
+- One of the package dependency is known for building native addons (or anything else).
+- The package.json file has the property "gypfile" set to `true`.
+</details>
+
 <details><summary>⚠️ hasWarnings</summary>
 <br />
 
