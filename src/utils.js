@@ -231,10 +231,12 @@ module.exports = Object.freeze({
     taggedString,
     getRegistryURL,
     constants: Object.freeze({
+        DEFAULT_REGISTRY_ADDR: getRegistryURL(),
+        NPM_TOKEN: typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {},
         FILE: SYM_FILE,
         DIRECTORY: SYM_DIR,
         NPM_SCRIPTS: new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]),
         EXT_DEPS: new Set(["http", "https", "net", "http2", "dgram", "child_process"]),
-        EXT_JS: new Set([".js", ".mjs"])
+        EXT_JS: new Set([".js", ".mjs", ".cjs"])
     })
 });

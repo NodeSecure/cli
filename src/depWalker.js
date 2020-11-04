@@ -1,8 +1,8 @@
 "use strict";
 
 // Require Node.js Dependencies
-const { join, extname, dirname } = require("path");
-const { mkdtemp, readFile, rmdir, access } = require("fs").promises;
+const { join } = require("path");
+const { mkdtemp, rmdir, access } = require("fs").promises;
 const os = require("os");
 
 // Require Third-party Dependencies
@@ -11,45 +11,29 @@ const combineAsyncIterators = require("combine-async-iterators");
 const Arborist = require("@npmcli/arborist");
 const Spinner = require("@slimio/async-cli-spinner");
 const Registry = require("@slimio/npm-registry");
-const difference = require("lodash.difference");
-const isMinified = require("is-minified-code");
 const Lock = require("@slimio/lock");
-const builtins = require("builtins");
 const iter = require("itertools");
 const pacote = require("pacote");
 const semver = require("semver");
-const ntlp = require("ntlp");
 const ms = require("ms");
 const is = require("@slimio/is");
-const { runASTAnalysis } = require("js-x-ray");
 
 // Require Internal Dependencies
-const {
-    getTarballComposition, mergeDependencies, cleanRange, getRegistryURL,
-    isSensitiveFile, getPackageName, constants
-} = require("./utils");
+const { mergeDependencies, cleanRange, constants } = require("./utils");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
+const { analyzeDirOrArchiveOnDisk } = require("./tarball");
 const Dependency = require("./dependency.class");
 const applyWarnings = require("./warnings");
 const i18n = require("./i18n");
 
-// CONSTANTS
-const DIRECT_PATH = new Set([".", "..", "./", "../"]);
-const NATIVE_CODE_EXTENSIONS = new Set([".gyp", ".c", ".cpp", ".node", ".so", ".h"]);
-const NATIVE_NPM_PACKAGES = new Set(["node-gyp", "node-pre-gyp", "node-gyp-build", "node-addon-api"]);
-const NODE_CORE_LIBS = new Set(builtins());
-const REGISTRY_DEFAULT_ADDR = getRegistryURL();
-
-// Vars
-const npmReg = new Registry(REGISTRY_DEFAULT_ADDR);
-const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
+// VARS
+const npmReg = new Registry(constants.DEFAULT_REGISTRY_ADDR);
 Spinner.DEFAULT_SPINNER = "dots";
 
 async function getExpectedSemVer(depName, range) {
     try {
         const { versions, "dist-tags": { latest } } = await pacote.packument(depName, {
-            registry: REGISTRY_DEFAULT_ADDR,
-            ...token
+            ...constants.NPM_TOKEN, registry: constants.DEFAULT_REGISTRY_ADDR
         });
         const currVersion = semver.maxSatisfying(Object.keys(versions), range);
 
@@ -72,8 +56,8 @@ async function* searchDeepDependencies(packageName, gitURL, options) {
     parent.dependencyCount++;
 
     const { name, version, deprecated, ...pkg } = await pacote.manifest(isGit ? gitURL : packageName, {
-        ...token,
-        registry: REGISTRY_DEFAULT_ADDR,
+        ...constants.NPM_TOKEN,
+        registry: constants.DEFAULT_REGISTRY_ADDR,
         cache: `${os.homedir()}/.npm`
     });
     const { dependencies, customResolvers } = mergeDependencies(pkg);
@@ -118,144 +102,43 @@ async function* searchDeepDependencies(packageName, gitURL, options) {
     yield current;
 }
 
-async function processPackageTarball(name, version, options) {
-    const { ref, tmpLocation, tarballLocker } = options;
+async function* deepReadEdges(currentPackageName, { to, parent, exclude, fullLockMode }) {
+    const { version, integrity = to.integrity } = to.package;
+    parent.dependencyCount++;
 
-    const dest = tmpLocation === null ? process.cwd() : join(tmpLocation, `${name}@${version}`);
-    const free = await tarballLocker.acquireOne();
+    const updatedVersion = version === "*" || typeof version === "undefined" ? "latest" : version;
+    const current = new Dependency(currentPackageName, updatedVersion, parent);
+    if (fullLockMode) {
+        const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${currentPackageName}@${updatedVersion}`, {
+            ...constants.NPM_TOKEN, registry: constants.DEFAULT_REGISTRY_ADDR, cache: `${os.homedir()}/.npm`
+        });
+        const { customResolvers } = mergeDependencies(pkg);
 
-    try {
-        if (tmpLocation !== null) {
-            await pacote.extract(ref.flags.isGit ? ref.gitUrl : `${name}@${version}`, dest, {
-                ...token,
-                registry: REGISTRY_DEFAULT_ADDR,
-                cache: `${os.homedir()}/.npm`
-            });
-            await new Promise((resolve) => setImmediate(resolve));
-        }
-        let depsInLocalPackage = null;
-        let devDepsInLocalPackage = [];
-        let packageHasGypfileField = false;
-
-        // Read the package.json file in the extracted tarball
-        try {
-            const packageStr = await readFile(join(dest, "package.json"), "utf-8");
-            const {
-                description = "", author = {}, scripts = {},
-                dependencies = {}, devDependencies = {}, gypfile = false
-            } = JSON.parse(packageStr);
-            ref.description = description;
-            ref.author = author;
-            depsInLocalPackage = [...Object.keys(dependencies)];
-            devDepsInLocalPackage = Object.keys(devDependencies);
-            packageHasGypfileField = gypfile;
-
-            ref.flags.hasScript = [...Object.keys(scripts)].some((value) => constants.NPM_SCRIPTS.has(value.toLowerCase()));
-        }
-        catch (err) {
-            ref.flags.hasManifest = false;
-        }
-
-        // Get the composition of the extracted tarball
-        const { ext, files, size } = await getTarballComposition(dest);
-        ref.size = size;
-        ref.composition.extensions.push(...ext);
-        ref.composition.files.push(...files);
-        ref.flags.hasBannedFile = files.some((path) => isSensitiveFile(path));
-
-        // Search for minified and runtime dependencies
-        const jsFiles = files.filter((name) => constants.EXT_JS.has(extname(name)));
-        const dependencies = [];
-        const filesDependencies = new Set();
-        const inTryDeps = new Set();
-
-        for (const file of jsFiles) {
-            try {
-                const str = await readFile(join(dest, file), "utf-8");
-                const isMin = file.includes(".min") || isMinified(str);
-
-                const ASTAnalysis = runASTAnalysis(str, { isMinified: isMin });
-                ASTAnalysis.dependencies.removeByName(name);
-                for (const depName of ASTAnalysis.dependencies) {
-                    // eslint-disable-next-line max-depth
-                    if (depName.startsWith(".")) {
-                        const indexName = DIRECT_PATH.has(depName) ? join(depName, "index.js") : join(dirname(file), depName);
-                        filesDependencies.add(indexName);
-                    }
-                    else {
-                        dependencies.push(depName);
-                    }
-                }
-                [...ASTAnalysis.dependencies.getDependenciesInTryStatement()]
-                    .forEach((depName) => inTryDeps.add(depName));
-
-                if (!ASTAnalysis.isOneLineRequire && isMin) {
-                    ref.composition.minified.push(file);
-                }
-                ref.warnings.push(...ASTAnalysis.warnings.map((curr) => Object.assign({}, curr, { file })));
-            }
-            catch (err) {
-                if (!Reflect.has(err, "code")) {
-                    ref.warnings.push({ file, kind: "parsing-error", value: err.message, location: [[0, 0], [0, 0]] });
-                    ref.flags.hasWarnings = true;
-                }
-            }
-        }
-
-        // Search for native code
-        {
-            const hasNativeFile = files.some((file) => NATIVE_CODE_EXTENSIONS.has(extname(file)));
-            const hasNativePackage = hasNativeFile ? null : [
-                ...new Set([...devDepsInLocalPackage, ...(depsInLocalPackage || [])])
-            ].some((pkg) => NATIVE_NPM_PACKAGES.has(pkg));
-            ref.flags.hasNativeCode = (hasNativeFile || hasNativePackage) || packageHasGypfileField;
-        }
-        ref.flags.hasWarnings = ref.warnings.length > 0;
-        const required = [...new Set(dependencies)];
-
-        if (depsInLocalPackage !== null) {
-            const thirdPartyDependencies = required
-                .map((name) => (depsInLocalPackage.includes(name) ? name : getPackageName(name)))
-                .filter((name) => !name.startsWith("."))
-                .filter((name) => !NODE_CORE_LIBS.has(name))
-                .filter((name) => !devDepsInLocalPackage.includes(name))
-                .filter((name) => !inTryDeps.has(name));
-            ref.composition.required_thirdparty = thirdPartyDependencies;
-
-            const unusedDeps = difference(
-                depsInLocalPackage.filter((name) => !name.startsWith("@types")), thirdPartyDependencies);
-            const missingDeps = new Set(difference(thirdPartyDependencies, depsInLocalPackage));
-
-            ref.flags.hasMissingOrUnusedDependency = unusedDeps.length > 0 || missingDeps.length > 0;
-            ref.composition.unused.push(...unusedDeps);
-            ref.composition.missing.push(...missingDeps);
-        }
-
-        ref.composition.required_files = [...filesDependencies]
-            .filter((depName) => depName.trim() !== "")
-            // .map((depName) => {
-            //     return files.includes(depName) ? depName : join(depName, "index.js");
-            // })
-            .map((depName) => (extname(depName) === "" ? `${depName}.js` : depName));
-        ref.composition.required_nodejs = required.filter((name) => NODE_CORE_LIBS.has(name));
-        ref.flags.hasExternalCapacity = ref.composition.required_nodejs
-            .some((depName) => constants.EXT_DEPS.has(depName));
-        ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
-
-        // License
-        await new Promise((resolve) => setImmediate(resolve));
-        const licenses = await ntlp(dest);
-        ref.flags.hasLicense = licenses.uniqueLicenseIds.length > 0;
-        ref.flags.hasMultipleLicenses = licenses.hasMultipleLicenses;
-        ref.license = licenses;
-        ref.license.uniqueLicenseIds = licenses.uniqueLicenseIds;
+        current.hasValidIntegrity = _integrity === integrity;
+        current.isDeprecated = deprecated === true;
+        current.hasCustomResolver = customResolvers.size > 0;
     }
-    catch (err) {
-        ref.flags.hasLicense = true;
+
+    current.hasDependencies = to.edgesOut.size > 0;
+    if (current.hasDependencies) {
+        parent.hasIndirectDependencies = true;
     }
-    finally {
-        free();
+
+    for (const [packageName, { to: toNode }] of to.edgesOut) {
+        if (toNode.dev) {
+            continue;
+        }
+        const cleanName = `${packageName}@${toNode.package.version}`;
+
+        if (exclude.has(cleanName)) {
+            exclude.get(cleanName).add(current.fullName);
+        }
+        else {
+            exclude.set(cleanName, new Set([current.fullName]));
+            yield* deepReadEdges(packageName, { parent: current, to: toNode, exclude });
+        }
     }
+    yield current;
 }
 
 async function fetchPackageMetadata(name, version, options) {
@@ -307,45 +190,6 @@ async function fetchPackageMetadata(name, version, options) {
     }
 }
 
-async function* deepReadEdges(currentPackageName, { to, parent, exclude, fullLockMode }) {
-    const { version, integrity = to.integrity } = to.package;
-    parent.dependencyCount++;
-
-    const updatedVersion = version === "*" || typeof version === "undefined" ? "latest" : version;
-    const current = new Dependency(currentPackageName, updatedVersion, parent);
-    if (fullLockMode) {
-        const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${currentPackageName}@${updatedVersion}`, {
-            ...token, registry: REGISTRY_DEFAULT_ADDR, cache: `${os.homedir()}/.npm`
-        });
-        const { customResolvers } = mergeDependencies(pkg);
-
-        current.hasValidIntegrity = _integrity === integrity;
-        current.isDeprecated = deprecated === true;
-        current.hasCustomResolver = customResolvers.size > 0;
-    }
-
-    current.hasDependencies = to.edgesOut.size > 0;
-    if (current.hasDependencies) {
-        parent.hasIndirectDependencies = true;
-    }
-
-    for (const [packageName, { to: toNode }] of to.edgesOut) {
-        if (toNode.dev) {
-            continue;
-        }
-        const cleanName = `${packageName}@${toNode.package.version}`;
-
-        if (exclude.has(cleanName)) {
-            exclude.get(cleanName).add(current.fullName);
-        }
-        else {
-            exclude.set(cleanName, new Set([current.fullName]));
-            yield* deepReadEdges(packageName, { parent: current, to: toNode, exclude });
-        }
-    }
-    yield current;
-}
-
 async function* getRootDependencies(manifest, options) {
     const { maxDepth = 4, exclude, usePackageLock, fullLockMode } = options;
 
@@ -356,7 +200,7 @@ async function* getRootDependencies(manifest, options) {
 
     let iterators;
     if (usePackageLock) {
-        const arb = new Arborist({ ...token, registry: REGISTRY_DEFAULT_ADDR });
+        const arb = new Arborist({ ...constants.NPM_TOKEN, registry: constants.DEFAULT_REGISTRY_ADDR });
         let tree;
         try {
             await access(join(process.cwd(), "node_modules"));
@@ -465,7 +309,7 @@ async function depWalker(manifest, options = Object.create(null)) {
             if (processDep) {
                 allDependencyCount++;
                 promisesToWait.push(fetchPackageMetadata(name, version, { ref: current, metadataLocker }));
-                promisesToWait.push(processPackageTarball(name, version, {
+                promisesToWait.push(analyzeDirOrArchiveOnDisk(name, version, {
                     ref: current[version],
                     tmpLocation: forceRootAnalysis && name === manifest.name ? null : tmpLocation,
                     tarballLocker
