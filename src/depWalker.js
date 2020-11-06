@@ -19,7 +19,7 @@ const ms = require("ms");
 const is = require("@slimio/is");
 
 // Require Internal Dependencies
-const { mergeDependencies, cleanRange, constants } = require("./utils");
+const { mergeDependencies, cleanRange, constants, cleanFlagsFromDependencies } = require("./utils");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
 const { analyzeDirOrArchiveOnDisk } = require("./tarball");
 const Dependency = require("./dependency.class");
@@ -369,8 +369,10 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     payload.dependencies = Object.fromEntries(payload.dependencies);
+    cleanFlagsFromDependencies(payload.dependencies);
 
     return payload;
 }
+
 
 module.exports = { depWalker };

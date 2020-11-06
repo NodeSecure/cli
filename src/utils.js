@@ -217,6 +217,35 @@ async function* readPackageLock(filePath = join(process.cwd(), "package-lock.jso
     yield* deepReadPackageLock(dependencies);
 }
 
+function cleanFlagsFromDependencies(dependencies) {
+    for (const packageName in dependencies) {
+        if (packageName) {
+            const dependency = dependencies[packageName];
+            if (dependency) {
+                dependency.versions.forEach((version) => {
+                    const flags = dependency[version].flags;
+                    dependency[version].flags = cleanFlags(flags);
+                });
+            }
+        }
+    }
+}
+
+function cleanFlags(flags) {
+    if (flags) {
+        return Object.keys(flags).reduce((acc, curr) => {
+            const flagValue = flags[curr];
+            if (flagValue) {
+                acc[curr] = flagValue;
+            }
+
+            return acc;
+        }, {});
+    }
+
+    return {};
+}
+
 module.exports = Object.freeze({
     readPackageLock,
     formatBytes,
@@ -238,5 +267,6 @@ module.exports = Object.freeze({
         NPM_SCRIPTS: new Set(["preinstall", "postinstall", "preuninstall", "postuninstall"]),
         EXT_DEPS: new Set(["http", "https", "net", "http2", "dgram", "child_process"]),
         EXT_JS: new Set([".js", ".mjs", ".cjs"])
-    })
+    }),
+    cleanFlagsFromDependencies
 });
