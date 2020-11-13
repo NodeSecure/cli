@@ -53,7 +53,6 @@ async function getCleanDependencyName([depName, range]) {
 async function* searchDeepDependencies(packageName, gitURL, options) {
     const isGit = typeof gitURL === "string";
     const { exclude, currDepth = 0, parent, maxDepth } = options;
-    parent.dependencyCount++;
 
     const { name, version, deprecated, ...pkg } = await pacote.manifest(isGit ? gitURL : packageName, {
         ...constants.NPM_TOKEN,
@@ -61,17 +60,12 @@ async function* searchDeepDependencies(packageName, gitURL, options) {
         cache: `${os.homedir()}/.npm`
     });
     const { dependencies, customResolvers } = mergeDependencies(pkg);
-    if (dependencies.size > 0) {
-        parent.hasIndirectDependencies = true;
-    }
 
     const current = new Dependency(name, version, parent);
-    if (isGit) {
-        current.isGit(gitURL);
-    }
-    current.isDeprecated = deprecated === true;
-    current.hasCustomResolver = customResolvers.size > 0;
-    current.hasDependencies = dependencies.size > 0;
+    isGit && current.isGit(gitURL);
+    current.addFlag("isDeprecated", deprecated === true);
+    current.addFlag("hasCustomResolver", customResolvers.size > 0);
+    current.addFlag("hasDependencies", dependencies.size > 0);
 
     if (currDepth !== maxDepth) {
         const config = {
@@ -86,7 +80,7 @@ async function* searchDeepDependencies(packageName, gitURL, options) {
         const depsNames = await Promise.all(iter.map(dependencies.entries(), getCleanDependencyName));
         for (const [fullName, cleanName, isLatest] of depsNames) {
             if (!isLatest) {
-                current.hasOutdatedDependency = true;
+                current.addFlag("hasOutdatedDependency");
             }
 
             if (exclude.has(cleanName)) {
@@ -104,25 +98,21 @@ async function* searchDeepDependencies(packageName, gitURL, options) {
 
 async function* deepReadEdges(currentPackageName, { to, parent, exclude, fullLockMode }) {
     const { version, integrity = to.integrity } = to.package;
-    parent.dependencyCount++;
 
     const updatedVersion = version === "*" || typeof version === "undefined" ? "latest" : version;
     const current = new Dependency(currentPackageName, updatedVersion, parent);
+
     if (fullLockMode) {
         const { deprecated, _integrity, ...pkg } = await pacote.manifest(`${currentPackageName}@${updatedVersion}`, {
             ...constants.NPM_TOKEN, registry: constants.DEFAULT_REGISTRY_ADDR, cache: `${os.homedir()}/.npm`
         });
         const { customResolvers } = mergeDependencies(pkg);
 
-        current.hasValidIntegrity = _integrity === integrity;
-        current.isDeprecated = deprecated === true;
-        current.hasCustomResolver = customResolvers.size > 0;
+        current.addFlag("hasValidIntegrity", _integrity === integrity);
+        current.addFlag("isDeprecated");
+        current.addFlag("hasCustomResolver", customResolvers.size > 0);
     }
-
-    current.hasDependencies = to.edgesOut.size > 0;
-    if (current.hasDependencies) {
-        parent.hasIndirectDependencies = true;
-    }
+    current.addFlag("hasDependencies", to.edgesOut.size > 0);
 
     for (const [packageName, { to: toNode }] of to.edgesOut) {
         if (toNode.dev) {
@@ -151,14 +141,16 @@ async function fetchPackageMetadata(name, version, options) {
         oneYearFromToday.setFullYear(oneYearFromToday.getFullYear() - 1);
 
         const pkg = await npmReg.package(name);
-        ref[version].flags.isOutdated = semver.neq(version, pkg.lastVersion);
+        if (semver.neq(version, pkg.lastVersion)) {
+            ref[version].flags.push("isOutdated");
+        }
         ref.metadata.publishedCount = pkg.versions.length;
         ref.metadata.lastUpdateAt = pkg.publishedAt(pkg.lastVersion);
         ref.metadata.hasReceivedUpdateInOneYear = !(oneYearFromToday > ref.metadata.lastUpdateAt);
         ref.metadata.lastVersion = pkg.lastVersion;
         ref.metadata.homepage = pkg.homepage || null;
         ref.metadata.maintainers = pkg.maintainers;
-        ref.metadata.author = pkg.author.name || pkg.author;
+        ref.metadata.author = pkg?.author?.name || "N/A";
 
         for (const version of pkg.versions) {
             const { npmUser } = pkg.version(version);
@@ -195,8 +187,8 @@ async function* getRootDependencies(manifest, options) {
 
     const { dependencies, customResolvers } = mergeDependencies(manifest, void 0);
     const parent = new Dependency(manifest.name, manifest.version);
-    parent.hasCustomResolver = customResolvers.size > 0;
-    parent.hasDependencies = dependencies.size > 0;
+    parent.addFlag("hasCustomResolver", customResolvers.size > 0);
+    parent.addFlag("hasDependencies", dependencies.size > 0);
 
     let iterators;
     if (usePackageLock) {
@@ -230,7 +222,7 @@ async function* getRootDependencies(manifest, options) {
     const depsName = await Promise.all(iter.map(dependencies.entries(), getCleanDependencyName));
     for (const [, fullRange, isLatest] of depsName) {
         if (!isLatest) {
-            parent.hasOutdatedDependency = true;
+            parent.addFlag("hasOutdatedDependency");
         }
         if (exclude.has(fullRange)) {
             exclude.get(fullRange).add(parent.fullName);

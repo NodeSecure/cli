@@ -59,15 +59,36 @@ const networkGraphOptions = {
     }
 };
 
+const kFlagsEmojis = {
+    isGit: "☁️",
+    hasNativeCode: "🐲",
+    hasIndirectDependencies: "🌲",
+    hasWarnings: "⚠️",
+    hasBannedFile: "⚔️",
+    isOutdated: "⌚️",
+    hasNoLicense: "📜",
+    hasCustomResolver: "💎",
+    hasMultipleLicenses: "📚",
+    hasMinifiedCode: "🔬",
+    isDeprecated: "⛔️",
+    hasExternalCapacity: "🌍",
+    hasScript: "📦",
+    hasMissingOrUnusedDependency: "👀",
+    hasManyPublishers: "💖",
+    hasChangedAuthor: "👥",
+    isDead: "💀",
+    hasVulnerabilities: "🚨",
+    hasDuplicate: "🎭"
+}
 
 function getColor(id, flags) {
     if (id === 0) {
         return C_MAIN;
     }
-    else if (flags.hasWarnings || flags.hasMinifiedCode) {
+    else if (flags.includes("hasWarnings") || flags.includes("hasMinifiedCode")) {
         return C_WARN;
     }
-    else if (flags.hasIndirectDependencies) {
+    else if (flags.includes("hasIndirectDependencies")) {
         return C_INDIRECT;
     }
 
@@ -76,67 +97,27 @@ function getColor(id, flags) {
 
 function getFlags(flags, options = {}) {
     const { metadata, vulnerabilities = [], versions } = options;
-    const flagList = [];
 
-    if (flags.isGit) {
-        flagList.push("☁️");
+    if (!metadata.hasReceivedUpdateInOneYear && flags.includes("hasOutdatedDependency") && !flags.includes("isDead")) {
+        flags.push("isDead");
     }
-    if (flags.hasNativeCode) {
-        flagList.push("🐲");
+    if (metadata.hasManyPublishers && !flags.includes("hasManyPublishers")) {
+        flags.push("hasManyPublishers");
     }
-    if (flags.hasIndirectDependencies) {
-        flagList.push("🌲");
+    if (metadata.hasChangedAuthor && !flags.includes("hasChangedAuthor")) {
+        flags.push("hasChangedAuthor");
     }
-    if (flags.hasWarnings) {
-        flagList.push("⚠️");
+    if (vulnerabilities.length > 0 && !flags.includes("hasVulnerabilities")) {
+        flags.push("hasVulnerabilities");
     }
-    if (flags.hasBannedFile) {
-        flagList.push("⚔️");
-    }
-    if (flags.isOutdated) {
-        flagList.push("⌚️");
-    }
-    if (flags.hasCustomResolver) {
-        flagList.push("💎");
-    }
-    if (flags.hasLicense === false) {
-        flagList.push("📜");
-    }
-    if (flags.hasMultipleLicenses) {
-        flagList.push("📚");
-    }
-    if (flags.hasMinifiedCode) {
-        flagList.push("🔬");
-    }
-    if (flags.isDeprecated) {
-        flagList.push("⛔️");
-    }
-    if (flags.hasExternalCapacity) {
-        flagList.push("🌍");
-    }
-    if (flags.hasScript) {
-        flagList.push("📦");
-    }
-    if (flags.hasMissingOrUnusedDependency) {
-        flagList.push("👀");
-    }
-    if (!metadata.hasReceivedUpdateInOneYear && flags.hasOutdatedDependency) {
-        flagList.push("💀");
-    }
-    if (metadata.hasManyPublishers) {
-        flagList.push("💕");
-    }
-    if (metadata.hasChangedAuthor) {
-        flagList.push("👥");
-    }
-    if (vulnerabilities.length > 0) {
-        flagList.push("🚨");
-    }
-    if (versions.length > 1) {
-        flagList.push("🎭");
+    if (versions.length > 1 && !flags.includes("hasDuplicate")) {
+        flags.push("hasDuplicate");
     }
 
-    return flagList.reduce((acc, cur) => `${acc} ${cur}`, "");
+    return [...flags]
+        .map((flagName) => kFlagsEmojis[flagName])
+        .filter((value) => value !== undefined)
+        .reduce((acc, cur) => `${acc} ${cur}`, "");
 }
 
 document.addEventListener("DOMContentLoaded", async() => {
@@ -221,7 +202,7 @@ document.addEventListener("DOMContentLoaded", async() => {
             }
             handleAuthor(author);
 
-            if (flags.hasIndirectDependencies) {
+            if (flags.includes("hasIndirectDependencies")) {
                 indirectDependenciesCount++;
             }
             totalSize += size;

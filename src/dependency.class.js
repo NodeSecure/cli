@@ -1,38 +1,21 @@
 /* eslint-disable lines-between-class-members */
 "use strict";
 
-// Require Third-party Dependencies
-const { klona } = require("klona");
-
 class Dependency {
     gitUrl = null;
     dependencyCount = 0;
     warnings = [];
 
+    #flags = new Set();
     #parent = null;
-    #flags = Object.preventExtensions({
-        isGit: false,
-        isDeprecated: false,
-        hasNativeCode: false,
-        hasManifest: true,
-        hasWarnings: false,
-        hasLicense: false,
-        hasMultipleLicenses: false,
-        hasIndirectDependencies: false,
-        hasMinifiedCode: false,
-        hasCustomResolver: false,
-        hasDependencies: false,
-        hasExternalCapacity: false,
-        hasMissingOrUnusedDependency: false,
-        hasOutdatedDependency: false,
-        hasScript: false,
-        hasBannedFile: false,
-        hasValidIntegrity: true
-    });
 
     constructor(name, version, parent = null) {
         this.name = name;
         this.version = version;
+
+        if (parent !== null) {
+            parent.dependencyCount++;
+        }
         this.#parent = parent;
     }
 
@@ -40,8 +23,30 @@ class Dependency {
         return `${this.name} ${this.version}`;
     }
 
+    get flags() {
+        return [...this.#flags];
+    }
+
+    get parent() {
+        return this.#parent === null ? {} : { [this.#parent.name]: this.#parent.version };
+    }
+
+    addFlag(flagName, predicate = true) {
+        if (typeof flagName !== "string") {
+            throw new TypeError("flagName argument must be typeof string");
+        }
+
+        if (predicate) {
+            if (flagName === "hasDependencies" && this.#parent !== null) {
+                this.#parent.addFlag("hasIndirectDependencies");
+            }
+
+            this.#flags.add(flagName);
+        }
+    }
+
     isGit(url) {
-        this.#flags.isGit = true;
+        this.#flags.add("isGit");
         if (typeof url === "string") {
             this.gitUrl = url;
         }
@@ -50,13 +55,14 @@ class Dependency {
     }
 
     exportAsPlainObject(customId) {
-        const parent = this.parent;
-        this.hasWarnings = this.warnings.length > 0;
+        if (this.warnings.length > 0) {
+            this.addFlag("hasWarnings");
+        }
 
         return {
             [this.version]: {
                 id: typeof customId === "number" ? customId : Dependency.currentId++,
-                usedBy: parent === null ? {} : { [parent.name]: parent.version },
+                usedBy: this.parent,
                 flags: this.flags,
                 description: "",
                 size: 0,
@@ -91,131 +97,6 @@ class Dependency {
                 maintainers: []
             }
         };
-    }
-
-    get parent() {
-        return this.#parent === null ? null : klona(this.#parent);
-    }
-
-    set parent(value) {
-        this.#parent = value instanceof Dependency ? { name: value.name, version: value.version } : null;
-    }
-
-    get flags() {
-        return klona(this.#flags);
-    }
-
-    get hasWarnings() {
-        return this.#flags.hasWarnings;
-    }
-
-    set hasWarnings(value) {
-        this.#flags.hasWarnings = value;
-    }
-
-    get hasValidIntegrity() {
-        return this.#flags.hasValidIntegrity;
-    }
-
-    set hasValidIntegrity(value) {
-        this.#flags.hasValidIntegrity = value;
-    }
-
-
-    get hasBannedFile() {
-        return this.#flags.hasBannedFile;
-    }
-
-    set hasBannedFile(value) {
-        this.#flags.hasBannedFile = value;
-    }
-
-    get hasMissingOrUnusedDependency() {
-        return this.#flags.hasMissingOrUnusedDependency;
-    }
-
-    set hasMissingOrUnusedDependency(value) {
-        this.#flags.hasMissingOrUnusedDependency = value;
-    }
-
-    get hasOutdatedDependency() {
-        return this.#flags.hasOutdatedDependency;
-    }
-
-    set hasOutdatedDependency(value) {
-        this.#flags.hasOutdatedDependency = value;
-    }
-
-    get hasManifest() {
-        return this.#flags.hasManifest;
-    }
-
-    set hasManifest(value) {
-        this.#flags.hasManifest = value;
-    }
-
-    get isDeprecated() {
-        return this.#flags.isDeprecated;
-    }
-
-    set isDeprecated(value) {
-        this.#flags.isDeprecated = value;
-    }
-
-    get hasLicense() {
-        return this.#flags.hasLicense;
-    }
-
-    set hasLicense(value) {
-        this.#flags.hasLicense = value;
-    }
-
-    get hasIndirectDependencies() {
-        return this.#flags.hasIndirectDependencies;
-    }
-
-    set hasIndirectDependencies(value) {
-        this.#flags.hasIndirectDependencies = value;
-    }
-
-    get hasMinifiedCode() {
-        return this.#flags.hasMinifiedCode;
-    }
-
-    set hasMinifiedCode(value) {
-        this.#flags.hasMinifiedCode = value;
-    }
-
-    get hasCustomResolver() {
-        return this.#flags.hasCustomResolver;
-    }
-
-    set hasCustomResolver(value) {
-        this.#flags.hasCustomResolver = value;
-    }
-
-    get hasScript() {
-        return this.#flags.hasScript;
-    }
-
-    set hasScript(value) {
-        this.#flags.hasScript = value;
-    }
-
-    get hasDependencies() {
-        return this.#flags.hasDependencies;
-    }
-
-    set hasDependencies(value) {
-        this.#flags.hasDependencies = value;
-    }
-
-    get hasNativeCode() {
-        return this.#flags.hasNativeCode;
-    }
-
-    set hasNativeCode(value) {
-        this.#flags.hasNativeCode = value;
     }
 }
 

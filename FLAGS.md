@@ -66,7 +66,7 @@ The given npm package has been deprecated by his author (it must be updated or r
 For more information on deprecation please check the official [npm documentation](https://docs.npmjs.com/deprecating-and-undeprecating-packages-or-package-versions).
 </details>
 
-<details><summary>📜 hasLicense</summary>
+<details><summary>📜 hasNoLicense</summary>
 <br />
 
 This flag mean that we have not detected any licenses in the npm Tarball (or something went wrong in the detection) For detecting licenses we are reading the **package.json** and searching for local files that contain the word "license".

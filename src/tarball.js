@@ -86,7 +86,6 @@ async function executeJSXRayAnalysisOnFile(dest, file, options) {
     catch (error) {
         if (!("code" in error)) {
             ref.warnings.push({ file, kind: "parsing-error", value: error.message, location: [[0, 0], [0, 0]] });
-            ref.flags.hasWarnings = true;
         }
 
         return null;
@@ -103,7 +102,7 @@ async function analyzeDirOrArchiveOnDisk(name, version, options) {
     try {
         // If this is an NPM tarball then we extract it on the disk with pacote.
         if (isNpmTarball) {
-            await pacote.extract(ref.flags.isGit ? ref.gitUrl : `${name}@${version}`, dest, {
+            await pacote.extract(ref.flags.includes("isGit") ? ref.gitUrl : `${name}@${version}`, dest, {
                 ...constants.NPM_TOKEN, registry: constants.DEFAULT_REGISTRY_ADDR, cache: `${os.homedir()}/.npm`
             });
             await nextTick();
@@ -117,7 +116,9 @@ async function analyzeDirOrArchiveOnDisk(name, version, options) {
         ref.size = size;
         ref.composition.extensions.push(...ext);
         ref.composition.files.push(...files);
-        ref.flags.hasBannedFile = files.some((path) => isSensitiveFile(path));
+        if (files.some((path) => isSensitiveFile(path))) {
+            ref.flags.push("hasBannedFile");
+        }
 
         // Search for minified and runtime dependencies
         // Run a JS-X-Ray analysis on each JavaScript files of the project!
@@ -140,10 +141,15 @@ async function analyzeDirOrArchiveOnDisk(name, version, options) {
             const hasNativePackage = hasNativeFile ? null : [
                 ...new Set([...packageDevDeps, ...(packageDeps || [])])
             ].some((pkg) => NATIVE_NPM_PACKAGES.has(pkg));
-            ref.flags.hasNativeCode = hasNativeFile || hasNativePackage || packageGyp;
+
+            if (hasNativeFile || hasNativePackage || packageGyp) {
+                ref.flags.push("hasNativeCode");
+            }
         }
 
-        ref.flags.hasWarnings = ref.warnings.length > 0;
+        if (ref.warnings.length > 0 && !ref.flags.includes("hasWarnings")) {
+            ref.flags.push("hasWarnings");
+        }
         const required = [...dependencies];
 
         if (packageDeps !== null) {
@@ -159,7 +165,9 @@ async function analyzeDirOrArchiveOnDisk(name, version, options) {
                 packageDeps.filter((name) => !name.startsWith("@types")), thirdPartyDependencies);
             const missingDeps = new Set(difference(thirdPartyDependencies, packageDeps));
 
-            ref.flags.hasMissingOrUnusedDependency = unusedDeps.length > 0 || missingDeps.length > 0;
+            if (unusedDeps.length > 0 || missingDeps.length > 0) {
+                ref.flags.push("hasMissingOrUnusedDependency");
+            }
             ref.composition.unused.push(...unusedDeps);
             ref.composition.missing.push(...missingDeps);
         }
@@ -171,22 +179,34 @@ async function analyzeDirOrArchiveOnDisk(name, version, options) {
             // })
             .map((depName) => (extname(depName) === "" ? `${depName}.js` : depName));
         ref.composition.required_nodejs = required.filter((name) => NODE_CORE_LIBS.has(name));
-        ref.flags.hasExternalCapacity = ref.composition.required_nodejs
+
+        if (ref.composition.minified.length > 0) {
+            ref.flags.push("hasMinifiedCode");
+        }
+
+        const hasExternalCapacity = ref.composition.required_nodejs
             .some((depName) => constants.EXT_DEPS.has(depName));
-        ref.flags.hasMinifiedCode = ref.composition.minified.length > 0;
+        if (hasExternalCapacity) {
+            ref.flags.push("hasExternalCapacity");
+        }
 
         // License
         await nextTick();
         const licenses = await ntlp(dest);
 
         const uniqueLicenseIds = Array.isArray(licenses.uniqueLicenseIds) ? licenses.uniqueLicenseIds : [];
-        ref.flags.hasLicense = uniqueLicenseIds.length > 0;
-        ref.flags.hasMultipleLicenses = licenses.hasMultipleLicenses;
+        if (uniqueLicenseIds.length === 0) {
+            ref.flags.push("hasNoLicense");
+        }
+        if (licenses.hasMultipleLicenses) {
+            ref.flags.push("hasMultipleLicenses");
+        }
+
         ref.license = licenses;
         ref.license.uniqueLicenseIds = uniqueLicenseIds;
     }
     catch (err) {
-        ref.flags.hasLicense = true;
+        // Ignore
     }
     finally {
         free();

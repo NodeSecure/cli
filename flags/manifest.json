@@ -16,7 +16,7 @@
         "tooltipDescription": "The package has dependencies that are not packages."
     },
     "📜": {
-        "title": "hasLicense",
+        "title": "hasNoLicense",
         "tooltipDescription": "The package does not seem to have a license."
     },
     "📚": {

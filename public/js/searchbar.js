@@ -354,7 +354,7 @@ export default class SearchBar {
                     break;
                 }
                 case "flag":
-                    if (inputValue in opt.flags && opt.flags[inputValue] === true) {
+                    if (opt.flags.includes(inputValue)) {
                         matchingIds.add(String(id));
                     }
                     break;

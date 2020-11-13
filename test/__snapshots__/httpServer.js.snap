@@ -65,7 +65,7 @@ Object {
     "tooltipDescription": "The package has multiple licenses in multiple files",
   },
   "📜": Object {
-    "title": "hasLicense",
+    "title": "hasNoLicense",
     "tooltipDescription": "The package does not seem to have a license.",
   },
   "📦": Object {

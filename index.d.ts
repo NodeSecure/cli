@@ -22,25 +22,24 @@ declare namespace NodeSecure {
         email?: string;
     }
 
-    interface Flags {
-        isGit: boolean;
-        isDeprecated: boolean;
-        isOutdated: boolean;
-        hasNativeCode: boolean;
-        hasManifest: boolean;
-        hasOutdatedDependency: boolean;
-        hasWarnings: boolean;
-        hasLicense: boolean;
-        hasMultipleLicenses: boolean;
-        hasMissingOrUnusedDependency: boolean;
-        hasMinifiedCode: boolean;
-        hasIndirectDependencies: boolean;
-        hasCustomResolver: boolean;
-        hasDependencies: boolean;
-        hasExternalCapacity: boolean;
-        hasScript: boolean;
-        hasBannedFile: boolean;
-    }
+    type Flags =
+        "isGit" |
+        "isDeprecated" |
+        "isOutdated" |
+        "hasNativeCode" |
+        "hasManifest" |
+        "hasOutdatedDependency" |
+        "hasWarnings" |
+        "hasNoLicense" |
+        "hasMultipleLicenses" |
+        "hasMissingOrUnusedDependency" |
+        "hasMinifiedCode" |
+        "hasIndirectDependencies" |
+        "hasCustomResolver" |
+        "hasDependencies" |
+        "hasExternalCapacity" |
+        "hasScript" |
+        "hasBannedFile";
 
     interface Dependency {
         name: string;
@@ -49,7 +48,7 @@ declare namespace NodeSecure {
             name: string;
             version: string;
         };
-        flags: Flags;
+        flags: Flags[];
     }
 
     interface Vulnerability {
