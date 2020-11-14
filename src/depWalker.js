@@ -172,7 +172,7 @@ async function fetchPackageMetadata(name, version, options) {
 
             if (!publishers.has(npmUser.name)) {
                 publishers.add(npmUser.name);
-                ref.metadata.publishers.push({ name, version, at: pkg.publishedAt(version) });
+                ref.metadata.publishers.push({ name: npmUser.name, version, at: pkg.publishedAt(version) });
             }
         }
 
