@@ -88,7 +88,6 @@ class Dependency {
                 publishedCount: 0,
                 lastUpdateAt: null,
                 lastVersion: null,
-                hasChangedAuthor: false,
                 hasManyPublishers: false,
                 hasReceivedUpdateInOneYear: true,
                 homepage: null,

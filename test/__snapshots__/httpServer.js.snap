@@ -45,8 +45,8 @@ Object {
     "tooltipDescription": "A dependency is missing in package.json or a dependency is installed but never used!",
   },
   "👥": Object {
-    "title": "hasChangedAuthor",
-    "tooltipDescription": "The author has already changed at least one time.",
+    "title": "hasManyPublishers",
+    "tooltipDescription": "The package has several publishers.",
   },
   "💀": Object {
     "title": "isDead",
@@ -55,10 +55,6 @@ Object {
   "💎": Object {
     "title": "hasCustomResolver",
     "tooltipDescription": "The package has dependencies that are not packages.",
-  },
-  "💕": Object {
-    "title": "hasManyPublishers",
-    "tooltipDescription": "The package has several publishers.",
   },
   "📚": Object {
     "title": "hasMultipleLicenses",

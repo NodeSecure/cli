@@ -141,18 +141,10 @@ Exemple:
 - [10 npm Security Best Practices](https://snyk.io/blog/ten-npm-security-best-practices/)
 </details>
 
-<details><summary>💕 hasManyPublishers</summary>
+<details><summary>👥 hasManyPublishers</summary>
 <br />
 
 The package has been published on npm by multiple unique users. There is no big deal here, just mean the package is maintained by a group of people.
-</details>
-
-<details><summary>👥 hasChangedAuthor</summary>
-<br />
-
-The package original author/owner has been updated. This may indicate ownership transfer !
-
-> ⚠️ this flag is not yet as revelant as we want because sometimes we fail to retrieve the real package owner.
 </details>
 
 <details><summary>🚨 vulnerabilities</summary>

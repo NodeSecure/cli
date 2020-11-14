@@ -31,13 +31,9 @@
         "title": "isDeprecated",
         "tooltipDescription": "The package is deprecated."
     },
-    "💕": {
+    "👥": {
         "title": "hasManyPublishers",
         "tooltipDescription": "The package has several publishers."
-    },
-    "👥": {
-        "title": "hasChangedAuthor",
-        "tooltipDescription": "The author has already changed at least one time."
     },
     "📦": {
         "title": "hasScript",

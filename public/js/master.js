@@ -74,8 +74,7 @@ const kFlagsEmojis = {
     hasExternalCapacity: "🌍",
     hasScript: "📦",
     hasMissingOrUnusedDependency: "👀",
-    hasManyPublishers: "💖",
-    hasChangedAuthor: "👥",
+    hasManyPublishers: "👥",
     isDead: "💀",
     hasVulnerabilities: "🚨",
     hasDuplicate: "🎭"

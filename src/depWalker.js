@@ -150,29 +150,35 @@ async function fetchPackageMetadata(name, version, options) {
         ref.metadata.lastVersion = pkg.lastVersion;
         ref.metadata.homepage = pkg.homepage || null;
         ref.metadata.maintainers = pkg.maintainers;
-        ref.metadata.author = pkg?.author?.name || "N/A";
+        if (is.string(pkg.author)) {
+            ref.metadata.author = pkg.author;
+        }
+        else {
+            ref.metadata.author = "name" in pkg.author ? pkg.author.name : null;
+        }
 
         for (const version of pkg.versions) {
             const { npmUser } = pkg.version(version);
-            if (!is.nullOrUndefined(npmUser)) {
-                const name = npmUser.name || version.npmUser;
-                if (!publishers.has(name)) {
-                    publishers.add(name);
-                    ref.metadata.publishers.push({ name, version, at: pkg.publishedAt(version) });
-                }
-            }
-
-            if (is.nullOrUndefined(ref.metadata.author) || is.nullOrUndefined(version.author)) {
+            if (is.nullOrUndefined(npmUser) || !("name" in npmUser) || !is.string(npmUser.name)) {
                 continue;
             }
 
-            const name = version.author.name || version.author;
-            if (is.string(name) && name !== ref.metadata.author) {
-                ref.metadata.hasChangedAuthor = true;
+            if (ref.metadata.author === null) {
+                ref.metadata.author = npmUser.name;
+            }
+            else if (npmUser.name !== ref.metadata.author) {
+                ref.metadata.hasManyPublishers = true;
+            }
+
+            if (!publishers.has(npmUser.name)) {
+                publishers.add(npmUser.name);
+                ref.metadata.publishers.push({ name, version, at: pkg.publishedAt(version) });
             }
         }
 
-        ref.metadata.hasManyPublishers = publishers.size > 1;
+        if (ref.metadata.author === null) {
+            ref.metadata.author = "N/A";
+        }
     }
     catch (err) {
         // Ignore

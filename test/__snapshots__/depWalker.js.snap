@@ -68,8 +68,7 @@ Object {
     "metadata": Object {
       "author": "SlimIO",
       "dependencyCount": 0,
-      "hasChangedAuthor": false,
-      "hasManyPublishers": false,
+      "hasManyPublishers": true,
       "hasReceivedUpdateInOneYear": false,
       "homepage": "https://github.com/SlimIO/is#readme",
       "lastUpdateAt": "2019-06-11T06:41:41.590Z",
@@ -96,7 +95,7 @@ Object {
       "publishers": Array [
         Object {
           "at": "2018-09-22T20:36:27.523Z",
-          "name": "fraxken",
+          "name": "@slimio/is",
           "version": "1.0.0",
         },
       ],
