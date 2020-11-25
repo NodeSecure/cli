@@ -115,7 +115,7 @@ async function* deepReadEdges(currentPackageName, { to, parent, exclude, fullLoc
     current.addFlag("hasDependencies", to.edgesOut.size > 0);
 
     for (const [packageName, { to: toNode }] of to.edgesOut) {
-        if (toNode.dev) {
+        if (toNode === null || toNode.dev) {
             continue;
         }
         const cleanName = `${packageName}@${toNode.package.version}`;
