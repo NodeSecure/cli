@@ -352,6 +352,12 @@ async function depWalker(manifest, options = Object.create(null)) {
 
     // Apply warnings!
     payload.warnings = applyWarnings(payload.dependencies);
+    if (payload.warnings.length > 0 && verbose) {
+        console.log(`\n ${yellow().underline().bold("Global Warning:")}\n`);
+        for (const warning of payload.warnings) {
+            console.log(red().bold(warning));
+        }
+    }
 
     // Cleanup tmpLocation dir
     try {

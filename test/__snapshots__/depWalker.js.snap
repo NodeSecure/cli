@@ -95,7 +95,7 @@ Object {
       "publishers": Array [
         Object {
           "at": "2018-09-22T20:36:27.523Z",
-          "name": "@slimio/is",
+          "name": "fraxken",
           "version": "1.0.0",
         },
       ],
