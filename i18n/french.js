@@ -41,6 +41,9 @@ module.exports = {
                 desc: "Démarre une analyse AST avancée pour un package npm donné",
                 option_json: "Affiche le résultat d'analyse dans la sortie standard"
             },
+            summary: {
+                desc: "Afficher le résultat de votre analyse"
+            },
             lang: {
                 desc: "Configure le langage par défaut du CLI",
                 question_text: "Quel langage souhaitez-vous utiliser ?",

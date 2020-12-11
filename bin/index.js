@@ -6,7 +6,7 @@ require("make-promises-safe");
 require("dotenv").config();
 
 // Require Node.js Dependencies
-const { writeFileSync, promises: { unlink, readdir } } = require("fs");
+const { writeFileSync, promises: { unlink, readdir, readFile } } = require("fs");
 const { join, extname, basename } = require("path");
 const { once } = require("events");
 
@@ -110,6 +110,11 @@ prog
     .action(verifyCmd);
 
 prog
+    .command("summary [json]")
+    .describe(i18n.getToken("cli.commands.summary.desc"))
+    .action(summaryCmd);
+
+prog
     .command("lang")
     .describe(i18n.getToken("cli.commands.lang.desc"))
     .action(async() => {
@@ -140,6 +145,134 @@ function locationToString(location) {
     const end = `${location[1][0]}:${location[1][1]}`;
 
     return `[${start}] - [${end}]`;
+}
+
+async function summaryCmd(json = "nsecure-result.json") {
+    const dataFilePath = join(process.cwd(), json);
+    const rawAnalysis = await readFile(dataFilePath, { encoding: "utf-8" });
+    const { rootDepencyName, dependencies } = JSON.parse(rawAnalysis);
+
+    ui.div(
+        { text: cyan().bold(`${i18n.getToken("ui.stats.title")}: ${rootDepencyName}`), width: 50 }
+    );
+    ui.div({ text: yellow("-------------------------------------------------------------------"), width: 70 });
+
+    if (dependencies) {
+        const {
+            packagesCount,
+            packageWithIndirectDeps,
+            totalSize,
+            extensionList,
+            licenseList
+        } = extractAnalysisData(dependencies);
+
+
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.total_packages")}:`), width: 40 },
+            { text: yellow().bold(`${packagesCount}`), width: 20 }
+        );
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.total_size")}`), width: 40 },
+            { text: yellow().bold(`${totalSize}`), width: 20 }
+        );
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.indirect_deps")}:`), width: 40 },
+            { text: yellow().bold(`${packageWithIndirectDeps}`), width: 20 }
+        );
+
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.extensions")}`), width: 40 }
+        );
+        ui.div(
+            { text: yellow().bold(`${[...extensionList.values()]
+                .reduce((acc, curr) => {
+                    // eslint-disable-next-line
+                    acc += `${curr} `;
+
+                    return acc;
+                }, "")
+            }`), width: 70 }
+        );
+
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.licenses")}`), width: 40 }
+        );
+        ui.div(
+            { text: yellow().bold(`${[...licenseList.values()]
+                .reduce((acc, curr) => {
+                    // eslint-disable-next-line
+                    acc += `${curr} `;
+
+                    return acc;
+                }, "")
+            }`), width: 70 }
+        );
+    }
+    else {
+        ui.div(
+            { text: cyan().bold("Error:"), width: 20 },
+            { text: yellow().bold("No dependencies"), width: 30 }
+        );
+    }
+    ui.div({ text: yellow("-------------------------------------------------------------------"), width: 70 });
+    console.log(`${ui.toString()}`);
+    ui.resetOutput();
+
+    return void 0;
+}
+
+function extractAnalysisData(dependencies) {
+    const analysisAggregator = {
+        packagesCount: 0,
+        totalSize: 0,
+        packageWithIndirectDeps: 0,
+        extensionList: new Set(),
+        licenseList: new Set()
+    };
+
+    for (const dependencyIdentifier in dependencies) {
+        if (dependencyIdentifier) {
+            const dependencyData = dependencies[dependencyIdentifier];
+            const versions = dependencyData.versions;
+            const metadata = dependencyData.metadata;
+
+            for (const version of versions) {
+                if (version) {
+                    const versionData = dependencyData[version];
+                    extractVersionData(versionData, analysisAggregator);
+                }
+            }
+
+            if (metadata.dependencyCount) {
+                analysisAggregator.packagesCount += metadata.dependencyCount;
+            }
+        }
+    }
+
+
+    return analysisAggregator;
+}
+
+function extractVersionData(version, analysisAggregator) {
+    if (version.composition.extensions) {
+        for (const extension of version.composition.extensions) {
+            analysisAggregator.extensionList.add(extension);
+        }
+    }
+
+    if (version.license.uniqueLicenseIds) {
+        for (const licence of version.license.uniqueLicenseIds) {
+            analysisAggregator.licenseList.add(licence);
+        }
+    }
+
+    if (version.flags && version.flags.includes("hasIndirectDependencies")) {
+        analysisAggregator.packageWithIndirectDeps++;
+    }
+
+    if (version.size) {
+        analysisAggregator.totalSize += version.size;
+    }
 }
 
 async function verifyCmd(packageName = null, options) {
