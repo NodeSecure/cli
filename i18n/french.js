@@ -96,7 +96,9 @@ module.exports = {
                 file: "fichier",
                 errorMsg: "valeur incriminée",
                 position: "position",
-                inspect: "inspecter"
+                inspect: "inspecter",
+                disable_scarf: "Cette dépendence peut recolter des données contre votre volonté, pensez donc à la désactiver en fournissant la variable d'environnement SCARF_ANALYTICS",
+                keylogging: "Cette dépendence peut obtenir vos entrez clavier ou de souris. Cette dépendence peut être utiliser en tant que 'keylogging' attacks/malwares."
             }
         },
         searchbar_placeholder: "Recherche",
