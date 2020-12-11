@@ -96,9 +96,7 @@ module.exports = {
                 file: "fichier",
                 errorMsg: "valeur incriminée",
                 position: "position",
-                inspect: "inspecter",
-                disable_scarf: "Cette dépendence peut recolter des données contre votre volonté, pensez donc à la désactiver en fournissant la variable d'environnement SCARF_ANALYTICS",
-                keylogging: "Cette dépendence peut obtenir vos entrez clavier ou de souris. Cette dépendence peut être utiliser en tant que 'keylogging' attacks/malwares."
+                inspect: "inspecter"
             }
         },
         searchbar_placeholder: "Recherche",
@@ -106,5 +104,9 @@ module.exports = {
         show_complete_desc: "Sélectionnez un package pour voir une description complète ici",
         loading_nodes: "... Chargement des noeuds ...",
         please_wait: "(Merci de patienter)"
+    },
+    warnings: {
+        disable_scarf: "Cette dépendance peut récolter des données contre votre volonté, pensez donc à la désactiver en fournissant la variable d'environnement SCARF_ANALYTICS",
+        keylogging: "Cette dépendance peut obtenir vos entrées clavier ou de souris. Cette dépendance peut être utilisée en tant que 'keylogging' attacks/malwares."
     }
 };

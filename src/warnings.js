@@ -3,13 +3,13 @@
 
 // Require Third-party Dependencies
 const { taggedString } = require("./utils");
-const i18n = require('./i18n');
+const i18n = require("./i18n");
 
 // CONSTANTS
 const kDetectedDep = taggedString`The dependency '${0}' has been detected in the dependency Tree.`;
 const kWarningsMessages = Object.freeze({
-    "@scarf/scarf": i18n.getToken("ui.popups.warnings.disable_scarf"),
-    iohook: i18n.getToken("ui.popups.warnings.keylogging")
+    "@scarf/scarf": i18n.getToken("warnings.disable_scarf"),
+    iohook: i18n.getToken("warnings.keylogging")
 });
 const kPackages = new Set(Object.keys(kWarningsMessages));
 
