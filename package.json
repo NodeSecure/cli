@@ -102,7 +102,7 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@npmcli/arborist": "0.0.21",
+    "@npmcli/arborist": "^2.0.1",
     "@polka/send-type": "^0.5.2",
     "@slimio/async-cli-spinner": "^0.5.2",
     "@slimio/github": "^0.5.0",
