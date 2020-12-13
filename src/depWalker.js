@@ -219,7 +219,7 @@ async function* getRootDependencies(manifest, options) {
             ...iter.map(dependencies.entries(), ([name, ver]) => searchDeepDependencies(`${name}@${ver}`, void 0, configRef))
         ];
     }
-    for await (const dep of combineAsyncIterators(...iterators)) {
+    for await (const dep of combineAsyncIterators({}, ...iterators)) {
         yield dep;
     }
 
