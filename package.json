@@ -97,7 +97,7 @@
     "pretty-bytes": "^5.4.1",
     "size-satisfies": "^1.0.0",
     "style-loader": "^1.3.0",
-    "vis-network": "^8.5.1",
+    "vis-network": "^8.5.4",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
   },
@@ -111,7 +111,7 @@
     "@slimio/npm-registry": "^0.7.0",
     "builtins": "^3.0.1",
     "cacache": "^15.0.5",
-    "cliui": "^7.0.3",
+    "cliui": "^7.0.4",
     "combine-async-iterators": "^2.0.0",
     "dotenv": "^8.2.0",
     "filenamify": "^4.2.0",
@@ -124,15 +124,15 @@
     "lodash.difference": "^4.5.0",
     "lodash.get": "^4.4.2",
     "make-promises-safe": "^5.1.0",
-    "ms": "^2.1.2",
+    "ms": "^2.1.3",
     "ntlp": "^1.1.3",
     "open": "^7.3.0",
-    "pacote": "^11.1.11",
+    "pacote": "^11.1.13",
     "polka": "^0.5.2",
     "qoa": "^0.2.0",
     "sade": "^1.7.4",
-    "semver": "^7.3.2",
-    "sirv": "^1.0.7",
+    "semver": "^7.3.4",
+    "sirv": "^1.0.10",
     "zup": "0.0.1"
   }
 }
