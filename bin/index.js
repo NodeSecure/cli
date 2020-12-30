@@ -162,10 +162,9 @@ async function summaryCmd(json = "nsecure-result.json") {
             packagesCount,
             packageWithIndirectDeps,
             totalSize,
-            extensionList,
-            licenseList
+            extensionMap,
+            licenceMap
         } = extractAnalysisData(dependencies);
-
 
         ui.div(
             { text: cyan().bold(`${i18n.getToken("ui.stats.total_packages")}:`), width: 40 },
@@ -181,30 +180,22 @@ async function summaryCmd(json = "nsecure-result.json") {
         );
 
         ui.div(
-            { text: cyan().bold(`${i18n.getToken("ui.stats.extensions")}`), width: 40 }
+            { text: cyan().bold(`${i18n.getToken("ui.stats.extensions")} :`), width: 40 }
         );
+        const extensionEntries = Object.entries(extensionMap);
         ui.div(
-            { text: yellow().bold(`${[...extensionList.values()]
-                .reduce((acc, curr) => {
-                    // eslint-disable-next-line
-                    acc += `${curr} `;
-
-                    return acc;
-                }, "")
-            }`), width: 70 }
+            { text: `${extensionEntries
+                .reduce(buildStringFromEntries, "")
+            }`, width: 70 }
         );
 
         ui.div(
-            { text: cyan().bold(`${i18n.getToken("ui.stats.licenses")}`), width: 40 }
+            { text: cyan().bold(`${i18n.getToken("ui.stats.licenses")} :`), width: 40 }
         );
+        const licenceEntries = Object.entries(licenceMap);
         ui.div(
-            { text: yellow().bold(`${[...licenseList.values()]
-                .reduce((acc, curr) => {
-                    // eslint-disable-next-line
-                    acc += `${curr} `;
-
-                    return acc;
-                }, "")
+            { text: yellow().bold(`${licenceEntries
+                .reduce(buildStringFromEntries, "")
             }`), width: 70 }
         );
     }
@@ -221,13 +212,25 @@ async function summaryCmd(json = "nsecure-result.json") {
     return void 0;
 }
 
+// eslint-disable-next-line max-params
+function buildStringFromEntries(accumulator, [extension, count], index, sourceArray) {
+    // eslint-disable-next-line no-param-reassign
+    accumulator += `(${yellow(count)}) ${white().bold(extension)} `;
+    if (index !== sourceArray.length - 1) {
+        // eslint-disable-next-line no-param-reassign
+        accumulator += cyan("- ");
+    }
+
+    return accumulator;
+}
+
 function extractAnalysisData(dependencies) {
     const analysisAggregator = {
         packagesCount: 0,
         totalSize: 0,
         packageWithIndirectDeps: 0,
-        extensionList: new Set(),
-        licenseList: new Set()
+        extensionMap: {},
+        licenceMap: {}
     };
 
     for (const dependencyIdentifier in dependencies) {
@@ -256,13 +259,13 @@ function extractAnalysisData(dependencies) {
 function extractVersionData(version, analysisAggregator) {
     if (version.composition.extensions) {
         for (const extension of version.composition.extensions) {
-            analysisAggregator.extensionList.add(extension);
+            addOccurrences(analysisAggregator.extensionMap, extension);
         }
     }
 
     if (version.license.uniqueLicenseIds) {
         for (const licence of version.license.uniqueLicenseIds) {
-            analysisAggregator.licenseList.add(licence);
+            addOccurrences(analysisAggregator.licenceMap, licence);
         }
     }
 
@@ -272,6 +275,15 @@ function extractVersionData(version, analysisAggregator) {
 
     if (version.size) {
         analysisAggregator.totalSize += version.size;
+    }
+}
+
+function addOccurrences(aggregator, key) {
+    if (aggregator[key]) {
+        aggregator[key]++;
+    }
+    else {
+        aggregator[key] = 1;
     }
 }
 
