@@ -233,34 +233,23 @@ function extractAnalysisData(dependencies) {
         licenceMap: {}
     };
 
-    for (const dependencyIdentifier in dependencies) {
-        if (dependencyIdentifier) {
-            const dependencyData = dependencies[dependencyIdentifier];
-            const versions = dependencyData.versions;
-            const metadata = dependencyData.metadata;
+    for (const dependencyData of Object.values(dependencies)) {
+        const { versions, metadata } = dependencyData;
 
-            for (const version of versions) {
-                if (version) {
-                    const versionData = dependencyData[version];
-                    extractVersionData(versionData, analysisAggregator);
-                }
-            }
-
-            if (metadata.dependencyCount) {
-                analysisAggregator.packagesCount += metadata.dependencyCount;
-            }
+        for (const version of versions) {
+            const versionData = dependencyData[version];
+            extractVersionData(versionData, analysisAggregator);
         }
-    }
 
+        analysisAggregator.packagesCount += metadata.dependencyCount;
+    }
 
     return analysisAggregator;
 }
 
 function extractVersionData(version, analysisAggregator) {
-    if (version.composition.extensions) {
-        for (const extension of version.composition.extensions) {
-            addOccurrences(analysisAggregator.extensionMap, extension);
-        }
+    for (const extension of version.composition.extensions) {
+        addOccurrences(analysisAggregator.extensionMap, extension);
     }
 
     if (version.license.uniqueLicenseIds) {
@@ -273,9 +262,7 @@ function extractVersionData(version, analysisAggregator) {
         analysisAggregator.packageWithIndirectDeps++;
     }
 
-    if (version.size) {
-        analysisAggregator.totalSize += version.size;
-    }
+    analysisAggregator.totalSize += version.size;
 }
 
 function addOccurrences(aggregator, key) {
