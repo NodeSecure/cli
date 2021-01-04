@@ -6,7 +6,7 @@ require("make-promises-safe");
 require("dotenv").config();
 
 // Require Node.js Dependencies
-const { writeFileSync, promises: { unlink, readdir } } = require("fs");
+const { writeFileSync, promises: { unlink, readdir, readFile } } = require("fs");
 const { join, extname, basename } = require("path");
 const { once } = require("events");
 
@@ -110,6 +110,11 @@ prog
     .action(verifyCmd);
 
 prog
+    .command("summary [json]")
+    .describe(i18n.getToken("cli.commands.summary.desc"))
+    .action(summaryCmd);
+
+prog
     .command("lang")
     .describe(i18n.getToken("cli.commands.lang.desc"))
     .action(async() => {
@@ -140,6 +145,133 @@ function locationToString(location) {
     const end = `${location[1][0]}:${location[1][1]}`;
 
     return `[${start}] - [${end}]`;
+}
+
+async function summaryCmd(json = "nsecure-result.json") {
+    const dataFilePath = join(process.cwd(), json);
+    const rawAnalysis = await readFile(dataFilePath, { encoding: "utf-8" });
+    const { rootDepencyName, dependencies } = JSON.parse(rawAnalysis);
+
+    ui.div(
+        { text: cyan().bold(`${i18n.getToken("ui.stats.title")}: ${rootDepencyName}`), width: 50 }
+    );
+    ui.div({ text: yellow("-------------------------------------------------------------------"), width: 70 });
+
+    if (dependencies) {
+        const {
+            packagesCount,
+            packageWithIndirectDeps,
+            totalSize,
+            extensionMap,
+            licenceMap
+        } = extractAnalysisData(dependencies);
+
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.total_packages")}:`), width: 40 },
+            { text: yellow().bold(`${packagesCount}`), width: 20 }
+        );
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.total_size")}`), width: 40 },
+            { text: yellow().bold(`${totalSize}`), width: 20 }
+        );
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.indirect_deps")}:`), width: 40 },
+            { text: yellow().bold(`${packageWithIndirectDeps}`), width: 20 }
+        );
+
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.extensions")} :`), width: 40 }
+        );
+        const extensionEntries = Object.entries(extensionMap);
+        ui.div(
+            { text: `${extensionEntries
+                .reduce(buildStringFromEntries, "")
+            }`, width: 70 }
+        );
+
+        ui.div(
+            { text: cyan().bold(`${i18n.getToken("ui.stats.licenses")} :`), width: 40 }
+        );
+        const licenceEntries = Object.entries(licenceMap);
+        ui.div(
+            { text: yellow().bold(`${licenceEntries
+                .reduce(buildStringFromEntries, "")
+            }`), width: 70 }
+        );
+    }
+    else {
+        ui.div(
+            { text: cyan().bold("Error:"), width: 20 },
+            { text: yellow().bold("No dependencies"), width: 30 }
+        );
+    }
+    ui.div({ text: yellow("-------------------------------------------------------------------"), width: 70 });
+    console.log(`${ui.toString()}`);
+    ui.resetOutput();
+
+    return void 0;
+}
+
+// eslint-disable-next-line max-params
+function buildStringFromEntries(accumulator, [extension, count], index, sourceArray) {
+    // eslint-disable-next-line no-param-reassign
+    accumulator += `(${yellow(count)}) ${white().bold(extension)} `;
+    if (index !== sourceArray.length - 1) {
+        // eslint-disable-next-line no-param-reassign
+        accumulator += cyan("- ");
+    }
+
+    return accumulator;
+}
+
+function extractAnalysisData(dependencies) {
+    const analysisAggregator = {
+        packagesCount: 0,
+        totalSize: 0,
+        packageWithIndirectDeps: 0,
+        extensionMap: {},
+        licenceMap: {}
+    };
+
+    for (const dependencyData of Object.values(dependencies)) {
+        const { versions, metadata } = dependencyData;
+
+        for (const version of versions) {
+            const versionData = dependencyData[version];
+            extractVersionData(versionData, analysisAggregator);
+        }
+
+        analysisAggregator.packagesCount += metadata.dependencyCount;
+    }
+
+    return analysisAggregator;
+}
+
+function extractVersionData(version, analysisAggregator) {
+    for (const extension of version.composition.extensions) {
+        addOccurrences(analysisAggregator.extensionMap, extension);
+    }
+
+    if (version.license.uniqueLicenseIds) {
+        for (const licence of version.license.uniqueLicenseIds) {
+            addOccurrences(analysisAggregator.licenceMap, licence);
+        }
+    }
+
+    if (version.flags && version.flags.includes("hasIndirectDependencies")) {
+        analysisAggregator.packageWithIndirectDeps++;
+    }
+
+    analysisAggregator.totalSize += version.size;
+}
+
+function addOccurrences(aggregator, key) {
+    if (aggregator[key]) {
+        aggregator[key]++;
+    }
+    else {
+        aggregator[key] = 1;
+    }
 }
 
 async function verifyCmd(packageName = null, options) {

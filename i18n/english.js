@@ -41,6 +41,9 @@ module.exports = {
                 desc: "Run a complete advanced analysis for a given npm package",
                 option_json: "Stdout the analysis payload"
             },
+            summary: {
+                desc: "Display your analysis results"
+            },
             lang: {
                 desc: "Configure the CLI default language",
                 question_text: "What language do you want to use?",
