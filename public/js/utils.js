@@ -1,4 +1,4 @@
-import gravatarURL from "gravatar-url";
+import avatarURL from "../img/avatar-default.png";
 
 window.activeLegendElement = null;
 
@@ -47,12 +47,12 @@ export function createAvatar(name, desc) {
 
     const imgEl = document.createElement("img");
     if (!("email" in desc) || typeof desc.email === "undefined" || desc.email === null || desc.email === "") {
-        imgEl.src = "/img/avatar-default.png";
+        imgEl.src = `img/${avatarURL}`;
     }
     else {
-        imgEl.src = gravatarURL(desc.email);
+        imgEl.src = `https://unavatar.now.sh/${desc.email}`;
         imgEl.onerror = () => {
-            imgEl.src = "/img/avatar-default.png";
+            imgEl.src = `img/${avatarURL}`;
         };
     }
     imgEl.alt = name;

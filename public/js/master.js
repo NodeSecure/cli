@@ -1,5 +1,6 @@
 "use strict";
 
+// Dependencies
 import prettyBytes from "pretty-bytes";
 import * as utils from "./utils.js";
 import * as popup from "./popup.js";

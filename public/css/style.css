@@ -1,3 +1,9 @@
+@import url("./reset.css");
+@import url("./fontello.css");
+@import url("./roboto.css");
+@import url("./popup.css");
+@import url("./searchbar.css");
+
 :root {
     --primary-color: #64B5F6;
     --background-color: #1976D2;
@@ -22,7 +28,6 @@
     src: url("../font/mononoki/mononoki-Italic.woff");
     font-style: italic;
 }
-
 
 body, html {
     height: 100%;
