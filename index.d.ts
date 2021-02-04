@@ -116,8 +116,9 @@ declare namespace NodeSecure {
     interface Payload {
         id: string;
         rootDependencyName: string;
-        warnings: [],
+        warnings: [];
         dependencies: Record<string, VersionDescriptor>;
+        version: string;
     }
 
     interface VerifyPayload {

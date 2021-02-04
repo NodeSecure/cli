@@ -114,5 +114,6 @@ Array [
   "rootDepencyName",
   "warnings",
   "dependencies",
+  "version",
 ]
 `;

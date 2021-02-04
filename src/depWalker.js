@@ -25,6 +25,7 @@ const { analyzeDirOrArchiveOnDisk } = require("./tarball");
 const Dependency = require("./dependency.class");
 const applyWarnings = require("./warnings");
 const i18n = require("./i18n");
+const { version: packageVersion } = require("../package.json");
 
 // VARS
 const npmReg = new Registry(constants.DEFAULT_REGISTRY_ADDR);
@@ -249,7 +250,8 @@ async function depWalker(manifest, options = Object.create(null)) {
         id,
         rootDepencyName: manifest.name,
         warnings: [],
-        dependencies: new Map()
+        dependencies: new Map(),
+        version: packageVersion
     };
 
     // We are dealing with an exclude Map to avoid checking a package more than one time in searchDeepDependencies
