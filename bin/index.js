@@ -27,6 +27,7 @@ const i18n = require("../src/i18n");
 const { getRegistryURL, loadNsecureCache, writeNsecureCache, formatBytes } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
 const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
+const { isAnalysisVersionValid, VERSION_RANGE } = require("../src/checkVersion");
 const { cwd, verify } = require("../index");
 
 // CONSTANTS
@@ -150,7 +151,13 @@ function locationToString(location) {
 async function summaryCmd(json = "nsecure-result.json") {
     const dataFilePath = join(process.cwd(), json);
     const rawAnalysis = await readFile(dataFilePath, { encoding: "utf-8" });
-    const { rootDepencyName, dependencies } = JSON.parse(rawAnalysis);
+    const { rootDepencyName, dependencies, version = "" } = JSON.parse(rawAnalysis);
+
+    if (!version || !isAnalysisVersionValid(version)) {
+        throw new Error(`
+        Your analysis version is no more compatible with nsecure (accepted range: ${VERSION_RANGE}) - Run a new analysis.
+        `);
+    }
 
     ui.div(
         { text: cyan().bold(`${i18n.getToken("ui.stats.title")}: ${rootDepencyName}`), width: 50 }
