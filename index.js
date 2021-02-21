@@ -3,7 +3,7 @@
 // Require Node.js Dependencies
 const os = require("os");
 const { join, extname } = require("path");
-const { mkdtemp, readFile, rmdir } = require("fs").promises;
+const { mkdtemp, readFile } = require("fs").promises;
 const { promisify } = require("util");
 
 // Require Third-party Dependencies
@@ -14,7 +14,7 @@ const isMinified = require("is-minified-code");
 
 // Require Internal Dependencies
 const { depWalker } = require("./src/depWalker");
-const { getRegistryURL, getTarballComposition } = require("./src/utils");
+const { getRegistryURL, getTarballComposition, recursiveRmdir } = require("./src/utils");
 
 // CONSTANTS
 const TMP = os.tmpdir();
@@ -133,7 +133,7 @@ async function verify(packageName = null) {
     }
     finally {
         await nextTick();
-        await rmdir(tmpLocation, { recursive: true });
+        await recursiveRmdir(tmpLocation);
     }
 }
 

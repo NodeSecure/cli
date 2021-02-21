@@ -2,7 +2,7 @@
 
 // Require Node.js Dependencies
 const { join } = require("path");
-const { mkdtemp, rmdir, access } = require("fs").promises;
+const { mkdtemp, access } = require("fs").promises;
 const os = require("os");
 
 // Require Third-party Dependencies
@@ -19,7 +19,7 @@ const ms = require("ms");
 const is = require("@slimio/is");
 
 // Require Internal Dependencies
-const { mergeDependencies, cleanRange, constants } = require("./utils");
+const { mergeDependencies, cleanRange, recursiveRmdir, constants } = require("./utils");
 const { hydrateNodeSecurePayload } = require("./vulnerabilities");
 const { analyzeDirOrArchiveOnDisk } = require("./tarball");
 const Dependency = require("./dependency.class");
@@ -364,9 +364,10 @@ async function depWalker(manifest, options = Object.create(null)) {
     // Cleanup tmpLocation dir
     try {
         await new Promise((resolve) => setImmediate(resolve));
-        await rmdir(tmpLocation, { recursive: true });
+        await recursiveRmdir(tmpLocation);
     }
     catch (err) {
+        console.log(err);
         /* istanbul ignore next */
         console.log(red().bold(i18n.getToken("depWalker.failed_rmdir", yellow().bold(tmpLocation))));
     }
