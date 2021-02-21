@@ -10,7 +10,7 @@ const { extname, join, relative, basename } = require("path");
 const { spawnSync } = require("child_process");
 const {
     existsSync, readFileSync, writeFileSync,
-    promises: { stat, opendir, readFile }
+    promises: { stat, opendir, readFile, rmdir, rm }
 } = require("fs");
 
 // SYMBOLS
@@ -217,6 +217,15 @@ async function* readPackageLock(filePath = join(process.cwd(), "package-lock.jso
     yield* deepReadPackageLock(dependencies);
 }
 
+function recursiveRmdir(dirPath) {
+    // Prefer the non-deprecated `fs.rm` where available.
+    if (typeof rm === "function") {
+        return rm(dirPath, { recursive: true, force: true });
+    }
+
+    return rmdir(dirPath, { recursive: true });
+}
+
 module.exports = Object.freeze({
     readPackageLock,
     formatBytes,
@@ -230,6 +239,7 @@ module.exports = Object.freeze({
     cleanRange,
     taggedString,
     getRegistryURL,
+    recursiveRmdir,
     constants: Object.freeze({
         DEFAULT_REGISTRY_ADDR: getRegistryURL(),
         NPM_TOKEN: typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {},

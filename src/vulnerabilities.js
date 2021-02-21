@@ -4,12 +4,15 @@
 const { join, extname } = require("path");
 const {
     unlinkSync,
-    promises: { readdir, readFile, writeFile, rmdir }
+    promises: { readdir, readFile, writeFile }
 } = require("fs");
 
 // Require Third-party Dependencies
 const download = require("@slimio/github");
 const semver = require("semver");
+
+// Require Internal Dependencies
+const { recursiveRmdir } = require("./utils");
 
 // CONSTANTS
 const REPO = "nodejs.security-wg";
@@ -56,7 +59,7 @@ async function hydrateDB() {
         await writeFile(VULN_FILE_PATH, data);
     }
     finally {
-        await rmdir(location, { recursive: true });
+        await recursiveRmdir(location);
     }
 }
 
