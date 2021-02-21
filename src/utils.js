@@ -77,7 +77,7 @@ async function getTarballComposition(tarballDir) {
     return {
         ext,
         size,
-        files: files.map((path) => relative(tarballDir, path))
+        files: files.map((path) => relative(tarballDir, path)).sort()
     };
 }
 
