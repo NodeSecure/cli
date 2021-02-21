@@ -9,7 +9,7 @@
 <p align="center">
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/package-json/v/ES-Community/node-secure?style=flat-square" alt="npm version"></a>
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/license/ES-Community/node-secure?style=flat-square" alt="license"></a>
-    <a href="https://travis-ci.com/ES-Community/node-secure"><img src="https://img.shields.io/travis/com/ES-Community/node-secure/master.svg?style=flat-square" alt="travis"></a>
+    <a href="https://github.com/ES-Community/node-secure/actions?query=workflow%3A%22Node.js+CI%22"><img src="https://img.shields.io/github/workflow/status/ES-Community/node-secure/ci/master?style=flat-square" alt="github ci workflow"></a>
     <a href="https://codecov.io/github/ES-Community/node-secure"><img src="https://img.shields.io/codecov/c/github/ES-Community/node-secure.svg?style=flat-square" alt="codecov"></a>
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/david/ES-Community/node-secure?style=flat-square" alt="dependencies"></a>
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/bundlephobia/min/nsecure?style=flat-square" alt="size"></a>
