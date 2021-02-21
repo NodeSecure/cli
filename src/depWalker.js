@@ -367,7 +367,6 @@ async function depWalker(manifest, options = Object.create(null)) {
         await recursiveRmdir(tmpLocation);
     }
     catch (err) {
-        console.log(err);
         /* istanbul ignore next */
         console.log(red().bold(i18n.getToken("depWalker.failed_rmdir", yellow().bold(tmpLocation))));
     }
