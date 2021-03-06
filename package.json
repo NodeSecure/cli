@@ -16,7 +16,6 @@
     "prepublishOnly": "npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
-    "test:watch": "jest --roots='./test' --watch",
     "test-only": "jest --coverage"
   },
   "files": [
