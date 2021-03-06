@@ -26,17 +26,17 @@ const startHTTPServer = require("../src/httpServer.js");
 const i18n = require("../src/i18n");
 const { getRegistryURL, loadNsecureCache, writeNsecureCache, formatBytes } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
-const { VulnerabilityStrategy } = require("../src/vulnerabilities/vulnSource");
-const { SecurityWGStrategy, NPMAuditStrategy, VULN_MODE_NPM_AUDIT } = require("../src/vulnerabilities/strategies");
-const { hydrateDB, deleteDB } = require("../src/vulnerabilities/strategies/security-wg");
+const { VulnerabilityStrategy } = require("../src/vulnerabilities/vulnerabilitiesSource");
+const { VULN_MODE_NPM_AUDIT, VULN_MODE_DB_SECURITY_WG } = require("../src/vulnerabilities/strategies");
+const NPMAuditStrategy = require("../src/vulnerabilities/strategies/npm-audit.js");
 const { cwd, verify } = require("../index");
 
 /**
- * now it is hard initialized, but could later depend on config / CLI options
- * default strategy is @SecurityWGStrategy
+ * default Strategy is hard initialized, but can be changed at runtime
+ * default Strategy is {@function SecurityWGStrategy}
  */
-const vulnStrategy = VulnerabilityStrategy(new NPMAuditStrategy());
-// => switch on NPMAudit strategy : const vulnStrategy = initVulnerabilityStrategy(new NPMAuditStrategy());
+let vulnStrategy = VulnerabilityStrategy();
+// => switch on NPMAudit strategy : let vulnStrategy = VulnerabilityStrategy(NPMAuditStrategy());
 
 
 // CONSTANTS
@@ -72,19 +72,11 @@ function logAndWrite(payload, output = "nsecure-result") {
 }
 
 async function checkHydrateDB() {
-    /**
-     * Ensures that hydrateCmd is only trigger when DB needs to be hydrated
-     * for Node Working Group DB || Snyk DB (eventually).
-     * Probably needs a way to inform on the CLI output that the hydrate
-     * hasnt been done because it doesnt need to be
-     */
-    if (vulnStrategy.getStrategyType() !== VULN_MODE_NPM_AUDIT) {
-        const ts = Math.abs(Date.now() - LOCAL_CACHE.lastUpdated);
+    const ts = Math.abs(Date.now() - LOCAL_CACHE.lastUpdated);
 
-        if (ts > ONE_DAY) {
-            await hydrateCmd();
-            writeNsecureCache();
-        }
+    if (ts > ONE_DAY) {
+        await hydrateCmd();
+        writeNsecureCache();
     }
 }
 
@@ -100,6 +92,7 @@ prog
     .option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result")
     .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
     .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
+    .option("-s, --strategy", i18n.getToken("cli.commands.strategy"), VULN_MODE_DB_SECURITY_WG)
     .action(cwdCmd);
 
 prog
@@ -398,8 +391,8 @@ async function verifyCmd(packageName = null, options) {
 
 async function hydrateCmd() {
     /**
-     * When directly invoked from CLI, we should probably adapt the output according
-     * to the strategy or completely ignore it
+     * We assume that from this cmd, the strategy is the default one (db_security_wg)
+     * so we dont do any assert
      */
     vulnStrategy.deleteDB();
 
@@ -407,7 +400,6 @@ async function hydrateCmd() {
         text: white().bold(i18n.getToken("cli.commands.hydrate_db.running", yellow().bold("nodejs security-wg")))
     }).start();
     try {
-        console.log("hydrate?");
         await vulnStrategy.hydrateDB();
 
         const elapsedTime = cyan(ms(Number(spinner.elapsedTime.toFixed(2))));
@@ -446,9 +438,15 @@ async function autoCmd(packageName, opts) {
 }
 
 async function cwdCmd(opts) {
-    const { depth: maxDepth = 4, output, nolock, full } = opts;
+    const { depth: maxDepth = 4, output, nolock, full, strategy } = opts;
 
-    await checkHydrateDB();
+    if (strategy === VULN_MODE_NPM_AUDIT) {
+        vulnStrategy = VulnerabilityStrategy(NPMAuditStrategy());
+    }
+
+    if (vulnStrategy.type === VULN_MODE_DB_SECURITY_WG) {
+        await checkHydrateDB();
+    }
 
     const payload = await cwd(void 0, { verbose: true, maxDepth, usePackageLock: !nolock, fullLockMode: full });
 

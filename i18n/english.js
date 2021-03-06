@@ -15,6 +15,7 @@ module.exports = {
         commands: {
             option_depth: "Maximum dependencies depth to fetch",
             option_output: "Json file output name",
+            strategy: "Vulnerabilities source to use",
             hydrate_db: {
                 desc: "Hydrate the vulnerabilities db",
                 running: tS`Hydrating local vulnerabilities with the '${0}' database...`,

@@ -20,7 +20,7 @@ const is = require("@slimio/is");
 
 // Require Internal Dependencies
 const { mergeDependencies, cleanRange, recursiveRmdir, constants } = require("./utils");
-const { getVulnerabilityStrategy } = require("./vulnerabilities/vulnSource");
+const { getVulnerabilityStrategy } = require("./vulnerabilities/vulnerabilitiesSource");
 const { analyzeDirOrArchiveOnDisk } = require("./tarball");
 const Dependency = require("./dependency.class");
 const applyWarnings = require("./warnings");
@@ -333,8 +333,7 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     // Search for vulnerabilities relatively to the current initialized strategy
-
-    await getVulnerabilityStrategy().hydrateNodeSecurePayload(payload.dependencies, tmpLocation);
+    await getVulnerabilityStrategy().hydrateNodeSecurePayload(payload.dependencies);
 
 
     // We do this because it "seem" impossible to link all dependencies in the first walk.
