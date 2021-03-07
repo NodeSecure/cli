@@ -11,7 +11,7 @@ function VulnerabilityStrategy(newStrategy = SecurityWGStrategy()) {
 }
 
 function getVulnerabilityStrategy() {
-    return strategy ?? VulnerabilityStrategy();
+    return strategy || VulnerabilityStrategy();
 }
 
 module.exports = { VulnerabilityStrategy, getVulnerabilityStrategy };
