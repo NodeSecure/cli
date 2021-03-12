@@ -23,15 +23,20 @@ const VULN_DIR_PATH = join("vuln", "npm");
 const VULN_FILE_PATH = join(__dirname, "..", "..", "vuln.json");
 const { VULN_MODE_DB_SECURITY_WG } = require("../strategies");
 
-async function SecurityWGStrategy() {
-    await checkHydrateDB();
+async function SecurityWGStrategy({ sideEffects = true }) {
+    if (sideEffects) {
+        try {
+            await checkHydrateDB();
+        }
+        // eslint-disable-next-line no-empty
+        catch {}
+    }
 
     return {
         type: VULN_MODE_DB_SECURITY_WG,
         hydrateNodeSecurePayload,
         hydrateDB,
-        deleteDB,
-        checkHydrateDB
+        deleteDB
     };
 }
 
@@ -131,4 +136,4 @@ function deleteDB() {
 }
 
 
-module.exports = { SecurityWGStrategy };
+module.exports = { SecurityWGStrategy, checkHydrateDB };

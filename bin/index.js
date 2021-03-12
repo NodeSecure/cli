@@ -26,7 +26,6 @@ const startHTTPServer = require("../src/httpServer.js");
 const i18n = require("../src/i18n");
 const { getRegistryURL, formatBytes } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
-const { checkHydrateDB } = require("../src/vulnerabilities/strategies/security-wg");
 const { cwd, verify } = require("../index");
 
 
@@ -372,13 +371,15 @@ async function verifyCmd(packageName = null, options) {
 }
 
 async function hydrateCmd() {
-    getVulnerabilityStrategy().deleteDB();
+    const { deleteDB, hydrateDB } = await setVulnerabilityStrategy(VULN_MODE_DB_SECURITY_WG, { sideEffects: false });
+
+    deleteDB();
 
     const spinner = new Spinner({
         text: white().bold(i18n.getToken("cli.commands.hydrate_db.running", yellow().bold("nodejs security-wg")))
     }).start();
     try {
-        await getVulnerabilityStrategy().hydrateDB();
+        await hydrateDB();
 
         const elapsedTime = cyan(ms(Number(spinner.elapsedTime.toFixed(2))));
         spinner.succeed(white().bold(i18n.getToken("cli.commands.hydrate_db.success", elapsedTime)));
@@ -429,8 +430,7 @@ async function fromCmd(packageName, opts) {
     const { depth: maxDepth = 4, output } = opts;
     let manifest = null;
 
-    const { checkHydrateDB } = await getVulnerabilityStrategy();
-    await checkHydrateDB();
+    await setVulnerabilityStrategy();
 
     const spinner = new Spinner({
         text: white().bold(i18n.getToken("cli.commands.from.searching", yellow().bold(packageName)))

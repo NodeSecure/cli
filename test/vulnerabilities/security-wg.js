@@ -1,10 +1,26 @@
 "use strict";
 
 // Require Internal Dependencies
-const { SecurityWGStrategy } = require("../../src/vulnerabilities/strategies/security-wg");
+const SecurityWGStrategyModule = require("../../src/vulnerabilities/strategies/security-wg");
 
-test("Delete and hydrate vulnerabilities DB", async() => {
-    const vulnStrategy = await SecurityWGStrategy();
-    vulnStrategy.deleteDB();
-    await vulnStrategy.hydrateDB();
+
+describe("Security Working Group inner methods", () => {
+    let spy;
+
+    beforeAll(() => {
+        spy = jest.fn();
+        spy = jest.spyOn(SecurityWGStrategyModule, "checkHydrateDB");
+    });
+
+    it("should delete and hydrate vulnerabilities DB without side effects", async() => {
+        const vulnStrategy = await SecurityWGStrategyModule.SecurityWGStrategy({ sideEffects: false });
+        vulnStrategy.deleteDB();
+        await vulnStrategy.hydrateDB();
+    });
+    it("should delete and hydrate vulnerabilities DB with side effects", async() => {
+        await SecurityWGStrategyModule.SecurityWGStrategy({ sideEffects: true });
+        await (() => expect(spy).toHaveBeenCalledTimes(1));
+    });
 });
+
+

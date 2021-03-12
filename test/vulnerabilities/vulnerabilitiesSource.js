@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 "use strict";
 
-const { setVulnerabilityStrategy } = require("../../src/vulnerabilities/vulnerabilitiesSource");
+const { setVulnerabilityStrategy, getVulnerabilityStrategy } = require("../../src/vulnerabilities/vulnerabilitiesSource");
 
 const { VULN_MODE_DB_SECURITY_WG, VULN_MODE_NPM_AUDIT } = require("../../src/vulnerabilities/strategies");
 const NPMAuditStrategyModule = require("../../src/vulnerabilities/strategies/npm-audit");
@@ -13,13 +13,36 @@ describe("Vulnerability source strategies", () => {
         jest.clearAllMocks();
     });
 
+    describe("Strategies initializations", () => {
+        it("should get the default strategy without explicitly setting it", async() => {
+            const defaultStrategy = await getVulnerabilityStrategy();
+            expect(defaultStrategy.type).toStrictEqual(VULN_MODE_DB_SECURITY_WG);
+        });
+
+        it("should get the default strategy by setting and getting it", async() => {
+            await setVulnerabilityStrategy(VULN_MODE_NPM_AUDIT);
+            const npmStrategy = await getVulnerabilityStrategy();
+            expect(npmStrategy.type).toStrictEqual(VULN_MODE_NPM_AUDIT);
+        });
+
+        it("should set the default strategy whenever no param or incorrect param is supplied", async() => {
+            const UNIMPLEMENTED_VULN_MODE_DB = "db_snyk";
+            await setVulnerabilityStrategy(UNIMPLEMENTED_VULN_MODE_DB);
+            const defaultStrategy = await getVulnerabilityStrategy();
+            expect(defaultStrategy.type).toStrictEqual(VULN_MODE_DB_SECURITY_WG);
+
+            await setVulnerabilityStrategy();
+            const alsoDefaultStrategy = await getVulnerabilityStrategy();
+            expect(alsoDefaultStrategy.type).toStrictEqual(VULN_MODE_DB_SECURITY_WG);
+        });
+    });
+
     describe("Security Working Group Strategy", () => {
         it("should instantiate default Security Working Group Strategy", async() => {
             const vulnSource = await setVulnerabilityStrategy(VULN_MODE_DB_SECURITY_WG);
 
             expect(vulnSource.type).toStrictEqual(VULN_MODE_DB_SECURITY_WG);
         });
-
 
         it("should call one of the SWG's strategy methods", async() => {
             const vulnSource = await setVulnerabilityStrategy(VULN_MODE_DB_SECURITY_WG);
