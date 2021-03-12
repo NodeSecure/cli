@@ -55,4 +55,4 @@ async function hydrateNodeSecurePayload(dependencies) {
 }
 
 
-module.exports = NPMAuditStrategy;
+module.exports = { NPMAuditStrategy };

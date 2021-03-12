@@ -333,7 +333,9 @@ async function depWalker(manifest, options = Object.create(null)) {
     }
 
     // Search for vulnerabilities relatively to the current initialized strategy
-    await getVulnerabilityStrategy().hydrateNodeSecurePayload(payload.dependencies);
+    const vs = await getVulnerabilityStrategy();
+
+    await vs.hydrateNodeSecurePayload(payload.dependencies);
 
 
     // We do this because it "seem" impossible to link all dependencies in the first walk.

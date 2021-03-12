@@ -13,21 +13,36 @@ const download = require("@slimio/github");
 const semver = require("semver");
 
 // Require Internal Dependencies
-const { recursiveRmdir } = require("../../utils");
+const { recursiveRmdir, loadNsecureCache, writeNsecureCache } = require("../../utils");
 
 // CONSTANTS
+const LOCAL_CACHE = loadNsecureCache();
+const ONE_DAY = 3600000 * 24;
 const REPO = "nodejs.security-wg";
 const VULN_DIR_PATH = join("vuln", "npm");
 const VULN_FILE_PATH = join(__dirname, "..", "..", "vuln.json");
 const { VULN_MODE_DB_SECURITY_WG } = require("../strategies");
 
-function SecurityWGStrategy() {
+async function SecurityWGStrategy() {
+    await checkHydrateDB();
+
     return {
         type: VULN_MODE_DB_SECURITY_WG,
         hydrateNodeSecurePayload,
         hydrateDB,
-        deleteDB
+        deleteDB,
+        checkHydrateDB
     };
+}
+
+async function checkHydrateDB() {
+    const ts = Math.abs(Date.now() - LOCAL_CACHE.lastUpdated);
+
+    if (ts > ONE_DAY) {
+        deleteDB();
+        await hydrateDB();
+        writeNsecureCache();
+    }
 }
 
 
@@ -116,4 +131,4 @@ function deleteDB() {
 }
 
 
-module.exports = SecurityWGStrategy;
+module.exports = { SecurityWGStrategy };
