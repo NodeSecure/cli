@@ -35,7 +35,7 @@ const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: proce
 
 // Process script arguments
 const version = require("../package.json").version;
-const { getVulnerabilityStrategy, setVulnerabilityStrategy } = require("../src/vulnerabilities/vulnerabilitiesSource.js");
+const { setVulnerabilityStrategy } = require("../src/vulnerabilities/vulnerabilitySource.js");
 const { VULN_MODE_DB_SECURITY_WG } = require("../src/vulnerabilities/strategies.js");
 const prog = sade("nsecure").version(version);
 console.log(grey().bold(`\n > ${i18n.getToken("cli.executing_at")}: ${yellow().bold(process.cwd())}\n`));
@@ -73,7 +73,7 @@ prog
     .option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result")
     .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
     .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
-    .option("-s, --strategy", i18n.getToken("cli.commands.strategy"), VULN_MODE_DB_SECURITY_WG)
+    .option("-s, --vulnerabilityStrategy", i18n.getToken("cli.commands.strategy"), VULN_MODE_DB_SECURITY_WG)
     .action(cwdCmd);
 
 prog
@@ -417,11 +417,11 @@ async function autoCmd(packageName, opts) {
 }
 
 async function cwdCmd(opts) {
-    const { depth: maxDepth = 4, output, nolock, full, strategy } = opts;
+    const { depth: maxDepth = 4, output, nolock, full, vulnerabilityStrategy } = opts;
 
-    await setVulnerabilityStrategy(strategy);
-
-    const payload = await cwd(void 0, { verbose: true, maxDepth, usePackageLock: !nolock, fullLockMode: full });
+    const payload = await cwd(void 0,
+        { verbose: true, maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy }
+    );
 
     return logAndWrite(payload, output);
 }
@@ -429,8 +429,6 @@ async function cwdCmd(opts) {
 async function fromCmd(packageName, opts) {
     const { depth: maxDepth = 4, output } = opts;
     let manifest = null;
-
-    await setVulnerabilityStrategy();
 
     const spinner = new Spinner({
         text: white().bold(i18n.getToken("cli.commands.from.searching", yellow().bold(packageName)))

@@ -15,6 +15,8 @@ const isMinified = require("is-minified-code");
 // Require Internal Dependencies
 const { depWalker } = require("./src/depWalker");
 const { getRegistryURL, getTarballComposition, recursiveRmdir } = require("./src/utils");
+const { setVulnerabilityStrategy } = require("./src/vulnerabilities/vulnerabilitySource.js");
+const { VULN_MODE_DB_SECURITY_WG } = require("./src/vulnerabilities/strategies.js");
 
 // CONSTANTS
 const TMP = os.tmpdir();
@@ -28,9 +30,11 @@ async function cwd(cwd = process.cwd(), options) {
     const packagePath = join(cwd, "package.json");
     const str = await readFile(packagePath, "utf-8");
     options.forceRootAnalysis = true;
-    if (!Reflect.has(options, "usePackageLock")) {
+    if (!("usePackageLock" in options)) {
         options.usePackageLock = true;
     }
+
+    setVulnerabilityStrategy("vulnerabilityStrategy" in options ? options.vulnerabilityStrategy : VULN_MODE_DB_SECURITY_WG);
 
     return depWalker(JSON.parse(str), options);
 }
@@ -38,6 +42,8 @@ async function cwd(cwd = process.cwd(), options) {
 async function from(packageName, options) {
     const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
     const manifest = await pacote.manifest(packageName, token);
+
+    setVulnerabilityStrategy("vulnerabilityStrategy" in options ? options.vulnerabilityStrategy : VULN_MODE_DB_SECURITY_WG);
 
     return depWalker(manifest, options);
 }

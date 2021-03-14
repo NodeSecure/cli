@@ -74,6 +74,8 @@ declare namespace NodeSecure {
         coordinating_vendor: string;
     }
 
+    type VulnerabilityStrategy = "db_npm" | "db_security_wg";
+
     interface VersionDescriptor {
         metadata: {
             dependencyCount: number;
@@ -119,6 +121,7 @@ declare namespace NodeSecure {
         warnings: [];
         dependencies: Record<string, VersionDescriptor>;
         version: string;
+        vulnerabilityStrategy: VulnerabilityStrategy;
     }
 
     interface VerifyPayload {
@@ -140,6 +143,7 @@ declare namespace NodeSecure {
         readonly verbose?: boolean;
         readonly maxDepth?: number;
         readonly usePackageLock?: boolean;
+        readonly vulnerabilityStrategy: VulnerabilityStrategy;
     }
 
     export function cwd(path: string, options?: NodeSecure.Options): Promise<NodeSecure.Payload>;
