@@ -8,7 +8,6 @@ describe("Security Working Group inner methods", () => {
     let spy;
 
     beforeAll(() => {
-        spy = jest.fn();
         spy = jest.spyOn(SecurityWGStrategyModule, "checkHydrateDB");
     });
 
