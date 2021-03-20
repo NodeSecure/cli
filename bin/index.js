@@ -89,6 +89,7 @@ prog
     .describe(i18n.getToken("cli.commands.auto.desc"))
     .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
     .option("-k, --keep", i18n.getToken("cli.commands.auto.option_keep"), false)
+    .option("-s, --vulnerabilityStrategy", i18n.getToken("cli.commands.strategy"), VULN_MODE_DB_SECURITY_WG)
     .action(autoCmd);
 
 prog
