@@ -86,7 +86,7 @@
     "vis-network": "^9.0.2"
   },
   "dependencies": {
-    "@npmcli/arborist": "^2.2.3",
+    "@npmcli/arborist": "^2.2.6",
     "@polka/send-type": "^0.5.2",
     "@slimio/async-cli-spinner": "^0.5.2",
     "@slimio/github": "^0.5.0",

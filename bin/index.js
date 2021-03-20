@@ -24,19 +24,19 @@ const ui = require("cliui")();
 // Require Internal Dependencies
 const startHTTPServer = require("../src/httpServer.js");
 const i18n = require("../src/i18n");
-const { getRegistryURL, loadNsecureCache, writeNsecureCache, formatBytes } = require("../src/utils");
+const { getRegistryURL, formatBytes } = require("../src/utils");
 const { depWalker } = require("../src/depWalker");
-const { hydrateDB, deleteDB } = require("../src/vulnerabilities");
 const { cwd, verify } = require("../index");
+
 
 // CONSTANTS
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
-const LOCAL_CACHE = loadNsecureCache();
-const ONE_DAY = 3600000 * 24;
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
 
 // Process script arguments
 const version = require("../package.json").version;
+const { setVulnerabilityStrategy } = require("../src/vulnerabilities/vulnerabilitySource.js");
+const { VULN_MODE_DB_SECURITY_WG } = require("../src/vulnerabilities/strategies.js");
 const prog = sade("nsecure").version(version);
 console.log(grey().bold(`\n > ${i18n.getToken("cli.executing_at")}: ${yellow().bold(process.cwd())}\n`));
 
@@ -61,15 +61,6 @@ function logAndWrite(payload, output = "nsecure-result") {
     return filePath;
 }
 
-async function checkHydrateDB() {
-    const ts = Math.abs(Date.now() - LOCAL_CACHE.lastUpdated);
-
-    if (ts > ONE_DAY) {
-        await hydrateCmd();
-        writeNsecureCache();
-    }
-}
-
 prog
     .command("hydrate-db")
     .describe(i18n.getToken("cli.commands.hydrate_db.desc"))
@@ -82,6 +73,7 @@ prog
     .option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result")
     .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
     .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
+    .option("-s, --vulnerabilityStrategy", i18n.getToken("cli.commands.strategy"), VULN_MODE_DB_SECURITY_WG)
     .action(cwdCmd);
 
 prog
@@ -379,6 +371,8 @@ async function verifyCmd(packageName = null, options) {
 }
 
 async function hydrateCmd() {
+    const { deleteDB, hydrateDB } = await setVulnerabilityStrategy(VULN_MODE_DB_SECURITY_WG, { sideEffects: false });
+
     deleteDB();
 
     const spinner = new Spinner({
@@ -423,10 +417,11 @@ async function autoCmd(packageName, opts) {
 }
 
 async function cwdCmd(opts) {
-    const { depth: maxDepth = 4, output, nolock, full } = opts;
+    const { depth: maxDepth = 4, output, nolock, full, vulnerabilityStrategy } = opts;
 
-    await checkHydrateDB();
-    const payload = await cwd(void 0, { verbose: true, maxDepth, usePackageLock: !nolock, fullLockMode: full });
+    const payload = await cwd(void 0,
+        { verbose: true, maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy }
+    );
 
     return logAndWrite(payload, output);
 }
@@ -435,7 +430,6 @@ async function fromCmd(packageName, opts) {
     const { depth: maxDepth = 4, output } = opts;
     let manifest = null;
 
-    await checkHydrateDB();
     const spinner = new Spinner({
         text: white().bold(i18n.getToken("cli.commands.from.searching", yellow().bold(packageName)))
     }).start();

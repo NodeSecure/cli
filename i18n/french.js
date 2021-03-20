@@ -15,6 +15,7 @@ module.exports = {
         commands: {
             option_depth: "Niveau de profondeur de dépendances maximum à aller chercher",
             option_output: "Nom de sortie du fichier json",
+            strategy: "Source de vulnérabilités à utiliser",
             hydrate_db: {
                 desc: "Mise à jour de la base de vulnérabilité",
                 running: tS`Mise à jour locale des vulnérabilités avec la base '${0}'...`,
