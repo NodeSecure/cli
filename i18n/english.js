@@ -36,7 +36,8 @@ module.exports = {
                 option_keep: "Keep the nsecure-result.json file on the system after execution"
             },
             open: {
-                desc: "Run an HTTP Server with a given nsecure JSON file"
+                desc: "Run an HTTP Server with a given nsecure JSON file",
+                option_port: "Define the running port"
             },
             verify: {
                 desc: "Run a complete advanced analysis for a given npm package",

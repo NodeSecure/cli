@@ -87,7 +87,17 @@ Then a `nsecure-result.json` will be writted at the current CLI location. To ope
 
 ```bash
 $ nsecure open
+
+# If you want to define a specific port use the --port option.
+$ nsecure open --port 8080
 ```
+---
+
+##### Available options
+
+| name | shortcut | default value | description |
+| --- | --- | --- | --- |
+| --port | -p |  | Define the running port, can also be define through the environment variable `PORT` |
 
 The `auto` command can be used to chain `cwd/from` and `open` commands automatically.
 

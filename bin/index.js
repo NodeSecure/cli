@@ -32,6 +32,7 @@ const { cwd, verify } = require("../index");
 // CONSTANTS
 const REGISTRY_DEFAULT_ADDR = getRegistryURL();
 const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
+const httpPort = process.env.PORT;
 
 // Process script arguments
 const version = require("../package.json").version;
@@ -93,6 +94,7 @@ prog
 prog
     .command("open [json]")
     .describe(i18n.getToken("cli.commands.open.desc"))
+    .option("-p, --port", i18n.getToken("cli.commands.open.option_port"), httpPort)
     .action(httpCmd);
 
 prog
@@ -459,9 +461,10 @@ async function fromCmd(packageName, opts) {
     return null;
 }
 
-async function httpCmd(json = "nsecure-result.json") {
+async function httpCmd(json = "nsecure-result.json", { port }) {
     const dataFilePath = join(process.cwd(), json);
-    const httpServer = await startHTTPServer(dataFilePath);
+    const configPort = Number.isNaN(Number(port)) ? 0 : Number(port);
+    const httpServer = await startHTTPServer(dataFilePath, configPort);
 
     for (const eventName of ["SIGINT", "SIGTERM"]) {
         process.on(eventName, () => httpServer.server.close());
