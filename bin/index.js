@@ -463,7 +463,7 @@ async function fromCmd(packageName, opts) {
 
 async function httpCmd(json = "nsecure-result.json", { port }) {
     const dataFilePath = join(process.cwd(), json);
-    const configPort = !isNaN(port) && Number(port);
+    const configPort = Number.isNaN(Number(port)) ? 0 : Number(port);
     const httpServer = await startHTTPServer(dataFilePath, configPort);
 
     for (const eventName of ["SIGINT", "SIGTERM"]) {
