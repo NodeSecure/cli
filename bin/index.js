@@ -37,7 +37,7 @@ const httpPort = process.env.PORT;
 // Process script arguments
 const version = require("../package.json").version;
 const { setVulnerabilityStrategy } = require("../src/vulnerabilities/vulnerabilitySource.js");
-const { VULN_MODE_DB_SECURITY_WG } = require("../src/vulnerabilities/strategies.js");
+const { VULN_MODE_DB_SECURITY_WG, VULN_MODE_NPM_AUDIT } = require("../src/vulnerabilities/strategies.js");
 const prog = sade("nsecure").version(version);
 console.log(grey().bold(`\n > ${i18n.getToken("cli.executing_at")}: ${yellow().bold(process.cwd())}\n`));
 
@@ -74,7 +74,7 @@ prog
     .option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result")
     .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
     .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
-    .option("-s, --vulnerabilityStrategy", i18n.getToken("cli.commands.strategy"), VULN_MODE_DB_SECURITY_WG)
+    .option("-s, --vulnerabilityStrategy", i18n.getToken("cli.commands.strategy"), VULN_MODE_NPM_AUDIT)
     .action(cwdCmd);
 
 prog

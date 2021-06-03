@@ -16,7 +16,7 @@ const isMinified = require("is-minified-code");
 const { depWalker } = require("./src/depWalker");
 const { getRegistryURL, getTarballComposition, recursiveRmdir } = require("./src/utils");
 const { setVulnerabilityStrategy } = require("./src/vulnerabilities/vulnerabilitySource.js");
-const { VULN_MODE_DB_SECURITY_WG } = require("./src/vulnerabilities/strategies.js");
+const { VULN_MODE_DB_SECURITY_WG, VULN_MODE_NPM_AUDIT } = require("./src/vulnerabilities/strategies.js");
 
 // CONSTANTS
 const TMP = os.tmpdir();
@@ -34,7 +34,7 @@ async function cwd(cwd = process.cwd(), options) {
         options.usePackageLock = true;
     }
 
-    setVulnerabilityStrategy("vulnerabilityStrategy" in options ? options.vulnerabilityStrategy : VULN_MODE_DB_SECURITY_WG);
+    setVulnerabilityStrategy("vulnerabilityStrategy" in options ? options.vulnerabilityStrategy : VULN_MODE_NPM_AUDIT);
 
     return depWalker(JSON.parse(str), options);
 }

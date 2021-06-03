@@ -74,7 +74,7 @@ declare namespace NodeSecure {
         coordinating_vendor: string;
     }
 
-    type VulnerabilityStrategy = "db_npm" | "db_security_wg";
+    type VulnerabilityStrategy = "npm" | "node";
 
     interface VersionDescriptor {
         metadata: {
