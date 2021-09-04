@@ -1,91 +1,83 @@
-"use strict";
+/* eslint-disable no-sync */
 
-// Require Node.js Dependencies
-const {
-    createReadStream, accessSync, promises: { readFile }, constants: { R_OK, W_OK }
-} = require("fs");
-const { join } = require("path");
-const { pipeline } = require("stream");
+// Import Node.js Dependencies
+import fs from "fs";
+import { readFile } from "fs/promises";
+import { join } from "path";
+import { pipeline } from "stream";
 
-// Require Third-party Dependencies
-const send = require("@polka/send-type");
-const kleur = require("kleur");
-const polka = require("polka");
-const sirv = require("sirv");
-const open = require("open");
-const zup = require("zup");
-
-// Require Internal Dependencies
-const i18n = require("./i18n");
+// Import Third-party Dependencies
+import send from "@polka/send-type";
+import kleur from "kleur";
+import polka from "polka";
+import sirv from "sirv";
+import open from "open";
+import zup from "zup";
+import i18n from "@nodesecure/i18n";
+import { getFlags, getFlagFile, getManifest } from "@nodesecure/flags";
 
 // CONSTANTS
-const VIEWS = join(__dirname, "..", "views");
-const PUBLIC = join(__dirname, "..", "dist");
-const FLAGS = require("../flags/manifest.json");
-const flagsTitle = new Set(Object.values(FLAGS).map((flagDescriptor) => flagDescriptor.title));
+const kNodeSecureFlags = getFlags();
+const kProjectRootDir = join(__dirname, "..");
 
-async function startHTTPServer(dataFilePath, configPort) {
-    accessSync(dataFilePath, R_OK | W_OK);
-    // Create HTTP Server and apply required middlewares!
-    const httpServer = polka();
-    httpServer.use(sirv(PUBLIC, { dev: true }));
+export async function startHTTPServer(dataFilePath, configPort) {
+  fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
 
-    httpServer.get("/", async(req, res) => {
-        try {
-            res.writeHead(200, {
-                "Content-Type": "text/html"
-            });
-            const HTMLStr = await readFile(join(VIEWS, "index.html"), "utf-8");
-            const templateStr = zup(HTMLStr)({
-                lang: i18n.getToken("lang"),
-                token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
-            });
-            res.end(templateStr);
-        }
-        catch (err) {
-            /* istanbul ignore next */
-            send(res, 500, { error: err.message });
-        }
+  const httpServer = polka();
+  httpServer.use(sirv(join(kProjectRootDir, "dist"), { dev: true }));
+
+  httpServer.get("/", async(req, res) => {
+    try {
+      res.writeHead(200, {
+        "Content-Type": "text/html"
+      });
+
+      const HTMLStr = await readFile(join(kProjectRootDir, "views", "index.html"), "utf-8");
+      const templateStr = zup(HTMLStr)({
+        lang: i18n.getToken("lang"),
+        token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
+      });
+
+      res.end(templateStr);
+    }
+    catch (err) {
+      send(res, 500, { error: err.message });
+    }
+  });
+
+  httpServer.get("/data", (req, res) => {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    pipeline(fs.createReadStream(dataFilePath), res, (err) => {
+      if (err) {
+        console.error(err);
+      }
     });
+  });
 
-    httpServer.get("/data", (req, res) => {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        pipeline(createReadStream(dataFilePath), res, (err) => {
-            /* istanbul ignore next */
-            if (err) {
-                console.error(err);
-            }
-        });
+  httpServer.get("/flags", (req, res) => send(res, 200, getManifest()));
+  httpServer.get("/flags/description/:title", (req, res) => {
+    if (req.params.title !== "isDuplicate" && !kNodeSecureFlags.has(req.params.title)) {
+      return send(res, 404, { error: "Not Found" });
+    }
+
+    res.writeHead(200, { "Content-Type": "text/html" });
+
+    return pipeline(getFlagFile(req.params.title), res, (err) => {
+      if (err) {
+        console.error(err);
+      }
     });
+  });
 
-    httpServer.get("/flags", (req, res) => send(res, 200, FLAGS));
-    httpServer.get("/flags/description/:title", (req, res) => {
-        if (req.params.title !== "isDuplicate" && !flagsTitle.has(req.params.title)) {
-            return send(res, 404, { error: "Not Found" });
-        }
+  /* istanbul ignore next */
+  httpServer.listen(typeof configPort === "number" ? configPort : 0, () => {
+    const link = `http://localhost:${httpServer.server.address().port}`;
+    console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
-        res.writeHead(200, { "Content-Type": "text/html" });
-        const flagDescription = join(__dirname, `../flags/${req.params.title}.html`);
+    if (typeof configPort === "undefined") {
+      open(link);
+    }
+  });
 
-        return pipeline(createReadStream(flagDescription), res, (err) => {
-            /* istanbul ignore next */
-            if (err) {
-                console.error(err);
-            }
-        });
-    });
-
-    /* istanbul ignore next */
-    httpServer.listen(typeof configPort === "number" ? configPort : 0, () => {
-        const link = `http://localhost:${httpServer.server.address().port}`;
-        console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
-        /* istanbul ignore next */
-        if (typeof configPort === "undefined") {
-            open(link);
-        }
-    });
-
-    return httpServer;
+  return httpServer;
 }
-
-module.exports = startHTTPServer;

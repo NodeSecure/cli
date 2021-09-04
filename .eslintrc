@@ -1,10 +1,7 @@
 {
-    "extends": "@slimio/eslint-config",
-    "rules": {
-        "jsdoc/require-jsdoc": "off",
-        "require-atomic-updates": "off",
-        "arrow-body-style": "off",
-        "new-cap": "off",
-        "no-invalid-this": "off"
+    "extends": "@nodesecure/eslint-config",
+    "parserOptions": {
+        "sourceType": "module",
+        "requireConfigFile": false
     }
 }

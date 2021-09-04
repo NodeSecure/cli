@@ -1,5 +1,3 @@
-"use strict";
-
 // Require Node.js Dependencies
 const { readFileSync } = require("fs");
 const { join } = require("path");
@@ -24,58 +22,58 @@ const IS_GIT_HTML = readFileSync(join(__dirname, "..", "flags", "isGit.html"), "
 let httpServer;
 
 beforeAll(async() => {
-    httpServer = await startHTTPServer(JSON_PATH, HTTP_PORT);
+  httpServer = await startHTTPServer(JSON_PATH, HTTP_PORT);
 });
 
 afterAll(() => {
-    httpServer.server.close();
+  httpServer.server.close();
 });
 
 test("'/' should return index.html HTML content", async() => {
-    const result = await get(HTTP_URL);
+  const result = await get(HTTP_URL);
 
-    expect(result.statusCode).toStrictEqual(200);
-    expect(result.headers["content-type"]).toStrictEqual("text/html");
+  expect(result.statusCode).toStrictEqual(200);
+  expect(result.headers["content-type"]).toStrictEqual("text/html");
 
-    const templateStr = zup(INDEX_HTML)({
-        lang: i18n.getToken("lang"),
-        token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
-    });
-    expect(result.data).toStrictEqual(templateStr);
+  const templateStr = zup(INDEX_HTML)({
+    lang: i18n.getToken("lang"),
+    token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
+  });
+  expect(result.data).toStrictEqual(templateStr);
 });
 
 test("'/flags' should return the flags list as JSON", async() => {
-    const result = await get(new URL("/flags", HTTP_URL));
+  const result = await get(new URL("/flags", HTTP_URL));
 
-    expect(result.statusCode).toStrictEqual(200);
-    expect(result.headers["content-type"]).toStrictEqual("application/json;charset=utf-8");
-    expect(result.data).toMatchSnapshot();
+  expect(result.statusCode).toStrictEqual(200);
+  expect(result.headers["content-type"]).toStrictEqual("application/json;charset=utf-8");
+  expect(result.data).toMatchSnapshot();
 });
 
 test("'/flags/description/isGit' should return the isGit HTML description", async() => {
-    const result = await get(new URL("/flags/description/isGit", HTTP_URL));
+  const result = await get(new URL("/flags/description/isGit", HTTP_URL));
 
-    expect(result.statusCode).toStrictEqual(200);
-    expect(result.headers["content-type"]).toStrictEqual("text/html");
+  expect(result.statusCode).toStrictEqual(200);
+  expect(result.headers["content-type"]).toStrictEqual("text/html");
 
-    expect(result.data).toStrictEqual(IS_GIT_HTML);
+  expect(result.data).toStrictEqual(IS_GIT_HTML);
 });
 
 test("'/flags/description/foobar' should return a 404 error", async() => {
-    expect.assertions(2);
-    try {
-        await get(new URL("/flags/description/foobar", HTTP_URL));
-    }
-    catch (error) {
-        expect(error.statusCode).toStrictEqual(404);
-        expect(error.data.error).toStrictEqual("Not Found");
-    }
+  expect.assertions(2);
+  try {
+    await get(new URL("/flags/description/foobar", HTTP_URL));
+  }
+  catch (error) {
+    expect(error.statusCode).toStrictEqual(404);
+    expect(error.data.error).toStrictEqual("Not Found");
+  }
 });
 
 test("'/data' should return the fixture payload we expect", async() => {
-    const result = await get(new URL("/data", HTTP_URL));
+  const result = await get(new URL("/data", HTTP_URL));
 
-    expect(result.statusCode).toStrictEqual(200);
-    expect(result.headers["content-type"]).toStrictEqual("application/json");
-    expect(result.data).toMatchSnapshot();
+  expect(result.statusCode).toStrictEqual(200);
+  expect(result.headers["content-type"]).toStrictEqual("application/json");
+  expect(result.data).toMatchSnapshot();
 });

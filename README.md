@@ -41,7 +41,7 @@ The CLI allow to load the JSON into a Webpage with the **open** command. The pag
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/en/) version 12.12.0 or higher
+- [Node.js](https://nodejs.org/en/) version 16.0.0 or higher
 
 ## Getting Started
 
@@ -136,35 +136,11 @@ $ npm config set "http://your-registry/"
 ```
 
 ## API
-Use nsecure as an API package to fetch and work with the generated JSON. The following example demonstrates how to retrieve the Payload for mocha, cacache and is-wsl packages. It's possible to use the **cwd** method if you want to achieve similar work on a local project.
-
-```js
-const { from } = require("nsecure");
-const { writeFile } = require("fs").promises;
-
-async function main() {
-    const toFetch = ["mocha", "cacache", "is-wsl"];
-    const options = { verbose: false }; // disable verbose to not show the spinners
-
-    const payloads = await Promise.all(
-        toFetch.map((name) => from(name, options))
-    );
-
-    const toWritePromise = [];
-    for (let i = 0; i < toFetch.length; i++) {
-        const data = JSON.stringify(payloads[i], null, 2);
-        toWritePromise.push(writeFile(`${toFetch[i]}.json`, data));
-    }
-    await Promise.allSettled(toWritePromise);
-}
-main().catch(console.error);
-```
-
-The SlimIO [Security project](https://github.com/SlimIO/Security) use nsecure with the API to analyze packages and repositories of a given github organization (or user).
+Our back-end scanner package is available [here](https://github.com/NodeSecure/scanner).
 
 ## Flags legends
 
-Flags and emojis legends are documented [here](./FLAGS.md).
+Flags and emojis legends are documented [here](https://github.com/NodeSecure/flags/blob/main/FLAGS.md).
 
 ## Searchbar filters
 
