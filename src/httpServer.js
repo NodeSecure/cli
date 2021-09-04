@@ -3,8 +3,9 @@
 // Import Node.js Dependencies
 import fs from "fs";
 import { readFile } from "fs/promises";
-import { join } from "path";
+import { join, dirname } from "path";
 import { pipeline } from "stream";
+import { fileURLToPath } from "url";
 
 // Import Third-party Dependencies
 import send from "@polka/send-type";
@@ -13,11 +14,12 @@ import polka from "polka";
 import sirv from "sirv";
 import open from "open";
 import zup from "zup";
-import i18n from "@nodesecure/i18n";
+import * as i18n from "@nodesecure/i18n";
 import { getFlags, getFlagFile, getManifest } from "@nodesecure/flags";
 
 // CONSTANTS
 const kNodeSecureFlags = getFlags();
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const kProjectRootDir = join(__dirname, "..");
 
 export async function startHTTPServer(dataFilePath, configPort) {

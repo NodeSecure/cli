@@ -1,474 +1,93 @@
 #!/usr/bin/env node
-import "make-promises-safe";
 import dotenv from "dotenv";
 dotenv.config();
 
 // Import Node.js Dependencies
-import { writeFileSync } from "fs";
-import { unlink, readdir, readFile } from "fs/promises";
-import { join, extname, basename } from "path";
-import { once } from "events";
+import { createRequire } from "module";
 
 // Import Third-party Dependencies
 import kleur from "kleur";
 import sade from "sade";
-import pacote from "pacote";
-import Spinner from "@slimio/async-cli-spinner";
-import filenamify from "filenamify";
 import semver from "semver";
-import ms from "ms";
-import qoa from "qoa";
-import cliui from "cliui";
-import i18n from "@nodesecure/i18n";
-import { cwd, verify, depWalker } from "@nodesecure/scanner";
-import { getLocalRegistryURL } from "@nodesecure/npm-registry-sdk";
-import vuln from "@nodesecure/vuln";
+import * as i18n from "@nodesecure/i18n";
+import * as vuln from "@nodesecure/vuln";
+import { loadRegistryURLFromLocalSystem } from "@nodesecure/npm-registry-sdk";
 
 // Import Internal Dependencies
-import { startHTTPServer } from "../src/httpServer.js";
-import { formatBytes } from "../src/utils.js";
+import * as commands from "../src/commands/index.js";
 
-const { yellow, grey, white, green, cyan, red, magenta } = kleur;
-const ui = cliui();
+// TODO: replace with await import() when available
+const require = createRequire(import.meta.url);
+const manifest = require("../package.json");
 
-// CONSTANTS
-const REGISTRY_DEFAULT_ADDR = getLocalRegistryURL();
-const token = typeof process.env.NODE_SECURE_TOKEN === "string" ? { token: process.env.NODE_SECURE_TOKEN } : {};
-const httpPort = process.env.PORT;
+console.log(kleur.grey().bold(`\n > ${i18n.getToken("cli.executing_at")}: ${kleur.yellow().bold(process.cwd())}\n`));
 
-// Process script arguments
-const prog = sade("nsecure").version("0.9.0");
-console.log(grey().bold(`\n > ${i18n.getToken("cli.executing_at")}: ${yellow().bold(process.cwd())}\n`));
-
-const currNodeSemVer = process.versions.node;
-if (semver.lt(currNodeSemVer, "16.1.0")) {
-  console.log(red().bold(` [!] ${i18n.getToken("cli.min_nodejs_version", "16.1.0")}\n`));
+const minVersion = semver.minVersion(manifest.engines.node);
+if (semver.lt(process.versions.node, minVersion)) {
+  console.log(kleur.red().bold(` [!] ${i18n.getToken("cli.min_nodejs_version", minVersion)}\n`));
   process.exit(0);
 }
 
-function logAndWrite(payload, output = "nsecure-result") {
-  if (payload === null) {
-    console.log(i18n.getToken("cli.no_dep_to_proceed"));
+loadRegistryURLFromLocalSystem();
 
-    return null;
-  }
-
-  const ret = JSON.stringify(payload, null, 2);
-  const filePath = join(process.cwd(), extname(output) === ".json" ? filenamify(output) : `${filenamify(output)}.json`);
-  writeFileSync(filePath, ret);
-  console.log(white().bold(i18n.getToken("cli.successfully_written_json", green().bold(filePath))));
-
-  return filePath;
-}
+const prog = sade(manifest.name).version(manifest.version);
 
 prog
   .command("hydrate-db")
   .describe(i18n.getToken("cli.commands.hydrate_db.desc"))
-  .action(hydrateCmd);
+  .action(commands.vulnerability.hydrate);
 
-prog
-  .command("cwd")
+defaultScannerCommand("cwd", { strategy: vuln.strategies.NPM_AUDIT })
   .describe(i18n.getToken("cli.commands.cwd.desc"))
-  .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
-  .option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result")
   .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
   .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
-  .option("-s, --vulnerabilityStrategy", i18n.getToken("cli.commands.strategy"), vuln.strategies.NPM_AUDIT)
-  .action(cwdCmd);
+  .action(commands.scanner.cwd);
 
-prog
-  .command("from <package>")
+defaultScannerCommand("from <package>")
   .describe(i18n.getToken("cli.commands.from.desc"))
-  .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
-  .option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result")
-  .action(fromCmd);
+  .action(commands.scanner.from);
 
-prog
-  .command("auto [package]")
+defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vuln.strategies.SECURITY_WG })
   .describe(i18n.getToken("cli.commands.auto.desc"))
-  .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
   .option("-k, --keep", i18n.getToken("cli.commands.auto.option_keep"), false)
-  .option("-s, --vulnerabilityStrategy", i18n.getToken("cli.commands.strategy"), vuln.strategies.SECURITY_WG)
-  .action(autoCmd);
+  .action(commands.scanner.auto);
 
 prog
   .command("open [json]")
   .describe(i18n.getToken("cli.commands.open.desc"))
-  .option("-p, --port", i18n.getToken("cli.commands.open.option_port"), httpPort)
-  .action(httpCmd);
+  .option("-p, --port", i18n.getToken("cli.commands.open.option_port"), process.env.PORT)
+  .action(commands.http.start);
 
 prog
   .command("verify [package]")
   .describe(i18n.getToken("cli.commands.verify.desc"))
   .option("-j, --json", i18n.getToken("cli.commands.verify.option_json"), false)
-  .action(verifyCmd);
+  .action(commands.verify.main);
 
 prog
   .command("summary [json]")
   .describe(i18n.getToken("cli.commands.summary.desc"))
-  .action(summaryCmd);
+  .action(commands.summary.main);
 
 prog
   .command("lang")
   .describe(i18n.getToken("cli.commands.lang.desc"))
-  .action(async() => {
-    const currentLang = i18n.getLocalLang();
-    const dirents = await readdir(join(__dirname, "../i18n"), { withFileTypes: true });
-    const langs = dirents
-      .filter((dirent) => dirent.isFile() && extname(dirent.name) === ".js")
-      .map((dirent) => basename(dirent.name, ".js"));
-
-    langs.splice(langs.indexOf(currentLang), 1);
-    langs.unshift(currentLang);
-
-    console.log("");
-    const { selectedLang } = await qoa.interactive({
-      query: green().bold(` ${i18n.getToken("cli.commands.lang.question_text")}`),
-      handle: "selectedLang",
-      menu: langs
-    });
-
-    await i18n.setLocalLang(selectedLang);
-    console.log(white().bold(`\n ${i18n.getToken("cli.commands.lang.new_selection", yellow().bold(selectedLang))}`));
-  });
+  .action(commands.lang.set);
 
 prog.parse(process.argv);
 
-function locationToString(location) {
-  const start = `${location[0][0]}:${location[0][1]}`;
-  const end = `${location[1][0]}:${location[1][1]}`;
+function defaultScannerCommand(name, options = {}) {
+  const { includeOutput = true, strategy = null } = options;
 
-  return `[${start}] - [${end}]`;
-}
+  const cmd = prog.command(name)
+    .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4);
 
-async function summaryCmd(json = "nsecure-result.json") {
-  const dataFilePath = join(process.cwd(), json);
-  const rawAnalysis = await readFile(dataFilePath, { encoding: "utf-8" });
-  const { rootDepencyName, dependencies } = JSON.parse(rawAnalysis);
-
-  ui.div(
-    { text: cyan().bold(`${i18n.getToken("ui.stats.title")}: ${rootDepencyName}`), width: 50 }
-  );
-  ui.div({ text: yellow("-------------------------------------------------------------------"), width: 70 });
-
-  if (dependencies) {
-    const {
-      packagesCount,
-      packageWithIndirectDeps,
-      totalSize,
-      extensionMap,
-      licenceMap
-    } = extractAnalysisData(dependencies);
-
-    ui.div(
-      { text: cyan().bold(`${i18n.getToken("ui.stats.total_packages")}:`), width: 40 },
-      { text: yellow().bold(`${packagesCount}`), width: 20 }
-    );
-    ui.div(
-      { text: cyan().bold(`${i18n.getToken("ui.stats.total_size")}`), width: 40 },
-      { text: yellow().bold(`${totalSize}`), width: 20 }
-    );
-    ui.div(
-      { text: cyan().bold(`${i18n.getToken("ui.stats.indirect_deps")}:`), width: 40 },
-      { text: yellow().bold(`${packageWithIndirectDeps}`), width: 20 }
-    );
-
-    ui.div(
-      { text: cyan().bold(`${i18n.getToken("ui.stats.extensions")} :`), width: 40 }
-    );
-    const extensionEntries = Object.entries(extensionMap);
-    ui.div(
-      {
-        text: `${extensionEntries.reduce(buildStringFromEntries, "")}`, width: 70
-      }
-    );
-
-    ui.div(
-      { text: cyan().bold(`${i18n.getToken("ui.stats.licenses")} :`), width: 40 }
-    );
-    const licenceEntries = Object.entries(licenceMap);
-    ui.div(
-      {
-        text: yellow().bold(`${licenceEntries.reduce(buildStringFromEntries, "")}`), width: 70
-      }
-    );
+  if (includeOutput) {
+    cmd.option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result");
   }
-  else {
-    ui.div(
-      { text: cyan().bold("Error:"), width: 20 },
-      { text: yellow().bold("No dependencies"), width: 30 }
-    );
-  }
-  ui.div({ text: yellow("-------------------------------------------------------------------"), width: 70 });
-  console.log(`${ui.toString()}`);
-  ui.resetOutput();
-
-  return void 0;
-}
-
-// eslint-disable-next-line max-params
-function buildStringFromEntries(accumulator, [extension, count], index, sourceArray) {
-  // eslint-disable-next-line no-param-reassign
-  accumulator += `(${yellow(count)}) ${white().bold(extension)} `;
-  if (index !== sourceArray.length - 1) {
-    // eslint-disable-next-line no-param-reassign
-    accumulator += cyan("- ");
+  if (strategy !== null) {
+    cmd.option("-s, --vulnerabilityStrategy", i18n.getToken("cli.commands.strategy"), strategy);
   }
 
-  return accumulator;
-}
-
-function extractAnalysisData(dependencies) {
-  const analysisAggregator = {
-    packagesCount: 0,
-    totalSize: 0,
-    packageWithIndirectDeps: 0,
-    extensionMap: {},
-    licenceMap: {}
-  };
-
-  for (const dependencyData of Object.values(dependencies)) {
-    const { versions, metadata } = dependencyData;
-
-    for (const version of versions) {
-      const versionData = dependencyData[version];
-      extractVersionData(versionData, analysisAggregator);
-    }
-
-    analysisAggregator.packagesCount += metadata.dependencyCount;
-  }
-
-  return analysisAggregator;
-}
-
-function extractVersionData(version, analysisAggregator) {
-  for (const extension of version.composition.extensions) {
-    addOccurrences(analysisAggregator.extensionMap, extension);
-  }
-
-  if (version.license.uniqueLicenseIds) {
-    for (const licence of version.license.uniqueLicenseIds) {
-      addOccurrences(analysisAggregator.licenceMap, licence);
-    }
-  }
-
-  if (version.flags && version.flags.includes("hasIndirectDependencies")) {
-    analysisAggregator.packageWithIndirectDeps++;
-  }
-
-  analysisAggregator.totalSize += version.size;
-}
-
-function addOccurrences(aggregator, key) {
-  if (aggregator[key]) {
-    aggregator[key]++;
-  }
-  else {
-    aggregator[key] = 1;
-  }
-}
-
-async function verifyCmd(packageName = null, options) {
-  const payload = await verify(packageName);
-  if (options.json) {
-    return console.log(JSON.stringify(payload, null, 2));
-  }
-  const { files, directorySize, uniqueLicenseIds, ast } = payload;
-
-  ui.div(
-    { text: cyan().bold("directory size:"), width: 20 },
-    { text: yellow().bold(formatBytes(directorySize)), width: 10 }
-  );
-  ui.div(
-    { text: cyan().bold("unique licenses:"), width: 20 },
-    { text: white().bold(uniqueLicenseIds.join(", ")), width: 10 }
-  );
-  console.log(`${ui.toString()}\n`);
-  ui.resetOutput();
-
-  {
-    ui.div(
-      { text: white().bold("ext"), width: 15, align: "center" },
-      { text: white().bold("files"), width: 45 },
-      { text: white().bold("minified files"), width: 30 }
-    );
-
-    const maxLen = files.list.length > files.extensions.length ? files.list.length : files.extensions.length;
-    const divArray = Array.from(Array(maxLen), () => ["", "", ""]);
-    files.extensions.forEach((value, index) => (divArray[index][0] = value));
-    files.list.forEach((value, index) => (divArray[index][1] = value));
-    files.minified.forEach((value, index) => (divArray[index][2] = value));
-
-    for (const [ext, file, min] of divArray) {
-      ui.div(
-        { text: cyan().bold(ext), width: 15, align: "center" },
-        { text: file, width: 45 },
-        { text: red().bold(min), width: 30 }
-      );
-    }
-  }
-  console.log(`${ui.toString()}\n`);
-  ui.resetOutput();
-
-  ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-  ui.div({ text: cyan().bold("Required dependency and files"), width: 70, align: "center" });
-  ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-  ui.div({ text: "\n", width: 70, align: "center" });
-
-  for (const [fileName, deps] of Object.entries(ast.dependencies)) {
-    ui.div({ text: magenta().bold(fileName), width: 70, align: "center" });
-    ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-    ui.div(
-      { text: white().bold("required stmt"), width: 32, align: "left" },
-      { text: white().bold("try/catch"), width: 12, align: "center" },
-      { text: white().bold("source location"), width: 26, align: "center" }
-    );
-    for (const [depName, infos] of Object.entries(deps)) {
-      const { start, end } = infos.location;
-      const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
-
-      ui.div(
-        { text: depName, width: 32 },
-        { text: (infos.inTry ? green : red)().bold(infos.inTry), width: 12, align: "center" },
-        { text: grey().bold(position), width: 26, align: "center" }
-      );
-    }
-    ui.div({ text: "", width: 70, align: "center" });
-    console.log(`${ui.toString()}`);
-    ui.resetOutput();
-  }
-
-  ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-  ui.div({ text: cyan().bold("AST Warnings"), width: 70, align: "center" });
-  ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-  ui.div({ text: "", width: 70, align: "center" });
-
-  ui.div(
-    { text: white().bold("file"), width: 30 },
-    { text: white().bold("kind"), width: 15, align: "center" },
-    { text: white().bold("source location"), width: 25, align: "center" }
-  );
-
-  for (const warning of ast.warnings) {
-    const position = warning.kind === "encoded-literal" ?
-      warning.location.map((loc) => locationToString(loc)).join(" // ") :
-      locationToString(warning.location);
-
-    ui.div(
-      { text: warning.file || grey().bold("NONE"), width: 30 },
-      { text: magenta().bold(warning.kind), width: 15, align: "center" },
-      { text: grey().bold(position), width: 25, align: "center" }
-    );
-    if (warning.value) {
-      ui.div({ text: "", width: 70, align: "center" });
-      ui.div({ text: yellow().bold(warning.value), width: 70, align: "center" });
-    }
-    ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-  }
-
-  console.log(`${ui.toString()}`);
-  ui.resetOutput();
-
-  return void 0;
-}
-
-async function hydrateCmd() {
-  const strategy = await vuln.setStrategy(vuln.strategies.SECURITY_WG, {
-    hydrateDatabase: false
-  });
-
-  await strategy.deleteDatabase();
-
-  const spinner = new Spinner({
-    text: white().bold(i18n.getToken("cli.commands.hydrate_db.running", yellow().bold("nodejs security-wg")))
-  }).start();
-  try {
-    await strategy.hydrateDatabase();
-
-    const elapsedTime = cyan(ms(Number(spinner.elapsedTime.toFixed(2))));
-    spinner.succeed(white().bold(i18n.getToken("cli.commands.hydrate_db.success", elapsedTime)));
-  }
-  catch (err) {
-    spinner.failed(err.message);
-  }
-}
-
-async function autoCmd(packageName, opts) {
-  const keep = Boolean(opts.keep);
-  delete opts.keep;
-  delete opts.k;
-
-  const payloadFile = await (typeof packageName === "string" ? fromCmd(packageName, opts) : cwdCmd(opts));
-  try {
-    if (payloadFile !== null) {
-      await httpCmd();
-      await once(process, "SIGINT");
-    }
-  }
-  finally {
-    if (!keep && payloadFile !== null) {
-      try {
-        await unlink(payloadFile);
-      }
-      catch (error) {
-        if (error.code !== "ENOENT") {
-          // eslint-disable-next-line no-unsafe-finally
-          throw error;
-        }
-      }
-    }
-  }
-}
-
-async function cwdCmd(opts) {
-  const { depth: maxDepth = 4, output, nolock, full, vulnerabilityStrategy } = opts;
-
-  const payload = await cwd(void 0,
-    { verbose: true, maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy }
-  );
-
-  return logAndWrite(payload, output);
-}
-
-async function fromCmd(packageName, opts) {
-  const { depth: maxDepth = 4, output } = opts;
-  let manifest = null;
-
-  const spinner = new Spinner({
-    text: white().bold(i18n.getToken("cli.commands.from.searching", yellow().bold(packageName)))
-  }).start();
-  try {
-    manifest = await pacote.manifest(packageName, {
-      registry: REGISTRY_DEFAULT_ADDR,
-      ...token
-    });
-
-    const elapsedTime = cyan().bold(ms(Number(spinner.elapsedTime.toFixed(2))));
-    spinner.succeed(
-      white().bold(i18n.getToken("cli.commands.from.fetched", yellow().bold(packageName), elapsedTime))
-    );
-  }
-  catch (err) {
-    spinner.failed(err.message);
-
-    return null;
-  }
-
-  if (manifest !== null) {
-    const payload = await depWalker(manifest, { verbose: true, maxDepth });
-
-    return logAndWrite(payload, output);
-  }
-
-  return null;
-}
-
-async function httpCmd(json = "nsecure-result.json", { port }) {
-  const dataFilePath = join(process.cwd(), json);
-  const configPort = Number.isNaN(Number(port)) ? 0 : Number(port);
-  const httpServer = await startHTTPServer(dataFilePath, configPort);
-
-  for (const eventName of ["SIGINT", "SIGTERM"]) {
-    process.on(eventName, () => httpServer.server.close());
-  }
+  return cmd;
 }
