@@ -17,7 +17,7 @@
     "prepublishOnly": "npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
-    "test-only": "jest --coverage"
+    "test-only": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
   },
   "files": [
     "bin",
@@ -60,6 +60,7 @@
     "setupFilesAfterEnv": [
       "./jest.setup.js"
     ],
+    "collectCoverage": true,
     "collectCoverageFrom": [
       "**/src/**/*.js"
     ],
@@ -76,8 +77,10 @@
   "devDependencies": {
     "@nodesecure/eslint-config": "^1.2.0",
     "@types/node": "^16.7.10",
+    "cross-env": "^7.0.3",
     "esbuild": "^0.12.25",
     "eslint": "^7.32.0",
+    "httpie": "^2.0.0-next.13",
     "jest": "^27.1.0",
     "list.js": "^2.3.1",
     "pkg-ok": "^2.3.1",
@@ -86,7 +89,7 @@
     "vis-network": "^9.1.0"
   },
   "dependencies": {
-    "@nodesecure/flags": "^1.0.0",
+    "@nodesecure/flags": "^1.1.0",
     "@nodesecure/i18n": "^1.2.0",
     "@nodesecure/npm-registry-sdk": "^1.2.1",
     "@nodesecure/scanner": "^1.4.0",
