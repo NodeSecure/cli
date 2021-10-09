@@ -46,13 +46,14 @@ export function createAvatar(name, desc) {
     });
 
     const imgEl = document.createElement("img");
+    console.log(avatarURL);
     if (!("email" in desc) || typeof desc.email === "undefined" || desc.email === null || desc.email === "") {
-        imgEl.src = `img/${avatarURL}`;
+        imgEl.src = `${avatarURL}`;
     }
     else {
         imgEl.src = `https://unavatar.now.sh/${desc.email}`;
         imgEl.onerror = () => {
-            imgEl.src = `img/${avatarURL}`;
+            imgEl.src = `${avatarURL}`;
         };
     }
     imgEl.alt = name;

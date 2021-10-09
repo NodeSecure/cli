@@ -23,11 +23,7 @@
     "bin",
     "dist",
     "src",
-    "views",
-    "flags",
-    "i18n",
-    "index.js",
-    "index.d.ts"
+    "views"
   ],
   "repository": {
     "type": "git",
