@@ -15,7 +15,7 @@ import sirv from "sirv";
 import open from "open";
 import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
-import { getFlags, getFlagFile, getManifest } from "@nodesecure/flags";
+import { getFlags, lazyFetchFlagFile, getManifest } from "@nodesecure/flags";
 
 // CONSTANTS
 const kNodeSecureFlags = getFlags();
@@ -64,7 +64,7 @@ export async function startHTTPServer(dataFilePath, configPort) {
 
     res.writeHead(200, { "Content-Type": "text/html" });
 
-    return pipeline(getFlagFile(req.params.title), res, (err) => {
+    return pipeline(lazyFetchFlagFile(req.params.title), res, (err) => {
       if (err) {
         console.error(err);
       }

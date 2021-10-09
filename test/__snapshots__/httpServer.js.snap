@@ -1,0 +1,102 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`'/data' should return the fixture payload we expect 1`] = `
+Object {
+  "foo": "bar",
+}
+`;
+
+exports[`'/flags' should return the flags list as JSON 1`] = `
+Object {
+  "bannedFile": Object {
+    "emoji": "⚔️",
+    "title": "hasBannedFile",
+    "tooltipDescription": "The project has at least one sensitive file.",
+  },
+  "customResolver": Object {
+    "emoji": "💎",
+    "title": "hasCustomResolver",
+    "tooltipDescription": "The package has dependencies that are not packages.",
+  },
+  "duplicated": Object {
+    "emoji": "🎭",
+    "title": "isDuplicated",
+    "tooltipDescription": "The package is also used somewhere else in the dependency tree but with a different version",
+  },
+  "externalCapacity": Object {
+    "emoji": "🌍",
+    "title": "hasExternalCapacity",
+    "tooltipDescription": "The package use at least one Node.js dependency capable to communicate outside or to establish a listening server.",
+  },
+  "hasScript": Object {
+    "emoji": "📦",
+    "title": "hasScript",
+    "tooltipDescription": "has \`post\` and/or \`pre\` (un)install npm script",
+  },
+  "indirectDependencies": Object {
+    "emoji": "🌲",
+    "title": "hasIndirectDependencies",
+    "tooltipDescription": "The package have indirect dependencies.",
+  },
+  "isDead": Object {
+    "emoji": "💀",
+    "title": "isDead",
+    "tooltipDescription": "The dependency has not received update from at least one year!",
+  },
+  "isDeprecated": Object {
+    "emoji": "⛔️",
+    "title": "isDeprecated",
+    "tooltipDescription": "The package is deprecated.",
+  },
+  "isGit": Object {
+    "emoji": "☁️",
+    "title": "isGit",
+    "tooltipDescription": "The package (project) is a git repository",
+  },
+  "manyPublishers": Object {
+    "emoji": "👥",
+    "title": "hasManyPublishers",
+    "tooltipDescription": "The package has several publishers.",
+  },
+  "minifiedCode": Object {
+    "emoji": "🔬",
+    "title": "hasMinifiedCode",
+    "tooltipDescription": "The package seems to have files that are minified/uglified.",
+  },
+  "missingOrUnusedDependency": Object {
+    "emoji": "👀",
+    "title": "hasMissingOrUnusedDependency",
+    "tooltipDescription": "A dependency is missing in package.json or a dependency is installed but never used!",
+  },
+  "multipleLicense": Object {
+    "emoji": "📚",
+    "title": "hasMultipleLicenses",
+    "tooltipDescription": "The package has multiple licenses in multiple files",
+  },
+  "nativeCode": Object {
+    "emoji": "🐲",
+    "title": "hasNativeCode",
+    "tooltipDescription": "The package use native components (package, file, configuration).",
+  },
+  "noLicense": Object {
+    "emoji": "📜",
+    "title": "hasNoLicense",
+    "tooltipDescription": "The package does not seem to have a license.",
+  },
+  "outdated": Object {
+    "emoji": "⌚️",
+    "title": "isOutdated",
+    "tooltipDescription": "The current package version is not equal to the package latest version!",
+  },
+  "vulnerabilities": Object {
+    "emoji": "🚨",
+    "title": "vulnerabilities",
+    "tooltipDescription": "The package have one or many vulnerabilities.",
+  },
+  "warnings": Object {
+    "emoji": "⚠",
+    "title": "hasWarnings",
+    "tooltipDescription": "The AST analysis has detected warnings (suspect import, unsafe regex ..)",
+  },
+}
+`;

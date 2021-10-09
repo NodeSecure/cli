@@ -1,22 +1,24 @@
 // Require Node.js Dependencies
-const { readFileSync } = require("fs");
-const { join } = require("path");
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import path from "path";
 
 // Require Third-party Dependencies
-const { get } = require("httpie");
-const zup = require("zup");
+import { get } from "httpie";
+import zup from "zup";
+import * as i18n from "@nodesecure/i18n";
+import * as flags from "@nodesecure/flags";
 
 // Require Internal Dependencies
-const startHTTPServer = require("../src/httpServer");
-const i18n = require("../src/i18n");
+import { startHTTPServer } from "../src/httpServer.js";
 
 // CONSTANTS
 const HTTP_PORT = 1337;
 const HTTP_URL = new URL(`http://localhost:${HTTP_PORT}`);
-const JSON_PATH = join(__dirname, "fixtures", "httpServer", "payload.json");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const INDEX_HTML = readFileSync(join(__dirname, "..", "views", "index.html"), "utf-8");
-const IS_GIT_HTML = readFileSync(join(__dirname, "..", "flags", "isGit.html"), "utf-8");
+const JSON_PATH = path.join(__dirname, "fixtures", "httpServer.json");
+const INDEX_HTML = readFileSync(path.join(__dirname, "..", "views", "index.html"), "utf-8");
 
 // VARS
 let httpServer;
@@ -56,7 +58,7 @@ test("'/flags/description/isGit' should return the isGit HTML description", asyn
   expect(result.statusCode).toStrictEqual(200);
   expect(result.headers["content-type"]).toStrictEqual("text/html");
 
-  expect(result.data).toStrictEqual(IS_GIT_HTML);
+  expect(result.data).toStrictEqual(await flags.eagerFetchFlagFile("isGit"));
 });
 
 test("'/flags/description/foobar' should return a 404 error", async() => {
