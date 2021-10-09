@@ -76,9 +76,7 @@ export async function startHTTPServer(dataFilePath, configPort) {
     const link = `http://localhost:${httpServer.server.address().port}`;
     console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
-    if (typeof configPort === "undefined") {
-      open(link);
-    }
+    open(link);
   });
 
   return httpServer;
