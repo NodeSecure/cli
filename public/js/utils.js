@@ -46,7 +46,6 @@ export function createAvatar(name, desc) {
     });
 
     const imgEl = document.createElement("img");
-    console.log(avatarURL);
     if (!("email" in desc) || typeof desc.email === "undefined" || desc.email === null || desc.email === "") {
         imgEl.src = `${avatarURL}`;
     }

@@ -129,8 +129,8 @@ document.addEventListener("DOMContentLoaded", async() => {
     document.getElementById("legend_popup_btn").addEventListener("click", () => {
         toggleModal("popup-legends");
         const legendsFlagsFragment = document.createDocumentFragment();
-        for (const [flagName, { title }] of Object.entries(FLAGS)) {
-            legendsFlagsFragment.appendChild(utils.createLegend(flagName, title));
+        for (const { title, emoji } of Object.values(FLAGS)) {
+            legendsFlagsFragment.appendChild(utils.createLegend(emoji, title));
         }
         legendsFlagsFragment.appendChild(utils.createLegend("🎭", "isDuplicate"));
         document.getElementById("flag-legends").appendChild(legendsFlagsFragment);
