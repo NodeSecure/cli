@@ -7,6 +7,9 @@ import cliui from "cliui";
 import kleur from "kleur";
 import * as i18n from "@nodesecure/i18n";
 
+// Import Internal Dependencies
+import { formatBytes } from "../utils.js";
+
 // VARS
 const { yellow, gray, white, green, cyan, red } = kleur;
 
@@ -36,8 +39,8 @@ export async function main(json = "nsecure-result.json") {
       { text: green().bold(`${packagesCount}`), width: 20 }
     );
     ui.div(
-      { text: white().bold(`${i18n.getToken("ui.stats.total_size")}`), width: 60 },
-      { text: green().bold(`${totalSize}`), width: 20 }
+      { text: white().bold(`${i18n.getToken("ui.stats.total_size")}:`), width: 60 },
+      { text: green().bold(`${formatBytes(totalSize)}`), width: 20 }
     );
     ui.div(
       { text: white().bold(`${i18n.getToken("ui.stats.indirect_deps")}:`), width: 60 },
@@ -46,7 +49,7 @@ export async function main(json = "nsecure-result.json") {
 
     ui.div("");
     ui.div(
-      { text: white().bold(`${i18n.getToken("ui.stats.extensions")} :`), width: 40 }
+      { text: white().bold(`${i18n.getToken("ui.stats.extensions")}:`), width: 40 }
     );
     const extensionEntries = Object.entries(extensionMap);
     ui.div(
@@ -57,7 +60,7 @@ export async function main(json = "nsecure-result.json") {
 
     ui.div("");
     ui.div(
-      { text: white().bold(`${i18n.getToken("ui.stats.licenses")} :`), width: 40 }
+      { text: white().bold(`${i18n.getToken("ui.stats.licenses")}:`), width: 40 }
     );
     const licenceEntries = Object.entries(licenceMap);
     ui.div(
