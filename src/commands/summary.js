@@ -9,15 +9,16 @@ import * as i18n from "@nodesecure/i18n";
 
 // VARS
 const { yellow, gray, white, green, cyan, red } = kleur;
-const ui = cliui();
 
 export async function main(json = "nsecure-result.json") {
   const dataFilePath = path.join(process.cwd(), json);
   const rawAnalysis = await fs.readFile(dataFilePath, { encoding: "utf-8" });
   const { rootDepencyName, dependencies } = JSON.parse(rawAnalysis);
 
+  const ui = cliui();
+  const title = `${white().bold(`${i18n.getToken("ui.stats.title")}:`)} ${cyan().bold(rootDepencyName)}`;
   ui.div(
-    { text: kleur.white().bold(`${i18n.getToken("ui.stats.title")}: `) + kleur.cyan().bold(rootDepencyName), width: 50 }
+    { text: title, width: 50 }
   );
   ui.div({ text: gray("-------------------------------------------------------------------"), width: 70 });
 
@@ -72,8 +73,7 @@ export async function main(json = "nsecure-result.json") {
     );
   }
   ui.div({ text: gray("-------------------------------------------------------------------"), width: 70 });
-  console.log(`${ui.toString()}`);
-  ui.resetOutput();
+  console.log(ui.toString());
 
   return void 0;
 }
