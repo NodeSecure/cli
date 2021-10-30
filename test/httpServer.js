@@ -24,7 +24,10 @@ const INDEX_HTML = readFileSync(path.join(__dirname, "..", "views", "index.html"
 let httpServer;
 
 beforeAll(async() => {
-  httpServer = await startHTTPServer(JSON_PATH, HTTP_PORT);
+  httpServer = await startHTTPServer(JSON_PATH, {
+    configPort: HTTP_PORT,
+    openLink: false
+  });
 });
 
 afterAll(() => {

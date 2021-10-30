@@ -22,7 +22,10 @@ const kNodeSecureFlags = getFlags();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const kProjectRootDir = join(__dirname, "..");
 
-export async function startHTTPServer(dataFilePath, configPort) {
+export async function startHTTPServer(dataFilePath, options = {}) {
+  const httpConfigPort = typeof options.configPort === "number" ? options.configPort : 0;
+  const openLink = typeof options.openLink === "boolean" ? options.openLink : true;
+
   fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
 
   const httpServer = polka();
@@ -72,11 +75,13 @@ export async function startHTTPServer(dataFilePath, configPort) {
   });
 
   /* istanbul ignore next */
-  httpServer.listen(typeof configPort === "number" ? configPort : 0, () => {
+  httpServer.listen(httpConfigPort, () => {
     const link = `http://localhost:${httpServer.server.address().port}`;
     console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
-    open(link);
+    if (openLink) {
+      open(link);
+    }
   });
 
   return httpServer;
