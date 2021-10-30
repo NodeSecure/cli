@@ -2,15 +2,14 @@
 import path from "path";
 
 // Import Internal Dependencies
-import { startHTTPServer } from "../httpServer.js";
+import { buildServer } from "../httpServer.js";
 
 export async function start(json = "nsecure-result.json", options = {}) {
-  const { port } = options;
+  const port = Number(options.port);
 
   const dataFilePath = path.join(process.cwd(), json);
-  const configPort = Number.isNaN(Number(port)) ? 0 : Number(port);
-  const httpServer = await startHTTPServer(dataFilePath, {
-    configPort
+  const httpServer = buildServer(dataFilePath, {
+    port: Number.isNaN(port) ? 0 : port
   });
 
   for (const eventName of ["SIGINT", "SIGTERM"]) {

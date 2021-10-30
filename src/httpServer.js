@@ -18,12 +18,12 @@ import * as i18n from "@nodesecure/i18n";
 import { getFlags, lazyFetchFlagFile, getManifest } from "@nodesecure/flags";
 
 // CONSTANTS
-const kNodeSecureFlags = getFlags();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const kProjectRootDir = join(__dirname, "..");
+const kNodeSecureFlags = getFlags();
 
-export async function startHTTPServer(dataFilePath, options = {}) {
-  const httpConfigPort = typeof options.configPort === "number" ? options.configPort : 0;
+export function buildServer(dataFilePath, options = {}) {
+  const httpConfigPort = typeof options.port === "number" ? options.port : 0;
   const openLink = typeof options.openLink === "boolean" ? options.openLink : true;
 
   fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
@@ -74,7 +74,6 @@ export async function startHTTPServer(dataFilePath, options = {}) {
     });
   });
 
-  /* istanbul ignore next */
   httpServer.listen(httpConfigPort, () => {
     const link = `http://localhost:${httpServer.server.address().port}`;
     console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
