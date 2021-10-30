@@ -7,7 +7,6 @@ import kleur from "kleur";
 import { formatBytes, locationToString } from "../utils.js";
 
 // VARS
-const ui = cliui();
 const { yellow, grey, white, green, cyan, red, magenta } = kleur;
 
 export async function main(packageName = null, options) {
@@ -17,6 +16,7 @@ export async function main(packageName = null, options) {
   }
   const { files, directorySize, uniqueLicenseIds, ast } = payload;
 
+  const ui = cliui();
   ui.div(
     { text: cyan().bold("directory size:"), width: 20 },
     { text: yellow().bold(formatBytes(directorySize)), width: 10 }

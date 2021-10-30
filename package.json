@@ -72,6 +72,7 @@
   "homepage": "https://github.com/ES-Community/nsecure#readme",
   "devDependencies": {
     "@nodesecure/eslint-config": "^1.2.1",
+    "@types/jest": "^27.0.2",
     "@types/node": "^16.11.4",
     "cross-env": "^7.0.3",
     "esbuild": "^0.13.8",

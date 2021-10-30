@@ -1,13 +1,14 @@
+// CONSTANTS
+const kBytesSize = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
-export function formatBytes(bytes, decimals) {
+export function formatBytes(bytes) {
   if (bytes === 0) {
     return "0 B";
   }
-  const dm = decimals <= 0 ? 0 : decimals || 2;
-  const sizes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const id = Math.floor(Math.log(bytes) / Math.log(1024));
+  const size = parseFloat((bytes / Math.pow(1024, id)).toFixed(2));
 
-  return parseFloat((bytes / Math.pow(1024, id)).toFixed(dm)) + " " + sizes[id];
+  return `${size} ${kBytesSize[id]}`;
 }
 
 export function locationToString(location) {
