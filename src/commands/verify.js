@@ -1,10 +1,8 @@
 // Import Third-party Dependencies
-import { verify } from "@nodesecure/scanner";
 import cliui from "cliui";
 import kleur from "kleur";
-
-// Import Internal Dependencies
-import { formatBytes, locationToString } from "../utils.js";
+import { verify } from "@nodesecure/scanner";
+import { formatBytes, locationToString } from "@nodesecure/utils";
 
 // VARS
 const { yellow, grey, white, green, cyan, red, magenta } = kleur;

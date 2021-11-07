@@ -553,17 +553,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
 
     function handleAuthor(author) {
-        if (typeof author === "undefined" || author === null) {
-            return;
-        }
-        let user = { name: null };
-
-        if (typeof author === "string") {
-            user = utils.parseAuthor(author);
-        }
-        else if (typeof author === "object" && typeof author.name === "string") {
-            user = author;
-        }
+        const user = "name" in author ? author : { name: null };
 
         if (authorsList.has(user.name)) {
             authorsList.get(user.name).count++;

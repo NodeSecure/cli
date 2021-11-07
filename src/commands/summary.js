@@ -6,9 +6,7 @@ import path from "path";
 import cliui from "cliui";
 import kleur from "kleur";
 import * as i18n from "@nodesecure/i18n";
-
-// Import Internal Dependencies
-import { formatBytes } from "../utils.js";
+import { formatBytes } from "@nodesecure/utils";
 
 // VARS
 const { yellow, gray, white, green, cyan, red } = kleur;

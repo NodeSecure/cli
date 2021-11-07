@@ -198,39 +198,6 @@ export async function getJSON(path, customHeaders = Object.create(null)) {
     return raw.json();
 }
 
-export function parseAuthor(str) {
-    if (typeof str !== "string") {
-        throw new TypeError("expected author to be a string");
-    }
-
-    if (!str || !/\w/.test(str)) {
-        return {};
-    }
-
-    const match = /^([^<(]+?)?[ \t]*(?:<([^>(]+?)>)?[ \t]*(?:\(([^)]+?)\)|$)/gm.exec(str);
-    if (!match) {
-        return {};
-    }
-    const author = Object.create(null);
-
-    if (match[1]) {
-        author.name = match[1];
-    }
-
-    for (let id = 2; id < match.length; id++) {
-        const val = match[id] || "";
-
-        if (val.includes("@")) {
-            author.email = val;
-        }
-        else if (val.includes("http")) {
-            author.url = val;
-        }
-    }
-
-    return author;
-}
-
 export function copyToClipboard(str) {
     const el = document.createElement('textarea');  // Create a <textarea> element
     el.value = str;                                 // Set its value to the string that you want copied

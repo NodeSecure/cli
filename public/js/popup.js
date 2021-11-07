@@ -1,7 +1,12 @@
-import * as utils from "./utils.js";
+// Import Third-party Dependencies
+import { locationToString } from "@nodesecure/utils";
 import List from "list.js";
 
-const loadingMessage = "Loading ...";
+// Import Internal Dependencies
+import * as utils from "./utils.js";
+
+// CONSTANTS
+const kLoadingMessage = "Loading ...";
 
 function licenseModal(clone, options) {
     const { licenses, selectedNode } = options;
@@ -21,13 +26,6 @@ function licenseModal(clone, options) {
     }
 }
 
-function locationToString(location) {
-    const start = `${location[0][0]}:${location[0][1]}`;
-    const end = `${location[1][0]}:${location[1][1]}`;
-
-    return `[${start}] - [${end}]`;
-}
-
 function getLineFromFile(code, location) {
     const [[startLine]] = location;
     const lines = code.split('\n');
@@ -45,7 +43,7 @@ async function fetchCodeLine(event, url, location, cache, lineId) {
         return;
     }
 
-    target.innerText = loadingMessage;
+    target.innerText = kLoadingMessage;
     const code = await fetch(url).then((response) => response.text());
 
     target.innerText = code.length ? getLineFromFile(code, location): "Line not found ...";
@@ -55,12 +53,12 @@ async function fetchCodeLine(event, url, location, cache, lineId) {
 
 function handleOutsideTooltipClick({ target }) {
     const tooltip = document.getElementById('tooltip');
-    
+
     if (!tooltip) {
         return;
     }
-    
-    if ((tooltip.innerHTML && tooltip.innerHTML !== loadingMessage) && !tooltip.contains(target) && tooltip.style.visibility === "visible") {
+
+    if ((tooltip.innerHTML && tooltip.innerHTML !== kLoadingMessage) && !tooltip.contains(target) && tooltip.style.visibility === "visible") {
         tooltip.style.visibility = "hidden";
         tooltip.innerHTML = "";
     }
