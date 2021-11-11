@@ -73,7 +73,7 @@
     "vis-network": "^9.1.0"
   },
   "dependencies": {
-    "@nodesecure/flags": "^1.2.0",
+    "@nodesecure/flags": "^2.0.0",
     "@nodesecure/i18n": "^1.2.0",
     "@nodesecure/npm-registry-sdk": "^1.3.0",
     "@nodesecure/scanner": "^2.0.1",
