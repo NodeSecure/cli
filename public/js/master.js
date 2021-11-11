@@ -6,6 +6,7 @@ import * as utils from "./utils.js";
 import * as popup from "./popup.js";
 import { Network, DataSet } from "vis-network/standalone/esm/index.js";
 import SearchBar from "./searchbar.js";
+import { getManifestEmoji } from "@nodesecure/flags/web";
 
 // CONSTANTS (for nodes colors)
 const C_MAIN = "#01579B";
@@ -16,6 +17,7 @@ const C_SELECTED = "rgba(170, 100, 200, 0.50)";
 const C_TRS = "rgba(150, 150, 150, 0.02)";
 let toggleModal;
 
+const kFlagsEmojis = Object.fromEntries(getManifestEmoji());
 const networkGraphOptions = {
     nodes: {
         mass: 6,
@@ -60,27 +62,6 @@ const networkGraphOptions = {
     }
 };
 
-const kFlagsEmojis = {
-    isGit: "☁️",
-    hasNativeCode: "🐲",
-    hasIndirectDependencies: "🌲",
-    hasWarnings: "⚠️",
-    hasBannedFile: "⚔️",
-    isOutdated: "⌚️",
-    hasNoLicense: "📜",
-    hasCustomResolver: "💎",
-    hasMultipleLicenses: "📚",
-    hasMinifiedCode: "🔬",
-    isDeprecated: "⛔️",
-    hasExternalCapacity: "🌍",
-    hasScript: "📦",
-    hasMissingOrUnusedDependency: "👀",
-    hasManyPublishers: "👥",
-    isDead: "💀",
-    hasVulnerabilities: "🚨",
-    hasDuplicate: "🎭"
-}
-
 function getColor(id, flags) {
     if (id === 0) {
         return C_MAIN;
@@ -95,28 +76,10 @@ function getColor(id, flags) {
     return C_NORMAL;
 }
 
-function getFlags(flags, options = {}) {
-    const { metadata, vulnerabilities = [], versions } = options;
-
-    if (!metadata.hasReceivedUpdateInOneYear && flags.includes("hasOutdatedDependency") && !flags.includes("isDead")) {
-        flags.push("isDead");
-    }
-    if (metadata.hasManyPublishers && !flags.includes("hasManyPublishers")) {
-        flags.push("hasManyPublishers");
-    }
-    if (metadata.hasChangedAuthor && !flags.includes("hasChangedAuthor")) {
-        flags.push("hasChangedAuthor");
-    }
-    if (vulnerabilities.length > 0 && !flags.includes("hasVulnerabilities")) {
-        flags.push("hasVulnerabilities");
-    }
-    if (versions.length > 1 && !flags.includes("hasDuplicate")) {
-        flags.push("hasDuplicate");
-    }
-
+function getEmojiFromFlags(flags) {
     return [...flags]
-        .map((flagName) => kFlagsEmojis[flagName])
-        .filter((value) => value !== undefined)
+        .map((title) => kFlagsEmojis[title] ?? null)
+        .filter((value) => value !== null)
         .reduce((acc, cur) => `${acc} ${cur}`, "");
 }
 
@@ -206,7 +169,7 @@ document.addEventListener("DOMContentLoaded", async() => {
                 indirectDependenciesCount++;
             }
             totalSize += size;
-            const flagStr = getFlags(flags, { metadata, vulnerabilities, versions });
+            const flagStr = getEmojiFromFlags(flags);
             {
                 const content = `<p>${flagStr.replace(/\s/g, "")} ${packageName}</p><b>${currVersion}</b>`;
                 dataListElement.insertAdjacentHTML("beforeend", `<div class="package hide" data-value="${id}">${content}</div>`);
@@ -416,7 +379,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
         {
             const flagsElement = clone.querySelector(".flags");
-            const textContent = getFlags(flags, { metadata, versions, vulnerabilities });
+            const textContent = getEmojiFromFlags(flags);
             if (textContent === "") {
                 flagsElement.style.display = "none";
             }
