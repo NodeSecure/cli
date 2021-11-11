@@ -1,3 +1,8 @@
+// Import Third-party Dependencies
+import prettyBytes from "pretty-bytes";
+import { getJSON } from "@nodesecure/vis-network";
+
+// Import static
 import avatarURL from "../img/avatar-default.png";
 
 window.activeLegendElement = null;
@@ -185,19 +190,6 @@ export function createItemsList(node, items = [], onclick = null, handleHidden =
     node.appendChild(fragment);
 }
 
-export async function getJSON(path, customHeaders = Object.create(null)) {
-    const headers = {
-        Accept: "application/json"
-    };
-
-    const raw = await fetch(path, {
-        method: "GET",
-        headers: Object.assign({}, headers, customHeaders)
-    });
-
-    return raw.json();
-}
-
 export function copyToClipboard(str) {
     const el = document.createElement('textarea');  // Create a <textarea> element
     el.value = str;                                 // Set its value to the string that you want copied
@@ -217,3 +209,25 @@ export function copyToClipboard(str) {
         document.getSelection().addRange(selected);   // Restore the original selection
     }
 };
+
+export async function getBundlephobiaSize(name, version) {
+  try {
+    const {
+      gzip, size, dependencySizes
+    } = await getJSON(`https://bundlephobia.com/api/size?package=${name}@${version}`);
+    const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
+
+    document.querySelector(".size-gzip").textContent = prettyBytes(gzip);
+    document.querySelector(".size-min").textContent = prettyBytes(size);
+    document.querySelector(".size-full").textContent = prettyBytes(fullSize);
+
+    return {
+      gzip: prettyBytes(gzip),
+      size: prettyBytes(size),
+      fullSize: prettyBytes(fullSize)
+    }
+  }
+  catch {
+    return null;
+  }
+}

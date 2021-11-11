@@ -5,7 +5,6 @@ import { fileURLToPath } from "url";
 
 // Import Third-party Dependencies
 import esbuild from "esbuild";
-import { getManifestEmoji } from "@nodesecure/flags";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

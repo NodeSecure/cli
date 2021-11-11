@@ -5,7 +5,7 @@ import path from "path";
 
 // Import Third-party Dependencies
 import test from "tape";
-import { get } from "httpie";
+import { get } from "@myunisoft/httpie";
 import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
