@@ -2,7 +2,6 @@
 
 // Import Node.js Dependencies
 import fs from "fs";
-import { readFile } from "fs/promises";
 import { join, dirname } from "path";
 import { pipeline } from "stream";
 import { fileURLToPath } from "url";
@@ -13,9 +12,11 @@ import kleur from "kleur";
 import polka from "polka";
 import sirv from "sirv";
 import open from "open";
-import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
 import { getFlags, lazyFetchFlagFile, getManifest } from "@nodesecure/flags";
+
+// Import Internal Dependencies
+import { root } from "./root.js";
 
 // CONSTANTS
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -31,24 +32,7 @@ export function buildServer(dataFilePath, options = {}) {
   const httpServer = polka();
   httpServer.use(sirv(join(kProjectRootDir, "dist"), { dev: true }));
 
-  httpServer.get("/", async(req, res) => {
-    try {
-      res.writeHead(200, {
-        "Content-Type": "text/html"
-      });
-
-      const HTMLStr = await readFile(join(kProjectRootDir, "views", "index.html"), "utf-8");
-      const templateStr = zup(HTMLStr)({
-        lang: i18n.getToken("lang"),
-        token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
-      });
-
-      res.end(templateStr);
-    }
-    catch (err) {
-      send(res, 500, { error: err.message });
-    }
-  });
+  httpServer.get("/", root);
 
   httpServer.get("/data", (req, res) => {
     res.writeHead(200, { "Content-Type": "application/json" });
