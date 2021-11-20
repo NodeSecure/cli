@@ -11,7 +11,7 @@ import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
 
 // Require Internal Dependencies
-import { buildServer } from "../src/httpServer.js";
+import { buildServer } from "../src/http-server/index.js";
 
 // CONSTANTS
 const HTTP_PORT = 1337;

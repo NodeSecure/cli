@@ -19,7 +19,7 @@ import { getFlags, lazyFetchFlagFile, getManifest } from "@nodesecure/flags";
 
 // CONSTANTS
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const kProjectRootDir = join(__dirname, "..");
+const kProjectRootDir = join(__dirname, "..", "..");
 const kNodeSecureFlags = getFlags();
 
 export function buildServer(dataFilePath, options = {}) {

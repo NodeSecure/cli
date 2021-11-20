@@ -2,7 +2,7 @@
 import path from "path";
 
 // Import Internal Dependencies
-import { buildServer } from "../httpServer.js";
+import { buildServer } from "../http-server/index.js";
 
 export async function start(json = "nsecure-result.json", options = {}) {
   const port = Number(options.port);
