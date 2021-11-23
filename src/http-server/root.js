@@ -11,17 +11,23 @@ import * as i18n from "@nodesecure/i18n";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const kProjectRootDir = join(__dirname, "..", "..");
 
+export async function buildHtml() {
+  const HTMLStr = await readFile(join(kProjectRootDir, "views", "index.html"), "utf-8");
+  const templateStr = zup(HTMLStr)({
+    lang: i18n.getToken("lang"),
+    token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
+  });
+
+  return templateStr;
+}
+
 export async function root(req, res) {
   try {
     res.writeHead(200, {
       "Content-Type": "text/html"
     });
 
-    const HTMLStr = await readFile(join(kProjectRootDir, "views", "index.html"), "utf-8");
-    const templateStr = zup(HTMLStr)({
-      lang: i18n.getToken("lang"),
-      token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
-    });
+    const templateStr = await buildHtml();
 
     res.end(templateStr);
   }

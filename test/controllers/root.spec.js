@@ -1,9 +1,9 @@
 // Import Third-party Dependencies
 import test from "tape";
-import { spy } from "sinon";
+import { spy, stub } from "sinon";
 
 // Import internal dependencies
-import { root } from "../../src/http-server/root.js";
+import { root, buildHtml } from "../../src/http-server/root.js";
 
 const resObject = {
   writeHead: spy(),
@@ -13,8 +13,32 @@ const resObject = {
 };
 
 
-test("it should set 'Content-Type' headers to 200", async(tape) => {
+test("it should set 'Content-Type' headers to html/text", async(tape) => {
   await root({}, resObject);
 
-  tape.ok(resObject.writeHead.called);
+  const expectedHeaders = { "Content-Type": "text/html" };
+  const isCalledRight = resObject.writeHead.calledWith(200, expectedHeaders);
+  tape.ok(isCalledRight, "should be called with 200, and content-type");
+});
+
+test("it should send render html page", async(tape) => {
+  await root({}, resObject);
+
+  const expectedHtml = await buildHtml();
+  const isCalledRight = resObject.end.calledWith(expectedHtml);
+  tape.ok(isCalledRight, "call the end method with html");
+});
+
+test("it could send an error if something goes wrong", async(tape) => {
+  tape.plan(1);
+
+  try {
+    await root({}, {
+      ...resObject,
+      writeHead: stub().throws()
+    });
+  }
+  catch {
+    tape.ok(resObject.end.called);
+  }
 });
