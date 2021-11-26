@@ -21,7 +21,7 @@ export async function buildHtml() {
   return templateStr;
 }
 
-export async function root(req, res) {
+export async function get(req, res) {
   try {
     res.writeHead(200, {
       "Content-Type": "text/html"

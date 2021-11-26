@@ -13,7 +13,7 @@ import * as i18n from "@nodesecure/i18n";
 import { getFlags, lazyFetchFlagFile, getManifest } from "@nodesecure/flags";
 
 // Import Internal Dependencies
-import { root } from "./root.js";
+import * as root from "./root.js";
 import * as data from "./data.js";
 import * as middleware from "./middleware.js";
 
@@ -32,7 +32,7 @@ export function buildServer(dataFilePath, options = {}) {
 
   httpServer.use(middleware.addStaticFiles);
 
-  httpServer.get("/", root);
+  httpServer.get("/", root.get);
 
   httpServer.get("/data", data.get);
 
