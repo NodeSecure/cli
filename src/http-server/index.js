@@ -16,7 +16,9 @@ import * as i18n from "@nodesecure/i18n";
 import { getFlags, lazyFetchFlagFile, getManifest } from "@nodesecure/flags";
 
 // Import Internal Dependencies
+import { context } from "./context.js";
 import { root } from "./root.js";
+import * as data from "./data.js";
 
 // CONSTANTS
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -30,18 +32,17 @@ export function buildServer(dataFilePath, options = {}) {
   fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
 
   const httpServer = polka();
+
+  httpServer.use((req, res, next) => {
+    const store = { dataFilePath };
+    context.run(store, next);
+  });
+
   httpServer.use(sirv(join(kProjectRootDir, "dist"), { dev: true }));
 
   httpServer.get("/", root);
 
-  httpServer.get("/data", (req, res) => {
-    res.writeHead(200, { "Content-Type": "application/json" });
-    pipeline(fs.createReadStream(dataFilePath), res, (err) => {
-      if (err) {
-        console.error(err);
-      }
-    });
-  });
+  httpServer.get("/data", data.get);
 
   httpServer.get("/flags", (req, res) => send(res, 200, getManifest()));
   httpServer.get("/flags/description/:title", (req, res) => {
