@@ -2,27 +2,22 @@
 
 // Import Node.js Dependencies
 import fs from "fs";
-import { join, dirname } from "path";
 import { pipeline } from "stream";
-import { fileURLToPath } from "url";
 
 // Import Third-party Dependencies
 import send from "@polka/send-type";
 import kleur from "kleur";
 import polka from "polka";
-import sirv from "sirv";
 import open from "open";
 import * as i18n from "@nodesecure/i18n";
 import { getFlags, lazyFetchFlagFile, getManifest } from "@nodesecure/flags";
 
 // Import Internal Dependencies
-import { context } from "./context.js";
 import { root } from "./root.js";
 import * as data from "./data.js";
+import * as middleware from "./middleware.js";
 
 // CONSTANTS
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const kProjectRootDir = join(__dirname, "..", "..");
 const kNodeSecureFlags = getFlags();
 
 export function buildServer(dataFilePath, options = {}) {
@@ -33,12 +28,9 @@ export function buildServer(dataFilePath, options = {}) {
 
   const httpServer = polka();
 
-  httpServer.use((req, res, next) => {
-    const store = { dataFilePath };
-    context.run(store, next);
-  });
+  httpServer.use(middleware.buildContextMiddleware(dataFilePath));
 
-  httpServer.use(sirv(join(kProjectRootDir, "dist"), { dev: true }));
+  httpServer.use(middleware.addStaticFiles);
 
   httpServer.get("/", root);
 
