@@ -15,6 +15,7 @@ import * as data from "./data.js";
 import * as flags from "./flags.js";
 import * as bundle from "./bundle.js";
 import * as middleware from "./middleware.js";
+import { portStore } from "./context.js";
 
 export function buildServer(dataFilePath, options = {}) {
   const httpConfigPort = typeof options.port === "number" ? options.port : 0;
@@ -34,12 +35,15 @@ export function buildServer(dataFilePath, options = {}) {
   httpServer.get("/bundle/:pkgName/:version", bundle.get);
 
   httpServer.listen(httpConfigPort, () => {
-    const link = `http://localhost:${httpServer.server.address().port}`;
-    console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
+    const port = httpServer.server.address().port;
+    portStore.run(port, () => {
+      const link = `http://localhost:${port}`;
+      console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
-    if (openLink) {
-      open(link);
-    }
+      if (openLink) {
+        open(link);
+      }
+    });
   });
 
   return httpServer;

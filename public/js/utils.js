@@ -4,6 +4,7 @@ import { getJSON } from "@nodesecure/vis-network";
 
 // Import static
 import avatarURL from "../img/avatar-default.png";
+import { portStore } from "../../src/http-server/context";
 
 window.activeLegendElement = null;
 
@@ -212,9 +213,11 @@ export function copyToClipboard(str) {
 
 export async function getBundlephobiaSize(name, version) {
   try {
+    const port = portStore.getStore();
+    console.log({ port });
     const {
       gzip, size, dependencySizes
-    } = await getJSON(`https://bundlephobia.com/api/size?package=${name}@${version}`);
+    } = await getJSON(`http://localhost:${port}/bundle/${name}/${version}`);
     const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
 
     document.querySelector(".size-gzip").textContent = prettyBytes(gzip);

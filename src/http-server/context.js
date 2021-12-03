@@ -1,3 +1,5 @@
 import { AsyncLocalStorage } from "async_hooks";
 
 export const context = new AsyncLocalStorage();
+
+export const portStore = new AsyncLocalStorage();
