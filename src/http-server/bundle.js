@@ -17,7 +17,7 @@ export async function get(req, res) {
       dependencySizes
     });
   }
-  catch {
-    return send(res, 404, { error: "Not Found" });
+  catch (error) {
+    return send(res, error.statusCode, { error: error.statusMessage });
   }
 }

@@ -97,10 +97,9 @@ test("'/bundle/:name/:version' should return the bundle size", async(tape) => {
 test("'/bundle/:name/:version' should return an error if it fails", async(tape) => {
   tape.plan(2);
   const wrongVersion = undefined;
-  const wrongPackageName = "br-br-br-brah";
 
   try {
-    await get(new URL(`/bundle/${wrongPackageName}/${wrongVersion}`, HTTP_URL));
+    await get(new URL(`/bundle/rimraf/${wrongVersion}`, HTTP_URL));
   }
   catch (error) {
     tape.equal(error.statusCode, 404);
@@ -116,6 +115,21 @@ test("'/bundle/:name' should return the bundle size of the last version", async(
   tape.equal(result.statusCode, 200);
   tape.equal(result.headers["content-type"], "application/json;charset=utf-8");
   checkBundleResponse(tape, result.data);
+});
+
+test("'/bundle/:name' should return an error if it fails", async(tape) => {
+  tape.plan(2);
+  const wrongPackageName = "br-br-br-brah";
+
+  try {
+    await get(new URL(`/bundle/${wrongPackageName}`, HTTP_URL));
+  }
+  catch (error) {
+    tape.equal(error.statusCode, 404);
+    tape.equal(error.data.error, "Not Found");
+  }
+
+  tape.end();
 });
 
 test("teardown", (tape) => {
