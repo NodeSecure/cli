@@ -214,7 +214,6 @@ export function copyToClipboard(str) {
 export async function getBundlephobiaSize(name, version) {
   try {
     const port = portStore.getStore();
-    console.log({ port });
     const {
       gzip, size, dependencySizes
     } = await getJSON(`http://localhost:${port}/bundle/${name}/${version}`);
