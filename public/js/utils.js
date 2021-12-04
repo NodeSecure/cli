@@ -214,7 +214,7 @@ export async function getBundlephobiaSize(name, version) {
   try {
     const {
       gzip, size, dependencySizes
-    } = await getJSON(`https://bundlephobia.com/api/size?package=${name}@${version}`);
+    } = await getJSON(`/bundle/${name}/${version}`);
     const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
 
     document.querySelector(".size-gzip").textContent = prettyBytes(gzip);

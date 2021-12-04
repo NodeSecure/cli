@@ -86,7 +86,63 @@ test("'/data' should return the fixture payload we expect", async(tape) => {
   tape.end();
 });
 
+test("'/bundle/:name/:version' should return the bundle size", async(tape) => {
+  const result = await get(new URL("/bundle/flatstr/1.0.12", HTTP_URL));
+
+  tape.equal(result.statusCode, 200);
+  tape.equal(result.headers["content-type"], "application/json;charset=utf-8");
+  checkBundleResponse(tape, result.data);
+});
+
+test("'/bundle/:name/:version' should return an error if it fails", async(tape) => {
+  tape.plan(2);
+  const wrongVersion = undefined;
+
+  try {
+    await get(new URL(`/bundle/rimraf/${wrongVersion}`, HTTP_URL));
+  }
+  catch (error) {
+    tape.equal(error.statusCode, 404);
+    tape.equal(error.data.error, "Not Found");
+  }
+
+  tape.end();
+});
+
+test("'/bundle/:name' should return the bundle size of the last version", async(tape) => {
+  const result = await get(new URL("/bundle/flatstr", HTTP_URL));
+
+  tape.equal(result.statusCode, 200);
+  tape.equal(result.headers["content-type"], "application/json;charset=utf-8");
+  checkBundleResponse(tape, result.data);
+});
+
+test("'/bundle/:name' should return an error if it fails", async(tape) => {
+  tape.plan(2);
+  const wrongPackageName = "br-br-br-brah";
+
+  try {
+    await get(new URL(`/bundle/${wrongPackageName}`, HTTP_URL));
+  }
+  catch (error) {
+    tape.equal(error.statusCode, 404);
+    tape.equal(error.data.error, "Not Found");
+  }
+
+  tape.end();
+});
+
 test("teardown", (tape) => {
   httpServer.server.close();
   tape.end();
 });
+
+/**
+ * HELPERS
+ */
+
+function checkBundleResponse(tapeInstance, payload) {
+  tapeInstance.ok(payload.gzip);
+  tapeInstance.ok(payload.size);
+  tapeInstance.ok(payload.dependencySizes);
+}

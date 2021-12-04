@@ -13,6 +13,7 @@ import * as i18n from "@nodesecure/i18n";
 import * as root from "./root.js";
 import * as data from "./data.js";
 import * as flags from "./flags.js";
+import * as bundle from "./bundle.js";
 import * as middleware from "./middleware.js";
 
 export function buildServer(dataFilePath, options = {}) {
@@ -29,9 +30,12 @@ export function buildServer(dataFilePath, options = {}) {
   httpServer.get("/data", data.get);
   httpServer.get("/flags", flags.getAll);
   httpServer.get("/flags/description/:title", flags.get);
+  httpServer.get("/bundle/:pkgName", bundle.get);
+  httpServer.get("/bundle/:pkgName/:version", bundle.get);
 
   httpServer.listen(httpConfigPort, () => {
-    const link = `http://localhost:${httpServer.server.address().port}`;
+    const port = httpServer.server.address().port;
+    const link = `http://localhost:${port}`;
     console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
     if (openLink) {
