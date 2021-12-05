@@ -2,7 +2,7 @@
   "name": "nsecure",
   "version": "0.9.0",
   "description": "Node.js security CLI",
-  "main": "./index.js",
+  "main": "./bin/index.js",
   "bin": {
     "node-secure": "./bin/index.js",
     "nsecure": "./bin/index.js"
