@@ -2,7 +2,7 @@
 
 import { createDOMElement } from "./utils.js";
 import semver from "semver";
-import sizeSatisfies from "size-satisfies";
+import sizeSatisfies from "@nodesecure/size-satisfies";
 
 // CONSTANTS
 const kFiltersName = new Set(["package", "version", "flag", "license", "author", "ext", "builtin", "size"]);
@@ -200,7 +200,14 @@ export default class SearchBar {
                 this.close();
             }
         });
+
         this.showPannelHelper();
+        const bar = this;
+        for (const domElement of this.allSearchPackages) {
+          domElement.addEventListener("click", function() {
+            bar.resultRowClick(this.getAttribute("data-value"));
+          });
+        }
     }
 
     appendCancelButton() {
@@ -366,7 +373,7 @@ export default class SearchBar {
 
     resultRowClick(dataValue) {
         this.delayOpenSearchBar = false;
-        this.network.emit("click", { nodes: [dataValue] });
+        this.network.focusNodeById(dataValue);
         this.close();
 
         setTimeout(() => {

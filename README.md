@@ -11,7 +11,6 @@
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/license/ES-Community/nsecure?style=flat-square" alt="license"></a>
     <a href="https://github.com/ES-Community/nsecure/actions?query=workflow%3A%22Node.js+CI%22"><img src="https://img.shields.io/github/workflow/status/ES-Community/nsecure/Node.js%20CI/master?style=flat-square" alt="github ci workflow"></a>
     <a href="https://codecov.io/github/ES-Community/nsecure"><img src="https://img.shields.io/codecov/c/github/ES-Community/nsecure.svg?style=flat-square" alt="codecov"></a>
-    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/david/ES-Community/nsecure?style=flat-square" alt="dependencies"></a>
     <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg?style=flat-square" alt="Responsible Disclosure Policy" /></a>
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/npm/dw/nsecure?style=flat-square" alt="downloads"></a>
 </p>
@@ -21,7 +20,7 @@
 <img src="https://i.imgur.com/3xnTGBl.png">
 </p>
 
-## About
+## 📢 About
 
 [Node.js](https://nodejs.org/en/) security Command Line Interface. The goal of the project is to a design a CLI/API that will fetch and deeply analyze the dependency tree of a given **npm** package (Or a local project with a **package.json**) and output a **.json file** that will contains all metadata and flags about each packages. All this data will allow to quickly identify different issues across projects and packages (related to security and quality).
 
@@ -29,7 +28,7 @@ The CLI allow to load the JSON into a Webpage with the **open** command. The pag
 
 - [NodeSecure G.Drive Design document](https://docs.google.com/document/d/1853Uwup9mityAYqAOnen1KSqSA6hlBgpKU0u0ygGY4Y/edit?usp=sharing)
 
-## Features
+## 📜 Features
 
 - Run an AST analysis on each .js/.mjs file in the packages tarball and sort out warnings (unsafe-regex, unsafe-import etc) and the complete list of required expr and statements (files, node.js module, etc.).
 - Return complete composition for each packages (extensions, files, tarball size, etc).
@@ -39,11 +38,11 @@ The CLI allow to load the JSON into a Webpage with the **open** command. The pag
 - Add flags to each packages versions to identify well known patterns and potential security threats easily.
 - Analyze npm packages and local Node.js projects.
 
-## Requirements
+## 🚧 Requirements
 
-- [Node.js](https://nodejs.org/en/) version 12.12.0 or higher
+- [Node.js](https://nodejs.org/en/) LTS 16.x or higher
 
-## Getting Started
+## 💃 Getting Started
 
 ```bash
 $ npm install nsecure -g
@@ -66,7 +65,7 @@ $ nsecure auto express
 
 > ⚠️ Setup an [npm token](https://github.com/ES-Community/nsecure#private-packages--registry) to avoid hiting the maximum request limit of the npm registry API.
 
-## Usage example
+## 👀 Usage example
 
 To show the complete list of commands
 ```bash
@@ -136,35 +135,11 @@ $ npm config set "http://your-registry/"
 ```
 
 ## API
-Use nsecure as an API package to fetch and work with the generated JSON. The following example demonstrates how to retrieve the Payload for mocha, cacache and is-wsl packages. It's possible to use the **cwd** method if you want to achieve similar work on a local project.
-
-```js
-const { from } = require("nsecure");
-const { writeFile } = require("fs").promises;
-
-async function main() {
-    const toFetch = ["mocha", "cacache", "is-wsl"];
-    const options = { verbose: false }; // disable verbose to not show the spinners
-
-    const payloads = await Promise.all(
-        toFetch.map((name) => from(name, options))
-    );
-
-    const toWritePromise = [];
-    for (let i = 0; i < toFetch.length; i++) {
-        const data = JSON.stringify(payloads[i], null, 2);
-        toWritePromise.push(writeFile(`${toFetch[i]}.json`, data));
-    }
-    await Promise.allSettled(toWritePromise);
-}
-main().catch(console.error);
-```
-
-The SlimIO [Security project](https://github.com/SlimIO/Security) use nsecure with the API to analyze packages and repositories of a given github organization (or user).
+Our back-end scanner package is available [here](https://github.com/NodeSecure/scanner).
 
 ## Flags legends
 
-Flags and emojis legends are documented [here](./FLAGS.md).
+Flags and emojis legends are documented [here](https://github.com/NodeSecure/flags/blob/main/FLAGS.md).
 
 ## Searchbar filters
 
@@ -219,10 +194,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
-
-## Roadmap
-
-We have created [a trello](https://trello.com/b/IY6lQ1A1/node-secure) so that we can plan long-term tasks. Do not hesitate to come participate and exchange your ideas!
 
 ## License
 MIT

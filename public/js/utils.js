@@ -1,3 +1,8 @@
+// Import Third-party Dependencies
+import prettyBytes from "pretty-bytes";
+import { getJSON } from "@nodesecure/vis-network";
+
+// Import static
 import avatarURL from "../img/avatar-default.png";
 
 window.activeLegendElement = null;
@@ -47,12 +52,12 @@ export function createAvatar(name, desc) {
 
     const imgEl = document.createElement("img");
     if (!("email" in desc) || typeof desc.email === "undefined" || desc.email === null || desc.email === "") {
-        imgEl.src = `img/${avatarURL}`;
+        imgEl.src = `${avatarURL}`;
     }
     else {
         imgEl.src = `https://unavatar.now.sh/${desc.email}`;
         imgEl.onerror = () => {
-            imgEl.src = `img/${avatarURL}`;
+            imgEl.src = `${avatarURL}`;
         };
     }
     imgEl.alt = name;
@@ -185,52 +190,6 @@ export function createItemsList(node, items = [], onclick = null, handleHidden =
     node.appendChild(fragment);
 }
 
-export async function getJSON(path, customHeaders = Object.create(null)) {
-    const headers = {
-        Accept: "application/json"
-    };
-
-    const raw = await fetch(path, {
-        method: "GET",
-        headers: Object.assign({}, headers, customHeaders)
-    });
-
-    return raw.json();
-}
-
-export function parseAuthor(str) {
-    if (typeof str !== "string") {
-        throw new TypeError("expected author to be a string");
-    }
-
-    if (!str || !/\w/.test(str)) {
-        return {};
-    }
-
-    const match = /^([^<(]+?)?[ \t]*(?:<([^>(]+?)>)?[ \t]*(?:\(([^)]+?)\)|$)/gm.exec(str);
-    if (!match) {
-        return {};
-    }
-    const author = Object.create(null);
-
-    if (match[1]) {
-        author.name = match[1];
-    }
-
-    for (let id = 2; id < match.length; id++) {
-        const val = match[id] || "";
-
-        if (val.includes("@")) {
-            author.email = val;
-        }
-        else if (val.includes("http")) {
-            author.url = val;
-        }
-    }
-
-    return author;
-}
-
 export function copyToClipboard(str) {
     const el = document.createElement('textarea');  // Create a <textarea> element
     el.value = str;                                 // Set its value to the string that you want copied
@@ -250,3 +209,25 @@ export function copyToClipboard(str) {
         document.getSelection().addRange(selected);   // Restore the original selection
     }
 };
+
+export async function getBundlephobiaSize(name, version) {
+  try {
+    const {
+      gzip, size, dependencySizes
+    } = await getJSON(`/bundle/${name.replace("/", "%2F")}/${version}`);
+    const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
+
+    document.querySelector(".size-gzip").textContent = prettyBytes(gzip);
+    document.querySelector(".size-min").textContent = prettyBytes(size);
+    document.querySelector(".size-full").textContent = prettyBytes(fullSize);
+
+    return {
+      gzip: prettyBytes(gzip),
+      size: prettyBytes(size),
+      fullSize: prettyBytes(fullSize)
+    }
+  }
+  catch {
+    return null;
+  }
+}
