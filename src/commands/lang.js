@@ -15,4 +15,5 @@ export async function set() {
   console.log(
     kleur.white().bold(`\n ${i18n.getToken("cli.commands.lang.new_selection", kleur.yellow().bold(selectedLang))}`)
   );
+  console.log("");
 }

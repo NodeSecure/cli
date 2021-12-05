@@ -103,9 +103,8 @@ function extractAnalysisData(dependencies) {
   for (const dependencyData of Object.values(dependencies)) {
     const { versions, metadata } = dependencyData;
 
-    for (const version of versions) {
-      const versionData = dependencyData[version];
-      extractVersionData(versionData, analysisAggregator);
+    for (const version of Object.values(versions)) {
+      extractVersionData(version, analysisAggregator);
     }
 
     analysisAggregator.packagesCount += metadata.dependencyCount;
