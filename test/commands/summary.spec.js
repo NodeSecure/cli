@@ -26,7 +26,6 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
     /\(48\) MIT - \(1\) BSD-3-Clause - \(3\) ISC.*$/,
     /.*/
   ];
-  tape.plan(lines.length * 2);
 
   const child = spawn(process.execPath, [path.join(kProcessDir, "summary.js")], {
     cwd: path.join(__dirname, "..", "fixtures"),
