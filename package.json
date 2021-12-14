@@ -17,7 +17,7 @@
     "prepublishOnly": "npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
-    "test-only": "cross-env esm-tape-runner 'test/**/*.spec.js'",
+    "test-only": "cross-env tape 'test/**/*.spec.js'",
     "coverage": "c8 --all --src ./src -r html npm run test"
   },
   "files": [
