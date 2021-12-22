@@ -5,7 +5,7 @@ import path from "path";
 
 // Import Third-party Dependencies
 import test from "tape";
-import split from "split2";
+import splitByLine from "split2";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -15,15 +15,15 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
   const lines = [
     /Global Stats: express.*$/,
     /.*/,
-    /Total of packages:.*60.*$/,
-    /Total size:.*1.59 MB.*$/,
+    /Total of packages:.*65.*$/,
+    /Total size:.*1.62 MB.*$/,
     /Packages with indirect dependencies:.*6.*$/,
     /.*/,
     /Extensions:.*$/,
-    /\(52\) \.md - \(52\) \.js - \(50\) {2}- \(52\) \.json - \(5\) \.ts - \(1\) \.yml.*$/,
+    /\(48\) {2}- \(50\) \.md - \(50\) \.json - \(50\) \.js - \(5\) \.ts - \(2\) \.yml.*$/,
     /.*/,
     /Licenses:.*$/,
-    /\(48\) MIT - \(1\) BSD-3-Clause - \(3\) ISC.*$/,
+    /\(47\) MIT - \(2\) ISC.*$/,
     /.*/
   ];
 
@@ -35,7 +35,7 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
   });
   tape.teardown(() => child.kill());
 
-  const rStream = child.stdout.pipe(split());
+  const rStream = child.stdout.pipe(splitByLine());
   for await (const line of rStream) {
     const regexp = lines.shift();
 
