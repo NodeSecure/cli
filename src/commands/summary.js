@@ -17,9 +17,9 @@ const { yellow, gray, white, green, cyan, red } = kleur;
 export async function main(json = "nsecure-result.json") {
   const dataFilePath = path.join(process.cwd(), json);
   const rawAnalysis = await fs.readFile(dataFilePath, { encoding: "utf-8" });
-  const { rootDepencyName: rootDependencyName, dependencies, version = "" } = JSON.parse(rawAnalysis);
+  const { rootDependencyName, dependencies, scannerVersion = "" } = JSON.parse(rawAnalysis);
 
-  if (!version || !isAnalysisVersionValid(version)) {
+  if (!scannerVersion || !isAnalysisVersionValid(scannerVersion)) {
     throw new Error(`
     Your analysis version is no more compatible with nsecure (accepted range: ${VERSION_RANGE}) - Run a new analysis.
     `);
