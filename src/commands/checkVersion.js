@@ -9,14 +9,14 @@ export const kVersionRange = ">=0.7.0";
  * => Exported for test purpose
  *
  * @param {string} acceptedVersionRange
- * @returns {Function} (packageVersion: string) => boolean
+ * @returns {Function} (scannerVersion: string) => boolean
  *
  */
 export function buildVersionChecker(acceptedVersionRange) {
-  return function isAnalysisVersionValid(packageVersion) {
-    const cleanedPackageVersion = semver.coerce(packageVersion);
+  return function isAnalysisVersionValid(scannerVersion) {
+    const cleanedScannerVersion = semver.coerce(scannerVersion);
 
-    return semver.satisfies(cleanedPackageVersion, acceptedVersionRange);
+    return semver.satisfies(cleanedScannerVersion, acceptedVersionRange);
   };
 }
 
