@@ -28,7 +28,7 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
   ];
   tape.plan(lines.length * 2);
 
-  const child = spawn(process.execPath, [path.join(kProcessDir, "summary.js")], {
+  const child = spawn(process.execPath, [path.join(kProcessDir, "run-summary.js"), "result-test1.json"], {
     cwd: path.join(__dirname, "..", "fixtures"),
     env: process.env,
     stdio: ["ignore", "pipe", "pipe"],
@@ -39,6 +39,77 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
   const rStream = child.stdout.pipe(splitByLine());
   for await (const line of rStream) {
     const regexp = lines.shift();
+
+    tape.ok(regexp, "we are expecting this line");
+    tape.ok(regexp.test(line), `line matches ${regexp}`);
+  }
+
+  tape.end();
+});
+
+test("summary should throw on fixtures 'result-without-version.json'", async(tape) => {
+  const lines = [
+    /.*/,
+    /throw new Error\(`/,
+    /.*/,
+    /.*/,
+    /Error:/,
+    /Your analysis version is no more compatible with nsecure \(accepted range: >=0.7.0\) - Run a new analysis./,
+    /.*/,
+    /.*/,
+    /.*/,
+    /.*/,
+    /.*/
+  ];
+  tape.plan(lines.length * 2);
+
+  const child = spawn(process.execPath, [path.join(kProcessDir, "run-summary.js"), "result-without-version.json"], {
+    cwd: path.join(__dirname, "..", "fixtures"),
+    env: process.env,
+    stdio: ["ignore", "pipe", "pipe"],
+    detached: false
+  });
+  tape.teardown(() => child.kill());
+
+  const rStream = child.stderr.pipe(splitByLine());
+  for await (const line of rStream) {
+    const regexp = lines.shift();
+
+    tape.ok(regexp, "we are expecting this line");
+    tape.ok(regexp.test(line), `line matches ${regexp}`);
+  }
+
+  tape.end();
+});
+
+test("summary should throw on fixtures 'summary-with-bad-version-range.json'", async(tape) => {
+  const lines = [
+    /.*/,
+    /throw new Error\(`/,
+    /.*/,
+    /.*/,
+    /Error:/,
+    /Your analysis version is no more compatible with nsecure \(accepted range: >=0.7.0\) - Run a new analysis./,
+    /.*/,
+    /.*/,
+    /.*/,
+    /.*/,
+    /.*/
+  ];
+  tape.plan(lines.length * 2);
+
+  const child = spawn(process.execPath, [path.join(kProcessDir, "run-summary.js"), "result-with-bad-version-range.json"], {
+    cwd: path.join(__dirname, "..", "fixtures"),
+    env: process.env,
+    stdio: ["ignore", "pipe", "pipe"],
+    detached: false
+  });
+  tape.teardown(() => child.kill());
+
+  const rStream = child.stderr.pipe(splitByLine());
+  for await (const line of rStream) {
+    const regexp = lines.shift();
+    console.log(line);
 
     tape.ok(regexp, "we are expecting this line");
     tape.ok(regexp.test(line), `line matches ${regexp}`);

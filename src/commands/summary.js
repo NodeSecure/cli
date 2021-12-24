@@ -9,7 +9,7 @@ import * as i18n from "@nodesecure/i18n";
 import { formatBytes } from "@nodesecure/utils";
 
 // Import Internal Dependencies
-import { isAnalysisVersionValid } from "./checkVersion.js";
+import { isAnalysisVersionValid, kVersionRange } from "./checkVersion.js";
 
 // VARS
 const { yellow, gray, white, green, cyan, red } = kleur;
@@ -21,7 +21,7 @@ export async function main(json = "nsecure-result.json") {
 
   if (!scannerVersion || !isAnalysisVersionValid(scannerVersion)) {
     throw new Error(`
-    Your analysis version is no more compatible with nsecure (accepted range: ${VERSION_RANGE}) - Run a new analysis.
+    Your analysis version is no more compatible with nsecure (accepted range: ${kVersionRange}) - Run a new analysis.
     `);
   }
 
