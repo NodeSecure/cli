@@ -26,7 +26,6 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
     /\(47\) MIT - \(2\) ISC.*$/,
     /.*/
   ];
-  tape.plan(lines.length * 2);
 
   const child = spawn(process.execPath, [path.join(kProcessDir, "run-summary.js"), "result-test1.json"], {
     cwd: path.join(__dirname, "..", "fixtures"),
@@ -61,7 +60,6 @@ test("summary should throw on fixtures 'result-without-version.json'", async(tap
     /.*/,
     /.*/
   ];
-  tape.plan(lines.length * 2);
 
   const child = spawn(process.execPath, [path.join(kProcessDir, "run-summary.js"), "result-without-version.json"], {
     cwd: path.join(__dirname, "..", "fixtures"),
@@ -96,7 +94,6 @@ test("summary should throw on fixtures 'summary-with-bad-version-range.json'", a
     /.*/,
     /.*/
   ];
-  tape.plan(lines.length * 2);
 
   const child = spawn(process.execPath, [path.join(kProcessDir, "run-summary.js"), "result-with-bad-version-range.json"], {
     cwd: path.join(__dirname, "..", "fixtures"),
