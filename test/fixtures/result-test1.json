@@ -1,7 +1,7 @@
 {
   "id": "idS5Rf",
   "rootDependencyName": "express",
-  "scannerVersion": "3.1.1-rc.0",
+  "scannerVersion": "3.1.1",
   "vulnerabilityStrategy": "none",
   "warnings": [],
   "dependencies": {

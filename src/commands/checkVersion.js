@@ -1,6 +1,6 @@
 import semver from "semver";
 
-export const kVersionRange = ">=0.7.0";
+export const kVersionRange = ">=3.0.0";
 
 /**
  * @description will return a validator
