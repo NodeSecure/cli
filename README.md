@@ -1,5 +1,5 @@
 <p align="center"><h1 align="center">
-  🐢 Node-Secure 🚀
+  🐢 Node-Secure CLI 🚀
 </h1>
 
 <p align="center">
@@ -45,7 +45,7 @@ The CLI allow to load the JSON into a Webpage with the **open** command. The pag
 ## 💃 Getting Started
 
 ```bash
-$ npm install nsecure -g
+$ npm install @nodesecure/cli -g
 ```
 
 or
