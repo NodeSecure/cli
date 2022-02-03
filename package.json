@@ -48,7 +48,7 @@
     "visualization",
     "dependencies"
   ],
-  "author": "ES Community",
+  "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/NodeSecure/cli/issues"
