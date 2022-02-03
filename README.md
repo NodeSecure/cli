@@ -7,9 +7,9 @@
 </p>
 
 <p align="center">
-    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/package-json/v/ES-Community/nsecure?style=flat-square" alt="npm version"></a>
-    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/license/ES-Community/nsecure?style=flat-square" alt="license"></a>
-    <a href="https://github.com/ES-Community/nsecure/actions?query=workflow%3A%22Node.js+CI%22"><img src="https://img.shields.io/github/workflow/status/ES-Community/nsecure/Node.js%20CI/master?style=flat-square" alt="github ci workflow"></a>
+    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/package-json/v/NodeSecure/cli?style=flat-square" alt="npm version"></a>
+    <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/license/NodeSecure/cli?style=flat-square" alt="license"></a>
+    <a href="https://github.com/NodeSecure/cli/actions?query=workflow%3A%22Node.js+CI%22"><img src="https://img.shields.io/github/workflow/status/NodeSecure/cli/Node.js%20CI/master?style=flat-square" alt="github ci workflow"></a>
     <a href="https://codecov.io/github/ES-Community/nsecure"><img src="https://img.shields.io/codecov/c/github/ES-Community/nsecure.svg?style=flat-square" alt="codecov"></a>
     <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg?style=flat-square" alt="Responsible Disclosure Policy" /></a>
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/npm/dw/nsecure?style=flat-square" alt="downloads"></a>
@@ -51,8 +51,8 @@ $ npm install nsecure -g
 or
 
 ```bash
-$ git clone https://github.com/ES-Community/nsecure.git
-$ cd nsecure
+$ git clone https://github.com/NodeSecure/cli.git
+$ cd cli
 $ npm ci
 $ npm run build
 $ npm link
@@ -63,7 +63,7 @@ Then the **nsecure** binary will be available in your terminal. Give a try with 
 $ nsecure auto express
 ```
 
-> ⚠️ Setup an [npm token](https://github.com/ES-Community/nsecure#private-packages--registry) to avoid hiting the maximum request limit of the npm registry API.
+> ⚠️ Setup an [npm token](https://github.com/NodeSecure/cli#private-packages--registry) to avoid hiting the maximum request limit of the npm registry API.
 
 ## 👀 Usage example
 
@@ -182,10 +182,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://mickaelcroquet.fr"><img src="https://avatars2.githubusercontent.com/u/23740372?v=4" width="100px;" alt=""/><br /><sub><b>Haze</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=CroquetMickael" title="Code">💻</a> <a href="#design-CroquetMickael" title="Design">🎨</a></td>
-    <td align="center"><a href="https://www.linkedin.com/in/thomas-gentilhomme/"><img src="https://avatars3.githubusercontent.com/u/4438263?v=4" width="100px;" alt=""/><br /><sub><b>fraxken</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Code">💻</a> <a href="https://github.com/ES-Community/nsecure/issues?q=author%3Afraxken" title="Bug reports">🐛</a> <a href="#blog-fraxken" title="Blogposts">📝</a> <a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Tests">⚠️</a> <a href="https://github.com/ES-Community/nsecure/commits?author=fraxken" title="Documentation">📖</a> <a href="#design-fraxken" title="Design">🎨</a></td>
-    <td align="center"><a href="https://stouder.io"><img src="https://avatars2.githubusercontent.com/u/2575182?v=4" width="100px;" alt=""/><br /><sub><b>Xavier Stouder</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=Xstoudi" title="Code">💻</a> <a href="#design-Xstoudi" title="Design">🎨</a> <a href="https://github.com/ES-Community/nsecure/commits?author=Xstoudi" title="Documentation">📖</a></td>
-    <td align="center"><a href="http://tonygo.dev"><img src="https://avatars0.githubusercontent.com/u/22824417?v=4" width="100px;" alt=""/><br /><sub><b>Tony Gorez</b></sub></a><br /><a href="https://github.com/ES-Community/nsecure/commits?author=tony-go" title="Code">💻</a> <a href="https://github.com/ES-Community/nsecure/commits?author=tony-go" title="Documentation">📖</a> <a href="https://github.com/ES-Community/nsecure/pulls?q=is%3Apr+reviewed-by%3Atony-go" title="Reviewed Pull Requests">👀</a></td>
+    <td align="center"><a href="https://mickaelcroquet.fr"><img src="https://avatars2.githubusercontent.com/u/23740372?v=4" width="100px;" alt=""/><br /><sub><b>Haze</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=CroquetMickael" title="Code">💻</a> <a href="#design-CroquetMickael" title="Design">🎨</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/thomas-gentilhomme/"><img src="https://avatars3.githubusercontent.com/u/4438263?v=4" width="100px;" alt=""/><br /><sub><b>fraxken</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=fraxken" title="Code">💻</a> <a href="https://github.com/NodeSecure/cli/issues?q=author%3Afraxken" title="Bug reports">🐛</a> <a href="#blog-fraxken" title="Blogposts">📝</a> <a href="https://github.com/NodeSecure/cli/commits?author=fraxken" title="Tests">⚠️</a> <a href="https://github.com/NodeSecure/cli/commits?author=fraxken" title="Documentation">📖</a> <a href="#design-fraxken" title="Design">🎨</a></td>
+    <td align="center"><a href="https://stouder.io"><img src="https://avatars2.githubusercontent.com/u/2575182?v=4" width="100px;" alt=""/><br /><sub><b>Xavier Stouder</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=Xstoudi" title="Code">💻</a> <a href="#design-Xstoudi" title="Design">🎨</a> <a href="https://github.com/NodeSecure/cli/commits?author=Xstoudi" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://tonygo.dev"><img src="https://avatars0.githubusercontent.com/u/22824417?v=4" width="100px;" alt=""/><br /><sub><b>Tony Gorez</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=tony-go" title="Code">💻</a> <a href="https://github.com/NodeSecure/cli/commits?author=tony-go" title="Documentation">📖</a> <a href="https://github.com/NodeSecure/cli/pulls?q=is%3Apr+reviewed-by%3Atony-go" title="Reviewed Pull Requests">👀</a></td>
   </tr>
 </table>
 

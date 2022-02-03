@@ -53,8 +53,8 @@
     }
   ],
   "contributorsPerLine": 7,
-  "projectName": "nsecure",
-  "projectOwner": "ES-Community",
+  "projectName": "cli",
+  "projectOwner": "NodeSecure",
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true
