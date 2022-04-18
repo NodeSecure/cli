@@ -74,6 +74,14 @@ prog
   .describe(i18n.getToken("cli.commands.lang.desc"))
   .action(commands.lang.set);
 
+prog
+  .command("config")
+  .describe("Manage your Nodesecure config file")
+  .option("-i, --init", "init your config file", false)
+  .option("-m, --modify", "modify your config file", false)
+  .option("-d, --delete", "Delete your config file", false)
+  .action(commands.config.main);
+
 prog.parse(process.argv);
 
 function defaultScannerCommand(name, options = {}) {
