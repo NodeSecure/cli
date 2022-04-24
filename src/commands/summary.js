@@ -14,10 +14,10 @@ const { yellow, gray, white, green, cyan, red } = kleur;
 export async function main(json = "nsecure-result.json") {
   const dataFilePath = path.join(process.cwd(), json);
   const rawAnalysis = await fs.readFile(dataFilePath, { encoding: "utf-8" });
-  const { rootDepencyName, dependencies } = JSON.parse(rawAnalysis);
+  const { rootDependencyName, dependencies } = JSON.parse(rawAnalysis);
 
   const ui = cliui();
-  const title = `${white().bold(`${i18n.getToken("ui.stats.title")}:`)} ${cyan().bold(rootDepencyName)}`;
+  const title = `${white().bold(`${i18n.getToken("ui.stats.title")}:`)} ${cyan().bold(rootDependencyName)}`;
   ui.div(
     { text: title, width: 50 }
   );
