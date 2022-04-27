@@ -75,12 +75,15 @@ prog
   .action(commands.lang.set);
 
 prog
+  .command("config create")
+  .option("-c, --cwd", "create config file at the cwd", false)
+  .describe("Init your Nodesecure config file")
+  .action(commands.config.createConfigFile);
+
+prog
   .command("config")
-  .describe("Manage your Nodesecure config file")
-  .option("-i, --init", "init your config file", false)
-  .option("-m, --modify", "modify your config file", false)
-  .option("-d, --delete", "Delete your config file", false)
-  .action(commands.config.main);
+  .describe("Edit your nodesecure config file")
+  .action(commands.config.editConfigFile);
 
 prog.parse(process.argv);
 
