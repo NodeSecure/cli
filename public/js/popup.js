@@ -1,9 +1,12 @@
 // Import Third-party Dependencies
 import { locationToString } from "@nodesecure/utils";
 import List from "list.js";
+import { CONSTANTS } from "@nodesecure/js-x-ray";
+import { getToken } from "@nodesecure/i18n";
 
 // Import Internal Dependencies
 import * as utils from "./utils.js";
+import { getI18nKindWarning } from "../../src/commands/utils.js";
 
 // CONSTANTS
 const kLoadingMessage = "Loading ...";
@@ -80,7 +83,7 @@ function warningModal(clone, options) {
     document.addEventListener("click", handleOutsideTooltipClick);
 
     const tbody = clone.querySelector("#warnings-table tbody");
-    for (const { kind, file, value = null, location } of warnings) {
+    for (const { kind, file, value = null, location } of getI18nKindWarning(warnings, CONSTANTS, getToken)) {
         const line = tbody.insertRow(0);
         const lineId = Math.random().toString(36).slice(2);
         const unpkgFile = `${unpkgRootURL}${file}`;

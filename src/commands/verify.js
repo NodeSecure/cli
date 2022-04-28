@@ -3,6 +3,9 @@ import cliui from "cliui";
 import kleur from "kleur";
 import { verify } from "@nodesecure/scanner";
 import { formatBytes, locationToString } from "@nodesecure/utils";
+import { CONSTANTS } from "@nodesecure/js-x-ray";
+import { getToken } from "@nodesecure/i18n";
+import { getI18nKindWarning } from "./utils.js";
 
 // VARS
 const { yellow, grey, white, green, cyan, red, magenta } = kleur;
@@ -89,7 +92,7 @@ export async function main(packageName = null, options) {
     { text: white().bold("source location"), width: 25, align: "center" }
   );
 
-  for (const warning of ast.warnings) {
+  for (const warning of getI18nKindWarning(ast.warnings, CONSTANTS, getToken)) {
     const position = warning.kind === "encoded-literal" ?
       warning.location.map((loc) => locationToString(loc)).join(" // ") :
       locationToString(warning.location);
