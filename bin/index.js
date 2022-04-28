@@ -75,7 +75,7 @@ prog
   .action(commands.lang.set);
 
 prog
-  .command("config create")
+  .command("config create [configuration]")
   .option("-c, --cwd", "create config file at the cwd", false)
   .describe("Init your Nodesecure config file")
   .action(commands.config.createConfigFile);

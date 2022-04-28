@@ -2,6 +2,7 @@
 import os from "node:os";
 import path from "node:path";
 import fs from "node:fs/promises";
+import { existsSync } from "node:fs";
 
 // Import Third-party Dependencies
 import * as RC from "@nodesecure/rc";
@@ -10,37 +11,35 @@ import { spawn } from "node:child_process";
 
 const K_HOME_PATH = path.join(os.homedir(), "nodesecure");
 
-async function spawnCodeAtNodeSecureRc(path, isCwd = false) {
-  try {
-    await fs.access(path);
+function spawnCodeAtNodeSecureRc(path, isCwd = false) {
+  if (existsSync(path)) {
     spawn("code", [path]);
 
     return 0;
   }
-  catch (_e) {
+
+  console.log(
+    kleur
+      .white()
+      .bold(
+        `\n ${kleur.yellow().bold(`There is no .nodesecurerc here: ${path}`)}`
+      )
+  );
+
+  if (isCwd) {
     console.log(
       kleur
         .white()
         .bold(
-          `\n ${kleur.yellow().bold(`There is no .nodesecurerc here: ${path}`)}`
+          `\n ${kleur.yellow().bold("You must try to run nsecure config create")}`
         )
     );
-
-    if (isCwd) {
-      console.log(
-        kleur
-          .white()
-          .bold(
-            `\n ${kleur.yellow().bold("You must try to run nsecure config create")}`
-          )
-      );
-    }
-
-    return -1;
   }
+
+  return -1;
 }
 
-export async function editConfigFile() {
+export function editConfigFile() {
   console.log("");
 
   console.log(
@@ -51,14 +50,14 @@ export async function editConfigFile() {
       )
   );
 
-  const isNodeSecureRcAtHomeDir = await spawnCodeAtNodeSecureRc(path.join(K_HOME_PATH, RC.CONSTANTS.CONFIGURATION_NAME));
+  const isNodeSecureRcAtHomeDir = spawnCodeAtNodeSecureRc(path.join(K_HOME_PATH, RC.CONSTANTS.CONFIGURATION_NAME));
 
   if (isNodeSecureRcAtHomeDir === -1) {
     spawnCodeAtNodeSecureRc(path.join(process.cwd(), RC.CONSTANTS.CONFIGURATION_NAME), true);
   }
 }
 
-export async function createConfigFile(opts) {
+export async function createConfigFile(configuration = "minimal", opts) {
   const { cwd } = opts;
 
   const pathConfigFile = cwd ? process.cwd() : K_HOME_PATH;
@@ -70,13 +69,7 @@ export async function createConfigFile(opts) {
         `\n ${kleur.yellow().bold(`We are going to create the Nodesecure configuration file at: ${pathConfigFile}`)}`
       )
   );
-  try {
-    await fs.access(pathConfigFile);
-  }
-  catch (_e) {
-    await fs.mkdir(pathConfigFile);
-  }
-  finally {
-    await RC.read(pathConfigFile, { createIfDoesNotExist: true, createMode: "complete" });
-  }
+  await fs.mkdir(pathConfigFile, { recursive: true });
+
+  await RC.read(pathConfigFile, { createIfDoesNotExist: true, createMode: configuration });
 }
