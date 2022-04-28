@@ -56,8 +56,6 @@ export async function editConfigFile() {
   if (isNodeSecureRcAtHomeDir === -1) {
     spawnCodeAtNodeSecureRc(path.join(process.cwd(), RC.CONSTANTS.CONFIGURATION_NAME), true);
   }
-
-  console.log("");
 }
 
 export async function createConfigFile(opts) {
