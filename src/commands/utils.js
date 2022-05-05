@@ -1,16 +1,16 @@
 export function getI18nKindWarning(
+  astWarnings,
   warnings,
-  constants,
   getToken = (i18nToken) => i18nToken
 ) {
-  return warnings.map((warning) => {
+  return astWarnings.map((astWarning) => {
+    const { i18n } = Object.values(warnings).find(
+      (warning) => astWarning.kind === warning.code
+    );
+
     return {
-      ...warning,
-      kind: getToken(
-        Object.values(constants.Warnings).find(
-          (constantWarning) => warning.kind === constantWarning.code
-        )?.i18n
-      )
+      ...astWarning,
+      kind: getToken(i18n)
     };
   });
 }

@@ -1,7 +1,7 @@
 // Import Third-party Dependencies
 import { locationToString } from "@nodesecure/utils";
 import List from "list.js";
-import { CONSTANTS } from "@nodesecure/js-x-ray";
+import { warnings } from "@nodesecure/js-x-ray";
 import { getToken } from "@nodesecure/i18n";
 
 // Import Internal Dependencies
@@ -68,7 +68,7 @@ function handleOutsideTooltipClick({ target }) {
 }
 
 function warningModal(clone, options) {
-    const { name, version, npmHomePageURL, homepage, warnings } = options;
+    const { name, version, npmHomePageURL, homepage } = options;
     const cache = new Map();
 
     const openLink = (link) => {
@@ -83,7 +83,7 @@ function warningModal(clone, options) {
     document.addEventListener("click", handleOutsideTooltipClick);
 
     const tbody = clone.querySelector("#warnings-table tbody");
-    for (const { kind, file, value = null, location } of getI18nKindWarning(warnings, CONSTANTS, getToken)) {
+    for (const { kind, file, value = null, location } of getI18nKindWarning(options.warnings, warnings, getToken)) {
         const line = tbody.insertRow(0);
         const lineId = Math.random().toString(36).slice(2);
         const unpkgFile = `${unpkgRootURL}${file}`;
