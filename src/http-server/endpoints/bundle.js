@@ -1,6 +1,8 @@
+// Import Third-party Dependencikes
 import { get as getRequest } from "@myunisoft/httpie";
 import send from "@polka/send-type";
 
+// CONSTANTS
 const kBaseBundlePhobiaUrl = "https://bundlephobia.com/api";
 
 export async function get(req, res) {

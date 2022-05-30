@@ -10,10 +10,12 @@ import open from "open";
 import * as i18n from "@nodesecure/i18n";
 
 // Import Internal Dependencies
-import * as root from "./root.js";
-import * as data from "./data.js";
-import * as flags from "./flags.js";
-import * as bundle from "./bundle.js";
+import * as root from "./endpoints/root.js";
+import * as data from "./endpoints/data.js";
+import * as flags from "./endpoints/flags.js";
+import * as config from "./endpoints/config.js";
+import * as bundle from "./endpoints/bundle.js";
+import * as npmDownloads from "./endpoints/npm-downloads.js";
 import * as middleware from "./middleware.js";
 
 export function buildServer(dataFilePath, options = {}) {
@@ -28,10 +30,15 @@ export function buildServer(dataFilePath, options = {}) {
   httpServer.use(middleware.addStaticFiles);
   httpServer.get("/", root.get);
   httpServer.get("/data", data.get);
+  httpServer.get("/data", data.get);
+  httpServer.get("/config", config.get);
+  httpServer.put("/config", config.save);
+
   httpServer.get("/flags", flags.getAll);
   httpServer.get("/flags/description/:title", flags.get);
   httpServer.get("/bundle/:pkgName", bundle.get);
   httpServer.get("/bundle/:pkgName/:version", bundle.get);
+  httpServer.get("/downloads/:pkgName", npmDownloads.get);
 
   httpServer.listen(httpConfigPort, () => {
     const port = httpServer.server.address().port;

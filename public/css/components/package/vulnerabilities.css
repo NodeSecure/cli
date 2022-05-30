@@ -1,0 +1,207 @@
+section#package-info .vuln-strategy {
+  display: flex;
+  flex-direction: column;
+  height: 60px;
+  margin-bottom: 15px;
+  justify-content: center;
+}
+
+section#package-info .vuln-strategy>div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+section#package-info .vuln-strategy>div+div {
+  margin-top: 5px;
+}
+
+section#package-info .vuln-strategy img {
+  width: 40px;
+  margin-right: 10px;
+}
+
+section#package-info .vuln-strategy .strategy {
+  color: #bbb;
+  font-size: 13px;
+  font-family: system-ui;
+  letter-spacing: 1px;
+}
+
+section#package-info .vuln-strategy .strategy>i {
+  margin-right: 4px;
+}
+
+section#package-info .vuln-strategy .name {
+  font-family: "mononoki";
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 20px;
+  text-shadow: 2px 2px 10px #00000082;
+}
+
+section#package-info .packages-vuln {
+  display: flex;
+  flex-direction: column;
+}
+
+section#package-info .packages-vuln .vuln {
+  border-top: 4px solid grey;
+  border-left: 1px solid grey;
+  border-right: 2px solid grey;
+  border-bottom: 1px solid grey;
+  border-radius: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: #FFF;
+  display: flex;
+  flex-direction: column;
+}
+
+section#package-info .packages-vuln .vuln+.vuln {
+  margin-top: 10px;
+}
+
+section#package-info .packages-vuln .vuln.critical {
+  border-color: #B71C1C;
+  background: -moz-linear-gradient(left, rgba(63, 0, 6, 0.53) 0%, rgba(0, 0, 0, 0) 100%);
+  background: -webkit-linear-gradient(left, rgba(63, 0, 6, 0.53) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to right, rgba(63, 0, 6, 0.53) 0%, rgba(0, 0, 0, 0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#873f0006', endColorstr='#00000000', GradientType=1);
+}
+
+section#package-info .packages-vuln .vuln.high {
+  border-color: rgb(249, 104, 37);
+  background: -moz-linear-gradient(left, rgba(53, 38, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  background: -webkit-linear-gradient(left, rgba(53, 38, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to right, rgba(53, 38, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a6352600', endColorstr='#00000000', GradientType=1);
+}
+
+section#package-info .packages-vuln .vuln.medium,
+section#package-info .packages-vuln .vuln.moderate {
+  border-color: #F9A825;
+  background: -moz-linear-gradient(left, rgba(65, 66, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  background: -webkit-linear-gradient(left, rgba(65, 66, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to right, rgba(65, 66, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a6414200', endColorstr='#00000000', GradientType=1);
+}
+
+section#package-info .packages-vuln .vuln.info,
+section#package-info .packages-vuln .vuln.low {
+  border-color: #2545f9;
+  background: -moz-linear-gradient(left, rgba(0, 46, 63, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  background: -webkit-linear-gradient(left, rgba(0, 46, 63, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to right, rgba(0, 46, 63, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a6002e3f', endColorstr='#00000000', GradientType=1);
+}
+
+section#package-info .packages-vuln .vuln {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+section#package-info .packages-vuln .vuln>div {
+  display: flex;
+  height: 24px;
+  align-items: center;
+}
+
+section#package-info .packages-vuln .vuln .links {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 5px;
+}
+
+section#package-info .packages-vuln .vuln .links>i {
+  margin-right: 5px;
+  color: #00b8ead1;
+}
+
+section#package-info .packages-vuln .vuln .links>a {
+  text-decoration: none;
+  font-variant: all-small-caps;
+}
+
+section#package-info .packages-vuln .vuln.critical .links>a {
+  color: #ff9797d1;
+}
+
+section#package-info .packages-vuln .vuln.high .links>a {
+  color: #ffd6a1d1;
+}
+
+section#package-info .packages-vuln .vuln.medium .links>a,
+section#package-info .packages-vuln .vuln.modate .links>a {
+  color: #ffeea1d1;
+}
+
+section#package-info .packages-vuln .vuln.info .links>a,
+section#package-info .packages-vuln .vuln.low .links>a {
+  color: #a1c8ffd1;
+}
+
+section#package-info .packages-vuln .vuln>div .severity {
+  width: 24px;
+  height: inherit;
+  margin-right: 10px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'mononoki';
+  font-weight: bold;
+  text-shadow: 2px 2px 10px #000;
+  color: #FFF;
+  border-top: 2px solid #fbffde61;
+  box-sizing: border-box;
+}
+
+section#package-info .packages-vuln .vuln>div>p {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+section#package-info .packages-vuln .vuln>div>p.name {
+  font-family: "mononoki";
+  font-size: 16px;
+  color: #FFF;
+}
+
+section#package-info .packages-vuln .vuln>div>span {
+  margin-left: auto;
+  background: #0000005c;
+  padding: 4px 5px;
+  margin-right: 10px;
+  font-family: "mononoki";
+  font-size: 12px;
+  border-radius: 4px;
+}
+
+section#package-info .packages-vuln .vuln .description {
+  height: auto;
+  margin-top: 10px;
+  text-shadow: 2px 2px 5px #00000054;
+}
+
+section#package-info .packages-vuln .vuln>div .severity.critical {
+  background: #B71C1C;
+}
+
+section#package-info .packages-vuln .vuln>div .severity.high {
+  background: rgb(249, 104, 37);
+}
+
+section#package-info .packages-vuln .vuln>div .severity.medium,
+section#package-info .packages-vuln .vuln>div .severity.moderate {
+  background: #F9A825;
+}
+
+section#package-info .packages-vuln .vuln>div .severity.info,
+section#package-info .packages-vuln .vuln>div .severity.low {
+  background: #2545f9;
+}

@@ -1,0 +1,93 @@
+div.package-head-information {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+div.package-head-information>.package-name {
+  display: flex;
+  font-family: "mononoki";
+  text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
+}
+
+div.package-head-information>.package-name>.name {
+  color: #FFF;
+  font-size: 22px;
+}
+
+div.package-head-information>.package-name>.name.lowsize {
+  font-size: 18px;
+}
+
+div.package-head-information>.package-name>.version {
+  color: var(--secondary);
+  font-size: 16px;
+  margin-left: 10px;
+  display: flex;
+  align-items: end;
+}
+
+div.package-head-information>.package-name>ul {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  padding-left: 10px;
+}
+
+div.package-head-information>.package-description {
+  width: 100%;
+  color: #FFF;
+  text-align: left;
+  font-size: 15px;
+  margin-top: 7px;
+}
+
+div.package-head-information>.package-links {
+  height: 20px;
+  display: flex;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+div.package-head-information>.package-links .link {
+  display: flex;
+  height: inherit;
+  align-items: center;
+}
+
+div.package-head-information>.package-links .link+.link {
+  margin-left: 20px;
+}
+
+div.package-head-information>.package-links .link>img {
+  height: 20px;
+}
+
+div.package-head-information>.package-links .link>i {
+  font-size: 20px;
+}
+
+div.package-head-information>.package-links .link>a {
+  margin-left: 6px;
+  color: #FFF;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+div.package-head-information>.package-links .link>a:hover {
+  text-decoration: underline;
+}
+
+/* .github-stars {
+  font-family: 'mononoki';
+  font-size: 14px;
+  color: #fce12b;
+  display: flex;
+  margin-left: 5px;
+  line-height: 30px;
+}
+
+.github-stars p {
+  margin-left: 1px;
+} */

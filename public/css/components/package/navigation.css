@@ -1,0 +1,89 @@
+section#package-info>.package-navigation {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  height: 55px;
+  margin-top: 20px;
+  padding-top: 40px;
+  padding-bottom: 10px;
+  border-radius: 8px 8px 0 0;
+  background: -moz-linear-gradient(top, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+  background: -webkit-linear-gradient(top, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to bottom, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#334c32df', endColorstr='#00000000', GradientType=0);
+}
+
+.container-title {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  color: var(--secondary);
+  margin-bottom: 10px;
+  font-family: 'mononoki';
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 5px #2a6f99;
+  position: absolute;
+  left: 0;
+  top: 10px;
+}
+
+section#package-info>.package-navigation>div {
+  width: 45px;
+  height: 45px;
+  position: relative;
+  border-radius: 55px;
+  box-sizing: border-box;
+  background: var(--primary);
+  border: 2px solid #4c32df6b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s ease;
+}
+
+section#package-info>.package-navigation>div:not(.active):not(.disabled):hover {
+  cursor: pointer;
+  background: #311B92;
+}
+
+section#package-info>.package-navigation>div.active {
+  border: 2px solid var(--secondary);
+  background: #311B92;
+  color: var(--secondary);
+}
+
+section#package-info>.package-navigation>div.disabled {
+  opacity: 0.3;
+}
+
+section#package-info>.package-navigation>div.active:before {
+  content: "";
+  position: absolute;
+  bottom: -17px;
+  left: 10px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 8px solid var(--secondary);
+}
+
+section#package-info>.package-navigation>div+div {
+  margin-left: 20px;
+}
+
+section#package-info>.package-navigation>div>.signal {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  font-size: 12px;
+  font-family: "mononoki";
+  background: #FBC02D;
+  color: #000 !important;
+  border-radius: 100%;
+  width: 16px;
+  height: 16px;
+  align-items: center;
+  justify-content: center;
+  display: none;
+}

@@ -1,0 +1,41 @@
+section#package-info .help-dialog {
+  display: flex;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border: 2px dashed #57e1bf4a;
+  color: #9de157;
+  letter-spacing: 0.5px;
+  align-items: center;
+}
+
+section#package-info .help-dialog>i {
+  margin-right: 5px;
+  font-size: 28px;
+}
+
+section#package-info .help-dialog>p {
+  font-size: 14px;
+  font-style: italic;
+}
+
+section#package-info .help-dialog>p b {
+  background: #9de157;
+  padding: 2px 5px;
+  color: #000;
+  border-radius: 4px;
+  font-style: normal;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+section#package-info .help-dialog>p b:hover {
+  background: var(--secondary);
+}
+
+section#package-info .help-dialog>p a {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+}
