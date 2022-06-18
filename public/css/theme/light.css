@@ -1,0 +1,16 @@
+:root {
+  --primary-theme-color: #FFF;
+  --primary-darker: #261877;
+  --primary: #3722AF;
+  --primary-lighter: #5A44DA;
+  --secondary: #00D1FF;
+  --secondary-darker: #1976D2;
+}
+body {
+  color: var(--primary-theme-color);
+  background: rgb(255,255,255);
+  background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 15%, rgba(208,220,221,1) 100%);
+  background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 15%,rgba(208,220,221,1) 100%);
+  background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 15%,rgba(208,220,221,1) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d0dcdd',GradientType=1 );
+}

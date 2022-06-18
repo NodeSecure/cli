@@ -1,0 +1,51 @@
+.gauge {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+}
+
+.gauge>.line {
+  display: flex;
+  height: 24px;
+  align-items: center;
+  color: #546884;
+}
+
+.gauge>.line.hidden {
+  display: none !important;
+}
+
+.gauge>.line+.line {
+  margin-top: 5px;
+}
+
+.gauge>.line .item-name {
+  width: 130px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.gauge>.line .gauge--bar {
+  flex-grow: 1;
+  margin: 0 10px;
+  background: #e1e4e6;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.gauge>.line .gauge--bar >.usage {
+  height: inherit;
+  background-color: var(--secondary-darker);
+}
+
+.gauge>.line span {
+  width: 20px;
+  text-align: right;
+  font-family: "mononoki";
+  color: var(--secondary-darker);
+}

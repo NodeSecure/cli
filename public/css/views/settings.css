@@ -1,0 +1,102 @@
+#settings--view {
+  flex-direction: column;
+  z-index: 10;
+  padding: 60px;
+  box-sizing: border-box;
+  height: 100%;
+  overflow-y: auto;
+}
+
+#settings--view>h1 {
+  height: 40px;
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  color: var(--primary);
+  font-size: 24px;
+  font-family: 'mononoki';
+}
+
+#settings--view>h1 i {
+  margin-right: 5px;
+}
+
+#settings--view>form {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#settings--view>form .line {
+  display: flex;
+  flex-basis: 340px;
+  flex-direction: column;
+  min-height: 30px;
+  margin-bottom: 30px;
+  padding-right: 30px;
+  box-sizing: border-box;
+}
+
+#settings--view>form .line label,
+#settings--view>form .line>p {
+  font-size: 15px;
+  margin-bottom: 6px;
+  color: #4a5e68;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+#settings--view>form .line>div {
+  display: flex;
+  height: 22px;
+  color: #334148;
+  align-items: center;
+  margin-left: 10px;
+}
+
+#settings--view>form .line>div+div {
+  margin-top: 5px;
+}
+
+#settings--view>form .line>div>p {
+  margin-left: 5px;
+}
+
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+button.save {
+  height: 30px;
+  width: 100px;
+  background: #27a845;
+  color: #FFF;
+  border-radius: 4px;
+  margin-top: 30px;
+  border: none;
+  outline: none;
+  font-family: "mononoki";
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-shadow: 2px 2px 5px #00000061;
+}
+button.save.disabled {
+  background: #334148;
+  opacity: 0.35;
+}
+button.save:not(.disabled):hover {
+  background-color: var(--secondary-darker);
+  cursor: pointer;
+}
+
+select {
+  max-width: 200px;
+  border: 1px solid #B0BEC5;
+  height: 30px;
+  border-radius: 4px;
+  font-family: 'mononoki';
+  color: #0c5a9b;
+}
+
