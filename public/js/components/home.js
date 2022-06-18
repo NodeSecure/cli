@@ -99,8 +99,10 @@ export class HomeView {
 
       const { downloads } = await getJSON(`/downloads/${name.replace("/", "%2F")}`);
 
-      const formattedNumber = new Intl.NumberFormat("de-DE").format(downloads);
-      homeOverviewElement.appendChild(createOverviewDiv("icon-chart-bar", "downloads last week", formattedNumber));
+      if (downloads) {
+        const formattedNumber = new Intl.NumberFormat("de-DE").format(downloads);
+        homeOverviewElement.appendChild(createOverviewDiv("icon-chart-bar", "downloads last week", formattedNumber));
+      }
     }
     catch {
       // DO NOTHING
