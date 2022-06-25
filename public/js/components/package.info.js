@@ -397,7 +397,7 @@ export class PackageInfo {
 
     // Flags
     {
-      const textContent = getFlagsEmojisInlined(this.dependencyVersion.flags, new Set());
+      const textContent = getFlagsEmojisInlined(this.dependencyVersion.flags, new Set(window.settings.config.ignore.flags));
 
       if (textContent === "") {
         flagsDomElement.style.display = "none";
