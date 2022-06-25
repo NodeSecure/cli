@@ -16,7 +16,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
 
-  const secureDataSet = new NodeSecureDataSet();
+  const secureDataSet = new NodeSecureDataSet({
+    flagsToIgnore: window.settings.config.ignore.flags,
+    warningsToIgnore: window.settings.config.ignore.warnings
+  });
   await secureDataSet.init();
 
   new HomeView(secureDataSet);
