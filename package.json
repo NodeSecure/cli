@@ -74,6 +74,7 @@
     "@nodesecure/flags": "^2.4.0",
     "@nodesecure/i18n": "^2.0.0",
     "@nodesecure/npm-registry-sdk": "^1.4.0",
+    "@nodesecure/rc": "^1.2.0",
     "@nodesecure/scanner": "^3.7.0",
     "@nodesecure/utils": "^1.0.0",
     "@nodesecure/vuln": "^1.7.0",

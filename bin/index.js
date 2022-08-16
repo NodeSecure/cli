@@ -74,6 +74,17 @@ prog
   .describe(i18n.getToken("cli.commands.lang.desc"))
   .action(commands.lang.set);
 
+prog
+  .command("config create [configuration]")
+  .option("-c, --cwd", "create config file at the cwd", false)
+  .describe("Init your Nodesecure config file")
+  .action(commands.config.createConfigFile);
+
+prog
+  .command("config")
+  .describe("Edit your nodesecure config file")
+  .action(commands.config.editConfigFile);
+
 prog.parse(process.argv);
 
 function defaultScannerCommand(name, options = {}) {
