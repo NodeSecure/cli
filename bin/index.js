@@ -30,7 +30,7 @@ if (semver.lt(process.versions.node, minVersion)) {
 
 loadRegistryURLFromLocalSystem();
 
-const prog = sade(manifest.name).version(manifest.version);
+const prog = sade("nsecure").version(manifest.version);
 
 prog
   .command("hydrate-db")

@@ -3,7 +3,7 @@ import fs from "fs";
 import { pipeline } from "stream";
 
 // Import Internal Dependencies
-import { context } from "./context.js";
+import { context } from "../context.js";
 
 export async function get(req, res) {
   const { dataFilePath } = context.getStore();

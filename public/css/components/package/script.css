@@ -1,0 +1,37 @@
+section#package-info .package-scripts {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+}
+
+section#package-info .package-scripts>.expandable {
+  margin-top: 10px;
+}
+
+section#package-info .package-scripts .script {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0;
+}
+
+section#package-info .package-scripts .script:nth-child(even) {
+  background: rgba(150, 100, 150, 0.05);
+}
+
+section#package-info .package-scripts .script+.script {
+  margin-top: 5px;
+}
+
+section#package-info .package-scripts .script p.name {
+  color: #B3E5FC;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.3px;
+}
+
+section#package-info .package-scripts .script p.value {
+  font-size: 13px;
+  color: #f3e4f8;
+  font-family: 'mononoki';
+}

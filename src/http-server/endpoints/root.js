@@ -9,7 +9,7 @@ import send from "@polka/send-type";
 import * as i18n from "@nodesecure/i18n";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const kProjectRootDir = join(__dirname, "..", "..");
+const kProjectRootDir = join(__dirname, "..", "..", "..");
 
 export async function buildHtml() {
   const HTMLStr = await readFile(join(kProjectRootDir, "views", "index.html"), "utf-8");

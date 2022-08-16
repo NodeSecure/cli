@@ -1,0 +1,19 @@
+div.package-maintainers {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+div.package-maintainers>div {
+  flex-basis: 56px;
+  height: 56px;
+  margin-right: 6px;
+  margin-bottom: 6px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+div.package-maintainers>div img {
+  width: 56px;
+}

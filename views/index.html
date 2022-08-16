@@ -6,267 +6,492 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-<link rel="stylesheet" href="css/style.css" />
-<script src="js/master.js" defer></script>
+<link rel="stylesheet" href="public/css/style.css" />
+<link rel="stylesheet" href="node_modules/@nodesecure/documentation-ui/src/css/main.css" />
+<script src="public/js/master.js" defer></script>
 <title>Node-Secure</title>
 
-<section class="nsecure">
-    <a href="https://github.com/NodeSecure/cli" target="_blank" rel="noopener">
-        <img src="github-mark.png" alt="github" />
+<main>
+  <nav>
+    <a class="nsecure-logo" href="https://github.com/NodeSecure" target="_blank" rel="noopener">
+      <svg width="60" height="60" viewBox="0 0 1324 776" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M662 0L998.042 194V582L662 776L325.958 582V194L662 0Z" fill="white" />
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M325.958 388V582L662 776L998.042 582V388H325.958Z" fill="#3319D1"
+          fill-opacity="0.74" />
+        <rect x="200" y="346.475" width="924" height="97.3244" fill="#00D1FF" />
+        <g filter="url(#filter0_f_401_16)">
+          <rect x="200" y="346.475" width="924" height="97.3244" fill="#00D1FF" />
+        </g>
+        <g filter="url(#filter1_f_401_16)">
+          <rect x="200" y="346.475" width="924" height="97.3244" fill="#00D1FF" />
+        </g>
+        <defs>
+          <filter id="filter0_f_401_16" x="0" y="146.475" width="1324" height="497.324" filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_401_16" />
+          </filter>
+          <filter id="filter1_f_401_16" x="0" y="146.475" width="1324" height="497.324" filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_401_16" />
+          </filter>
+        </defs>
+      </svg>
     </a>
-    <p>NODE-SECURE</p>
-    <div class="current-project">
-        <p id="main-project-name"></p>
-        <b id="main-project-version"></b>
+    <ul id="view-navigation">
+      <li data-menu="home--view">
+        <i class="icon-home"></i>
+        <span>H</span>
+      </li>
+      <li data-menu="network--view">
+        <i class="icon-globe-alt-outline"></i>
+        <span>N</span>
+      </li>
+      <li data-menu="settings--view" class="bottom-nav">
+        <i class="icon-cog"></i>
+        <span>S</span>
+      </li>
+    </ul>
+  </nav>
+  <section class="content">
+    <div id="home--view" class="view hidden">
+      <div class="home--header">
+        <div class="top">
+          <p id="project-name">-</p>
+          <p id="project-version">v0.0.0</p>
+        </div>
+        <div class="bottom">
+          <p id="project-description"></p>
+          <ul id="project-links"></ul>
+        </div>
+      </div>
+      <div class="home--body">
+        <div class="pannel">
+          <div class="module">
+            <div class="title">
+              <i class="icon-eye"></i>
+              <p>Overview</p>
+            </div>
+            <div class="content">
+              <div class="home--overview"></div>
+            </div>
+          </div>
+          <div class="module" id="warnings-module">
+            <div class="title warning">
+              <i class="icon-warning"></i>
+              <p>Warnings</p>
+              <span class="count">1</span>
+            </div>
+            <div class="content">
+              <div class="home--warnings"></div>
+            </div>
+          </div>
+          <div class="module">
+            <div class="title">
+              <i class="icon-users"></i>
+              <p>Authors</p>
+            </div>
+            <div class="content">
+              <div class="home--maintainers"></div>
+            </div>
+          </div>
+        </div>
+        <div class="pannel">
+          <div class="module">
+            <div class="title">
+              <i class="icon-doc"></i>
+              <p>Extensions</p>
+            </div>
+            <div class="content" id="home-extensions"></div>
+          </div>
+          <div class="module">
+            <div class="title">
+              <i class="icon-vcard"></i>
+              <p>Licenses</p>
+            </div>
+            <div class="content" id="home-licenses"></div>
+          </div>
+        </div>
+      </div>
     </div>
+    <div id="network--view" class="view hidden">
+      <div id="network-loader">
+        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <p>[[=z.token('loading_nodes')]]</p>
+        <p>[[=z.token('please_wait')]]</p>
+      </div>
+      <div id="dependency-graph">
+
+      </div>
+    </div>
+    <div id="settings--view" class="view hidden">
+      <h1><i class="icon-cog"></i>General</h1>
+      <form>
+        <div class="line">
+          <label for="default_package_menu">Default Package Menu:</label>
+          <select name="defaultPackageMenu" id="default_package_menu">
+            <option value="info">overview</option>
+            <option value="files">files</option>
+            <option value="dependencies">scripts & dependencies</option>
+            <option value="warnings">warnings</option>
+            <option value="vulnerabilities">vulnerabilities</option>
+            <option value="licenses" selected>licenses conformance</option>
+          </select>
+        </div>
+        <div class="line">
+          <p>SAST Warnings to ignore:</p>
+          <div>
+            <input type="checkbox" checked name="warnings" value="parsing-error">
+            <p>parsing error</p>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="unsafe-import">
+            <p>unsafe import</p>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="unsafe-regex">
+            <p>unsafe regex</p>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="unsafe-stmt">
+            <p>unsafe stmt</p>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="unsafe-assign">
+            <p>unsafe assign</p>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="encoded-literal">
+            <p>encoded literal</p>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="short-identifiers">
+            <p>short identifiers</p>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="suspicious-literal">
+            <p>suspicious literal</p>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="obfuscated-code">
+            <p>obfuscated code</p>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="weak-crypto">
+            <p>weak crypto</p>
+          </div>
+        </div>
+        <div class="line">
+          <p>Flags to ignore:</p>
+          <div>
+            <input type="checkbox" name="flags" value="hasManyPublishers">
+            <p>👥 hasManyPublishers</p>
+          </div>
+          <div>
+            <input type="checkbox" name="flags" value="hasIndirectDependencies">
+            <p>🌲 hasIndirectDependencies</p>
+          </div>
+          <div>
+            <input type="checkbox" name="flags" value="hasMissingOrUnusedDependency">
+            <p>👀 hasMissingOrUnusedDependency</p>
+          </div>
+          <div>
+            <input type="checkbox" name="flags" value="isDead">
+            <p>💀 isDead</p>
+          </div>
+          <div>
+            <input type="checkbox" name="flags" value="isOutdated">
+            <p>⌚️ isOutdated</p>
+          </div>
+          <div>
+            <input type="checkbox" name="flags" value="isDuplicate">
+            <p>🎭 isDuplicate</p>
+          </div>
+        </div>
+      </form>
+      <button class="save">save</button>
+    </div>
+
+    <section id="package-info"></section>
+  </section>
+</main>
+
+<section id="documentation-root-element">
+  <div class="open-button">
+    <i class="icon-book-open"></i>
+  </div>
+  <div class="documentation-render-container"></div>
 </section>
 
-<section id="stats">
-    <div class="btn platine-button-skin warning" id="global_warnings">
-        <i class="icon-attention-circled"></i>
-        <p style="padding-right: 5px;">0</p>
-        <div class="hiddenarea">
-            <div class="global-stats dark-box-skin" id="warnings_box"></div>
-        </div>
-    </div>
-    <div class="btn platine-button-skin">
-        <i class="icon-chart-pie" style="margin-bottom: 2px;"></i>
-        <p>[[=z.token('stats.title')]]</p>
-        <div class="hiddenarea">
-            <div class="global-stats dark-box-skin">
-                <ul>
-                    <li>
-                        <i class="icon-cubes"></i>
-                        <p>[[=z.token('stats.total_packages')]]</p>
-                        <b id="total-packages">0</b>
-                    </li>
-                    <li>
-                        <i class="icon-archive"></i>
-                        <p>[[=z.token('stats.total_size')]]</p>
-                        <b id="total-size">0</b>
-                    </li>
-                    <li>
-                        <i class="icon-sitemap"></i>
-                        <p>[[=z.token('stats.indirect_deps')]]</p>
-                        <b id="indirect-dependencies">0</b>
-                    </li>
-                    <li class="column">
-                        <p>[[=z.token('stats.extensions')]]</p>
-                        <div class="stat-container" id="extensions-counts"></div>
-                    </li>
-                    <li class="column">
-                        <p>[[=z.token('stats.licenses')]]</p>
-                        <div class="stat-container" id="license-counts"></div>
-                    </li>
-                    <li class="column">
-                        <p id="stat-maintainers-title">[[=z.token('stats.maintainers')]]</p>
-                        <div class="stat-container" id="maintainers-list"></div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="btn platine-button-skin" id="legend_popup_btn">
-        <i class="icon-book-open"></i>
-        <p>[[=z.token('btn_emojis_legends')]]</p>
-    </div>
-    <div class="search-bar-container">
-        <div class="search-items"></div>
-        <input type="text" placeholder="[[=z.token('searchbar_placeholder')]]" id="search-bar-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" ></input>
-        <i class="icon-search"></i>
-        <div class="search-result-background dark-box-skin">
-            <div class="search-result-pannel" id="package-list">
-                <div class="helpers"></div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<div class="modal">
-    <div class="tooltip" id="tooltip"></div>
-    <div class="modal-content dark-box-skin">
-        <span class="close-button">&times;</span>
-        <div class="infobox"></div>
+<div id="searchbar">
+  <div class="search-items"></div>
+  <input type="text" placeholder="[[=z.token('searchbar_placeholder')]]" id="search-bar-input" autocomplete="off"
+    autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+  <i class="icon-search"></i>
+
+  <div class="search-result-background">
+    <div class="search-result-pannel" id="package-list">
+      <div class="helpers"></div>
     </div>
+  </div>
 </div>
 
-<section id="show-info" class="dark-box-skin">
-    <div class="select-project">
-        <p>[[=z.token('show_complete_desc')]]</p>
+<template id="package-info-template">
+  <div class="package-code"></div>
+  <div class="package-head-information">
+    <div class="package-name">
+      <p class="name"></p>
+      <p class="version"></p>
+      <ul class="package-flags"></ul>
     </div>
-</section>
+    <p class="package-description"></p>
+    <div class="package-links"></div>
+  </div>
 
-<main id="network-graph"></main>
-<div id="network-loader">
-    <p>[[=z.token('loading_nodes')]]</p>
-    <p>[[=z.token('please_wait')]]</p>
-</div>
+  <div class="package-navigation">
+    <span class="container-title">overview</span>
 
-<template id="left-menu-desc">
-    <div class="select-project">
-        <p>[[=z.token('show_complete_desc')]]</p>
+    <div class="active" data-menu="info" data-title="[[=z.token('package_info.navigation.overview')]]">
+      <i class="icon-cube"></i>
     </div>
-</template>
-
-<template id="show-children">
-    <i class="icon-eye"></i><p>[[=z.token('package_info.show_children')]]</p>
-</template>
-
-<template id="hide-children">
-    <i class="icon-eye-off"></i><p>[[=z.token('package_info.hide_children')]]</p>
-</template>
-
-<template id="package-info">
-    <span class="line-title">
-        <p class="name"></p>
-        <p class="arrobase">@</p>
-        <p class="version"></p>
-    </span>
-    <ul class="flags"></ul>
-    <p class="desc"></p>
-
-    <!-- button to interact with the network or show more informations -->
-    <hr />
-    <div class="buttons">
-        <div class="platine-button-skin" id="btn_showOrHide">
-            <i class="icon-eye-off"></i>
-            <p>[[=z.token('package_info.hide_children')]]</p>
-        </div>
-        <div class="platine-button-skin" id="btn_vuln">
-            <i class="icon-attention-circled"></i>
-            <p>[[=z.token('package_info.vuln')]]</p>
-        </div>
+    <div data-menu="files" data-title="[[=z.token('package_info.navigation.files')]]">
+      <i class="icon-docs"></i>
     </div>
+    <div data-menu="dependencies" id="dependencies-nav-menu" data-title="[[=z.token('package_info.navigation.dependencies')]]">
+      <i class="icon-sitemap"></i>
+      <div class="signal"></div>
+    </div>
+    <div data-menu="warnings" id="warnings-nav-menu" data-title="[[=z.token('package_info.navigation.warnings')]]">
+      <i class="icon-warning-empty"></i>
+      <div class="signal"></div>
+    </div>
+    <div data-menu="vulnerabilities" id="vulnerabilities-nav-menu" data-title="[[=z.token('package_info.navigation.vulnerabilities')]]">
+      <i class="icon-bell-1"></i>
+      <div class="signal"></div>
+    </div>
+    <div data-menu="licenses" data-title="[[=z.token('package_info.navigation.licenses')]]">
+      <i class="icon-vcard"></i>
+    </div>
+  </div>
 
+  <div class="package-container" id="pan-info">
     <!-- package metadata -->
-    <ul class="fields"></ul>
+    <ul class="fields" style="margin-top: 0px !important;"></ul>
 
-    <p class="head-title">[[=z.token('package_info.used_by')]]</p>
-    <div class="list-item line" id="usedby"></div>
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.releases')]]</p>
+    </div>
+    <ul class="fields releases"></ul>
 
-    <p class="head-title">[[=z.token('package_info.files_extensions')]]</p>
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.used_by')]]</p>
+    </div>
+    <div class="list-item line" id="usedby" style="margin-top: 0px;"></div>
+
+    <div class="head-title">
+      <p>github</p>
+    </div>
+    <div class="bundlephobia" style="margin-bottom: 10px;">
+      <div>
+        <b class="github-stars">N/A</b>
+        <span>STARS</span>
+      </div>
+      <div>
+        <b class="github-issues">N/A</b>
+        <span>ISSUES</span>
+      </div>
+      <div>
+        <b class="github-forks">N/A</b>
+        <span>FORKS</span>
+      </div>
+    </div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.maintainers')]]</p>
+    </div>
+    <div class="package-maintainers"></div>
+  </div>
+
+  <div class="package-container hidden" id="pan-files">
+    <div class="head-title no-margin">
+      <p>[[=z.token('package_info.title.files_extensions')]]</p>
+    </div>
     <div class="list-item" id="extensions"></div>
 
-    <p class="head-title">[[=z.token('package_info.unused_deps')]]</p>
-    <div class="list-item line" id="unuseddep"></div>
+    <div class="head-title no-margin">
+      <p>[[=z.token('package_info.title.files')]]</p>
+    </div>
+    <div class="list-item line" id="tarballfiles"></div>
 
-    <p class="head-title">[[=z.token('package_info.missing_deps')]]</p>
-    <div class="list-item line" id="missingdep"></div>
-
-    <p class="head-title">[[=z.token('package_info.minified_files')]]</p>
-    <div class="list-item line" id="minifiedfiles"></div>
-
-    <p class="head-title">[[=z.token('package_info.node_deps')]]</p>
-    <div class="list-item" id="nodedep"></div>
-
-    <p class="head-title">[[=z.token('package_info.third_party_deps')]]</p>
-    <div class="list-item line" id="requireddep"></div>
-
-    <p class="head-title">[[=z.token('package_info.required_files')]]</p>
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.required_files')]]</p>
+    </div>
     <div class="list-item line" id="internaldep"></div>
 
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.minified_files')]]</p>
+    </div>
+    <div class="list-item line" id="minifiedfiles"></div>
+
     <!-- bundlephobia (package size) -->
-    <p class="head-title">bundlephobia</p>
+    <div class="head-title">
+      <p>bundlephobia</p>
+    </div>
     <div class="bundlephobia">
-        <div>
-            <b class="size-min">N/A</b>
-            <span>MIN</span>
-        </div>
-        <div>
-            <b class="size-gzip">N/A</b>
-            <span>GZIP</span>
-        </div>
-        <div>
-            <b class="size-full">N/A</b>
-            <span>FULL</span>
-        </div>
+      <div>
+        <b class="size-min">N/A</b>
+        <span>MIN</span>
+      </div>
+      <div>
+        <b class="size-gzip">N/A</b>
+        <span>GZIP</span>
+      </div>
+      <div>
+        <b class="size-full">N/A</b>
+        <span>FULL</span>
+      </div>
     </div>
-</template>
+  </div>
 
-<template id="popup-legends">
-    <div class="flags-legend">
-        <div class="flags-legend-tags" id="flag-legends"></div>
+  <div class="package-container hidden" id="pan-dependencies">
+    <div class="head-title no-margin">
+      <p>npm scripts</p>
     </div>
-    <div class="flags-description-container" id="flag-description"></div>
-</template>
+    <div class="package-scripts"></div>
 
-<template id="popup-license">
-    <div class="popup-licenses-container">
-        <h1>[[=z.token('popups.licenses.title')]]</h1>
-        <table id="licenses-table">
-            <thead>
-                <tr>
-                    <th>[[=z.token('popups.licenses.name')]]</th>
-                    <th>osi</th>
-                    <th>fsf</th>
-                    <th>fsfAndOsi</th>
-                    <th>includesDeprecated</th>
-                    <th>[[=z.token('popups.licenses.from')]]</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.unused_deps')]]</p>
     </div>
-</template>
+    <div class="list-item line" id="unuseddep"></div>
 
-<template id="popup-warning">
-    <div class="popup-licenses-container" id="warnings-container">
-        <h1>[[=z.token('popups.warnings.title')]]</h1>
-        <div class="buttons-line">
-            <div class="btn" id="warning-link-homepage">
-                <p>[[=z.token('popups.warnings.homepage')]]</p><span></span>
-            </div>
-            <div class="btn" id="warning-link-npm"><img src="npm-icon.svg"><p>package page</p></div>
-            <div class="btn" id="warning-link-unpkg"><p>unpkg root</p></div>
-        </div>
-        <div class="search-line">
-            <i class="icon-search"></i>
-            <input class="search" placeholder="Search" />
-            <button class="sort" data-sort="type" style="margin-left: auto">Sort</button>
-        </div>
-        <table id="warnings-table">
-            <thead>
-                <tr>
-                    <th class="sort" data-sort="type">[[=z.token('popups.warnings.type')]]</th>
-                    <th class="sort" data-sort="file">[[=z.token('popups.warnings.file')]]</th>
-                    <th class="sort" data-sort="msg">[[=z.token('popups.warnings.errorMsg')]]</th>
-                    <th class="sort" data-sort="position">[[=z.token('popups.warnings.position')]]</th>
-                    <th class="sort" data-sort="position">[[=z.token('popups.warnings.inspect')]]</th>
-                </tr>
-            </thead>
-            <tbody class="list"></tbody>
-        </table>
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.missing_deps')]]</p>
     </div>
+    <div class="list-item line" id="missingdep"></div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.node_deps')]]</p>
+    </div>
+    <div class="list-item" id="nodedep"></div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.third_party_deps')]]</p>
+      <span id="show-hide-dependency">hide</span>
+    </div>
+    <div class="list-item line" id="requireddep"></div>
+  </div>
+
+  <div class="package-container hidden" id="pan-warnings">
+    <div class="help-dialog">
+      <i class="icon-info-circled-alt"></i>
+      <p>[[=z.token('package_info.helpers.warnings')]] <b class="open-wiki">wiki</b></p>
+    </div>
+  </div>
+  <div class="package-container hidden" id="pan-vulnerabilities">
+    <div class="vuln-strategy">
+      <div>
+        <p class="strategy"><i class="icon-info-circled"></i>strategy</p>
+      </div>
+      <div>
+        <img src="sonatype.png" class="logo">
+        <p class="name">SONATYPE</p>
+      </div>
+    </div>
+    <div class="packages-vuln"></div>
+  </div>
+
+  <div class="package-container hidden" id="pan-licenses">
+    <div class="help-dialog">
+      <i class="icon-info-circled-alt"></i>
+      <p>[[=z.token('package_info.helpers.spdx')]] <a href="https://spdx.dev/about/" target="_blank" rel="noopener noreferrer">[[=z.token('package_info.helpers.here')]]</a></p>
+    </div>
+  </div>
 </template>
 
 <template id="search_helpers_default">
-    <div class="line" data-value="version:"><b>version:</b><p>semver</p></div>
-    <div class="line" data-value="package:"><b>package:</b><p>name</p></div>
-    <div class="line" data-value="license:"><b>license:</b><p>name</p></div>
-    <div class="line" data-value="ext:"><b>ext:</b><p>file extension</p></div>
-    <div class="line" data-value="builtin:"><b>builtin:</b><p>node.js module</p></div>
-    <div class="line" data-value="author:"><b>author:</b><p>name/email</p></div>
-    <div class="line" data-value="flag:"><b>flag:</b><p>name</p></div>
-    <div class="line" data-value="flag:"><b>size:</b><p>size</p></div>
+  <div class="line" data-value="version:"><b>version:</b>
+    <p>semver</p>
+  </div>
+  <div class="line" data-value="package:"><b>package:</b>
+    <p>name</p>
+  </div>
+  <div class="line" data-value="license:"><b>license:</b>
+    <p>name</p>
+  </div>
+  <div class="line" data-value="ext:"><b>ext:</b>
+    <p>file extension</p>
+  </div>
+  <div class="line" data-value="builtin:"><b>builtin:</b>
+    <p>node.js module</p>
+  </div>
+  <div class="line" data-value="author:"><b>author:</b>
+    <p>name/email</p>
+  </div>
+  <div class="line" data-value="flag:"><b>flag:</b>
+    <p>name</p>
+  </div>
+  <div class="line" data-value="flag:"><b>size:</b>
+    <p>size</p>
+  </div>
 </template>
 
 <template id="search_helpers_flags">
-    <div class="line" data-value="hasExternalCapacity"><p>🌍 hasExternalCapacity</p></div>
-    <div class="line" data-value="hasIndirectDependencies"><p>🌲 hasIndirectDependencies</p></div>
-    <div class="line" data-value="hasWarnings"><p>⚠️ hasWarnings</p></div>
-    <div class="line" data-value="hasNoLicense"><p>📜 hasNoLicense</p></div>
-    <div class="line" data-value="hasMultipleLicenses"><p>📚 hasMultipleLicenses</p></div>
-    <div class="line" data-value="hasMinifiedCode"><p>🔬 hasMinifiedCode</p></div>
-    <div class="line" data-value="hasCustomResolver"><p>💎 hasCustomResolver</p></div>
-    <div class="line" data-value="hasMissingOrUnusedDependency"><p>👀 hasMissingOrUnusedDependency</p></div>
-    <div class="line" data-value="hasScript"><p>📦 hasScript</p></div>
-    <div class="line" data-value="hasNativeCode"><p>🐲 hasNativeCode</p></div>
-    <div class="line" data-value="hasBannedFile"><p>⚔️ hasBannedFile</p></div>
-    <div class="line" data-value="isGit"><p>☁️ isGit</p></div>
-    <div class="line" data-value="isDeprecated"><p>⛔️ isDeprecated</p></div>
-    <div class="line" data-value="isOutdated"><p>⌚️ isOutdated</p></div>
-    <div class="line" data-value="hasManyPublishers"><p>👥 hasManyPublishers</p></div>
-    <div class="line" data-value="isDead"><p>💀 isDead</p></div>
-    <div class="line" data-value="hasVulnerabilities"><p>🚨 hasVulnerabilities</p></div>
-    <div class="line" data-value="hasDuplicate"><p>🎭 hasDuplicate</p></div>
+  <div class="line" data-value="hasExternalCapacity">
+    <p>🌍 hasExternalCapacity</p>
+  </div>
+  <div class="line" data-value="hasIndirectDependencies">
+    <p>🌲 hasIndirectDependencies</p>
+  </div>
+  <div class="line" data-value="hasWarnings">
+    <p>⚠️ hasWarnings</p>
+  </div>
+  <div class="line" data-value="hasNoLicense">
+    <p>📜 hasNoLicense</p>
+  </div>
+  <div class="line" data-value="hasMultipleLicenses">
+    <p>📚 hasMultipleLicenses</p>
+  </div>
+  <div class="line" data-value="hasMinifiedCode">
+    <p>🔬 hasMinifiedCode</p>
+  </div>
+  <div class="line" data-value="hasCustomResolver">
+    <p>💎 hasCustomResolver</p>
+  </div>
+  <div class="line" data-value="hasMissingOrUnusedDependency">
+    <p>👀 hasMissingOrUnusedDependency</p>
+  </div>
+  <div class="line" data-value="hasScript">
+    <p>📦 hasScript</p>
+  </div>
+  <div class="line" data-value="hasNativeCode">
+    <p>🐲 hasNativeCode</p>
+  </div>
+  <div class="line" data-value="hasBannedFile">
+    <p>⚔️ hasBannedFile</p>
+  </div>
+  <div class="line" data-value="isGit">
+    <p>☁️ isGit</p>
+  </div>
+  <div class="line" data-value="isDeprecated">
+    <p>⛔️ isDeprecated</p>
+  </div>
+  <div class="line" data-value="isOutdated">
+    <p>⌚️ isOutdated</p>
+  </div>
+  <div class="line" data-value="hasManyPublishers">
+    <p>👥 hasManyPublishers</p>
+  </div>
+  <div class="line" data-value="isDead">
+    <p>💀 isDead</p>
+  </div>
+  <div class="line" data-value="hasVulnerabilities">
+    <p>🚨 hasVulnerabilities</p>
+  </div>
+  <div class="line" data-value="hasDuplicate">
+    <p>🎭 hasDuplicate</p>
+  </div>
 </template>

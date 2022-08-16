@@ -50,6 +50,15 @@
         "doc",
         "review"
       ]
+    },
+    {
+      "login": "abdellah-housni",
+      "name": "abdellah-housni",
+      "avatar_url": "https://avatars.githubusercontent.com/u/39569278?v=4",
+      "profile": "https://github.com/abdellah-housni",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
