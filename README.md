@@ -11,7 +11,6 @@
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/github/license/NodeSecure/cli?style=flat-square" alt="license"></a>
     <a href="https://github.com/NodeSecure/cli/actions?query=workflow%3A%22Node.js+CI%22"><img src="https://img.shields.io/github/workflow/status/NodeSecure/cli/Node.js%20CI/master?style=flat-square" alt="github ci workflow"></a>
     <a href="https://codecov.io/github/ES-Community/nsecure"><img src="https://img.shields.io/codecov/c/github/ES-Community/nsecure.svg?style=flat-square" alt="codecov"></a>
-    <a href="./SECURITY.md"><img src="https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg?style=flat-square" alt="Responsible Disclosure Policy" /></a>
     <a href="https://www.npmjs.com/package/nsecure"><img src="https://img.shields.io/npm/dw/nsecure?style=flat-square" alt="downloads"></a>
 </p>
 
