@@ -6,7 +6,7 @@ import events from "events";
 // Import Third-party Dependencies
 import kleur from "kleur";
 import filenamify from "filenamify";
-import Spinner from "@slimio/async-cli-spinner";
+import Spinner from "@topcli/spinner";
 import ms from "ms";
 import * as i18n from "@nodesecure/i18n";
 import * as scanner from "@nodesecure/scanner";
