@@ -79,7 +79,7 @@
     "@nodesecure/utils": "^1.0.0",
     "@nodesecure/vuln": "^1.7.0",
     "@polka/send-type": "^0.5.2",
-    "@slimio/async-cli-spinner": "^0.5.2",
+    "@topcli/spinner": "^1.1.0",
     "cacache": "^16.1.1",
     "cliui": "^7.0.4",
     "dotenv": "^16.0.1",
