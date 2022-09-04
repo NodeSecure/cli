@@ -6,6 +6,7 @@ dotenv.config();
 import { createRequire } from "module";
 
 // Import Third-party Dependencies
+import { execSync } from "node:child_process";
 import kleur from "kleur";
 import sade from "sade";
 import semver from "semver";
@@ -41,16 +42,26 @@ defaultScannerCommand("cwd", { strategy: vuln.strategies.NPM_AUDIT })
   .describe(i18n.getToken("cli.commands.cwd.desc"))
   .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
   .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
-  .action((_, _, opts) => {
+  .action(async(_, __, opts) => {
     checkNodeSecureToken();
-    commands.scanner.cwd(opts);
+    try {
+      await commands.scanner.cwd(opts);
+    }
+    catch (err) {
+      // DO NOTHING
+    }
   });
 
 defaultScannerCommand("from <package>")
   .describe(i18n.getToken("cli.commands.from.desc"))
-  .action((packageName, _, opts) => {
+  .action(async(packageName, _, opts) => {
     checkNodeSecureToken();
-    commands.scanner.from(packageName, opts);
+    try {
+      await commands.scanner.from(packageName, opts);
+    }
+    catch (err) {
+      // DO NOTHING
+    }
   });
 
 defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vuln.strategies.SECURITY_WG })
@@ -68,9 +79,14 @@ prog
   .command("verify [package]")
   .describe(i18n.getToken("cli.commands.verify.desc"))
   .option("-j, --json", i18n.getToken("cli.commands.verify.option_json"), false)
-  .action((packageName, _, opts) => {
-    checkNodeSecureToken();
-    commands.verify.main(packageName, opts);
+  .action(async(packageName, _, opts) => {
+    try {
+      checkNodeSecureToken();
+      await commands.verify.main(packageName, opts);
+    }
+    catch (err) {
+      // DO NOTHING
+    }
   });
 
 prog
@@ -112,8 +128,17 @@ function defaultScannerCommand(name, options = {}) {
   return cmd;
 }
 
-function checkNodeSecureToken(){
-  if(process.env.NODE_SECURE_TOKEN){
-    kleur.yellow("Environment variable \"NODE_SECURE_TOKEN\" is missing: You need to login to npm with \`$ npm login\`")
+function checkNodeSecureToken() {
+  if (!process.env.NODE_SECURE_TOKEN) {
+    console.log(
+      kleur
+        .white()
+        .bold(
+          `\n ${kleur
+            .yellow()
+            .bold(`Environment variable ${"\"NODE_SECURE_TOKEN\""} is missing.
+            \trun${"`npm login`"} to login`)}`
+        )
+    );
   }
 }

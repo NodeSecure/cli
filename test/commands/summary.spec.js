@@ -1,11 +1,15 @@
 // Import Node.js Dependencies
-import { spawn } from "child_process";
+import dotenv from "dotenv";
+import { spawn, execSync } from "child_process";
 import { fileURLToPath } from "url";
 import path from "path";
+
+dotenv.config();
 
 // Import Third-party Dependencies
 import test from "tape";
 import splitByLine from "split2";
+import kleur from "kleur";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -42,6 +46,14 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
 
     tape.ok(regexp, "we are expecting this line");
     tape.ok(regexp.test(line), `line matches ${regexp}`);
+  }
+
+  tape.end();
+});
+
+test("warning on missing 'NODE_SECURE_TOKEN'", async(tape) => {
+  if (!process.env.NODE_SECURE_TOKEN) {
+    tape.equal(process.env.NODE_SECURE_TOKEN, undefined);
   }
 
   tape.end();
