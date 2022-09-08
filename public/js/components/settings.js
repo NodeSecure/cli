@@ -2,6 +2,8 @@
 import { getJSON } from "@nodesecure/vis-network";
 
 export class Settings {
+  static defaultMenuName = "info";
+
   constructor() {
     this.saveEnabled = false;
     this.dom = {
@@ -49,7 +51,7 @@ export class Settings {
     }
 
     const newConfig = {
-      defaultPackageMenu: this.dom.defaultPackageMenu.value,
+      defaultPackageMenu: this.dom.defaultPackageMenu.value || Settings.defaultMenuName,
       ignore: { flags: [], warnings: [] }
     };
 

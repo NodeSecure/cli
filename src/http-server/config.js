@@ -17,7 +17,7 @@ export async function get() {
   }
   catch (error) {
     const defaultValue = {
-      defaultPackageMenu: "overview",
+      defaultPackageMenu: "info",
       ignore: { flags: [], warnings: [] }
     };
 
