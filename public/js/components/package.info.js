@@ -110,7 +110,7 @@ export class PackageInfo {
   }
 
   enableNavigation(name) {
-    const div = this.menus.get(name);
+    const div = this.menus.has(name) ? this.menus.get(name) : this.menus.get("info");
 
     const isActive = div.classList.contains("active");
     const isDisabled = div.classList.contains("disabled");
