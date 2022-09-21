@@ -6,7 +6,6 @@ dotenv.config();
 import { createRequire } from "module";
 
 // Import Third-party Dependencies
-import { execSync } from "node:child_process";
 import kleur from "kleur";
 import sade from "sade";
 import semver from "semver";
@@ -136,8 +135,7 @@ function checkNodeSecureToken() {
         .bold(
           `\n ${kleur
             .yellow()
-            .bold(`Environment variable ${"\"NODE_SECURE_TOKEN\""} is missing.
-            \trun${"`npm login`"} to login`)}`
+            .bold(`Environment variable ${"\"NODE_SECURE_TOKEN\""} is missing.`)}`
         )
     );
   }
