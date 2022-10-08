@@ -78,6 +78,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "tekeuange23",
+      "name": "Ange TEKEU",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35274201?v=4",
+      "profile": "https://www.linkedin.com/in/ange-tekeu-a155811b4/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -85,5 +94,6 @@
   "projectOwner": "NodeSecure",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitConvention": "angular"
 }
