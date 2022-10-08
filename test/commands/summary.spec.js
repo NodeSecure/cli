@@ -1,7 +1,10 @@
 // Import Node.js Dependencies
+import dotenv from "dotenv";
 import { spawn } from "child_process";
 import { fileURLToPath } from "url";
 import path from "path";
+
+dotenv.config();
 
 // Import Third-party Dependencies
 import test from "tape";

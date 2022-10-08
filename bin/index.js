@@ -41,11 +41,17 @@ defaultScannerCommand("cwd", { strategy: vuln.strategies.NPM_AUDIT })
   .describe(i18n.getToken("cli.commands.cwd.desc"))
   .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
   .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
-  .action(commands.scanner.cwd);
+  .action(async(_, __, opts) => {
+    checkNodeSecureToken();
+    await commands.scanner.cwd(opts);
+  });
 
 defaultScannerCommand("from <package>")
   .describe(i18n.getToken("cli.commands.from.desc"))
-  .action(commands.scanner.from);
+  .action(async(packageName, _, opts) => {
+    checkNodeSecureToken();
+    await commands.scanner.from(packageName, opts);
+  });
 
 defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vuln.strategies.SECURITY_WG })
   .describe(i18n.getToken("cli.commands.auto.desc"))
@@ -62,7 +68,10 @@ prog
   .command("verify [package]")
   .describe(i18n.getToken("cli.commands.verify.desc"))
   .option("-j, --json", i18n.getToken("cli.commands.verify.option_json"), false)
-  .action(commands.verify.main);
+  .action(async(packageName, _, opts) => {
+    checkNodeSecureToken();
+    await commands.verify.main(packageName, opts);
+  });
 
 prog
   .command("summary [json]")
@@ -101,4 +110,14 @@ function defaultScannerCommand(name, options = {}) {
   }
 
   return cmd;
+}
+
+function checkNodeSecureToken() {
+  if (!process.env.NODE_SECURE_TOKEN) {
+    console.log(
+      kleur.white().bold(
+        `\n ${kleur.yellow().bold(`Environment variable ${"\"NODE_SECURE_TOKEN\""} is missing.`)}`
+      )
+    );
+  }
 }
