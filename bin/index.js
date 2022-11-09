@@ -41,16 +41,16 @@ defaultScannerCommand("cwd", { strategy: vuln.strategies.NPM_AUDIT })
   .describe(i18n.getToken("cli.commands.cwd.desc"))
   .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
   .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
-  .action(async(_, __, opts) => {
+  .action(async(...options) => {
     checkNodeSecureToken();
-    await commands.scanner.cwd(opts);
+    await commands.scanner.cwd(...options);
   });
 
 defaultScannerCommand("from <package>")
   .describe(i18n.getToken("cli.commands.from.desc"))
-  .action(async(packageName, _, opts) => {
+  .action(async(...options) => {
     checkNodeSecureToken();
-    await commands.scanner.from(packageName, opts);
+    await commands.scanner.from(...options);
   });
 
 defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vuln.strategies.SECURITY_WG })
@@ -68,9 +68,9 @@ prog
   .command("verify [package]")
   .describe(i18n.getToken("cli.commands.verify.desc"))
   .option("-j, --json", i18n.getToken("cli.commands.verify.option_json"), false)
-  .action(async(packageName, _, opts) => {
+  .action(async(...options) => {
     checkNodeSecureToken();
-    await commands.verify.main(packageName, opts);
+    await commands.verify.main(...options);
   });
 
 prog
