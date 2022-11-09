@@ -75,7 +75,7 @@
     "@nodesecure/i18n": "^2.0.0",
     "@nodesecure/npm-registry-sdk": "^1.4.1",
     "@nodesecure/rc": "^1.2.1",
-    "@nodesecure/scanner": "^3.7.0",
+    "@nodesecure/scanner": "^3.8.0",
     "@nodesecure/utils": "^1.0.0",
     "@nodesecure/vuln": "^1.7.0",
     "@polka/send-type": "^0.5.2",
