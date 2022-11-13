@@ -16,6 +16,7 @@ import * as flags from "./endpoints/flags.js";
 import * as config from "./endpoints/config.js";
 import * as bundle from "./endpoints/bundle.js";
 import * as npmDownloads from "./endpoints/npm-downloads.js";
+import * as scorecard from "./endpoints/ossf-scorecard.js";
 import * as middleware from "./middleware.js";
 
 export function buildServer(dataFilePath, options = {}) {
@@ -39,6 +40,7 @@ export function buildServer(dataFilePath, options = {}) {
   httpServer.get("/bundle/:pkgName", bundle.get);
   httpServer.get("/bundle/:pkgName/:version", bundle.get);
   httpServer.get("/downloads/:pkgName", npmDownloads.get);
+  httpServer.get("/scorecard/:org/:pkgName", scorecard.get);
 
   httpServer.listen(httpConfigPort, () => {
     const port = httpServer.server.address().port;

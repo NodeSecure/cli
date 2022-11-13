@@ -1,7 +1,7 @@
 section#package-info>.package-navigation {
   display: flex;
   position: relative;
-  justify-content: center;
+  justify-content: space-around;
   height: 55px;
   margin-top: 20px;
   padding-top: 40px;
@@ -68,9 +68,6 @@ section#package-info>.package-navigation>div.active:before {
   border-top: 8px solid var(--secondary);
 }
 
-section#package-info>.package-navigation>div+div {
-  margin-left: 20px;
-}
 
 section#package-info>.package-navigation>div>.signal {
   position: absolute;
@@ -85,5 +82,9 @@ section#package-info>.package-navigation>div>.signal {
   height: 16px;
   align-items: center;
   justify-content: center;
+  display: none;
+}
+
+section#package-info>.package-navigation>div#scorecard-menu {
   display: none;
 }
