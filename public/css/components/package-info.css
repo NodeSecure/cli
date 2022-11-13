@@ -312,15 +312,6 @@ section#package-info ul li.clickable:hover {
   position: static;
 }
 
-/* #pan-scorecard .total-score {
-  width: 40px;
-  margin: auto;
-  font-size: 26px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 40px;
-} */
-
 #pan-scorecard .check {
   display: flex;
   height: 26px;
