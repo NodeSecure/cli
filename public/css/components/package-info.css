@@ -369,6 +369,12 @@ section#package-info ul li.clickable:hover {
   margin-bottom: 6px;
 }
 
+#pan-scorecard .name,
+#pan-scorecard .score {
+  height: 26px;
+  line-height: 26px;
+}
+
 #pan-scorecard .name {
   font-weight: 500;
   color: #BBDEFB;
