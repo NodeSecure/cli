@@ -641,76 +641,113 @@ export class PackageInfo {
     const github = new URL(this.links.github.href);
     const repoName = github.pathname.slice(1, github.pathname.includes(".git") ? -4 : github.pathname.length);
 
+    let data;
+
     try {
-      const { data } = (await getJSON(`/scorecard/${repoName}`));
-      if (!data) {
-        return;
-      }
-
-      const { score, checks } = data;
-      const checksContainerElement = document.createElement('div');
-      checksContainerElement.classList.add('checks');
-
-      function generateCheckElement(check) {
-        if (!check.score || check.score < 0) {
-          check.score = 0;
-        }
-
-        const checkElement = document.createElement('div');
-        checkElement.classList.add('check');
-        const checkInfoElement = document.createElement('div');
-        checkInfoElement.classList.add('info');
-        checkInfoElement.innerHTML = `
-            <div class="description">${check.documentation.short}</div>
-            <div class="reason"><p><strong>Reasoning</strong></p>${check.reason}</div>
-          `;
-
-        if (check.details) {
-          for (const detail of check.details) {
-            checkInfoElement.innerHTML += `<div class="detail">${detail}</div>`;
-          }
-        }
-
-        checkElement.innerHTML = `<span class="name">${check.name}</span><div class="score">${check.score}/10</div>`
-        checkElement.append(checkInfoElement);
-
-        return checkElement;
-      }
-
-      for (const check of checks) {
-        checksContainerElement.append(generateCheckElement(check));
-      }
-
-      document.getElementById('ossf-score').innerText = score;
-
-      const checksNodes = checksContainerElement.childNodes;
-      checksNodes.forEach((check, checkKey) => {
-        check.addEventListener('click', () => {
-          if (check.children[2].classList.contains('visible')) {
-            check.children[2].classList.remove('visible');
-            check.classList.remove('visible')
-
-            return;
-          }
-
-          check.classList.add('visible');
-          check.children[2].classList.add('visible');
-
-          checksNodes.forEach((check, key) => {
-            if (checkKey !== key) {
-              check.classList.remove('visible');
-              check.children[2].classList.remove('visible');
-            }
-          });
-        });
-      });
-
-      return checksContainerElement;
-    } catch (error) {
+      data = (await getJSON(`/scorecard/${repoName}`)).data;
+    }
+    catch (error) {
       console.error(error);
       document.getElementById('scorecard-menu').style.display = 'none';
 
       return null;
     }
+
+    if (!data) {
+      return;
+    }
+
+    const { score, checks } = data;
+    const checksContainerElement = utils.createDOMElement('div', {
+      classList: ['checks'],
+    });
+
+    function generateCheckElement(check) {
+      if (!check.score || check.score < 0) {
+        check.score = 0;
+      }
+
+      const fragment = document.createDocumentFragment();
+      fragment.appendChild(
+        utils.createDOMElement('div', {
+          classList: ['check'],
+          childs: [
+            utils.createDOMElement('span', {
+              classList: ['name'],
+              text: check.name,
+            }),
+            utils.createDOMElement('div', {
+              classList: ['score'],
+              text: `${check.score}/10`,
+            }),
+            utils.createDOMElement('div', {
+              classList: ['info'],
+              childs: [
+                utils.createDOMElement('div', {
+                  classList: ['description'],
+                  text: check.documentation.short,
+                }),
+                utils.createDOMElement('div', {
+                  classList: ['reason'],
+                  childs: [
+                    utils.createDOMElement('p', {
+                      childs: [
+                        utils.createDOMElement('strong', {
+                          text: "Reasoning",
+                        }),
+                      ],
+                    }),
+                    utils.createDOMElement('span', {
+                      text: check.reason,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        })
+      );
+
+      for (const detail of check.details ?? []) {
+        fragment.querySelector('.info').appendChild(
+          utils.createDOMElement('div', {
+            classList: ['detail'],
+            text: detail,
+          }),
+        );
+      }
+
+      return fragment;
+    }
+
+    for (const check of checks) {
+      checksContainerElement.append(generateCheckElement(check));
+    }
+
+    document.getElementById('ossf-score').innerText = score;
+
+    const checksNodes = checksContainerElement.childNodes;
+    checksNodes.forEach((check, checkKey) => {
+      check.addEventListener('click', () => {
+        if (check.children[2].classList.contains('visible')) {
+          check.children[2].classList.remove('visible');
+          check.classList.remove('visible')
+
+          return;
+        }
+
+        check.classList.add('visible');
+        check.children[2].classList.add('visible');
+
+        checksNodes.forEach((check, key) => {
+          if (checkKey !== key) {
+            check.classList.remove('visible');
+            check.children[2].classList.remove('visible');
+          }
+        });
+      });
+    });
+
+    return checksContainerElement;
   }
 }
