@@ -38,6 +38,10 @@ section#package-info .package-container {
   height: calc(100vh - 275px);
 }
 
+section#package-info>.package-navigation>div {
+  font-family: 'mononoki';
+}
+
 /**
  * TITLE
  */
@@ -345,7 +349,7 @@ section#package-info ul li.clickable:hover {
 
 #pan-scorecard .check .info {
   flex: 1 1 100%;
-  margin-left: 24px;
+  margin-left: 28px;
   visibility: hidden;
 }
 
@@ -385,4 +389,9 @@ section#package-info ul li.clickable:hover {
 #pan-scorecard .score {
   margin-left: auto;
   font-size: 14px;
+  font-family: 'mononoki';
+}
+
+.mb-5 {
+  margin-bottom: 5px;
 }

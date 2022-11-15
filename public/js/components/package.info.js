@@ -725,6 +725,7 @@ export class PackageInfo {
     }
 
     document.getElementById('ossf-score').innerText = score;
+    document.getElementById('head-score').innerText = score;
 
     const checksNodes = checksContainerElement.childNodes;
     checksNodes.forEach((check, checkKey) => {
