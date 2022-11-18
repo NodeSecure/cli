@@ -316,6 +316,28 @@ section#package-info ul li.clickable:hover {
   position: static;
 }
 
+#pan-scorecard .score-header {
+  height: inherit;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#pan-scorecard .score-header .score-text {
+  font-family: 'mononoki';
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+#pan-scorecard .score-header .score-value {
+  font-weight: 800px;
+  color: var(--secondary);
+  margin-top: 6px;
+  font-size: 18px;
+}
+
 #pan-scorecard .check {
   display: flex;
   height: 26px;
