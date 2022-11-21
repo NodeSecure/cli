@@ -38,10 +38,14 @@ section#package-info .package-container {
   height: calc(100vh - 275px);
 }
 
+section#package-info>.package-navigation>div {
+  font-family: 'mononoki';
+}
+
 /**
  * TITLE
  */
- section#package-info .head-title {
+section#package-info .head-title {
   background: var(--primary-darker);
   height: 28px;
   flex-shrink: 0;
@@ -288,4 +292,128 @@ section#package-info ul li.clickable:hover {
   font-family: "mononoki";
   letter-spacing: 0.5px;
   word-wrap: break-word;
+}
+
+
+#pan-scorecard {
+  padding: 10px;
+  border-radius: 8px 8px 0 0;
+  background: -moz-linear-gradient(top, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 15%);
+  background: -webkit-linear-gradient(top, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 15%);
+  background: linear-gradient(to bottom, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 15%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#334c32df', endColorstr='#00000000', GradientType=0);
+}
+
+#pan-scorecard .container-title {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  color: var(--secondary);
+  margin-bottom: 10px;
+  font-family: 'mononoki';
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 5px #2a6f99;
+  position: static;
+}
+
+#pan-scorecard .score-header {
+  height: inherit;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#pan-scorecard .score-header .score-text {
+  font-family: 'mononoki';
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+#pan-scorecard .score-header .score-value {
+  font-weight: 800px;
+  color: var(--secondary);
+  margin-top: 6px;
+  font-size: 18px;
+}
+
+#pan-scorecard .check {
+  display: flex;
+  height: 26px;
+  align-items: center;
+  cursor: pointer;
+  flex-wrap: wrap;
+  white-space: initial;
+  overflow: hidden;
+}
+
+#pan-scorecard .check.visible {
+  height: auto;
+}
+
+#pan-scorecard .check:before {
+  content: '▶';
+  padding: 4px;
+  width: 20px;
+  text-align: center;
+  font-size: 11px;
+}
+
+#pan-scorecard .check.visible:before {
+  content: '▼';
+}
+
+
+#pan-scorecard .check:hover {
+  background: #3722af;
+}
+
+#pan-scorecard .check .info {
+  flex: 1 1 100%;
+  margin-left: 28px;
+  visibility: hidden;
+  font-size: 14px;
+}
+
+#pan-scorecard .check .info.visible {
+  visibility: visible;
+}
+
+#pan-scorecard .check .info strong {
+  font-weight: 500;
+}
+
+#pan-scorecard .check .description,
+#pan-scorecard .check .reason,
+#pan-scorecard .check .detail {
+  margin-bottom: 10px;
+  word-wrap: break-word;
+}
+
+#pan-scorecard .check .detail {
+  font-size: small;
+  margin-bottom: 6px;
+}
+
+#pan-scorecard .name,
+#pan-scorecard .score {
+  height: 26px;
+  line-height: 26px;
+  font-size: 16px;
+}
+
+#pan-scorecard .name {
+  font-weight: 500;
+  color: #BBDEFB;
+  font-family: system-ui;
+}
+
+#pan-scorecard .score {
+  margin-left: auto;
+  font-family: 'mononoki';
+}
+
+.mb-5 {
+  margin-bottom: 5px;
 }

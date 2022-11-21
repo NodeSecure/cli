@@ -1,6 +1,6 @@
 // Import Third-party Dependencies
 import prettyBytes from "pretty-bytes";
-import { getFlagsEmojisInlined } from "@nodesecure/vis-network";
+import { getFlagsEmojisInlined, getJSON } from "@nodesecure/vis-network";
 import { locationToString } from "@nodesecure/utils";
 
 // Import Internal Dependencies
@@ -152,12 +152,13 @@ export class PackageInfo {
     const { name, version, size, composition, warnings, usedBy, engines, flags } = this.dependencyVersion;
     const { metadata, vulnerabilities } = this.dependency;
 
-    const [maintainersDomElement, licensesDomElement, warningsDomElement, scriptsDomElement, vulnDomElement] = [
+    const [maintainersDomElement, licensesDomElement, warningsDomElement, scriptsDomElement, vulnDomElement, ossfScorecardDomElement] = [
       clone.querySelector(".package-maintainers"),
       clone.getElementById("pan-licenses"),
       clone.getElementById("pan-warnings"),
       clone.querySelector(".package-scripts"),
-      clone.querySelector(".packages-vuln")
+      clone.querySelector(".packages-vuln"),
+      clone.getElementById("pan-scorecard")
     ];
     const [fieldsDefault, fieldsReleases] = [
       clone.querySelector(".fields"),
@@ -244,12 +245,20 @@ export class PackageInfo {
       hideItems: true,
       hideItemsLength: 3
     });
-
     licensesDomElement.appendChild(this.generateLicenses());
     maintainersDomElement.appendChild(this.generateMaintainers());
     warningsDomElement.appendChild(this.generateWarnings());
     scriptsDomElement.appendChild(this.generateScripts());
     vulnDomElement.appendChild(this.generateVulnerabilities());
+
+    this.generateOssfScorecard(name).then(
+      (ossfScorecardElementChildren) => {
+        if (ossfScorecardElementChildren) {
+          ossfScorecardDomElement.appendChild(ossfScorecardElementChildren);
+          document.getElementById('scorecard-menu').style.display = 'flex';
+        }
+      }
+    );
 
     const strategy = window.vulnerabilityStrategy;
     clone.querySelector(".vuln-strategy .name").textContent = strategy;
@@ -621,5 +630,125 @@ export class PackageInfo {
     }
 
     return fragment;
+  }
+
+  async generateOssfScorecard() {
+    if (!this.links.github.href) {
+      document.getElementById('scorecard-menu').style.display = 'none';
+      return;
+    }
+
+    const github = new URL(this.links.github.href);
+    const repoName = github.pathname.slice(1, github.pathname.includes(".git") ? -4 : github.pathname.length);
+
+    let data;
+
+    try {
+      data = (await getJSON(`/scorecard/${repoName}`)).data;
+    }
+    catch (error) {
+      console.error(error);
+      document.getElementById('scorecard-menu').style.display = 'none';
+
+      return null;
+    }
+
+    if (!data) {
+      return;
+    }
+
+    const { score, checks } = data;
+    const checksContainerElement = utils.createDOMElement('div', {
+      classList: ['checks'],
+    });
+
+    function generateCheckElement(check) {
+      if (!check.score || check.score < 0) {
+        check.score = 0;
+      }
+
+      const fragment = document.createDocumentFragment();
+      fragment.appendChild(
+        utils.createDOMElement('div', {
+          classList: ['check'],
+          childs: [
+            utils.createDOMElement('span', {
+              classList: ['name'],
+              text: check.name,
+            }),
+            utils.createDOMElement('div', {
+              classList: ['score'],
+              text: `${check.score}/10`,
+            }),
+            utils.createDOMElement('div', {
+              classList: ['info'],
+              childs: [
+                utils.createDOMElement('div', {
+                  classList: ['description'],
+                  text: check.documentation.short,
+                }),
+                utils.createDOMElement('div', {
+                  classList: ['reason'],
+                  childs: [
+                    utils.createDOMElement('p', {
+                      childs: [
+                        utils.createDOMElement('strong', {
+                          text: "Reasoning",
+                        }),
+                      ],
+                    }),
+                    utils.createDOMElement('span', {
+                      text: check.reason,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        })
+      );
+
+      for (const detail of check.details ?? []) {
+        fragment.querySelector('.info').appendChild(
+          utils.createDOMElement('div', {
+            classList: ['detail'],
+            text: detail,
+          }),
+        );
+      }
+
+      return fragment;
+    }
+
+    for (const check of checks) {
+      checksContainerElement.append(generateCheckElement(check));
+    }
+
+    document.getElementById('ossf-score').innerText = score;
+    document.getElementById('head-score').innerText = score;
+
+    const checksNodes = checksContainerElement.childNodes;
+    checksNodes.forEach((check, checkKey) => {
+      check.addEventListener('click', () => {
+        if (check.children[2].classList.contains('visible')) {
+          check.children[2].classList.remove('visible');
+          check.classList.remove('visible')
+
+          return;
+        }
+
+        check.classList.add('visible');
+        check.children[2].classList.add('visible');
+
+        checksNodes.forEach((check, key) => {
+          if (checkKey !== key) {
+            check.classList.remove('visible');
+            check.children[2].classList.remove('visible');
+          }
+        });
+      });
+    });
+
+    return checksContainerElement;
   }
 }

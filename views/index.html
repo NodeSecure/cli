@@ -119,7 +119,12 @@
     </div>
     <div id="network--view" class="view hidden">
       <div id="network-loader">
-        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        <div class="lds-ellipsis">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
         <p>[[=z.token('loading_nodes')]]</p>
         <p>[[=z.token('please_wait')]]</p>
       </div>
@@ -276,6 +281,9 @@
     <div data-menu="licenses" data-title="[[=z.token('package_info.navigation.licenses')]]">
       <i class="icon-vcard"></i>
     </div>
+    <div data-menu="scorecard" id="scorecard-menu" data-title="[[=z.token('package_info.title.openSsfScorecard')]]">
+      <i id="ossf-score"></i>
+    </div>
   </div>
 
   <div class="package-container" id="pan-info">
@@ -391,6 +399,7 @@
       <p>[[=z.token('package_info.helpers.warnings')]] <b class="open-wiki">wiki</b></p>
     </div>
   </div>
+
   <div class="package-container hidden" id="pan-vulnerabilities">
     <div class="vuln-strategy">
       <div>
@@ -407,7 +416,24 @@
   <div class="package-container hidden" id="pan-licenses">
     <div class="help-dialog">
       <i class="icon-info-circled-alt"></i>
-      <p>[[=z.token('package_info.helpers.spdx')]] <a href="https://spdx.dev/about/" target="_blank" rel="noopener noreferrer">[[=z.token('package_info.helpers.here')]]</a></p>
+      <p>[[=z.token('package_info.helpers.spdx')]] <a href="https://spdx.dev/about/" target="_blank"
+          rel="noopener noreferrer">[[=z.token('package_info.helpers.here')]]</a></p>
+    </div>
+  </div>
+
+  <div class="package-container hidden" id="pan-scorecard">
+    <div class="package-scorecard">
+      <div class="help-dialog">
+        <i class="icon-info-circled-alt"></i>
+        <p>[[=z.token('package_info.helpers.openSsf')]] <a href="https://github.com/ossf/scorecard" target="_blank"
+            rel="noopener noreferrer">[[=z.token('package_info.helpers.here')]]</a></p>
+      </div>
+      <div class="score-header mb-5">
+        <span class="score-text">SCORE</span>
+        <span class="score-value">
+          <span id="head-score"></span>/10
+        </span>
+      </div>
     </div>
   </div>
 </template>
