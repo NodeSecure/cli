@@ -211,7 +211,11 @@ export class PackageInfo {
     utils.createItemsList(clone.getElementById("nodedep"), composition.required_nodejs, {
       hideItemsLength: 8,
       onclick: (event, coreLib) => {
-        window.open(`https://nodejs.org/dist/latest/docs/api/${coreLib}.html`, "_blank").focus();
+        function formatNodeLib(lib) {
+          return lib.startsWith('node:') ? lib.slice(5) : lib;
+        }
+
+        window.open(`https://nodejs.org/dist/latest/docs/api/${formatNodeLib(coreLib)}.html`, "_blank").focus();
       }
     });
 
@@ -521,7 +525,7 @@ export class PackageInfo {
             childs: [
               utils.createDOMElement("p", {
                 className: "title",
-                text: `incrimined value`
+                text: "incrimined value"
               }),
               utils.createDOMElement("p", {
                 className: "value",
