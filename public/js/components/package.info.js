@@ -211,11 +211,9 @@ export class PackageInfo {
     utils.createItemsList(clone.getElementById("nodedep"), composition.required_nodejs, {
       hideItemsLength: 8,
       onclick: (event, coreLib) => {
-        function formatNodeLib(lib) {
-          return lib.startsWith('node:') ? lib.slice(5) : lib;
-        }
+        const lib = coreLib.startsWith('node:') ? coreLib.slice(5) : coreLib;
 
-        window.open(`https://nodejs.org/dist/latest/docs/api/${formatNodeLib(coreLib)}.html`, "_blank").focus();
+        window.open(`https://nodejs.org/dist/latest/docs/api/${lib}.html`, "_blank").focus();
       }
     });
 
