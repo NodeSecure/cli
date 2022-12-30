@@ -3,25 +3,29 @@ import fs from "fs/promises";
 import path from "path";
 
 // Import Third-party Dependencies
-import cliui from "cliui";
+import cliui from "@topcli/cliui";
 import kleur from "kleur";
 import * as i18n from "@nodesecure/i18n";
 import { formatBytes } from "@nodesecure/utils";
 
 // VARS
-const { yellow, gray, white, green, cyan, red } = kleur;
+const { yellow, grey, white, green, cyan, red } = kleur;
+
+function separatorLine() {
+  return grey("-".repeat(80));
+}
 
 export async function main(json = "nsecure-result.json") {
   const dataFilePath = path.join(process.cwd(), json);
   const rawAnalysis = await fs.readFile(dataFilePath, { encoding: "utf-8" });
   const { rootDependencyName, dependencies } = JSON.parse(rawAnalysis);
 
-  const ui = cliui();
+  const ui = cliui({ width: 80 });
   const title = `${white().bold(`${i18n.getToken("ui.stats.title")}:`)} ${cyan().bold(rootDependencyName)}`;
   ui.div(
     { text: title, width: 50 }
   );
-  ui.div({ text: gray("-------------------------------------------------------------------"), width: 70 });
+  ui.div({ text: separatorLine() });
 
   if (dependencies) {
     const {
@@ -34,15 +38,15 @@ export async function main(json = "nsecure-result.json") {
 
     ui.div(
       { text: white().bold(`${i18n.getToken("ui.stats.total_packages")}:`), width: 60 },
-      { text: green().bold(`${packagesCount}`), width: 20 }
+      { text: green().bold(`${packagesCount}`), width: 20, align: "right" }
     );
     ui.div(
       { text: white().bold(`${i18n.getToken("ui.stats.total_size")}:`), width: 60 },
-      { text: green().bold(`${formatBytes(totalSize)}`), width: 20 }
+      { text: green().bold(`${formatBytes(totalSize)}`), width: 20, align: "right" }
     );
     ui.div(
       { text: white().bold(`${i18n.getToken("ui.stats.indirect_deps")}:`), width: 60 },
-      { text: green().bold(`${packageWithIndirectDeps}`), width: 20 }
+      { text: green().bold(`${packageWithIndirectDeps}`), width: 20, align: "right" }
     );
 
     ui.div("");
@@ -52,7 +56,7 @@ export async function main(json = "nsecure-result.json") {
     const extensionEntries = Object.entries(extensionMap);
     ui.div(
       {
-        text: `${extensionEntries.reduce(buildStringFromEntries, "")}`, width: 70
+        text: `${extensionEntries.reduce(buildStringFromEntries, "")}`
       }
     );
 
@@ -63,7 +67,7 @@ export async function main(json = "nsecure-result.json") {
     const licenceEntries = Object.entries(licenceMap);
     ui.div(
       {
-        text: yellow().bold(`${licenceEntries.reduce(buildStringFromEntries, "")}`), width: 70
+        text: yellow().bold(`${licenceEntries.reduce(buildStringFromEntries, "")}`)
       }
     );
   }
@@ -73,7 +77,7 @@ export async function main(json = "nsecure-result.json") {
       { text: yellow().bold("No dependencies"), width: 30 }
     );
   }
-  ui.div({ text: gray("-------------------------------------------------------------------"), width: 70 });
+  ui.div({ text: separatorLine() });
   console.log(ui.toString());
 
   return void 0;
