@@ -1,11 +1,15 @@
 // Import Third-party Dependencies
-import cliui from "cliui";
+import cliui from "@topcli/cliui";
 import kleur from "kleur";
 import { verify } from "@nodesecure/scanner";
 import { formatBytes, locationToString } from "@nodesecure/utils";
 
 // VARS
 const { yellow, grey, white, green, cyan, red, magenta } = kleur;
+
+function separatorLine() {
+  return grey("-".repeat(80));
+}
 
 export async function main(packageName = null, options) {
   const payload = await verify(packageName);
@@ -14,7 +18,7 @@ export async function main(packageName = null, options) {
   }
   const { files, directorySize, uniqueLicenseIds, ast } = payload;
 
-  const ui = cliui();
+  const ui = cliui({ width: 80 });
   ui.div(
     { text: cyan().bold("directory size:"), width: 20 },
     { text: yellow().bold(formatBytes(directorySize)), width: 10 }
@@ -28,8 +32,8 @@ export async function main(packageName = null, options) {
 
   {
     ui.div(
-      { text: white().bold("ext"), width: 15, align: "center" },
-      { text: white().bold("files"), width: 45 },
+      { text: white().bold("ext"), width: 10, align: "center" },
+      { text: white().bold("files"), width: 40 },
       { text: white().bold("minified files"), width: 30 }
     );
 
@@ -41,8 +45,8 @@ export async function main(packageName = null, options) {
 
     for (const [ext, file, min] of divArray) {
       ui.div(
-        { text: cyan().bold(ext), width: 15, align: "center" },
-        { text: file, width: 45 },
+        { text: cyan().bold(ext), width: 10, align: "center" },
+        { text: file, width: 40 },
         { text: red().bold(min), width: 30 }
       );
     }
@@ -50,43 +54,43 @@ export async function main(packageName = null, options) {
   console.log(`${ui.toString()}\n`);
   ui.resetOutput();
 
-  ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-  ui.div({ text: cyan().bold("Required dependency and files"), width: 70, align: "center" });
-  ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-  ui.div({ text: "\n", width: 70, align: "center" });
+  ui.div({ text: separatorLine() });
+  ui.div({ text: cyan().bold("Required dependency and files"), align: "center" });
+  ui.div({ text: separatorLine() });
+  ui.div();
 
   for (const [fileName, deps] of Object.entries(ast.dependencies)) {
-    ui.div({ text: magenta().bold(fileName), width: 70, align: "center" });
-    ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
+    ui.div({ text: magenta().bold(fileName), align: "center" });
+    ui.div({ text: separatorLine() });
     ui.div(
-      { text: white().bold("required stmt"), width: 32, align: "left" },
-      { text: white().bold("try/catch"), width: 12, align: "center" },
-      { text: white().bold("source location"), width: 26, align: "center" }
+      { text: white().bold("required stmt"), width: 30 },
+      { text: white().bold("try/catch"), width: 20, align: "center" },
+      { text: white().bold("source location"), width: 30, align: "right" }
     );
     for (const [depName, infos] of Object.entries(deps)) {
       const { start, end } = infos.location;
       const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
 
       ui.div(
-        { text: depName, width: 32 },
-        { text: (infos.inTry ? green : red)().bold(infos.inTry), width: 12, align: "center" },
-        { text: grey().bold(position), width: 26, align: "center" }
+        { text: depName, width: 30 },
+        { text: (infos.inTry ? green : red)().bold(infos.inTry), width: 20, align: "center" },
+        { text: grey().bold(position), width: 30, align: "right" }
       );
     }
-    ui.div({ text: "", width: 70, align: "center" });
+    ui.div();
     console.log(`${ui.toString()}`);
     ui.resetOutput();
   }
 
-  ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-  ui.div({ text: cyan().bold("AST Warnings"), width: 70, align: "center" });
-  ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
-  ui.div({ text: "", width: 70, align: "center" });
+  ui.div({ text: separatorLine() });
+  ui.div({ text: cyan().bold("AST Warnings"), align: "center" });
+  ui.div({ text: separatorLine() });
+  ui.div();
 
   ui.div(
     { text: white().bold("file"), width: 30 },
-    { text: white().bold("kind"), width: 15, align: "center" },
-    { text: white().bold("source location"), width: 25, align: "center" }
+    { text: white().bold("kind"), width: 20, align: "center" },
+    { text: white().bold("source location"), width: 30, align: "right" }
   );
 
   for (const warning of ast.warnings) {
@@ -96,14 +100,14 @@ export async function main(packageName = null, options) {
 
     ui.div(
       { text: warning.file || grey().bold("NONE"), width: 30 },
-      { text: magenta().bold(warning.kind), width: 15, align: "center" },
-      { text: grey().bold(position), width: 25, align: "center" }
+      { text: magenta().bold(warning.kind), width: 20, align: "center" },
+      { text: grey().bold(position), width: 30, align: "right" }
     );
     if (warning.value) {
-      ui.div({ text: "", width: 70, align: "center" });
-      ui.div({ text: yellow().bold(warning.value), width: 70, align: "center" });
+      ui.div();
+      ui.div({ text: yellow().bold(warning.value), align: "center" });
     }
-    ui.div({ text: grey("-------------------------------------------------------------------"), width: 70 });
+    ui.div({ text: separatorLine() });
   }
 
   console.log(`${ui.toString()}`);
