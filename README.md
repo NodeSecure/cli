@@ -48,6 +48,7 @@ The CLI allow to load the JSON into a Webpage with the **open** command. The pag
 - Link vulnerabilities from the [Security-WG repository](https://github.com/nodejs/security-wg/tree/master/vuln/npm) to the package version node.
 - Add flags to each packages versions to identify well known patterns and potential security threats easily.
 - Analyze npm packages and local Node.js projects.
+- Supports [OpenSSF Scorecard](https://github.com/ossf/scorecard).
 
 ## 🚧 Requirements
 
@@ -179,6 +180,11 @@ Nodes are red when the project/package has been flagged with 🔬 `hasMinifiedCo
 ### Why the node-secure package size is so different from Bundlephobia ?
 Node-secure will analyze the complete size of the npm tarball with no filters or particular optimization. Bundlephobia on the
 other side will bundle and remove most of the useless files from the tarball (Like the documentation, etc.).
+
+### Why some packages don't have OSSF Scorecard ?
+See [Scorecard Public Data](https://github.com/ossf/scorecard#public-data):
+> We run a weekly Scorecard scan of the 1 million most critical open source projects judged by their direct dependencies and publish the results in a BigQuery public dataset.
+> Currently, this list is derived from projects hosted on GitHub ONLY.
 
 ## Contributors ✨
 
