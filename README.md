@@ -8,22 +8,19 @@
 
 <p align="center">
     <a href="https://www.npmjs.com/package/nsecure">
-      <img src="https://img.shields.io/github/package-json/v/NodeSecure/cli?style=flat-square" alt="npm version">
+      <img src="https://img.shields.io/github/package-json/v/NodeSecure/cli?style=for-the-badge" alt="npm version">
     </a>
     <a href="https://www.npmjs.com/package/nsecure">
-      <img src="https://img.shields.io/github/license/NodeSecure/cli?style=flat-square" alt="license">
+      <img src="https://img.shields.io/github/license/NodeSecure/cli?style=for-the-badge" alt="license">
     </a>
     <a href="https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli">
-      <img src="https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli/badge" alt="ossf scorecard">
+      <img src="https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli/badge?style=for-the-badge" alt="ossf scorecard">
     </a>
     <a href="https://github.com/NodeSecure/cli/actions?query=workflow%3A%22Node.js+CI%22">
-      <img src="https://img.shields.io/github/actions/workflow/status/NodeSecure/cli/nodejs.yml" alt="github ci workflow">
+      <img src="https://img.shields.io/github/actions/workflow/status/NodeSecure/cli/nodejs.yml?style=for-the-badge" alt="github ci workflow">
     </a>
     <a href="https://codecov.io/github/NodeSecure/cli">
-      <img src="https://img.shields.io/codecov/c/github/NodeSecure/cli" alt="codecov">
-    </a>
-    <a href="https://www.npmjs.com/package/nsecure">
-      <img src="https://img.shields.io/npm/dw/nsecure?style=flat-square" alt="downloads">
+      <img src="https://img.shields.io/codecov/c/github/NodeSecure/cli?style=for-the-badge" alt="codecov">
     </a>
 </p>
 
