@@ -70,7 +70,7 @@ export function createAvatarImageElement(email = null) {
     imageElement.src = `${avatarURL}`;
   }
   else {
-    imageElement.src = `https://unavatar.now.sh/${email}`;
+    imageElement.src = `https://unavatar.io/ ${email}`;
     imageElement.onerror = () => {
       imageElement.src = `${avatarURL}`;
     };
