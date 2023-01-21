@@ -6,7 +6,7 @@ export async function get(req, res) {
   const { pkgName } = req.params;
 
   try {
-    const data = await downloads(`${pkgName.replace("%2F", "/")}`, "last-week");
+    const data = await downloads(`${pkgName.replaceAll("%2F", "/")}`, "last-week");
 
     return send(res, 200, data);
   }
