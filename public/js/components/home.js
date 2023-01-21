@@ -97,7 +97,7 @@ export class HomeView {
 
     try {
 
-      const { downloads } = await getJSON(`/downloads/${name.replace("/", "%2F")}`);
+      const { downloads } = await getJSON(`/downloads/${name.replaceAll("/", "%2F")}`);
 
       if (downloads) {
         const formattedNumber = new Intl.NumberFormat("de-DE").format(downloads);

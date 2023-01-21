@@ -13,7 +13,7 @@ export class Bundlephobia {
   }
 
   get httpName() {
-    return this.name.replace("/", "%2F");
+    return this.name.replaceAll("/", "%2F");
   }
 
   async fetchDataOnHttpServer() {

@@ -8,7 +8,7 @@ const kBaseBundlePhobiaUrl = "https://bundlephobia.com/api";
 export async function get(req, res) {
   const { pkgName, version } = req.params;
 
-  const pkgTemplate = version ? `${pkgName.replace("%2F", "/")}@${version}` : pkgName;
+  const pkgTemplate = version ? `${pkgName.replaceAll("%2F", "/")}@${version}` : pkgName;
   try {
     const { data } = await getRequest(`${kBaseBundlePhobiaUrl}/size?package=${pkgTemplate}`);
     const { gzip, size, dependencySizes } = data;
