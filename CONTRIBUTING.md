@@ -18,6 +18,16 @@ that *all* contributors are expected to follow. This code describes the
 
 See [details on our policy on Code of Conduct](https://github.com/NodeSecure/Governance/blob/main/COC_POLICY.md).
 
+## First-contributor guide
+
+If this is your first open source contribution, we [have a special guide](https://github.com/NodeSecure/Governance/blob/main/guides/contributor-en.md) to help you.
+
+## Discord
+
+Our project has a discord that allows mutual cooperation between (new-)contributors. We are very welcoming and respectful, do not hesitate to come and ask us questions if you are in trouble.
+
+[![OpenAlly](https://discordapp.com/api/guilds/640183220452720650/embed.png?style=banner2)](https://discord.gg/4Wn8rjAtB4)
+
 <a id="developers-certificate-of-origin"></a>
 ## Developer's Certificate of Origin 1.1
 

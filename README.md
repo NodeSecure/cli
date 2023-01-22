@@ -62,8 +62,13 @@ or
 ```bash
 $ git clone https://github.com/NodeSecure/cli.git
 $ cd cli
+
+# install NPM dependencies using package-lock.json
 $ npm ci
+
+# run esbuild to bundle/compile front-end assets
 $ npm run build
+
 $ npm link
 ```
 
@@ -182,6 +187,26 @@ other side will bundle and remove most of the useless files from the tarball (Li
 See [Scorecard Public Data](https://github.com/ossf/scorecard#public-data):
 > We run a weekly Scorecard scan of the 1 million most critical open source projects judged by their direct dependencies and publish the results in a BigQuery public dataset.
 > Currently, this list is derived from projects hosted on GitHub ONLY.
+
+## Contributors guide
+
+If you are a developer **wishing to contribute** to the project, you must first read the [CONTRIBUTING](./CONTRIBUTING.md) guide.
+
+If you have already cloned and installed the project with npm locally, you still need to build and bundle front-end assets using the npm `build` script:
+
+```bash
+$ npm run build
+```
+
+> **Warning** restart this command when modifying files in the public root folder
+
+Once you have finished your development, check that the tests (and linter) are still good by running the following script:
+
+```bash
+$ npm test
+```
+
+> **Note** If you add a feature, try adding tests for it along.
 
 ## Contributors ✨
 
