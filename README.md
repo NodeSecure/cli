@@ -63,8 +63,8 @@ or
 $ git clone https://github.com/NodeSecure/cli.git
 $ cd cli
 
-# install NPM dependencies using package-lock.json
-$ npm ci
+# install NPM dependencies
+$ npm install
 
 # run esbuild to bundle/compile front-end assets
 $ npm run build
