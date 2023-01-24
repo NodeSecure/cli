@@ -65,7 +65,7 @@
     "esbuild": "^0.17.3",
     "eslint": "^8.27.0",
     "pkg-ok": "^3.0.0",
-    "pretty-bytes": "^5.6.0",
+    "pretty-bytes": "^6.0.0",
     "split2": "^4.1.0",
     "tape": "^5.6.1"
   },
