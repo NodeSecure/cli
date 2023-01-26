@@ -45,7 +45,7 @@ test("should execute verify command", async(tape) => {
 
   const child = spawn(process.execPath, [path.join(kProcessDir, "verify.js")], {
     env: process.env,
-    stdio: ["ignore", "pipe", "pipe"],
+    stdio: ["ignore", "pipe", "pipe"]
   });
   tape.teardown(() => child.kill());
 
@@ -53,7 +53,7 @@ test("should execute verify command", async(tape) => {
   let i = 0;
   for await (const line of rStream) {
     const expectedLine = expectedLines[i++];
-    tape.equal(line, expectedLine, `should be ${expectedLine}`)
+    tape.equal(line, expectedLine, `should be ${expectedLine}`);
   }
 
   tape.end();
