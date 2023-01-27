@@ -81,7 +81,7 @@
     "@nodesecure/vuln": "^1.7.0",
     "@polka/send-type": "^0.5.2",
     "@topcli/cliui": "^1.1.0",
-    "@topcli/spinner": "^1.1.0",
+    "@topcli/spinner": "^2.0.0",
     "cacache": "^17.0.4",
     "dotenv": "^16.0.3",
     "filenamify": "^5.1.1",

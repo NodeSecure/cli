@@ -100,7 +100,8 @@ function defaultScannerCommand(name, options = {}) {
   const { includeOutput = true, strategy = null } = options;
 
   const cmd = prog.command(name)
-    .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4);
+    .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
+    .option("--silent", "enable silent mode which disable CLI spinners", false);
 
   if (includeOutput) {
     cmd.option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result");
@@ -114,10 +115,10 @@ function defaultScannerCommand(name, options = {}) {
 
 function checkNodeSecureToken() {
   if (!process.env.NODE_SECURE_TOKEN) {
+    const varEnvName = kleur.yellow().bold("NODE_SECURE_TOKEN");
+
     console.log(
-      kleur.white().bold(
-        `\n ${kleur.yellow().bold(`Environment variable ${"\"NODE_SECURE_TOKEN\""} is missing.`)}`
-      )
+      kleur.red().bold(`Environment variable ${varEnvName} is missing!\n`)
     );
   }
 }
