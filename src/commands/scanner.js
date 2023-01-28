@@ -6,15 +6,13 @@ import events from "events";
 // Import Third-party Dependencies
 import kleur from "kleur";
 import filenamify from "filenamify";
-import Spinner from "@topcli/spinner";
+import { Spinner } from "@topcli/spinner";
 import ms from "ms";
 import * as i18n from "@nodesecure/i18n";
 import * as scanner from "@nodesecure/scanner";
 
 // Import Internal Dependencies
 import * as http from "./http.js";
-
-Spinner.DEFAULT_SPINNER = "dots";
 
 export async function auto(packageName, opts) {
   const keep = Boolean(opts.keep);
@@ -44,31 +42,33 @@ export async function auto(packageName, opts) {
 }
 
 export async function cwd(opts) {
-  const { depth: maxDepth = 4, output, nolock, full, vulnerabilityStrategy } = opts;
+  const {
+    depth: maxDepth = 4, output, nolock, full, vulnerabilityStrategy, silent
+  } = opts;
 
   const payload = await scanner.cwd(
     process.cwd(),
     { maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy },
-    initLogger()
+    initLogger(void 0, !silent)
   );
 
   return await logAndWrite(payload, output);
 }
 
 export async function from(packageName, opts) {
-  const { depth: maxDepth = 4, output } = opts;
+  const { depth: maxDepth = 4, output, silent } = opts;
 
-  const payload = await scanner.from(packageName, { maxDepth }, initLogger(packageName));
+  const payload = await scanner.from(packageName, { maxDepth }, initLogger(packageName, !silent));
 
   return await logAndWrite(payload, output);
 }
 
-function initLogger(packageName) {
+function initLogger(packageName, verbose = true) {
   const spinner = {
-    walkTree: new Spinner(),
-    tarball: new Spinner(),
-    registry: new Spinner(),
-    fetchManifest: new Spinner(),
+    walkTree: new Spinner({ verbose }),
+    tarball: new Spinner({ verbose }),
+    registry: new Spinner({ verbose }),
+    fetchManifest: new Spinner({ verbose }),
     i18n: {
       start: {
         fetchManifest: "cli.commands.from.searching",
@@ -104,6 +104,7 @@ function initLogger(packageName) {
         .start(kleur.white().bold(i18n.getToken(spinner.i18n.start[eventName])));
     }
   });
+
   logger.on("tick", (eventName) => {
     if (!(eventName in spinner) || eventName === "walkTree") {
       return;
@@ -112,6 +113,7 @@ function initLogger(packageName) {
     const stats = kleur.gray().bold(`[${kleur.yellow().bold(logger.count(eventName))}/${logger.count("walkTree")}]`);
     spinner[eventName].text = kleur.white().bold(`${i18n.getToken(spinner.i18n.tick[eventName])} ${stats}`);
   });
+
   logger.on("end", (eventName) => {
     if (!(eventName in spinner)) {
       return;
