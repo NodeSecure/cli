@@ -14,7 +14,7 @@ function separatorLine() {
   return grey("-".repeat(80));
 }
 
-async function getCurrentRepository() {
+export async function getCurrentRepository() {
   // eslint-disable-next-line no-sync
   const config = ini.parse(fs.readFileSync(".git/config", "utf-8"));
   if (!config) {
@@ -48,9 +48,9 @@ async function getCurrentRepository() {
     process.exit();
   }
 
-  const pkg = originMetadata.url.split(":")[1].split(".")[0];
+  const [, pkg] = originMetadata.url.match(/github\.com(.+)\.git/);
 
-  return pkg;
+  return pkg.slice(1);
 }
 
 export async function main(repo) {
