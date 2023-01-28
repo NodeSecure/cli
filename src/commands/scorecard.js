@@ -14,7 +14,7 @@ function separatorLine() {
   return grey("-".repeat(80));
 }
 
-export async function getCurrentRepository() {
+export function getCurrentRepository() {
   // eslint-disable-next-line no-sync
   const config = ini.parse(fs.readFileSync(".git/config", "utf-8"));
   if (!config) {
@@ -54,7 +54,7 @@ export async function getCurrentRepository() {
 }
 
 export async function main(repo) {
-  const repository = repo ?? await getCurrentRepository();
+  const repository = repo ?? getCurrentRepository();
   let data;
 
   try {

@@ -1,6 +1,4 @@
 // Import Node.js Dependencies
-import { fileURLToPath } from "node:url";
-import path from "node:path";
 import { fork } from "node:child_process";
 import { createInterface } from "node:readline";
 
@@ -10,14 +8,8 @@ import { MockAgent, setGlobalDispatcher } from "undici";
 // Import Internal Dependencies
 import { getCurrentRepository } from "../../src/commands/scorecard.js";
 
-// CONSTANTS
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const kScorecardPath = path.join(__dirname, "..", "process", "scorecard.js");
-const kOpenSSFScorecardRestApi = "https://api.securityscorecards.dev";
-// const kDefaultPlatform = "github.com";
-
-async function getChildProcess(options) {
-  const packageName = options.packageName || await getCurrentRepository();
+function getChildProcess(options) {
+  const packageName = options.packageName || getCurrentRepository();
   const apiReturns404 = Boolean(options.api?.isUnknown);
   const mockPkgName = apiReturns404 ? null : packageName;
   const mockOptions = options.api?.baseUrl ? buildOptions(mockPkgName, options.api?.baseUrl) : null;
@@ -33,7 +25,7 @@ async function getChildProcess(options) {
 }
 
 export async function forkAndGetLines(options) {
-  const child = await getChildProcess(options);
+  const child = getChildProcess(options);
   const rStream = createInterface(child.stdout);
   const lines = [];
 
@@ -93,7 +85,7 @@ function buildOptions(pkgName, baseUrl) {
           {
             name: "Maintained",
             score: 10,
-            reason: "nananinanana"
+            reason: "Package is maintained"
           }
         ]
       }
