@@ -80,7 +80,7 @@ prog
 
 prog
   .command("scorecard [repository]")
-  .describe("TODO")
+  .describe(i18n.getToken("cli.commands.scorecard.desc"))
   .action(commands.scorecard.main);
 
 prog
