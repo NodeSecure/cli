@@ -15,9 +15,17 @@ export function getExpectedScorecardLines(pkgName, body) {
     ...startOfLines
   ];
 
+  function normalizeScore(score) {
+    if (!score || score < 0) {
+      return 0;
+    }
+
+    return score;
+  }
+
   for (const { name, score, reason } of checks) {
     const reasonLines = reason.split("\n");
-    const lines = [mockScorecardCliLine(name, score), ...reasonLines, ""];
+    const lines = [mockScorecardCliLine(name, normalizeScore(score)), ...reasonLines, ""];
 
     expectedLines.push(...lines);
   }
@@ -26,7 +34,7 @@ export function getExpectedScorecardLines(pkgName, body) {
 }
 
 function mockScorecardCliLine(str, rawValue) {
-  if (!rawValue) {
+  if (typeof rawValue === "undefined") {
     return str;
   }
 

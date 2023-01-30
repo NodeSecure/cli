@@ -43,12 +43,7 @@ function getMockApiOptions(pkgName, options) {
   const defaultBody = {
     date: "2222-12-31",
     repo: {
-      name: `github.com/${pkgName}`,
-      commit: "f4843b4fd9a35f187c931e7efe61ad17c94fe67a"
-    },
-    scorecard: {
-      version: "v4.8.0-81-g28b116f",
-      commit: "28b116f1a79f548b3b3bd595d8e379d0b7cadeaf"
+      name: `github.com/${pkgName}`
     },
     score: 5.2,
     checks: [

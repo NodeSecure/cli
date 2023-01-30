@@ -17,15 +17,6 @@ function separatorLine() {
 export function getCurrentRepository() {
   // eslint-disable-next-line no-sync
   const config = ini.parse(fs.readFileSync(".git/config", "utf-8"));
-  if (!config) {
-    console.log(
-      kleur
-        .white()
-        .bold(white().bold("CWD is not git initialized."))
-    );
-
-    process.exit();
-  }
 
   const originMetadata = config["remote \"origin\""];
   if (!originMetadata) {
