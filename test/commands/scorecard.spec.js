@@ -6,7 +6,7 @@ import path from "node:path";
 import test from "tape";
 
 // Import Internal Dependencies
-import { forkAndGetLines } from "../helpers/cliCommandRunner.js";
+import { initCliRunner } from "../helpers/cliCommandRunner.js";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -15,53 +15,57 @@ const kProcessPath = path.join(kProcessDir, "scorecard.js");
 const kOpenSSFScorecardRestApi = "https://api.securityscorecards.dev";
 
 test("scorecard should display fastify scorecard", async(tape) => {
-  const expectedLines = [
-    "",
-    "                                 OSSF Scorecard",
-    "",
-    "Repository                                                       fastify/fastify",
-    "Scan at                                                               2222-12-31",
-    "Score                                                                        5.2",
-    "--------------------------------------------------------------------------------",
-    "Maintained                                                                    10",
-    "Package is maintained",
-    ""
-  ];
-
-  // TODO: create a `buildMockBody()`
+  const pkgName = "fastify/fastissssssssssssssfy";
   const mockBody = {
-    body: {
-      date: "2222-12-31",
-      repo: {
-        name: "github.com/fastify/fastify",
-        commit: "f4843b4fd9a35f187c931e7efe61ad17c94fe67a"
+    date: "2222-12-31",
+    repo: {
+      name: `github.com/${pkgName}`,
+      commit: "f4843b4fd9a35f187c931e7efe61ad17c94fe67a"
+    },
+    scorecard: {
+      version: "v4.8.0-81-g28b116f",
+      commit: "28b116f1a79f548b3b3bd595d8e379d0b7cadeaf"
+    },
+    score: 5.2,
+    checks: [
+      {
+        name: "Maintained",
+        score: 5.5,
+        reason: "Package is maintassssssssssssssined"
       },
-      scorecard: {
-        version: "v4.8.0-81-g28b116f",
-        commit: "28b116f1a79f548b3b3bd595d8e379d0b7cadeaf"
+      {
+        name: "2",
+        score: 10,
+        reason: `Package is maint2d
+Package is maintazzzzzzzzzzzzzzzzzzzined`
       },
-      score: 5.2,
-      checks: [
-        {
-          name: "Maintained",
-          score: 10,
-          reason: "Package is maintained"
-        }
-      ]
+      {
+        name: "3",
+        score: 1,
+        reason: "Package is maintas3ined"
+      },
+      {
+        name: "sqdc",
+        score: 0,
+        reason: "Package is not maint4ned"
+      }
+    ]
+  };
+  const scorecardCliOptions = {
+    path: kProcessPath,
+    packageName: pkgName,
+    api: {
+      baseUrl: kOpenSSFScorecardRestApi,
+      mustReturn404: false,
+      response: { body: mockBody }
     }
   };
 
-  const lines = await forkAndGetLines({
-    path: kProcessPath,
-    packageName: "fastify/fastify",
-    api: {
-      baseUrl: kOpenSSFScorecardRestApi,
-      isUnknown: false,
-      body: mockBody
-    }
-  });
+  const { forkAndGetLines: processScorecardAndParseStdout, mockApiOptions } = initCliRunner(scorecardCliOptions);
+  const expectedLines = getExpectedScorecardLines(pkgName, mockApiOptions.response.body);
+  const givenLines = await processScorecardAndParseStdout();
 
-  tape.deepEqual(lines, expectedLines, `lines should be ${expectedLines}`);
+  tape.deepEqual(givenLines, expectedLines, `lines should be ${expectedLines}`);
   tape.end();
 });
 

@@ -8,34 +8,71 @@ import { MockAgent, setGlobalDispatcher } from "undici";
 // Import Internal Dependencies
 import { getCurrentRepository } from "../../src/commands/scorecard.js";
 
-function getChildProcess(options) {
-  const packageName = options.packageName || getCurrentRepository();
-  const apiReturns404 = Boolean(options.api?.isUnknown);
-  const mockPkgName = apiReturns404 ? null : packageName;
-  const mockOptions = options.api?.baseUrl ? buildOptions(mockPkgName, options.api?.baseUrl) : null;
-  const args = packageName ? [packageName] : [];
-
-  const childProcess = fork(options.path, args, {
+function initChildProcess({ path, args, mockApiOptions }) {
+  const childProcess = fork(path, args, {
     stdio: ["ignore", "pipe", "pipe", "ipc"]
   });
-
-  childProcess.send(mockOptions);
+  childProcess.send(mockApiOptions);
 
   return childProcess;
 }
 
-export async function forkAndGetLines(options) {
-  const child = getChildProcess(options);
-  const rStream = createInterface(child.stdout);
+async function forkAndGetLines(options) {
+  const childProcess = initChildProcess(options);
+  const rStream = createInterface(childProcess.stdout);
   const lines = [];
 
   for await (const line of rStream) {
     lines.push(line);
   }
 
-  child.kill();
+  if (!options.keepAlive) {
+    childProcess.kill();
+  }
 
   return lines;
+}
+
+function getMockApiOptions(pkgName, options) {
+  // use faker.js
+  const defaultIntercept = {
+    path: `/projects/github.com/${pkgName}`,
+    method: "GET"
+  };
+
+  const defaultBody = {
+    date: "2222-12-31",
+    repo: {
+      name: `github.com/${pkgName}`,
+      commit: "f4843b4fd9a35f187c931e7efe61ad17c94fe67a"
+    },
+    scorecard: {
+      version: "v4.8.0-81-g28b116f",
+      commit: "28b116f1a79f548b3b3bd595d8e379d0b7cadeaf"
+    },
+    score: 5.2,
+    checks: [
+      {
+        name: "Maintained",
+        score: 10,
+        reason: "Package is maintained"
+      }
+    ]
+  };
+
+  const { response, intercept: customIntercept, baseUrl } = options;
+  const intercept = customIntercept || defaultIntercept;
+  const body = response?.body ?? defaultBody;
+  const status = response?.status ?? 200;
+
+  return {
+    baseUrl,
+    intercept,
+    response: {
+      status,
+      body
+    }
+  };
 }
 
 export async function runCliCommand(cb, args = []) {
@@ -61,34 +98,36 @@ export async function runCliCommand(cb, args = []) {
   });
 }
 
-function buildOptions(pkgName, baseUrl) {
-  return {
-    baseUrl,
-    intercept: {
-      path: `/projects/github.com/${pkgName}`,
-      method: "GET"
-    },
-    response: {
-      status: 200,
-      body: {
-        date: "2222-12-31",
-        repo: {
-          name: `github.com/${pkgName}`,
-          commit: "f4843b4fd9a35f187c931e7efe61ad17c94fe67a"
-        },
-        scorecard: {
-          version: "v4.8.0-81-g28b116f",
-          commit: "28b116f1a79f548b3b3bd595d8e379d0b7cadeaf"
-        },
-        score: 5.2,
-        checks: [
-          {
-            name: "Maintained",
-            score: 10,
-            reason: "Package is maintained"
-          }
-        ]
-      }
+export function initCliRunner(options) {
+  if (typeof options.path !== "string") {
+    throw new Error(`CLI_COMMAND_RUNNER_ERROR: Needs 'options.path' value to fork a file (given: ${options.path}).`);
+  }
+
+  const packageName = options.packageName || getCurrentRepository();
+  const args = packageName ? [packageName] : [];
+  const apiOptions = options.api;
+
+  let mockApiOptions = null;
+  if (apiOptions) {
+    const { mustReturn404, baseUrl } = apiOptions;
+    const mockPkgName = mustReturn404 ? null : packageName;
+
+    if (!baseUrl) {
+      throw new Error("CLI_COMMAND_RUNNER_ERROR: A dummy response API requires value 'options.api.baseUrl'.");
     }
+
+    mockApiOptions = getMockApiOptions(mockPkgName, apiOptions);
+  }
+
+  const forkOptions = {
+    path: options.path,
+    args,
+    mockApiOptions
   };
+  const result = {
+    forkAndGetLines: forkAndGetLines.bind(null, forkOptions),
+    mockApiOptions
+  };
+
+  return result;
 }
