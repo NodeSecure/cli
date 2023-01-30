@@ -104,8 +104,8 @@ export function initCliRunner(options) {
 
   let mockApiOptions = null;
   if (apiOptions) {
-    const { mustReturn404, baseUrl } = apiOptions;
-    const mockPkgName = mustReturn404 ? null : packageName;
+    const { shouldFail, baseUrl } = apiOptions;
+    const mockPkgName = shouldFail ? null : packageName;
 
     if (!baseUrl) {
       throw new Error("CLI_COMMAND_RUNNER_ERROR: A dummy response API requires value 'options.api.baseUrl'.");

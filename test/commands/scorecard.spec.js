@@ -37,7 +37,7 @@ test("scorecard should display fastify scorecard", async(tape) => {
     packageName: pkgName,
     api: {
       baseUrl: kOpenSSFScorecardRestApi,
-      mustReturn404: false,
+      shouldFail: false,
       response: { body: mockBody }
     }
   };
@@ -57,7 +57,7 @@ test("should not display scorecard for unknown repository", async(tape) => {
     packageName,
     api: {
       baseUrl: kOpenSSFScorecardRestApi,
-      mustReturn404: true
+      shouldFail: true
     }
   };
 
@@ -97,7 +97,7 @@ test("scorecard should display fastify scorecard", async(tape) => {
     packageName: pkgName,
     api: {
       baseUrl: kOpenSSFScorecardRestApi,
-      mustReturn404: false,
+      shouldFail: false,
       response: { body: mockBody }
     }
   };
