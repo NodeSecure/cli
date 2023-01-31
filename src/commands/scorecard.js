@@ -14,10 +14,6 @@ function separatorLine() {
   return grey("-".repeat(80));
 }
 
-export function normalizeScore(score) {
-  return white().bold(!score || score < 0 ? 0 : score);
-}
-
 export function getCurrentRepository() {
   const result = {
     ok: true,

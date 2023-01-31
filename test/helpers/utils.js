@@ -1,5 +1,3 @@
-import { normalizeScore } from "../../src/commands/scorecard";
-
 export function getExpectedScorecardLines(pkgName, body) {
   const { date, score: scorePkg, checks } = body;
 
@@ -19,7 +17,7 @@ export function getExpectedScorecardLines(pkgName, body) {
 
   for (const { name, score, reason } of checks) {
     const reasonLines = reason.split("\n");
-    const lines = [mockScorecardCliLine(name, normalizeScore(score)), ...reasonLines, ""];
+    const lines = [mockScorecardCliLine(name, !score || score < 0 ? 0 : score), ...reasonLines, ""];
 
     expectedLines.push(...lines);
   }

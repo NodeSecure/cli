@@ -72,6 +72,6 @@ test("should not display scorecard for unknown repository", async(tape) => {
 });
 
 test("should retrieve repository whithin git config", async(tape) => {
-  tape.equal(getCurrentRepository(), "NodeSecure/cli");
+  tape.deepEqual(getCurrentRepository(), { ok: true, reason: null, value: "NodeSecure/cli" });
   tape.end();
 });

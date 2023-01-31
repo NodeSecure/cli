@@ -8,17 +8,13 @@ import { MockAgent, setGlobalDispatcher } from "undici";
 // Import Internal Dependencies
 import { getCurrentRepository } from "../../src/commands/scorecard.js";
 
-function initChildProcess({ path, args, mockApiOptions }) {
+async function forkAndGetLines(options) {
+  const { path, args, mockApiOptions } = options;
   const childProcess = fork(path, args, {
     stdio: ["ignore", "pipe", "pipe", "ipc"]
   });
   childProcess.send(mockApiOptions);
 
-  return childProcess;
-}
-
-async function forkAndGetLines(options) {
-  const childProcess = initChildProcess(options);
   const rStream = createInterface(childProcess.stdout);
   const lines = [];
 
@@ -70,26 +66,20 @@ function getMockApiOptions(pkgName, options) {
   };
 }
 
-export async function runCliCommand(cb, args = []) {
+export function runCliCommand(cb, args = []) {
   process.on("message", async(mockApi) => {
     if (!mockApi) {
-      await cb(...args);
-
-      process.exit(0);
+      cb(...args).then(() => process.exit(0));
     }
 
     const kScorecardAgent = new MockAgent();
     const kScorecardPool = kScorecardAgent.get(mockApi.baseUrl);
     kScorecardAgent.disableNetConnect();
 
-    const request = mockApi.intercept;
-    const response = mockApi.response;
-    kScorecardPool.intercept(request).reply(response.status, () => response.body);
+    kScorecardPool.intercept(mockApi.intercept).reply(mockApi.response.status, () => mockApi.response.body);
     setGlobalDispatcher(kScorecardAgent);
 
-    await cb(...args);
-
-    process.exit(0);
+    cb(...args).then(() => process.exit(0));
   });
 }
 
