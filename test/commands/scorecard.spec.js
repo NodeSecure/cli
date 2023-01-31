@@ -42,9 +42,9 @@ test("scorecard should display fastify scorecard", async(tape) => {
     }
   };
 
-  const { forkAndGetLines, mockApiOptions } = initCliRunner(scorecardCliOptions);
+  const { mockAndGetLines, mockApiOptions } = initCliRunner(scorecardCliOptions);
   const expectedLines = getExpectedScorecardLines(pkgName, mockApiOptions.response.body);
-  const givenLines = await forkAndGetLines();
+  const givenLines = await mockAndGetLines();
 
   tape.deepEqual(givenLines, expectedLines, `lines should be ${expectedLines}`);
   tape.end();
@@ -61,11 +61,11 @@ test("should not display scorecard for unknown repository", async(tape) => {
     }
   };
 
-  const { forkAndGetLines } = initCliRunner(scorecardCliOptions);
+  const { mockAndGetLines } = initCliRunner(scorecardCliOptions);
   const expectedLines = [
-    "unkown/repository is not part of the OSSF Scorecard BigQuery public dataset."
+    `${packageName} is not part of the OSSF Scorecard BigQuery public dataset.`
   ];
-  const givenLines = await forkAndGetLines();
+  const givenLines = await mockAndGetLines();
 
   tape.deepEqual(givenLines, expectedLines, `lines should be ${expectedLines}`);
   tape.end();

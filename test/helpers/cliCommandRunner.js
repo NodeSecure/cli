@@ -8,25 +8,28 @@ import { MockAgent, setGlobalDispatcher } from "undici";
 // Import Internal Dependencies
 import { getCurrentRepository } from "../../src/commands/scorecard.js";
 
-async function forkAndGetLines(options) {
+function initMockCli(options) {
   const { path, args, mockApiOptions } = options;
-  const childProcess = fork(path, args, {
-    stdio: ["ignore", "pipe", "pipe", "ipc"]
-  });
-  childProcess.send(mockApiOptions);
 
-  const rStream = createInterface(childProcess.stdout);
-  const lines = [];
+  return async() => {
+    const childProcess = fork(path, args, {
+      stdio: ["ignore", "pipe", "pipe", "ipc"]
+    });
+    childProcess.send(mockApiOptions);
 
-  for await (const line of rStream) {
-    lines.push(line);
-  }
+    const rStream = createInterface(childProcess.stdout);
+    const lines = [];
 
-  if (!options.keepAlive) {
-    childProcess.kill();
-  }
+    for await (const line of rStream) {
+      lines.push(line);
+    }
 
-  return lines;
+    if (!options.keepAlive) {
+      childProcess.kill();
+    }
+
+    return lines;
+  };
 }
 
 function getMockApiOptions(pkgName, options) {
@@ -110,7 +113,7 @@ export function initCliRunner(options) {
     mockApiOptions
   };
   const result = {
-    forkAndGetLines: forkAndGetLines.bind(null, forkOptions),
+    mockAndGetLines: initMockCli(forkOptions),
     mockApiOptions
   };
 
