@@ -98,7 +98,7 @@ export function initCliRunner(options) {
     throw new Error(`CLI_COMMAND_RUNNER_ERROR: Needs 'options.path' value to fork a file (given: ${options.path}).`);
   }
 
-  const packageName = options.packageName || getCurrentRepository();
+  const packageName = options.packageName ?? getCurrentRepository();
   const args = packageName ? [packageName] : [];
   const apiOptions = options.api;
 

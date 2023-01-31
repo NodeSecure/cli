@@ -1,5 +1,5 @@
 // Import Node.js Dependencies
-import fs from "fs";
+import fs from "node:fs";
 
 // Import Third-party Dependencies
 import cliui from "@topcli/cliui";
@@ -14,40 +14,55 @@ function separatorLine() {
   return grey("-".repeat(80));
 }
 
+export function normalizeScore(score) {
+  return white().bold(!score || score < 0 ? 0 : score);
+}
+
 export function getCurrentRepository() {
+  const result = {
+    ok: true,
+    reason: null,
+    value: null
+  };
   // eslint-disable-next-line no-sync
   const config = ini.parse(fs.readFileSync(".git/config", "utf-8"));
 
   const originMetadata = config["remote \"origin\""];
   if (!originMetadata) {
-    console.log(
-      kleur
-        .white()
-        .bold(white().bold("Cannot find origin remote."))
-    );
+    result.ok = false;
+    result.reason = "Cannot find origin remote.";
 
-    process.exit();
+    return result;
   }
 
   if (!originMetadata.url.includes("github")) {
-    console.log(
-      kleur
-        .white()
-        .bold(white().bold("OSSF Scorecard supports projects hosted on Github only."))
-    );
+    result.ok = false;
+    result.reason = "Cannot find origin remote.";
 
-    process.exit();
+    return result;
   }
 
   const [, pkg] = originMetadata.url.match(/github\.com(.+)\.git/);
+  result.value = pkg.slice(1);
 
-  return pkg.slice(1);
+  return result;
 }
 
 export async function main(repo) {
-  const repository = repo ?? getCurrentRepository();
-  let data;
+  let repository = repo;
+  if (!repository) {
+    const result = getCurrentRepository();
 
+    if (!result.ok) {
+      console.log(white().bold(result.reason));
+
+      process.exit();
+    }
+
+    repository = result.value;
+  }
+
+  let data;
   try {
     data = await scorecard.result(repository);
   }
@@ -58,7 +73,7 @@ export async function main(repo) {
         .bold(white().bold(`${repository} is not part of the OSSF Scorecard BigQuery public dataset.`))
     );
 
-    return;
+    process.exit();
   }
 
   const ui = cliui({ width: 80 });
@@ -79,26 +94,20 @@ export async function main(repo) {
   );
   ui.div(separatorLine());
 
-  function normalizeScore(score) {
-    if (!score || score < 0) {
-      return white().bold(0);
-    }
-
-    return white().bold(score);
-  }
 
   for (const check of data.checks) {
+    const { score, name, reason } = check;
     ui.div(
-      { text: yellow(check.name), width: 77 },
-      { text: normalizeScore(check.score), width: 3, align: "right" }
+      { text: yellow(name), width: 77 },
+      { text: !score || score < 0 ? 0 : score, width: 3, align: "right" }
     );
 
-    if (check.reason) {
+    if (reason) {
       ui.div({ text: check.reason, width: 77, padding: [0, 0, 1, 0] });
     }
   }
 
   console.log(ui.toString());
 
-  return;
+  process.exit();
 }

@@ -1,3 +1,5 @@
+import { normalizeScore } from "../../src/commands/scorecard";
+
 export function getExpectedScorecardLines(pkgName, body) {
   const { date, score: scorePkg, checks } = body;
 
@@ -14,14 +16,6 @@ export function getExpectedScorecardLines(pkgName, body) {
   const expectedLines = [
     ...startOfLines
   ];
-
-  function normalizeScore(score) {
-    if (!score || score < 0) {
-      return 0;
-    }
-
-    return score;
-  }
 
   for (const { name, score, reason } of checks) {
     const reasonLines = reason.split("\n");
