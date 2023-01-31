@@ -1,7 +1,7 @@
 export function getExpectedScorecardLines(pkgName, body) {
   const { date, score: scorePkg, checks } = body;
 
-  const startOfLines = [
+  const expectedLines = [
     "",
     "                                 OSSF Scorecard",
     "",
@@ -9,10 +9,6 @@ export function getExpectedScorecardLines(pkgName, body) {
     mockScorecardCliLine("Scan at", date),
     mockScorecardCliLine("Score", scorePkg),
     "--------------------------------------------------------------------------------"
-  ];
-
-  const expectedLines = [
-    ...startOfLines
   ];
 
   for (const { name, score, reason } of checks) {
