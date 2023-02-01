@@ -22,7 +22,7 @@ unique licenses:    MIT
 
    ext    files                                   minified files
    .js    index.js                                index.min.js
-  ${".json   package.json".padEnd(48)}
+  .json   package.json
 
 --------------------------------------------------------------------------------
                          Required dependency and files
@@ -56,7 +56,7 @@ tap.test("should execute verify command", async(tape) => {
   let i = 0;
   for await (const line of rStream) {
     const expectedLine = expectedLines[i++];
-    tape.equal(stripAnsi(line), expectedLine, `should be ${expectedLine}`);
+    tape.equal(stripAnsi(line).trimEnd(), expectedLine, `should be ${expectedLine}`);
   }
 
   tape.end();
