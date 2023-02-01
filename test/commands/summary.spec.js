@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 // Import Third-party Dependencies
-import tap from "tape";
+import tap from "tap";
 import splitByLine from "split2";
 import stripAnsi from "strip-ansi";
 

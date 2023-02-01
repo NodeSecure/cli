@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 
 // Import Third-party Dependencies
-import tap from "tape";
+import tap from "tap";
 import { get } from "@myunisoft/httpie";
 import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
