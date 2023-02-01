@@ -73,27 +73,33 @@ tap.test("should not display scorecard for unknown repository", async(tape) => {
 });
 
 tap.test("should retrieve repository whithin git config", async(tape) => {
-  tape.same(getCurrentRepository(), { ok: true, reason: null, value: "NodeSecure/cli" });
+  const testingModule = await esmock("../../src/commands/scorecard.js", {
+    fs: { readFileSync: () => `
+[remote "origin"]
+  url = git@github.com:myawesome/repository.git
+  fetch = +refs/heads/*:refs/remotes/origin/*
+` } });
+  tape.same(testingModule.getCurrentRepository(), { ok: true, reason: null, value: "myawesome/repository" });
   tape.end();
 });
 
 tap.test("should not find origin remote", async(tape) => {
-  const myModule = await esmock("../../src/commands/scorecard.js", {
+  const testingModule = await esmock("../../src/commands/scorecard.js", {
     fs: { readFileSync: () => "just one line" }
   });
-  const result = myModule.getCurrentRepository();
+  const result = testingModule.getCurrentRepository();
   tape.equal(result.ok, false);
   tape.equal(result.reason, "Cannot find origin remote.");
 });
 
 tap.test("should support github only", async(tape) => {
-  const myModule = await esmock("../../src/commands/scorecard.js", {
+  const testingModule = await esmock("../../src/commands/scorecard.js", {
     fs: { readFileSync: () => `
 [remote "origin"]
   url = git@gitlab.com:gitlab/repository.git
   fetch = +refs/heads/*:refs/remotes/origin/*
 ` } });
-  const result = myModule.getCurrentRepository();
+  const result = testingModule.getCurrentRepository();
   tape.equal(result.ok, false);
   tape.equal(result.reason, "OSSF Scorecard supports projects hosted on Github only.");
 });
