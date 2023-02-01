@@ -70,17 +70,15 @@ function getMockApiOptions(pkgName, options) {
 }
 
 export function runCliCommand(cb, args = []) {
-  process.on("message", async(mockApi) => {
-    if (!mockApi) {
-      cb(...args).then(() => process.exit(0));
+  process.on("message", (mockApi) => {
+    if (mockApi) {
+      const scorecardAgent = new MockAgent();
+      const scorecardPool = scorecardAgent.get(mockApi.baseUrl);
+
+      scorecardAgent.disableNetConnect();
+      scorecardPool.intercept(mockApi.intercept).reply(mockApi.response.status, () => mockApi.response.body);
+      setGlobalDispatcher(scorecardAgent);
     }
-
-    const kScorecardAgent = new MockAgent();
-    const kScorecardPool = kScorecardAgent.get(mockApi.baseUrl);
-    kScorecardAgent.disableNetConnect();
-
-    kScorecardPool.intercept(mockApi.intercept).reply(mockApi.response.status, () => mockApi.response.body);
-    setGlobalDispatcher(kScorecardAgent);
 
     cb(...args).then(() => process.exit(0));
   });
