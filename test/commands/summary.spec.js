@@ -7,14 +7,15 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 // Import Third-party Dependencies
-import test from "tape";
+import tap from "tape";
 import splitByLine from "split2";
+import stripAnsi from "strip-ansi";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kProcessDir = path.join(__dirname, "..", "process");
 
-test("summary should execute summary command on fixtures 'result-test1.json'", async(tape) => {
+tap.test("summary should execute summary command on fixtures 'result-test1.json'", async(tape) => {
   const lines = [
     /Global Stats: express.*$/,
     /.*/,
@@ -44,7 +45,7 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
     const regexp = lines.shift();
 
     tape.ok(regexp, "we are expecting this line");
-    tape.ok(regexp.test(line), `line matches ${regexp}`);
+    tape.ok(regexp.test(stripAnsi(line)), `line matches ${regexp}`);
   }
 
   tape.end();

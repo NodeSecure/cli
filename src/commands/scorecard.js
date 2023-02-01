@@ -33,7 +33,7 @@ export function getCurrentRepository() {
 
   if (!originMetadata.url.includes("github")) {
     result.ok = false;
-    result.reason = "Cannot find origin remote.";
+    result.reason = "OSSF Scorecard supports projects hosted on Github only.";
 
     return result;
   }

@@ -4,6 +4,7 @@ import { createInterface } from "node:readline";
 
 // Import Third-party Dependencies
 import { MockAgent, setGlobalDispatcher } from "undici";
+import stripAnsi from "strip-ansi";
 
 // Import Internal Dependencies
 import { getCurrentRepository } from "../../src/commands/scorecard.js";
@@ -21,7 +22,7 @@ function initMockCli(options) {
     const lines = [];
 
     for await (const line of rStream) {
-      lines.push(line);
+      lines.push(stripAnsi(line));
     }
 
     if (!options.keepAlive) {

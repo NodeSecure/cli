@@ -3,12 +3,13 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 // Import Third-party Dependencies
-import test from "tape";
+import tap from "tap";
+import esmock from "esmock";
 
 // Import Internal Dependencies
 import { initCliRunner } from "../helpers/cliCommandRunner.js";
-import { getExpectedScorecardLines } from "../helpers/utils.js";
 import { getCurrentRepository } from "../../src/commands/scorecard.js";
+import { getExpectedScorecardLines } from "../helpers/utils.js";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -16,7 +17,7 @@ const kProcessDir = path.join(__dirname, "..", "process");
 const kProcessPath = path.join(kProcessDir, "scorecard.js");
 const kOpenSSFScorecardRestApi = "https://api.securityscorecards.dev";
 
-test("scorecard should display fastify scorecard", async(tape) => {
+tap.test("scorecard should display fastify scorecard", async(tape) => {
   const pkgName = "fastify/fastify";
   const mockBody = {
     date: "2222-12-31",
@@ -46,11 +47,11 @@ test("scorecard should display fastify scorecard", async(tape) => {
   const expectedLines = getExpectedScorecardLines(pkgName, mockApiOptions.response.body);
   const givenLines = await mockAndGetLines();
 
-  tape.deepEqual(givenLines, expectedLines, `lines should be ${expectedLines}`);
+  tape.same(givenLines, expectedLines, `lines should be ${expectedLines}`);
   tape.end();
 });
 
-test("should not display scorecard for unknown repository", async(tape) => {
+tap.test("should not display scorecard for unknown repository", async(tape) => {
   const packageName = "unkown/repository";
   const scorecardCliOptions = {
     path: kProcessPath,
@@ -67,11 +68,32 @@ test("should not display scorecard for unknown repository", async(tape) => {
   ];
   const givenLines = await mockAndGetLines();
 
-  tape.deepEqual(givenLines, expectedLines, `lines should be ${expectedLines}`);
+  tape.same(givenLines, expectedLines, `lines should be ${expectedLines}`);
   tape.end();
 });
 
-test("should retrieve repository whithin git config", async(tape) => {
-  tape.deepEqual(getCurrentRepository(), { ok: true, reason: null, value: "NodeSecure/cli" });
+tap.test("should retrieve repository whithin git config", async(tape) => {
+  tape.same(getCurrentRepository(), { ok: true, reason: null, value: "NodeSecure/cli" });
   tape.end();
+});
+
+tap.test("should not find origin remote", async(tape) => {
+  const myModule = await esmock("../../src/commands/scorecard.js", {
+    fs: { readFileSync: () => "just one line" }
+  });
+  const result = myModule.getCurrentRepository();
+  tape.equal(result.ok, false);
+  tape.equal(result.reason, "Cannot find origin remote.");
+});
+
+tap.test("should support github only", async(tape) => {
+  const myModule = await esmock("../../src/commands/scorecard.js", {
+    fs: { readFileSync: () => `
+[remote "origin"]
+  url = git@gitlab.com:gitlab/repository.git
+  fetch = +refs/heads/*:refs/remotes/origin/*
+` } });
+  const result = myModule.getCurrentRepository();
+  tape.equal(result.ok, false);
+  tape.equal(result.reason, "OSSF Scorecard supports projects hosted on Github only.");
 });

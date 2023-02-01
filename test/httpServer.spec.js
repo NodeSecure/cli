@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 
 // Import Third-party Dependencies
-import test from "tape";
+import tap from "tape";
 import { get } from "@myunisoft/httpie";
 import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
@@ -27,7 +27,7 @@ const httpServer = buildServer(JSON_PATH, {
   openLink: false
 });
 
-test("'/' should return index.html content", async(tape) => {
+tap.test("'/' should return index.html content", async(tape) => {
   const result = await get(HTTP_URL);
 
   tape.equal(result.statusCode, 200);
@@ -42,7 +42,7 @@ test("'/' should return index.html content", async(tape) => {
   tape.end();
 });
 
-test("'/flags' should return the flags list as JSON", async(tape) => {
+tap.test("'/flags' should return the flags list as JSON", async(tape) => {
   const result = await get(new URL("/flags", HTTP_URL));
 
   tape.equal(result.statusCode, 200);
@@ -51,7 +51,7 @@ test("'/flags' should return the flags list as JSON", async(tape) => {
   tape.end();
 });
 
-test("'/flags/description/isGit' should return the isGit HTML description", async(tape) => {
+tap.test("'/flags/description/isGit' should return the isGit HTML description", async(tape) => {
   const result = await get(new URL("/flags/description/isGit", HTTP_URL));
 
   tape.equal(result.statusCode, 200);
@@ -62,7 +62,7 @@ test("'/flags/description/isGit' should return the isGit HTML description", asyn
   tape.end();
 });
 
-test("'/flags/description/foobar' should return a 404 error", async(tape) => {
+tap.test("'/flags/description/foobar' should return a 404 error", async(tape) => {
   tape.plan(2);
 
   try {
@@ -76,7 +76,7 @@ test("'/flags/description/foobar' should return a 404 error", async(tape) => {
   tape.end();
 });
 
-test("'/data' should return the fixture payload we expect", async(tape) => {
+tap.test("'/data' should return the fixture payload we expect", async(tape) => {
   const result = await get(new URL("/data", HTTP_URL));
 
   tape.equal(result.statusCode, 200);
@@ -86,7 +86,7 @@ test("'/data' should return the fixture payload we expect", async(tape) => {
   tape.end();
 });
 
-test("'/bundle/:name/:version' should return the bundle size", async(tape) => {
+tap.test("'/bundle/:name/:version' should return the bundle size", async(tape) => {
   const result = await get(new URL("/bundle/flatstr/1.0.12", HTTP_URL));
 
   tape.equal(result.statusCode, 200);
@@ -94,7 +94,7 @@ test("'/bundle/:name/:version' should return the bundle size", async(tape) => {
   checkBundleResponse(tape, result.data);
 });
 
-test("'/bundle/:name/:version' should return an error if it fails", async(tape) => {
+tap.test("'/bundle/:name/:version' should return an error if it fails", async(tape) => {
   tape.plan(2);
   const wrongVersion = undefined;
 
@@ -109,7 +109,7 @@ test("'/bundle/:name/:version' should return an error if it fails", async(tape) 
   tape.end();
 });
 
-test("'/bundle/:name' should return the bundle size of the last version", async(tape) => {
+tap.test("'/bundle/:name' should return the bundle size of the last version", async(tape) => {
   const result = await get(new URL("/bundle/flatstr", HTTP_URL));
 
   tape.equal(result.statusCode, 200);
@@ -117,7 +117,7 @@ test("'/bundle/:name' should return the bundle size of the last version", async(
   checkBundleResponse(tape, result.data);
 });
 
-test("'/bundle/:name' should return an error if it fails", async(tape) => {
+tap.test("'/bundle/:name' should return an error if it fails", async(tape) => {
   tape.plan(2);
   const wrongPackageName = "br-br-br-brah";
 
@@ -132,7 +132,7 @@ test("'/bundle/:name' should return an error if it fails", async(tape) => {
   tape.end();
 });
 
-test("teardown", (tape) => {
+tap.test("teardown", (tape) => {
   httpServer.server.close();
   tape.end();
 });

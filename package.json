@@ -17,7 +17,7 @@
     "prepublishOnly": "npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
-    "test-only": "cross-env tape 'test/**/*.spec.js'",
+    "test-only": "NODE_OPTIONS=--loader=esmock cross-env tap --test-regex='.spec.js'",
     "coverage": "c8 --all --src ./src -r html npm run test"
   },
   "files": [
@@ -64,10 +64,12 @@
     "cross-env": "^7.0.3",
     "esbuild": "^0.17.3",
     "eslint": "^8.27.0",
+    "esmock": "^2.1.0",
     "pkg-ok": "^3.0.0",
     "pretty-bytes": "^5.6.0",
     "split2": "^4.1.0",
-    "tape": "^5.6.1"
+    "strip-ansi": "^7.0.1",
+    "tap": "^16.3.4"
   },
   "dependencies": {
     "@nodesecure/documentation-ui": "^1.2.1",

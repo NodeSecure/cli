@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -8,8 +9,9 @@ import path from "node:path";
 
 
 // Import Third-party Dependencies
-import test from "tape";
+import tap from "tap";
 import splitByLine from "split2";
+import stripAnsi from "strip-ansi";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -20,7 +22,7 @@ unique licenses:    MIT
 
    ext    files                                   minified files
    .js    index.js                                index.min.js
-  .json   package.json
+  ${".json   package.json".padEnd(48)}
 
 --------------------------------------------------------------------------------
                          Required dependency and files
@@ -41,7 +43,7 @@ index.js                       suspicious-literal                  [4:1] - [4:8]
                                5.268656716417911
 --------------------------------------------------------------------------------`.split("\n");
 
-test("should execute verify command", async(tape) => {
+tap.test("should execute verify command", async(tape) => {
   tape.plan(expectedLines.length);
 
   const child = spawn(process.execPath, [path.join(kProcessDir, "verify.js")], {
@@ -54,7 +56,7 @@ test("should execute verify command", async(tape) => {
   let i = 0;
   for await (const line of rStream) {
     const expectedLine = expectedLines[i++];
-    tape.equal(line, expectedLine, `should be ${expectedLine}`);
+    tape.equal(stripAnsi(line), expectedLine, `should be ${expectedLine}`);
   }
 
   tape.end();
