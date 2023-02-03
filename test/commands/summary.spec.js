@@ -2,13 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Import Node.js Dependencies
-import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 // Import Third-party Dependencies
 import tap from "tap";
-import splitByLine from "split2";
 import stripAnsi from "strip-ansi";
 
 // Import Internal Dependencies
