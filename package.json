@@ -17,8 +17,7 @@
     "prepublishOnly": "npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
-    "test-only": "NODE_OPTIONS=--loader=esmock cross-env tap --test-regex='.spec.js'",
-    "coverage": "c8 --all --src ./src -r html npm run test"
+    "test-only": "NODE_OPTIONS=--loader=esmock cross-env tap --test-regex='.spec.js' --no-check-coverage"
   },
   "files": [
     "bin",
@@ -55,12 +54,12 @@
   },
   "homepage": "https://github.com/NodeSecure/cli#readme",
   "devDependencies": {
+    "@istanbuljs/esm-loader-hook": "^0.2.0",
     "@myunisoft/httpie": "^1.9.2",
     "@nodesecure/eslint-config": "^1.5.0",
     "@nodesecure/size-satisfies": "^1.0.2",
     "@nodesecure/vis-network": "^1.4.0",
     "@types/node": "^18.11.9",
-    "c8": "^7.12.0",
     "cross-env": "^7.0.3",
     "esbuild": "^0.17.3",
     "eslint": "^8.27.0",
@@ -96,5 +95,11 @@
     "semver": "^7.3.8",
     "sirv": "^2.0.2",
     "zup": "0.0.1"
+  },
+  "tap": {
+    "node-arg": [
+      "--experimental-loader",
+      "@istanbuljs/esm-loader-hook"
+    ]
   }
 }
