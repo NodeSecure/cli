@@ -5,17 +5,16 @@ import path from "node:path";
 // Import Third-party Dependencies
 import tap from "tap";
 import esmock from "esmock";
+import { API_URL } from "@nodesecure/ossf-scorecard-sdk";
 
 // Import Internal Dependencies
 import { initCliRunner } from "../helpers/cliCommandRunner.js";
-import { getCurrentRepository } from "../../src/commands/scorecard.js";
 import { getExpectedScorecardLines } from "../helpers/utils.js";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kProcessDir = path.join(__dirname, "..", "process");
 const kProcessPath = path.join(kProcessDir, "scorecard.js");
-const kOpenSSFScorecardRestApi = "https://api.securityscorecards.dev";
 
 tap.test("scorecard should display fastify scorecard", async(tape) => {
   const pkgName = "fastify/fastify";
@@ -37,7 +36,7 @@ tap.test("scorecard should display fastify scorecard", async(tape) => {
     path: kProcessPath,
     packageName: pkgName,
     api: {
-      baseUrl: kOpenSSFScorecardRestApi,
+      baseUrl: API_URL,
       shouldFail: false,
       response: { body: mockBody }
     }
@@ -57,7 +56,7 @@ tap.test("should not display scorecard for unknown repository", async(tape) => {
     path: kProcessPath,
     packageName,
     api: {
-      baseUrl: kOpenSSFScorecardRestApi,
+      baseUrl: API_URL,
       shouldFail: true
     }
   };
