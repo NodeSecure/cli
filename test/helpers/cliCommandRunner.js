@@ -36,7 +36,7 @@ export function prepareProcess(command, args = []) {
       const pool = mockAgent.get(baseUrl);
 
       mockAgent.disableNetConnect();
-      pool.intercept(intercept).reply(response.status, () => undiciMockAgentOptions.response.body);
+      pool.intercept(intercept).reply(response.status, () => response.body);
       setGlobalDispatcher(mockAgent);
     }
 
