@@ -11,9 +11,13 @@ import tap from "tap";
 import splitByLine from "split2";
 import stripAnsi from "strip-ansi";
 
+// Import Internal Dependencies
+import { runProcess } from "../helpers/cliCommandRunner.js";
+
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kProcessDir = path.join(__dirname, "..", "process");
+const kProcessPath = path.join(kProcessDir, "summary.js");
 
 tap.test("summary should execute summary command on fixtures 'result-test1.json'", async(tape) => {
   const lines = [
@@ -32,18 +36,13 @@ tap.test("summary should execute summary command on fixtures 'result-test1.json'
   ];
   tape.plan(lines.length * 2);
 
-  const child = spawn(process.execPath, [path.join(kProcessDir, "summary.js")], {
-    cwd: path.join(__dirname, "..", "fixtures"),
-    env: process.env,
-    stdio: ["ignore", "pipe", "pipe"],
-    detached: false
-  });
-  tape.teardown(() => child.kill());
-
-  const rStream = child.stdout.pipe(splitByLine());
-  for await (const line of rStream) {
+  const processOptions = {
+    path: kProcessPath,
+    cwd: path.join(__dirname, "..", "fixtures")
+  };
+  const givenLines = await runProcess(processOptions);
+  for (const line of givenLines) {
     const regexp = lines.shift();
-
     tape.ok(regexp, "we are expecting this line");
     tape.ok(regexp.test(stripAnsi(line)), `line matches ${regexp}`);
   }

@@ -1,5 +1,6 @@
-// Import command
+// Import Internal Dependencies
 import * as verify from "../../src/commands/verify.js";
+import { prepareProcess } from "../helpers/cliCommandRunner.js";
 
 function mockVerify(packageName) {
   return ({
@@ -43,4 +44,4 @@ function mockVerify(packageName) {
   });
 }
 
-await verify.main("myawesome/package", {}, mockVerify);
+prepareProcess(verify.main, ["myawesome/package", {}, mockVerify]);

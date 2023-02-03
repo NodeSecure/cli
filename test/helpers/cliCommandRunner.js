@@ -6,115 +6,40 @@ import { createInterface } from "node:readline";
 import { MockAgent, setGlobalDispatcher } from "undici";
 import stripAnsi from "strip-ansi";
 
-// Import Internal Dependencies
-import { getCurrentRepository } from "../../src/commands/scorecard.js";
+export async function runProcess(options) {
+  const { path, args = [], cwd = process.cwd(), undiciMockAgentOptions = null } = options;
 
-function initMockCli(options) {
-  const { path, args, mockApiOptions } = options;
-
-  return async() => {
-    const childProcess = fork(path, args, {
-      stdio: ["ignore", "pipe", "pipe", "ipc"]
-    });
-    childProcess.send(mockApiOptions);
-
-    const rStream = createInterface(childProcess.stdout);
-    const lines = [];
-
-    for await (const line of rStream) {
-      lines.push(stripAnsi(line));
-    }
-
-    if (!options.keepAlive) {
-      childProcess.kill();
-    }
-
-    return lines;
-  };
-}
-
-function getMockApiOptions(pkgName, options) {
-  // use faker.js
-  const defaultIntercept = {
-    path: `/projects/github.com/${pkgName}`,
-    method: "GET"
-  };
-
-  const defaultBody = {
-    date: "2222-12-31",
-    repo: {
-      name: `github.com/${pkgName}`
-    },
-    score: 5.2,
-    checks: [
-      {
-        name: "Maintained",
-        score: 10,
-        reason: "Package is maintained"
-      }
-    ]
-  };
-
-  const { response, intercept: customIntercept, baseUrl } = options;
-  const intercept = customIntercept || defaultIntercept;
-  const body = response?.body ?? defaultBody;
-  const status = response?.status ?? 200;
-
-  return {
-    baseUrl,
-    intercept,
-    response: {
-      status,
-      body
-    }
-  };
-}
-
-export function runCliCommand(cb, args = []) {
-  process.on("message", (mockApi) => {
-    if (mockApi) {
-      const scorecardAgent = new MockAgent();
-      const scorecardPool = scorecardAgent.get(mockApi.baseUrl);
-
-      scorecardAgent.disableNetConnect();
-      scorecardPool.intercept(mockApi.intercept).reply(mockApi.response.status, () => mockApi.response.body);
-      setGlobalDispatcher(scorecardAgent);
-    }
-
-    cb(...args).then(() => process.exit(0));
+  const childProcess = fork(path, args, {
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+    cwd
   });
+  // send needed options to trigger the `prepareProcess()` command.
+  childProcess.send(undiciMockAgentOptions);
+
+  const rStream = createInterface(childProcess.stdout);
+  const lines = [];
+
+  for await (const line of rStream) {
+    lines.push(stripAnsi(line));
+  }
+
+  childProcess.kill();
+
+  return lines;
 }
 
-export function initCliRunner(options) {
-  if (typeof options.path !== "string") {
-    throw new Error(`CLI_COMMAND_RUNNER_ERROR: Needs 'options.path' value to fork a file (given: ${options.path}).`);
-  }
+export function prepareProcess(command, args = []) {
+  process.on("message", (undiciMockAgentOptions) => {
+    if (undiciMockAgentOptions) {
+      const { baseUrl, intercept, response } = undiciMockAgentOptions;
+      const mockAgent = new MockAgent();
+      const pool = mockAgent.get(baseUrl);
 
-  const packageName = options.packageName ?? getCurrentRepository();
-  const args = packageName ? [packageName] : [];
-  const apiOptions = options.api;
-
-  let mockApiOptions = null;
-  if (apiOptions) {
-    const { shouldFail, baseUrl } = apiOptions;
-    const mockPkgName = shouldFail ? null : packageName;
-
-    if (!baseUrl) {
-      throw new Error("CLI_COMMAND_RUNNER_ERROR: A dummy response API requires value 'options.api.baseUrl'.");
+      mockAgent.disableNetConnect();
+      pool.intercept(intercept).reply(response.status, () => undiciMockAgentOptions.response.body);
+      setGlobalDispatcher(mockAgent);
     }
 
-    mockApiOptions = getMockApiOptions(mockPkgName, apiOptions);
-  }
-
-  const forkOptions = {
-    path: options.path,
-    args,
-    mockApiOptions
-  };
-  const result = {
-    mockAndGetLines: initMockCli(forkOptions),
-    mockApiOptions
-  };
-
-  return result;
+    command(...args).then(() => process.exit(0));
+  });
 }

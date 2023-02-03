@@ -1,7 +1,7 @@
 // Import Internal Dependencies
 import * as scorecard from "../../src/commands/scorecard.js";
-import { runCliCommand } from "../helpers/cliCommandRunner.js";
+import { prepareProcess } from "../helpers/cliCommandRunner.js";
 
 const kPackageName = process.argv[2];
 
-runCliCommand(scorecard.main, [kPackageName]);
+prepareProcess(scorecard.main, [kPackageName]);

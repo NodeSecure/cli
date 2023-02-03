@@ -8,7 +8,7 @@ import esmock from "esmock";
 import { API_URL } from "@nodesecure/ossf-scorecard-sdk";
 
 // Import Internal Dependencies
-import { initCliRunner } from "../helpers/cliCommandRunner.js";
+import { runProcess } from "../helpers/cliCommandRunner.js";
 import { getExpectedScorecardLines } from "../helpers/utils.js";
 
 // CONSTANTS
@@ -17,11 +17,11 @@ const kProcessDir = path.join(__dirname, "..", "process");
 const kProcessPath = path.join(kProcessDir, "scorecard.js");
 
 tap.test("scorecard should display fastify scorecard", async(tape) => {
-  const pkgName = "fastify/fastify";
+  const packageName = "fastify/fastify";
   const mockBody = {
     date: "2222-12-31",
     repo: {
-      name: `github.com/${pkgName}`
+      name: `github.com/${packageName}`
     },
     score: 5.2,
     checks: [
@@ -34,17 +34,22 @@ tap.test("scorecard should display fastify scorecard", async(tape) => {
   };
   const scorecardCliOptions = {
     path: kProcessPath,
-    packageName: pkgName,
-    api: {
+    args: [packageName],
+    undiciMockAgentOptions: {
       baseUrl: API_URL,
-      shouldFail: false,
-      response: { body: mockBody }
+      intercept: {
+        path: `/projects/github.com/${packageName}`,
+        method: "GET"
+      },
+      response: {
+        body: mockBody,
+        status: 200
+      }
     }
   };
 
-  const { mockAndGetLines, mockApiOptions } = initCliRunner(scorecardCliOptions);
-  const expectedLines = getExpectedScorecardLines(pkgName, mockApiOptions.response.body);
-  const givenLines = await mockAndGetLines();
+  const givenLines = await runProcess(scorecardCliOptions);
+  const expectedLines = getExpectedScorecardLines(packageName, mockBody);
 
   tape.same(givenLines, expectedLines, `lines should be ${expectedLines}`);
   tape.end();
@@ -54,18 +59,24 @@ tap.test("should not display scorecard for unknown repository", async(tape) => {
   const packageName = "unkown/repository";
   const scorecardCliOptions = {
     path: kProcessPath,
-    packageName,
-    api: {
+    args: [packageName],
+    undiciMockAgentOptions: {
       baseUrl: API_URL,
-      shouldFail: true
+      intercept: {
+        path: `/projects/github.com/${packageName}`,
+        method: "GET"
+      },
+      response: {
+        body: {},
+        status: 500
+      }
     }
   };
 
-  const { mockAndGetLines } = initCliRunner(scorecardCliOptions);
   const expectedLines = [
     `${packageName} is not part of the OSSF Scorecard BigQuery public dataset.`
   ];
-  const givenLines = await mockAndGetLines();
+  const givenLines = await runProcess(scorecardCliOptions);
 
   tape.same(givenLines, expectedLines, `lines should be ${expectedLines}`);
   tape.end();
