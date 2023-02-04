@@ -16,9 +16,10 @@ export async function runProcess(options) {
   // send needed options to trigger the `prepareProcess()` command.
   childProcess.send(undiciMockAgentOptions);
 
+  const lines = [];
+
   try {
     const rStream = createInterface(childProcess.stdout);
-    const lines = [];
 
     for await (const line of rStream) {
       lines.push(stripAnsi(line));
@@ -31,9 +32,7 @@ export async function runProcess(options) {
   return lines;
 }
 
-export function prepareProcess(command, customArgv = null) {
-  const args = customArgv ?? process.argv.slice(2);
-
+export function prepareProcess(command, args = process.argv.slice(2)) {
   process.on("message", (undiciMockAgentOptions) => {
     if (undiciMockAgentOptions) {
       const { baseUrl, intercept, response } = undiciMockAgentOptions;

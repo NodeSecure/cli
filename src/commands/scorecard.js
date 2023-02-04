@@ -6,7 +6,7 @@ import cliui from "@topcli/cliui";
 import kleur from "kleur";
 import * as scorecard from "@nodesecure/ossf-scorecard-sdk";
 import ini from "ini";
-
+import { Ok, Err } from "@openally/result";
 // VARS
 const { yellow, grey, cyan, white } = kleur;
 
@@ -20,36 +20,28 @@ export function getCurrentRepository() {
 
   const originMetadata = config["remote \"origin\""];
   if (!originMetadata) {
-    return {
-      ok: false,
-      reason: "Cannot find origin remote."
-    };
+    return Err("Cannot find origin remote.");
   }
 
   const [, rawPkg] = originMetadata.url.match(/github\.com(.+)\.git/) ?? [];
   if (!rawPkg) {
-    return {
-      ok: false,
-      reason: "OSSF Scorecard supports projects hosted on Github only."
-    };
+    return Err("OSSF Scorecard supports projects hosted on Github only.");
   }
 
-  return {
-    ok: true,
-    value: rawPkg.slice(1)
-  };
+  return Ok(rawPkg.slice(1));
 }
 
 export async function main(repo) {
-  const result = typeof repo === "string" ? { ok: true, value: repo } : getCurrentRepository();
+  const result = typeof repo === "string" ? Ok(repo) : getCurrentRepository();
 
-  if (!result.ok) {
-    console.log(white().bold(result.reason));
+  const repository = result.unwrap();
+
+  if (result.err) {
+    console.log(white().bold(result.val));
 
     process.exit();
   }
 
-  const repository = result.value;
 
   let data;
   try {

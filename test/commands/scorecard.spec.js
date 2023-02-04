@@ -6,6 +6,7 @@ import path from "node:path";
 import tap from "tap";
 import esmock from "esmock";
 import { API_URL } from "@nodesecure/ossf-scorecard-sdk";
+import { Ok } from "@openally/result";
 
 // Import Internal Dependencies
 import { runProcess } from "../helpers/cliCommandRunner.js";
@@ -96,7 +97,7 @@ tap.test("should retrieve repository whithin git config", async(tape) => {
 `);
 
   const testingModule = await esmock("../../src/commands/scorecard.js", { fs: mockFs });
-  tape.same(testingModule.getCurrentRepository(), { ok: true, reason: null, value: "myawesome/repository" });
+  tape.same(testingModule.getCurrentRepository(), Ok("myawesome/repository"));
   tape.end();
 });
 
@@ -105,8 +106,8 @@ tap.test("should not find origin remote", async(tape) => {
     fs: { readFileSync: () => "just one line" }
   });
   const result = testingModule.getCurrentRepository();
-  tape.equal(result.ok, false);
-  tape.equal(result.reason, "Cannot find origin remote.");
+  tape.equal(result.err, true);
+  tape.equal(result.val, "Cannot find origin remote.");
 });
 
 tap.test("should support github only", async(tape) => {
@@ -118,6 +119,6 @@ tap.test("should support github only", async(tape) => {
 
   const testingModule = await esmock("../../src/commands/scorecard.js", { fs: mockFs });
   const result = testingModule.getCurrentRepository();
-  tape.equal(result.ok, false);
-  tape.equal(result.reason, "OSSF Scorecard supports projects hosted on Github only.");
+  tape.equal(result.err, true);
+  tape.equal(result.val, "OSSF Scorecard supports projects hosted on Github only.");
 });
