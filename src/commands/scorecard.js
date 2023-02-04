@@ -15,33 +15,29 @@ function separatorLine() {
 }
 
 export function getCurrentRepository() {
-  const result = {
-    ok: true,
-    reason: null,
-    value: null
-  };
   // eslint-disable-next-line no-sync
   const config = ini.parse(fs.readFileSync(".git/config", "utf-8"));
 
   const originMetadata = config["remote \"origin\""];
   if (!originMetadata) {
-    result.ok = false;
-    result.reason = "Cannot find origin remote.";
-
-    return result;
+    return {
+      ok: false,
+      reason: "Cannot find origin remote."
+    };
   }
 
-  if (!originMetadata.url.includes("github")) {
-    result.ok = false;
-    result.reason = "OSSF Scorecard supports projects hosted on Github only.";
-
-    return result;
+  const [, rawPkg] = originMetadata.url.match(/github\.com(.+)\.git/) ?? [];
+  if (!rawPkg) {
+    return {
+      ok: false,
+      reason: "OSSF Scorecard supports projects hosted on Github only."
+    };
   }
 
-  const [, pkg] = originMetadata.url.match(/github\.com(.+)\.git/);
-  result.value = pkg.slice(1);
-
-  return result;
+  return {
+    ok: true,
+    value: rawPkg.slice(1)
+  };
 }
 
 export async function main(repo) {
