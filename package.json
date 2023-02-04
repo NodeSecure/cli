@@ -18,7 +18,7 @@
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
     "test-only": "NODE_OPTIONS=--loader=esmock cross-env tap --test-regex='.spec.js' --no-check-coverage",
-    "test:ci": "NODE_OPTIONS=--loader=esmock cross-env c8 tap --test-regex='.spec.js' --no-coverage"
+    "test:ci": "NODE_OPTIONS=--loader=esmock cross-env c8 -r html tap --test-regex='.spec.js' --no-coverage"
   },
   "files": [
     "bin",
