@@ -16,14 +16,17 @@ export async function runProcess(options) {
   // send needed options to trigger the `prepareProcess()` command.
   childProcess.send(undiciMockAgentOptions);
 
-  const rStream = createInterface(childProcess.stdout);
-  const lines = [];
+  try {
+    const rStream = createInterface(childProcess.stdout);
+    const lines = [];
 
-  for await (const line of rStream) {
-    lines.push(stripAnsi(line));
+    for await (const line of rStream) {
+      lines.push(stripAnsi(line));
+    }
   }
-
-  childProcess.kill();
+  finally {
+    childProcess.kill();
+  }
 
   return lines;
 }
