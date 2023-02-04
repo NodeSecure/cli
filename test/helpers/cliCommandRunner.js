@@ -28,7 +28,9 @@ export async function runProcess(options) {
   return lines;
 }
 
-export function prepareProcess(command, args = []) {
+export function prepareProcess(command, customArgv = null) {
+  const args = customArgv ?? process.argv.slice(2);
+
   process.on("message", (undiciMockAgentOptions) => {
     if (undiciMockAgentOptions) {
       const { baseUrl, intercept, response } = undiciMockAgentOptions;
