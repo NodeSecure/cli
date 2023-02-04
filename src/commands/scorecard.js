@@ -41,18 +41,15 @@ export function getCurrentRepository() {
 }
 
 export async function main(repo) {
-  let repository = repo;
-  if (!repository) {
-    const result = getCurrentRepository();
+  const result = typeof repo === "string" ? { ok: true, value: repo } : getCurrentRepository();
 
-    if (!result.ok) {
-      console.log(white().bold(result.reason));
+  if (!result.ok) {
+    console.log(white().bold(result.reason));
 
-      process.exit();
-    }
-
-    repository = result.value;
+    process.exit();
   }
+
+  const repository = result.value;
 
   let data;
   try {
