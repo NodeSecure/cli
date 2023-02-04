@@ -133,8 +133,10 @@ tap.test("'/bundle/:name' should return an error if it fails", async(tape) => {
 });
 
 tap.test("teardown", (tape) => {
-  httpServer.server.close();
-  tape.end();
+  httpServer.server.close(() => {
+    tape.end();
+    tap.endAll();
+  });
 });
 
 /**
