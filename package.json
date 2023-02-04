@@ -17,7 +17,8 @@
     "prepublishOnly": "npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
-    "test-only": "NODE_OPTIONS=--loader=esmock cross-env tap --test-regex='.spec.js' --no-check-coverage"
+    "test-only": "NODE_OPTIONS=--loader=esmock cross-env tap --test-regex='.spec.js' --no-check-coverage",
+    "test:ci": "NODE_OPTIONS=--loader=esmock cross-env tap --test-regex='.spec.js' --no-check-coverage --coverage-report=text-lcov | codecov --pipe"
   },
   "files": [
     "bin",
@@ -60,6 +61,7 @@
     "@nodesecure/size-satisfies": "^1.0.2",
     "@nodesecure/vis-network": "^1.4.0",
     "@types/node": "^18.11.9",
+    "codecov": "^3.8.3",
     "cross-env": "^7.0.3",
     "esbuild": "^0.17.3",
     "eslint": "^8.27.0",

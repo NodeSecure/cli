@@ -2,7 +2,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: master
+    branches: ["master"]
   pull_request:
 
 permissions:
@@ -29,6 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run tests
-        run: npm run test
+        run: npm run test:ci
       - name: Send coverage report to Codecov
         uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70
