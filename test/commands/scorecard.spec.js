@@ -17,12 +17,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kProcessDir = path.join(__dirname, "..", "process");
 const kProcessPath = path.join(kProcessDir, "scorecard.js");
 
-function getMockFsModule(str) {
-  return {
-    readFileSync: () => str
-  };
-}
-
 tap.test("scorecard should display fastify scorecard", async(tape) => {
   const packageName = "fastify/fastify";
   const mockBody = {
@@ -90,20 +84,23 @@ tap.test("should not display scorecard for unknown repository", async(tape) => {
 });
 
 tap.test("should retrieve repository whithin git config", async(tape) => {
-  const mockFs = getMockFsModule(`
-[remote "origin"]
-  url = git@github.com:myawesome/repository.git
-  fetch = +refs/heads/*:refs/remotes/origin/*
-`);
-
-  const testingModule = await esmock("../../src/commands/scorecard.js", { fs: mockFs });
+  const testingModule = await esmock("../../src/commands/scorecard.js", {
+    fs: {
+      readFileSync: () => [
+        "[remote \"origin\"]",
+        "\turl = git@github.com:myawesome/repository.git"
+      ].join("\n")
+    }
+  });
   tape.same(testingModule.getCurrentRepository(), Ok("myawesome/repository"));
   tape.end();
 });
 
 tap.test("should not find origin remote", async(tape) => {
   const testingModule = await esmock("../../src/commands/scorecard.js", {
-    fs: { readFileSync: () => "just one line" }
+    fs: {
+      readFileSync: () => "just one line"
+    }
   });
   const result = testingModule.getCurrentRepository();
   tape.equal(result.err, true);
@@ -111,13 +108,14 @@ tap.test("should not find origin remote", async(tape) => {
 });
 
 tap.test("should support github only", async(tape) => {
-  const mockFs = getMockFsModule(`
-[remote "origin"]
-  url = git@gitlab.com:gitlab/repository.git
-  fetch = +refs/heads/*:refs/remotes/origin/*
-`);
-
-  const testingModule = await esmock("../../src/commands/scorecard.js", { fs: mockFs });
+  const testingModule = await esmock("../../src/commands/scorecard.js", {
+    fs: {
+      readFileSync: () => [
+        "[remote \"origin\"]",
+        "\turl = git@gitlab.com:myawesome/repository.git"
+      ].join("\n")
+    }
+  });
   const result = testingModule.getCurrentRepository();
   tape.equal(result.err, true);
   tape.equal(result.val, "OSSF Scorecard supports projects hosted on Github only.");
