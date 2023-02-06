@@ -275,7 +275,7 @@ export class SearchBar {
 
     const titleText = Reflect.has(kHelpersTitleName, filterName) ? kHelpersTitleName[filterName] : "Options de recherche";
     // eslint-disable-next-line max-len
-    this.helper.innerHTML = `<div class="title"><p>${titleText}</p><a href="https://github.com/NodeSecure/cli" rel="noopener" target="_blank"><i class="icon-attention-circled"></i></a></div>`;
+    this.helper.innerHTML = `<div class="title"><p>${titleText}</p><a href="https://github.com/NodeSecure/cli#searchbar-filters" rel="noopener" target="_blank"><i class="icon-attention-circled"></i></a></div>`;
     this.helper.appendChild(clone);
   }
 
