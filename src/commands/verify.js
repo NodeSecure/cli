@@ -11,8 +11,9 @@ function separatorLine() {
   return grey("-".repeat(80));
 }
 
-export async function main(packageName = null, options) {
-  const payload = await verify(packageName);
+export async function main(packageName = null, options, verifyFn = verify) {
+  const payload = await verifyFn(packageName);
+
   if (options.json) {
     return console.log(JSON.stringify(payload, null, 2));
   }

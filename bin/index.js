@@ -79,6 +79,11 @@ prog
   .action(commands.summary.main);
 
 prog
+  .command("scorecard [repository]")
+  .describe(i18n.getToken("cli.commands.scorecard.desc"))
+  .action(commands.scorecard.main);
+
+prog
   .command("lang")
   .describe(i18n.getToken("cli.commands.lang.desc"))
   .action(commands.lang.set);

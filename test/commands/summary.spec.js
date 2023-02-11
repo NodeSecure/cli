@@ -1,20 +1,23 @@
-// Import Node.js Dependencies
 import dotenv from "dotenv";
-import { spawn } from "child_process";
-import { fileURLToPath } from "url";
-import path from "path";
-
 dotenv.config();
 
+// Import Node.js Dependencies
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
 // Import Third-party Dependencies
-import test from "tape";
-import splitByLine from "split2";
+import tap from "tap";
+import stripAnsi from "strip-ansi";
+
+// Import Internal Dependencies
+import { runProcess } from "../helpers/cliCommandRunner.js";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kProcessDir = path.join(__dirname, "..", "process");
+const kProcessPath = path.join(kProcessDir, "summary.js");
 
-test("summary should execute summary command on fixtures 'result-test1.json'", async(tape) => {
+tap.test("summary should execute summary command on fixtures 'result-test1.json'", async(tape) => {
   const lines = [
     /Global Stats: express.*$/,
     /.*/,
@@ -31,20 +34,15 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
   ];
   tape.plan(lines.length * 2);
 
-  const child = spawn(process.execPath, [path.join(kProcessDir, "summary.js")], {
-    cwd: path.join(__dirname, "..", "fixtures"),
-    env: process.env,
-    stdio: ["ignore", "pipe", "pipe"],
-    detached: false
-  });
-  tape.teardown(() => child.kill());
+  const processOptions = {
+    path: kProcessPath,
+    cwd: path.join(__dirname, "..", "fixtures")
+  };
 
-  const rStream = child.stdout.pipe(splitByLine());
-  for await (const line of rStream) {
+  for await (const line of runProcess(processOptions)) {
     const regexp = lines.shift();
-
     tape.ok(regexp, "we are expecting this line");
-    tape.ok(regexp.test(line), `line matches ${regexp}`);
+    tape.ok(regexp.test(stripAnsi(line)), `line matches ${regexp}`);
   }
 
   tape.end();
