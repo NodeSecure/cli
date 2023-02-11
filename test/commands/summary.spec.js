@@ -38,8 +38,8 @@ tap.test("summary should execute summary command on fixtures 'result-test1.json'
     path: kProcessPath,
     cwd: path.join(__dirname, "..", "fixtures")
   };
-  const givenLines = await runProcess(processOptions);
-  for (const line of givenLines) {
+
+  for await (const line of runProcess(processOptions)) {
     const regexp = lines.shift();
     tape.ok(regexp, "we are expecting this line");
     tape.ok(regexp.test(stripAnsi(line)), `line matches ${regexp}`);

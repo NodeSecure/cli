@@ -30,3 +30,13 @@ function mockScorecardCliLine(str, rawValue) {
 
   return `${str.padEnd(80 - value.length, " ")}${value}`;
 }
+
+export async function arrayFromAsync(stream) {
+  const chunks = [];
+
+  for await (const chunk of stream) {
+    chunks.push(chunk);
+  }
+
+  return chunks;
+}

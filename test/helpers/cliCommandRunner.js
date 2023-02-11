@@ -6,7 +6,7 @@ import { createInterface } from "node:readline";
 import { MockAgent, setGlobalDispatcher } from "undici";
 import stripAnsi from "strip-ansi";
 
-export async function runProcess(options) {
+export async function* runProcess(options) {
   const { path, args = [], cwd = process.cwd(), undiciMockAgentOptions = null } = options;
 
   const childProcess = fork(path, args, {
@@ -16,24 +16,20 @@ export async function runProcess(options) {
   // send needed options to trigger the `prepareProcess()` command.
   childProcess.send(undiciMockAgentOptions);
 
-  const lines = [];
-
   try {
     const rStream = createInterface(childProcess.stdout);
 
     for await (const line of rStream) {
-      lines.push(stripAnsi(line));
+      yield stripAnsi(line);
     }
   }
   finally {
     childProcess.kill();
   }
-
-  return lines;
 }
 
 export function prepareProcess(command, args = process.argv.slice(2)) {
-  process.on("message", (undiciMockAgentOptions) => {
+  process.once("message", (undiciMockAgentOptions) => {
     if (undiciMockAgentOptions) {
       const { baseUrl, intercept, response } = undiciMockAgentOptions;
       const mockAgent = new MockAgent();

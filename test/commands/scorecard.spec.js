@@ -10,7 +10,7 @@ import { Ok } from "@openally/result";
 
 // Import Internal Dependencies
 import { runProcess } from "../helpers/cliCommandRunner.js";
-import { getExpectedScorecardLines } from "../helpers/utils.js";
+import { arrayFromAsync, getExpectedScorecardLines } from "../helpers/utils.js";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -49,7 +49,7 @@ tap.test("scorecard should display fastify scorecard", async(tape) => {
     }
   };
 
-  const givenLines = await runProcess(scorecardCliOptions);
+  const givenLines = await arrayFromAsync(runProcess(scorecardCliOptions));
   const expectedLines = getExpectedScorecardLines(packageName, mockBody);
 
   tape.same(givenLines, expectedLines, `lines should be ${expectedLines}`);
@@ -77,7 +77,7 @@ tap.test("should not display scorecard for unknown repository", async(tape) => {
   const expectedLines = [
     `${packageName} is not part of the OSSF Scorecard BigQuery public dataset.`
   ];
-  const givenLines = await runProcess(scorecardCliOptions);
+  const givenLines = await arrayFromAsync(runProcess(scorecardCliOptions));
 
   tape.same(givenLines, expectedLines, `lines should be ${expectedLines}`);
   tape.end();
