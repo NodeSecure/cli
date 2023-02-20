@@ -8,6 +8,9 @@ import * as utils from "../utils.js";
 import { Bundlephobia } from "./bundlephobia.js";
 import { UnpkgCodeFetcher } from "./unpkgCodeFetcher.js";
 
+const kSocketDevLink = 'https://socket.dev/npm/package/';
+const kSnykAdvisorLink = 'https://snyk.io/advisor/npm-package/';
+
 export class PackageInfo {
   static DOMElementName = "package-info";
   static StopSimulationTimeout = null;
@@ -371,6 +374,12 @@ export class PackageInfo {
         text: hasNoLicense ? "unkown" : license.uniqueLicenseIds.join(", ").toUpperCase(),
         icon: "icon-vcard",
         showInHeader: true
+      },
+      thirdParty: {
+        menu: this.externalToolsMenu(),
+        text: 'Tools',
+        icon: 'icon-link',
+        showInHeader: true
       }
     };
 
@@ -388,15 +397,26 @@ export class PackageInfo {
 
         const linksChildren = [
           linkImageOrIcon,
-          utils.createDOMElement("a", {
-            text: linkAttributes.text,
-            attributes: {
-              href: linkAttributes.href,
-              target: "_blank",
-              rel: "noopener noreferrer"
-            }
-          })
         ];
+        if (linkAttributes.menu) {
+          linksChildren.push(
+            utils.createDOMElement("div", {
+              classList: ['package-info-header-menu'],
+              childs: linkAttributes.menu
+            })
+          );
+        } else {
+          linksChildren.push(
+            utils.createDOMElement("a", {
+              text: linkAttributes.text,
+              attributes: {
+                href: linkAttributes.href,
+                target: "_blank",
+                rel: "noopener noreferrer"
+              }
+            })
+          );
+        }
 
         linksFragment.appendChild(utils.createDOMElement("div", {
           className: "link", childs: linksChildren
@@ -752,5 +772,30 @@ export class PackageInfo {
     });
 
     return checksContainerElement;
+  }
+
+  externalToolsMenu() {
+    return [
+      utils.createDOMElement('span', { text: 'Tools' }),
+      utils.createDOMElement('div', {
+        classList: ['tools-menu'],
+        childs: [
+          utils.createDOMElement('a', {
+            text: 'Snyk',
+            attributes: {
+              href: kSnykAdvisorLink + this.dependencyVersion.name,
+              target: "_blank",
+            }
+          }),
+          utils.createDOMElement('a', {
+            text: 'Socket.dev',
+            attributes: {
+              href: kSocketDevLink + this.dependencyVersion.name,
+              target: "_blank",
+            }
+          })
+        ]
+      })
+    ]
   }
 }

@@ -79,6 +79,30 @@ div.package-head-information>.package-links .link>a:hover {
   text-decoration: underline;
 }
 
+.package-info-header-menu .tools-menu {
+  display: none;
+}
+
+.package-info-header-menu:hover .tools-menu, .tools-menu:hover {
+  display: inline-flex;
+  flex-wrap: wrap;
+  position: absolute;
+  left: 417px;
+  top: 90px;
+  background: #261877;
+  padding: 7px 15px;
+  border-radius: 4px;
+}
+
+.package-info-header-menu .tools-menu a {
+  width: 100%;
+  color: #cfd8dc;
+  padding: 5px;
+}
+.package-info-header-menu .tools-menu a:hover {
+  background: #2e1e87;
+}
+
 /* .github-stars {
   font-family: 'mononoki';
   font-size: 14px;
