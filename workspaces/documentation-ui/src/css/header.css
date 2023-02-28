@@ -1,0 +1,70 @@
+.documentation--header {
+  flex-basis: 110px;
+  background: #3722AF;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding-left: 10px;
+  border-bottom: 1px solid #00D1FF;
+  box-sizing: border-box;
+}
+
+.documentation--header>.title {
+  height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.documentation--header>.title>img {
+  width: 70px;
+  margin-right: 10px;
+}
+
+.documentation--header>.title>p {
+  font-family: "system-ui";
+  letter-spacing: 1px;
+  font-weight: bold;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  text-shadow: 2px 2px 10px rgba(20, 20, 20, 0.4);
+}
+
+.documentation--header>ul {
+  height: 30px;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.documentation--header>ul li {
+  display: flex;
+  align-items: flex-start;
+  padding: 0 20px;
+  font-family: "Roboto";
+  font-weight: bold;
+  position: relative;
+}
+
+.documentation--header>ul li:not(.active):hover {
+  cursor: pointer;
+  color: #D1C4E9;
+}
+
+.documentation--header>ul li.active {
+  color: #B3E5FC;
+}
+
+.documentation--header>ul li.active::after {
+  height: 4px;
+  width: 80%;
+  background: #00D1FF;
+  border-radius: 4px 4px 0 0;
+  position: absolute;
+  left: 10%;
+  bottom: 0;
+  content: "";
+}
+
+.documentation--header>ul li+li {
+  margin-left: 40px;
+}

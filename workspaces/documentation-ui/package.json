@@ -1,0 +1,31 @@
+{
+  "name": "@nodesecure/documentation-ui",
+  "version": "1.3.0",
+  "description": "Portable UI for NodeSecure tools (guides on flags, security docs etc..)",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "example": "npm run example:build && http-server ./dist",
+    "example:build": "node esbuild.config.js"
+  },
+  "files": [
+    "index.js",
+    "src"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./node": "./src/nodejs/esm.js"
+  },
+  "types": "./index.d.ts",
+  "keywords": [
+    "nodesecure",
+    "documentation",
+    "help"
+  ],
+  "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@nodesecure/flags": "^2.4.0",
+    "markdown-it": "^13.0.1"
+  }
+}

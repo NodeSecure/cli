@@ -26,6 +26,10 @@
     "src",
     "views"
   ],
+  "workspaces": [
+    "workspaces/documentation-ui",
+    "workspaces/vis-network"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/NodeSecure/cli.git"
@@ -67,6 +71,7 @@
     "esbuild": "^0.17.3",
     "eslint": "^8.27.0",
     "esmock": "^2.1.0",
+    "http-server": "^14.1.1",
     "pkg-ok": "^3.0.0",
     "pretty-bytes": "^5.6.0",
     "strip-ansi": "^7.0.1",

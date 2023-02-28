@@ -1,0 +1,150 @@
+.documentation--content>div {
+  display: flex;
+  flex-direction: column;
+  color: #455A64;
+  font-weight: 400;
+  font-size: 18px;
+  margin: 10px;
+  overflow-x: hidden;
+}
+
+.documentation--content img {
+  max-width: 100%;
+}
+
+.documentation--content span {
+  background: #b8e9ff;
+  padding: 2px;
+  border-radius: 2px;
+  color: #0f1126;
+  margin: 0 2px;
+}
+
+.documentation--content b {
+  color: #263238;
+  font-weight: 600;
+}
+
+.documentation--content a {
+  color: #1e00ff;
+}
+
+.documentation--content h1 {
+  color: #263238;
+  height: 50px;
+  margin-bottom: 1rem;
+  text-align: center;
+  line-height: 50px;
+  font-family: system-ui;
+  font-size: 30px;
+  letter-spacing: 0.5px;
+}
+
+.documentation--content h2 {
+  color: #3722AF;
+  height: 26px;
+  font-size: 22px;
+  border-bottom: 1px solid #3722AF;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.documentation--content p {
+  text-align: justify;
+  line-height: 1.20;
+  color: #314249;
+}
+
+.documentation--content p.note {
+  border-left: 3px solid #01579B;
+  padding: 10px 15px;
+  background: #81d4fa59;
+  color: #283593;
+  font-weight: 400;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+.documentation--content p.note > span {
+  background: #FFF9C4;
+}
+
+.documentation--content ul {
+  margin: 1rem 0;
+  list-style: disc !important;
+  border-radius: 4px;
+  box-shadow: 1px 1px 10px rgb(20 20 20 / 10%);
+}
+
+.documentation--content ul li {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 2px 10px;
+}
+
+.documentation--content ul li:nth-child(odd) {
+  background: #ECEFF1;
+}
+
+.documentation--content ul li:nth-child(even) {
+  background: #CFD8DC;
+}
+
+
+table {
+  width: 100%;
+  border-spacing: 2px;
+  table-layout:fixed;
+}
+
+table thead tr th {
+  font-weight: bold;
+  background: #3722AF;
+  color: #FFF;
+  height: 40px;
+  cursor: pointer;
+  line-height: 40px;
+}
+
+table tbody tr {
+  background: rgba(55, 55, 55, 0.1);
+}
+
+table tr td {
+  height: 30px;
+  line-height: 30px;
+  color: #263238;
+}
+
+table tr td,
+table tr th {
+  font-size: 14px;
+  font-family: "mononoki";
+  border: 2px solid rgba(55, 71, 79, 0.30);
+  text-align: center;
+  letter-spacing: 0.5px;
+  word-wrap: break-word;
+  padding: 0 10px;
+}
+
+/* CSS Simple Pre Code */
+pre {
+  background: #263238;
+  white-space: pre;
+  word-wrap: break-word;
+  overflow: auto;
+  border-radius: 4px;
+}
+
+pre code {
+  font-family: "Inconsolata", "Monaco", "Consolas", "Andale Mono", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+  display: block;
+  margin: 0 0 0 60px;
+  padding: 15px 16px 14px;
+  border-left: 1px solid #37474F;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 19px;
+  color: #ddd;
+}
