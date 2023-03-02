@@ -42,10 +42,10 @@ export function buildServer(dataFilePath, options = {}) {
   httpServer.get("/downloads/:pkgName", npmDownloads.get);
   httpServer.get("/scorecard/:org/:pkgName", scorecard.get);
 
-  httpServer.listen(httpConfigPort, () => {
+  httpServer.listen(httpConfigPort, async() => {
     const port = httpServer.server.address().port;
     const link = `http://localhost:${port}`;
-    console.log(kleur.magenta().bold(i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
+    console.log(kleur.magenta().bold(await i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
     if (openLink) {
       open(link);

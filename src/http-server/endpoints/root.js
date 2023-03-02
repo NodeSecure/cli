@@ -12,10 +12,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const kProjectRootDir = join(__dirname, "..", "..", "..");
 
 export async function buildHtml() {
+  await i18n.getLocalLang();
   const HTMLStr = await readFile(join(kProjectRootDir, "views", "index.html"), "utf-8");
   const templateStr = zup(HTMLStr)({
-    lang: i18n.getToken("lang"),
-    token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
+    lang: i18n.getTokenSync("lang"),
+    token: (tokenName) => i18n.getTokenSync(`ui.${tokenName}`)
   });
 
   return templateStr;

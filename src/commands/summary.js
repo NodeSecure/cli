@@ -16,12 +16,13 @@ function separatorLine() {
 }
 
 export async function main(json = "nsecure-result.json") {
+  await i18n.getLocalLang();
   const dataFilePath = path.join(process.cwd(), json);
   const rawAnalysis = await fs.readFile(dataFilePath, { encoding: "utf-8" });
   const { rootDependencyName, dependencies } = JSON.parse(rawAnalysis);
 
   const ui = cliui({ width: 80 });
-  const title = `${white().bold(`${i18n.getToken("ui.stats.title")}:`)} ${cyan().bold(rootDependencyName)}`;
+  const title = `${white().bold(`${i18n.getTokenSync("ui.stats.title")}:`)} ${cyan().bold(rootDependencyName)}`;
   ui.div(
     { text: title, width: 50 }
   );
@@ -37,21 +38,21 @@ export async function main(json = "nsecure-result.json") {
     } = extractAnalysisData(dependencies);
 
     ui.div(
-      { text: white().bold(`${i18n.getToken("ui.stats.total_packages")}:`), width: 60 },
+      { text: white().bold(`${i18n.getTokenSync("ui.stats.total_packages")}:`), width: 60 },
       { text: green().bold(`${packagesCount}`), width: 20, align: "right" }
     );
     ui.div(
-      { text: white().bold(`${i18n.getToken("ui.stats.total_size")}:`), width: 60 },
+      { text: white().bold(`${i18n.getTokenSync("ui.stats.total_size")}:`), width: 60 },
       { text: green().bold(`${formatBytes(totalSize)}`), width: 20, align: "right" }
     );
     ui.div(
-      { text: white().bold(`${i18n.getToken("ui.stats.indirect_deps")}:`), width: 60 },
+      { text: white().bold(`${i18n.getTokenSync("ui.stats.indirect_deps")}:`), width: 60 },
       { text: green().bold(`${packageWithIndirectDeps}`), width: 20, align: "right" }
     );
 
     ui.div("");
     ui.div(
-      { text: white().bold(`${i18n.getToken("ui.stats.extensions")}:`), width: 40 }
+      { text: white().bold(`${i18n.getTokenSync("ui.stats.extensions")}:`), width: 40 }
     );
     const extensionEntries = Object.entries(extensionMap);
     ui.div(
@@ -62,7 +63,7 @@ export async function main(json = "nsecure-result.json") {
 
     ui.div("");
     ui.div(
-      { text: white().bold(`${i18n.getToken("ui.stats.licenses")}:`), width: 40 }
+      { text: white().bold(`${i18n.getTokenSync("ui.stats.licenses")}:`), width: 40 }
     );
     const licenceEntries = Object.entries(licenceMap);
     ui.div(

@@ -28,14 +28,15 @@ const httpServer = buildServer(JSON_PATH, {
 });
 
 tap.test("'/' should return index.html content", async(tape) => {
+  await i18n.getLocalLang();
   const result = await get(HTTP_URL);
 
   tape.equal(result.statusCode, 200);
   tape.equal(result.headers["content-type"], "text/html");
 
   const templateStr = zup(INDEX_HTML)({
-    lang: i18n.getToken("lang"),
-    token: (tokenName) => i18n.getToken(`ui.${tokenName}`)
+    lang: i18n.getTokenSync("lang"),
+    token: (tokenName) => i18n.getTokenSync(`ui.${tokenName}`)
   });
   tape.equal(result.data, templateStr);
 

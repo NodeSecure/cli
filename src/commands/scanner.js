@@ -97,11 +97,11 @@ function initLogger(packageName, verbose = true) {
 
     if (eventName === "fetchManifest") {
       spinner[eventName]
-        .start(kleur.white().bold(i18n.getToken(spinner.i18n.start[eventName], kleur.green().bold(packageName))));
+        .start(kleur.white().bold(i18n.getTokenSync(spinner.i18n.start[eventName], kleur.green().bold(packageName))));
     }
     else {
       spinner[eventName]
-        .start(kleur.white().bold(i18n.getToken(spinner.i18n.start[eventName])));
+        .start(kleur.white().bold(i18n.getTokenSync(spinner.i18n.start[eventName])));
     }
   });
 
@@ -111,7 +111,7 @@ function initLogger(packageName, verbose = true) {
     }
 
     const stats = kleur.gray().bold(`[${kleur.yellow().bold(logger.count(eventName))}/${logger.count("walkTree")}]`);
-    spinner[eventName].text = kleur.white().bold(`${i18n.getToken(spinner.i18n.tick[eventName])} ${stats}`);
+    spinner[eventName].text = kleur.white().bold(`${i18n.getTokenSync(spinner.i18n.tick[eventName])} ${stats}`);
   });
 
   logger.on("end", (eventName) => {
@@ -125,16 +125,16 @@ function initLogger(packageName, verbose = true) {
 
     if (eventName === "walkTree") {
       spin.succeed(kleur.white().bold(
-        i18n.getToken(tokenName, kleur.yellow().bold(i18n.getToken("depWalker.dep_tree")), execTime)));
+        i18n.getTokenSync(tokenName, kleur.yellow().bold(i18n.getTokenSync("depWalker.dep_tree")), execTime)));
     }
     else if (eventName === "registry") {
-      spin.succeed(kleur.white().bold(i18n.getToken(tokenName)));
+      spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName)));
     }
     else if (eventName === "tarball") {
-      spin.succeed(kleur.white().bold(i18n.getToken(tokenName, kleur.green().bold(logger.count("walkTree")), execTime)));
+      spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName, kleur.green().bold(logger.count("walkTree")), execTime)));
     }
     else if (eventName === "fetchManifest") {
-      spin.succeed(kleur.white().bold(i18n.getToken(tokenName, kleur.green().bold(packageName), execTime)));
+      spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName, kleur.green().bold(packageName), execTime)));
       console.log("");
     }
   });
@@ -144,7 +144,7 @@ function initLogger(packageName, verbose = true) {
 
 async function logAndWrite(payload, output = "nsecure-result") {
   if (payload === null) {
-    console.log(i18n.getToken("cli.no_dep_to_proceed"));
+    console.log(i18n.getTokenSync("cli.no_dep_to_proceed"));
 
     return null;
   }
@@ -163,7 +163,7 @@ async function logAndWrite(payload, output = "nsecure-result") {
   await fs.writeFile(filePath, ret);
 
   console.log("");
-  console.log(kleur.white().bold(i18n.getToken("cli.successfully_written_json", kleur.green().bold(filePath))));
+  console.log(kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath))));
   console.log("");
 
   return filePath;

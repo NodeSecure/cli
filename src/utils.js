@@ -10,7 +10,7 @@ export function taggedI18nString(strings, ...keys) {
       const args = i18nParameters.shift() ?? [];
 
       finalString.push(
-        i18n.getToken(currentKey, ...args),
+        i18n.getTokenSync(currentKey, ...args),
         strings[index + 1]
       );
     });

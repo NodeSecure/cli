@@ -75,7 +75,7 @@
   "dependencies": {
     "@nodesecure/documentation-ui": "^1.3.0",
     "@nodesecure/flags": "^2.4.0",
-    "@nodesecure/i18n": "^2.2.0",
+    "@nodesecure/i18n": "^3.1.0",
     "@nodesecure/npm-registry-sdk": "^1.4.1",
     "@nodesecure/ossf-scorecard-sdk": "^1.1.0",
     "@nodesecure/rc": "^1.2.1",
