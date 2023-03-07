@@ -3,8 +3,5 @@
     "parserOptions": {
         "sourceType": "module",
         "requireConfigFile": false
-    },
-    "rules": {
-      "no-sync": "off"
     }
 }

@@ -1,5 +1,3 @@
-/* eslint-disable no-sync */
-
 // Import Node.js Dependencies
 import fs from "fs";
 

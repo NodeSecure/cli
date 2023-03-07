@@ -15,7 +15,6 @@ function separatorLine() {
 }
 
 export function getCurrentRepository() {
-  // eslint-disable-next-line no-sync
   const config = ini.parse(fs.readFileSync(".git/config", "utf-8"));
 
   const originMetadata = config["remote \"origin\""];

@@ -57,7 +57,7 @@
   "devDependencies": {
     "@istanbuljs/esm-loader-hook": "^0.2.0",
     "@myunisoft/httpie": "^1.9.2",
-    "@nodesecure/eslint-config": "^1.5.0",
+    "@nodesecure/eslint-config": "^1.7.0",
     "@nodesecure/size-satisfies": "^1.0.2",
     "@nodesecure/vis-network": "^1.4.0",
     "@openally/result": "^1.0.0",
