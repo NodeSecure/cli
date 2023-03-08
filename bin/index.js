@@ -20,11 +20,13 @@ import * as commands from "../src/commands/index.js";
 const require = createRequire(import.meta.url);
 const manifest = require("../package.json");
 
-console.log(kleur.grey().bold(`\n > ${i18n.getToken("cli.executing_at")}: ${kleur.yellow().bold(process.cwd())}\n`));
+await i18n.getLocalLang();
+
+console.log(kleur.grey().bold(`\n > ${i18n.getTokenSync("cli.executing_at")}: ${kleur.yellow().bold(process.cwd())}\n`));
 
 const minVersion = semver.minVersion(manifest.engines.node);
 if (semver.lt(process.versions.node, minVersion)) {
-  console.log(kleur.red().bold(` [!] ${i18n.getToken("cli.min_nodejs_version", minVersion)}\n`));
+  console.log(kleur.red().bold(` [!] ${i18n.getTokenSync("cli.min_nodejs_version", minVersion)}\n`));
   process.exit(0);
 }
 
@@ -34,40 +36,40 @@ const prog = sade("nsecure").version(manifest.version);
 
 prog
   .command("hydrate-db")
-  .describe(i18n.getToken("cli.commands.hydrate_db.desc"))
+  .describe(i18n.getTokenSync("cli.commands.hydrate_db.desc"))
   .action(commands.vulnerability.hydrate);
 
 defaultScannerCommand("cwd", { strategy: vuln.strategies.NPM_AUDIT })
-  .describe(i18n.getToken("cli.commands.cwd.desc"))
-  .option("-n, --nolock", i18n.getToken("cli.commands.cwd.option_nolock"), false)
-  .option("-f, --full", i18n.getToken("cli.commands.cwd.option_full"), false)
+  .describe(i18n.getTokenSync("cli.commands.cwd.desc"))
+  .option("-n, --nolock", i18n.getTokenSync("cli.commands.cwd.option_nolock"), false)
+  .option("-f, --full", i18n.getTokenSync("cli.commands.cwd.option_full"), false)
   .action(async(...options) => {
     checkNodeSecureToken();
     await commands.scanner.cwd(...options);
   });
 
 defaultScannerCommand("from <package>")
-  .describe(i18n.getToken("cli.commands.from.desc"))
+  .describe(i18n.getTokenSync("cli.commands.from.desc"))
   .action(async(...options) => {
     checkNodeSecureToken();
     await commands.scanner.from(...options);
   });
 
 defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vuln.strategies.SECURITY_WG })
-  .describe(i18n.getToken("cli.commands.auto.desc"))
-  .option("-k, --keep", i18n.getToken("cli.commands.auto.option_keep"), false)
+  .describe(i18n.getTokenSync("cli.commands.auto.desc"))
+  .option("-k, --keep", i18n.getTokenSync("cli.commands.auto.option_keep"), false)
   .action(commands.scanner.auto);
 
 prog
   .command("open [json]")
-  .describe(i18n.getToken("cli.commands.open.desc"))
-  .option("-p, --port", i18n.getToken("cli.commands.open.option_port"), process.env.PORT)
+  .describe(i18n.getTokenSync("cli.commands.open.desc"))
+  .option("-p, --port", i18n.getTokenSync("cli.commands.open.option_port"), process.env.PORT)
   .action(commands.http.start);
 
 prog
   .command("verify [package]")
-  .describe(i18n.getToken("cli.commands.verify.desc"))
-  .option("-j, --json", i18n.getToken("cli.commands.verify.option_json"), false)
+  .describe(i18n.getTokenSync("cli.commands.verify.desc"))
+  .option("-j, --json", i18n.getTokenSync("cli.commands.verify.option_json"), false)
   .action(async(...options) => {
     checkNodeSecureToken();
     await commands.verify.main(...options);
@@ -75,17 +77,17 @@ prog
 
 prog
   .command("summary [json]")
-  .describe(i18n.getToken("cli.commands.summary.desc"))
+  .describe(i18n.getTokenSync("cli.commands.summary.desc"))
   .action(commands.summary.main);
 
 prog
   .command("scorecard [repository]")
-  .describe(i18n.getToken("cli.commands.scorecard.desc"))
+  .describe(i18n.getTokenSync("cli.commands.scorecard.desc"))
   .action(commands.scorecard.main);
 
 prog
   .command("lang")
-  .describe(i18n.getToken("cli.commands.lang.desc"))
+  .describe(i18n.getTokenSync("cli.commands.lang.desc"))
   .action(commands.lang.set);
 
 prog
@@ -105,14 +107,14 @@ function defaultScannerCommand(name, options = {}) {
   const { includeOutput = true, strategy = null } = options;
 
   const cmd = prog.command(name)
-    .option("-d, --depth", i18n.getToken("cli.commands.option_depth"), 4)
+    .option("-d, --depth", i18n.getTokenSync("cli.commands.option_depth"), 4)
     .option("--silent", "enable silent mode which disable CLI spinners", false);
 
   if (includeOutput) {
-    cmd.option("-o, --output", i18n.getToken("cli.commands.option_output"), "nsecure-result");
+    cmd.option("-o, --output", i18n.getTokenSync("cli.commands.option_output"), "nsecure-result");
   }
   if (strategy !== null) {
-    cmd.option("-s, --vulnerabilityStrategy", i18n.getToken("cli.commands.strategy"), strategy);
+    cmd.option("-s, --vulnerabilityStrategy", i18n.getTokenSync("cli.commands.strategy"), strategy);
   }
 
   return cmd;
