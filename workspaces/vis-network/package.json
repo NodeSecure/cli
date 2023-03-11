@@ -1,0 +1,36 @@
+{
+  "name": "@nodesecure/vis-network",
+  "version": "1.4.0",
+  "description": "NodeSecure vis.js network front module",
+  "type": "module",
+  "exports": "./index.js",
+  "scripts": {
+    "lint": "eslint src test",
+    "lint:fix": "eslint --fix src test",
+    "test": "tap --no-coverage ./test/**.test.js",
+    "test:watch": "tap -b -T --watch ./test/**.test.js",
+    "test:c8": "c8 tap --no-coverage",
+    "start": "npm run build && http-server ./dist",
+    "build": "node esbuild.config.js"
+  },
+  "files": [
+    "index.js",
+    "src"
+  ],
+  "keywords": [
+    "NodeSecure",
+    "vis",
+    "network"
+  ],
+  "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "pretty-bytes": "^6.0.0",
+    "vis-data": "^7.1.4",
+    "vis-network": "^9.1.2"
+  },
+  "devDependencies": {
+    "@nodesecure/flags": "^2.4.0",
+    "@nodesecure/scanner": "^3.7.0"
+  }
+}

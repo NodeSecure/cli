@@ -1,0 +1,97 @@
+{
+  "id": "abcde",
+  "rootDepencyName": "pkg1",
+  "dependencies": {
+    "pkg2": {
+      "versions": {
+        "1.0.3": {
+          "usedBy": {
+            "pkg3": "3.4.0"
+          },
+          "flags": [],
+          "size": 100,
+          "author": {},
+          "warnings": [],
+          "composition": {
+            "extensions": [
+              ".md",
+              ".js",
+              "",
+              ".json"
+            ]
+          },
+          "license": {
+            "uniqueLicenseIds": [
+              "Unlicense"
+            ]
+          },
+          "name": "pkg2",
+          "version": "1.0.3"
+        }
+      }
+    },
+    "pkg3": {
+      "versions": {
+        "3.4.0": {
+          "id": 4,
+          "usedBy": {
+            "pkg1": "3.0.0"
+          },
+          "flags": [
+            "hasDependencies",
+            "hasIndirectDependencies",
+            "hasWarnings"
+          ],
+          "size": 100,
+          "author": {},
+          "warnings": [],
+          "composition": {
+            "extensions": [
+              ".md",
+              ".ts",
+              ".js",
+              "",
+              ".json"
+            ]
+          },
+          "license": {
+            "uniqueLicenseIds": [
+              "Licence1"
+            ]
+          }
+        }
+      }
+    },
+    "pkg1": {
+      "versions": {
+        "3.0.0": {
+          "id": 0,
+          "usedBy": {},
+          "flags": [
+            "hasDependencies"
+          ],
+          "size": 200,
+          "author": {
+            "name": "john doe"
+          },
+          "composition": {
+            "extensions": [
+              ".ts",
+              ".js",
+              ".txt",
+              ".md",
+              ".json"
+            ]
+          },
+          "license": "a string licence (should be unknown)",
+          "warnings": []
+        }
+      }
+    }
+  },
+  "version": "2.2.0",
+  "warnings": [
+    "warning_01",
+    "warning_02"
+  ]
+}
