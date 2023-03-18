@@ -10,6 +10,9 @@ on:
     paths:
       - workspaces/vis-network/**
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
