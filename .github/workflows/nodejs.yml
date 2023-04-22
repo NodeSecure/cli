@@ -10,10 +10,11 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{matrix.os}}
     strategy:
       matrix:
         node-version: [16.x, 18.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
       fail-fast: false
     steps:
       - name: Harden Runner
