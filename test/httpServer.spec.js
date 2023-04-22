@@ -9,6 +9,7 @@ import { get } from "@myunisoft/httpie";
 import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
+import enableDestroy from "server-destroy";
 
 // Require Internal Dependencies
 import { buildServer } from "../src/http-server/index.js";
@@ -26,6 +27,7 @@ const httpServer = buildServer(JSON_PATH, {
   port: HTTP_PORT,
   openLink: false
 });
+enableDestroy(httpServer.server);
 
 tap.test("'/' should return index.html content", async(tape) => {
   await i18n.getLocalLang();
@@ -138,6 +140,7 @@ tap.test("teardown", (tape) => {
     tape.end();
     tap.endAll();
   });
+  httpServer.server.destroy();
 });
 
 /**
