@@ -92,7 +92,7 @@
     "@topcli/spinner": "^2.0.0",
     "cacache": "^17.0.5",
     "dotenv": "^16.0.3",
-    "filenamify": "^5.1.1",
+    "filenamify": "^6.0.0",
     "ini": "^4.0.0",
     "kleur": "^4.1.4",
     "ms": "^2.1.3",
