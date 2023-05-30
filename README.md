@@ -7,10 +7,10 @@
 </p>
 
 <p align="center">
-    <a href="https://www.npmjs.com/package/nsecure">
+    <a href="https://www.npmjs.com/package/@nodesecure/cli">
       <img src="https://img.shields.io/github/package-json/v/NodeSecure/cli?style=for-the-badge" alt="npm version">
     </a>
-    <a href="https://www.npmjs.com/package/nsecure">
+    <a href="https://github.com/NodeSecure/cli/blob/master/LICENSE">
       <img src="https://img.shields.io/github/license/NodeSecure/cli?style=for-the-badge" alt="license">
     </a>
     <a href="https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli">
