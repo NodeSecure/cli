@@ -17,8 +17,8 @@
     "prepublishOnly": "npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
-    "test-only": "cross-env NODE_OPTIONS=\"--loader=esmock --no-warnings\" tap --test-regex='.spec.js' --no-check-coverage",
-    "coverage": "cross-env NODE_OPTIONS=\"--loader=esmock --no-warnings\" c8 -r html tap --test-regex='.spec.js' --no-coverage"
+    "test-only": "node --loader=esmock --no-warnings --test test/",
+    "coverage": "c8 --reporter=html npm run test"
   },
   "files": [
     "bin",
@@ -59,56 +59,48 @@
   },
   "homepage": "https://github.com/NodeSecure/cli#readme",
   "devDependencies": {
-    "@istanbuljs/esm-loader-hook": "^0.2.0",
     "@myunisoft/httpie": "^1.11.0",
     "@nodesecure/eslint-config": "^1.7.0",
     "@nodesecure/size-satisfies": "^1.1.0",
     "@nodesecure/vis-network": "^1.4.0",
-    "@types/node": "^18.15.10",
-    "c8": "^7.13.0",
+    "@types/node": "^20.2.5",
+    "c8": "^7.14.0",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.17.14",
-    "eslint": "^8.27.0",
-    "esmock": "^2.2.0",
+    "esbuild": "^0.17.19",
+    "eslint": "^8.41.0",
+    "esmock": "^2.3.0",
     "http-server": "^14.1.1",
     "pkg-ok": "^3.0.0",
-    "pretty-bytes": "^5.6.0",
-    "strip-ansi": "^7.0.1",
-    "tap": "^16.3.4"
+    "pretty-bytes": "^6.1.0",
+    "strip-ansi": "^7.1.0"
   },
   "dependencies": {
     "@nodesecure/documentation-ui": "^1.3.0",
     "@nodesecure/flags": "^2.4.0",
-    "@nodesecure/i18n": "^3.1.0",
+    "@nodesecure/i18n": "^3.2.0",
     "@nodesecure/npm-registry-sdk": "^1.5.2",
-    "@nodesecure/ossf-scorecard-sdk": "^1.1.0",
+    "@nodesecure/ossf-scorecard-sdk": "^1.1.1",
     "@nodesecure/rc": "^1.4.0",
     "@nodesecure/scanner": "^4.0.0",
     "@nodesecure/utils": "^1.1.0",
     "@nodesecure/vuln": "^1.7.0",
-    "@openally/result": "^1.1.0",
+    "@openally/result": "^1.2.0",
     "@polka/send-type": "^0.5.2",
     "@topcli/cliui": "^1.1.0",
     "@topcli/spinner": "^2.0.0",
-    "cacache": "^17.0.5",
-    "dotenv": "^16.0.3",
+    "cacache": "^17.1.3",
+    "dotenv": "^16.1.3",
     "filenamify": "^6.0.0",
-    "ini": "^4.0.0",
-    "kleur": "^4.1.4",
+    "ini": "^4.1.1",
+    "kleur": "^4.1.5",
     "ms": "^2.1.3",
     "open": "^9.1.0",
     "polka": "^0.5.2",
     "qoa": "^0.2.0",
     "sade": "^1.8.1",
-    "semver": "^7.3.8",
+    "semver": "^7.5.1",
     "server-destroy": "^1.0.1",
-    "sirv": "^2.0.2",
+    "sirv": "^2.0.3",
     "zup": "0.0.1"
-  },
-  "tap": {
-    "node-arg": [
-      "--experimental-loader",
-      "@istanbuljs/esm-loader-hook"
-    ]
   }
 }
