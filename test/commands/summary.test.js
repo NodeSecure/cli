@@ -4,9 +4,10 @@ dotenv.config();
 // Import Node.js Dependencies
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { test } from "node:test";
+import assert from "node:assert";
 
 // Import Third-party Dependencies
-import tap from "tap";
 import stripAnsi from "strip-ansi";
 import * as i18n from "@nodesecure/i18n";
 
@@ -18,7 +19,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kProcessDir = path.join(__dirname, "..", "process");
 const kProcessPath = path.join(kProcessDir, "summary.js");
 
-tap.test("summary should execute summary command on fixtures 'result-test1.json'", async(tape) => {
+test("summary should execute summary command on fixtures 'result-test1.json'", async() => {
   await i18n.setLocalLang("english");
   const lines = [
     /Global Stats: express.*$/,
@@ -34,7 +35,6 @@ tap.test("summary should execute summary command on fixtures 'result-test1.json'
     /\(47\) MIT - \(2\) ISC.*$/,
     /.*/
   ];
-  tape.plan(lines.length * 2);
 
   const processOptions = {
     path: kProcessPath,
@@ -43,9 +43,7 @@ tap.test("summary should execute summary command on fixtures 'result-test1.json'
 
   for await (const line of runProcess(processOptions)) {
     const regexp = lines.shift();
-    tape.ok(regexp, "we are expecting this line");
-    tape.ok(regexp.test(stripAnsi(line)), `line (${line}) matches ${regexp}`);
+    assert.ok(regexp, "we are expecting this line");
+    assert.ok(regexp.test(stripAnsi(line)), `line (${line}) matches ${regexp}`);
   }
-
-  tape.end();
 });
