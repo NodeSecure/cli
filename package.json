@@ -18,7 +18,7 @@
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
     "test-only": "node --loader=esmock --no-warnings --test test/",
-    "coverage": "c8 --reporter=html npm run test"
+    "coverage": "c8 --reporter=lcov npm run test"
   },
   "files": [
     "bin",
