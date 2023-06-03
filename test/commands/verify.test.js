@@ -4,10 +4,8 @@ dotenv.config();
 // Import Node.js Dependencies
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-
-
-// Import Third-party Dependencies
-import tap from "tap";
+import { test } from "node:test";
+import assert from "node:assert";
 
 // Import Internal Dependencies
 import { VERIFY_EXPECTED_LINES } from "../fixtures/verifyExpectedStdout.js";
@@ -17,13 +15,9 @@ import { runProcess } from "../helpers/cliCommandRunner.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kProcessDir = path.join(__dirname, "..", "process");
 
-tap.test("should execute verify command", async(tape) => {
-  tape.plan(VERIFY_EXPECTED_LINES.length);
-
+test("should execute verify command", async() => {
   for await (const line of runProcess({ path: path.join(kProcessDir, "verify.js") })) {
     const expectedLine = VERIFY_EXPECTED_LINES.shift();
-    tape.equal(line.trimEnd(), expectedLine, `should be ${expectedLine}`);
+    assert.equal(line.trimEnd(), expectedLine, `should be ${expectedLine}`);
   }
-
-  tape.end();
 });

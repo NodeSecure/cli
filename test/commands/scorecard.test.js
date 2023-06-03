@@ -1,9 +1,10 @@
 // Import Node.js Dependencies
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { test } from "node:test";
+import assert from "node:assert";
 
 // Import Third-party Dependencies
-import tap from "tap";
 import esmock from "esmock";
 import { API_URL } from "@nodesecure/ossf-scorecard-sdk";
 import { Ok } from "@openally/result";
@@ -17,7 +18,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kProcessDir = path.join(__dirname, "..", "process");
 const kProcessPath = path.join(kProcessDir, "scorecard.js");
 
-tap.test("scorecard should display fastify scorecard", async(tape) => {
+test("scorecard should display fastify scorecard", async() => {
   const packageName = "fastify/fastify";
   const mockBody = {
     date: "2222-12-31",
@@ -52,11 +53,10 @@ tap.test("scorecard should display fastify scorecard", async(tape) => {
   const givenLines = await arrayFromAsync(runProcess(scorecardCliOptions));
   const expectedLines = getExpectedScorecardLines(packageName, mockBody);
 
-  tape.same(givenLines, expectedLines, `lines should be ${expectedLines}`);
-  tape.end();
+  assert.deepEqual(givenLines, expectedLines, `lines should be ${expectedLines}`);
 });
 
-tap.test("should not display scorecard for unknown repository", async(tape) => {
+test("should not display scorecard for unknown repository", async() => {
   const packageName = "unkown/repository";
   const scorecardCliOptions = {
     path: kProcessPath,
@@ -79,11 +79,10 @@ tap.test("should not display scorecard for unknown repository", async(tape) => {
   ];
   const givenLines = await arrayFromAsync(runProcess(scorecardCliOptions));
 
-  tape.same(givenLines, expectedLines, `lines should be ${expectedLines}`);
-  tape.end();
+  assert.deepEqual(givenLines, expectedLines, `lines should be ${expectedLines}`);
 });
 
-tap.test("should retrieve repository whithin git config", async(tape) => {
+test("should retrieve repository whithin git config", async() => {
   const testingModule = await esmock("../../src/commands/scorecard.js", {
     fs: {
       readFileSync: () => [
@@ -92,22 +91,23 @@ tap.test("should retrieve repository whithin git config", async(tape) => {
       ].join("\n")
     }
   });
-  tape.same(testingModule.getCurrentRepository(), Ok("myawesome/repository"));
-  tape.end();
+
+  assert.deepEqual(testingModule.getCurrentRepository(), Ok("myawesome/repository"));
 });
 
-tap.test("should not find origin remote", async(tape) => {
+test("should not find origin remote", async() => {
   const testingModule = await esmock("../../src/commands/scorecard.js", {
     fs: {
       readFileSync: () => "just one line"
     }
   });
   const result = testingModule.getCurrentRepository();
-  tape.equal(result.err, true);
-  tape.equal(result.val, "Cannot find origin remote.");
+
+  assert.equal(result.err, true);
+  assert.equal(result.val, "Cannot find origin remote.");
 });
 
-tap.test("should support github only", async(tape) => {
+test("should support github only", async() => {
   const testingModule = await esmock("../../src/commands/scorecard.js", {
     fs: {
       readFileSync: () => [
@@ -117,6 +117,7 @@ tap.test("should support github only", async(tape) => {
     }
   });
   const result = testingModule.getCurrentRepository();
-  tape.equal(result.err, true);
-  tape.equal(result.val, "OSSF Scorecard supports projects hosted on Github only.");
+
+  assert.equal(result.err, true);
+  assert.equal(result.val, "OSSF Scorecard supports projects hosted on Github only.");
 });
