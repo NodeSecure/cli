@@ -1,5 +1,5 @@
 // Import Node.js Dependencies
-import path from "path";
+import path from "node:path";
 
 // Import Internal Dependencies
 import { buildServer } from "../http-server/index.js";

@@ -1,5 +1,5 @@
 // Import Node.Js Dependencies
-import { pipeline } from "stream";
+import { pipeline } from "node:stream";
 
 // Import Third-party Dependencies
 import send from "@polka/send-type";

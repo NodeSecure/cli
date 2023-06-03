@@ -14,6 +14,6 @@ export async function get(req, res) {
   }
 
   catch (error) {
-    return send(res, error.statusCode, { error: error.statusMessage });
+    return send(res, error.statusCode ?? 404, { error: error.statusMessage ?? "Not Found" });
   }
 }
