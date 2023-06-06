@@ -17,6 +17,7 @@ const kProcessDir = path.join(__dirname, "..", "process");
 const kExpectVerifyJson = `{
   "foo": "bar"
 }`.split("\n");
+
 test("should execute verify command", async() => {
   for await (const line of runProcess({ path: path.join(kProcessDir, "verify.js") })) {
     const expectedLine = VERIFY_EXPECTED_LINES.shift();

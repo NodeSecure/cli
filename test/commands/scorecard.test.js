@@ -117,8 +117,11 @@ test("should support github only", async() => {
       ].join("\n")
     }
   });
+  // NOTE: we can then test that the only expected one console.log is correct
+  // it's a bit simpler that running the process to parse stdout
   const logs = [];
   console.log = (str) => logs.push(str);
+
   await testingModule.main();
 
   assert.equal(logs.length, 1);

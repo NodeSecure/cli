@@ -49,7 +49,7 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
 });
 
 test("should not have dependencies", async() => {
-  const lines = [
+  const expectedLines = [
     /Global Stats: express.*$/,
     /.*/,
     /Error:.*No dependencies.*$/,
@@ -61,8 +61,9 @@ test("should not have dependencies", async() => {
   };
 
   for await (const line of runProcess(processOptions)) {
-    const regexp = lines.shift();
-    assert.ok(regexp, "we are expecting this line");
-    assert.ok(regexp.test(stripAnsi(line)), `line (${line}) matches ${regexp}`);
+    const expectedLineRegex = expectedLines.shift();
+    const formattedLine = stripAnsi(line);
+    assert.ok(expectedLineRegex, "we are expecting this line");
+    assert.ok(expectedLineRegex.test(formattedLine), `line (${formattedLine}) should match ${expectedLineRegex}`);
   }
 });

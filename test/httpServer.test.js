@@ -39,7 +39,6 @@ describe("httpServer", () => {
     httpServer = buildServer(JSON_PATH, {
       port: HTTP_PORT,
       openLink: false
-
     });
     httpServer.server.on("listening", () => done(1));
     enableDestroy(httpServer.server);
