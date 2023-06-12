@@ -47,3 +47,23 @@ test("summary should execute summary command on fixtures 'result-test1.json'", a
     assert.ok(regexp.test(stripAnsi(line)), `line (${line}) matches ${regexp}`);
   }
 });
+
+test("should not have dependencies", async() => {
+  const expectedLines = [
+    /Global Stats: express.*$/,
+    /.*/,
+    /Error:.*No dependencies.*$/,
+    /.*/
+  ];
+  const processOptions = {
+    path: kProcessPath.replace("summary.js", "summary-zero-dependencies.js"),
+    cwd: path.join(__dirname, "..", "fixtures")
+  };
+
+  for await (const line of runProcess(processOptions)) {
+    const expectedLineRegex = expectedLines.shift();
+    const formattedLine = stripAnsi(line);
+    assert.ok(expectedLineRegex, "we are expecting this line");
+    assert.ok(expectedLineRegex.test(formattedLine), `line (${formattedLine}) should match ${expectedLineRegex}`);
+  }
+});

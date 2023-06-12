@@ -8,6 +8,7 @@ import assert from "node:assert";
 import esmock from "esmock";
 import { API_URL } from "@nodesecure/ossf-scorecard-sdk";
 import { Ok } from "@openally/result";
+import stripAnsi from "strip-ansi";
 
 // Import Internal Dependencies
 import { runProcess } from "../helpers/cliCommandRunner.js";
@@ -116,8 +117,13 @@ test("should support github only", async() => {
       ].join("\n")
     }
   });
-  const result = testingModule.getCurrentRepository();
+  // NOTE: we can then test that the only expected one console.log is correct
+  // it's a bit simpler that running the process to parse stdout
+  const logs = [];
+  console.log = (str) => logs.push(str);
 
-  assert.equal(result.err, true);
-  assert.equal(result.val, "OSSF Scorecard supports projects hosted on Github only.");
+  await testingModule.main();
+
+  assert.equal(logs.length, 1);
+  assert.equal(stripAnsi(logs[0]), "OSSF Scorecard supports projects hosted on Github only.");
 });

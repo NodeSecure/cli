@@ -1,6 +1,6 @@
 // Import Node.js Dependencies
-import path from "path";
-import os from "os";
+import path from "node:path";
+import os from "node:os";
 
 // Import Third-party Depedencies
 import cacache from "cacache";
@@ -15,7 +15,7 @@ export async function get() {
 
     return JSON.parse(data.toString());
   }
-  catch (error) {
+  catch {
     const defaultValue = {
       defaultPackageMenu: "info",
       ignore: { flags: [], warnings: [] }

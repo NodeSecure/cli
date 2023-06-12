@@ -1,5 +1,5 @@
 // Import Node.js Dependencies
-import fs from "fs";
+import fs from "node:fs";
 
 // Import Third-party Dependencies
 import kleur from "kleur";

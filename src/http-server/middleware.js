@@ -1,6 +1,6 @@
 // Import Node.js Dependencies
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // Import Third-party Dependencies
 import sirv from "sirv";

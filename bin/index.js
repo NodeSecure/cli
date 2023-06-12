@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Import Node.js Dependencies
-import { createRequire } from "module";
+import { createRequire } from "node:module";
 
 // Import Third-party Dependencies
 import kleur from "kleur";

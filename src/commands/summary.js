@@ -1,6 +1,6 @@
 // Import Node.js Dependencies
-import fs from "fs/promises";
-import path from "path";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 // Import Third-party Dependencies
 import cliui from "@topcli/cliui";

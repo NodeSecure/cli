@@ -656,7 +656,7 @@ export class PackageInfo {
 
   async generateOssfScorecard() {
     if (!this.links.github.href) {
-      document.getElementById('scorecard-menu').style.display = 'none';
+      document.getElementById('scorecard-menu')?.style.display = 'none';
       return;
     }
 

@@ -1,7 +1,7 @@
 // Import Node.js Dependencies
-import fs from "fs/promises";
-import path from "path";
-import events from "events";
+import fs from "node:fs/promises";
+import path from "node:path";
+import events from "node:events";
 
 // Import Third-party Dependencies
 import kleur from "kleur";
