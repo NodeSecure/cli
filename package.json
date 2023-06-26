@@ -79,7 +79,7 @@
     "@nodesecure/flags": "^2.4.0",
     "@nodesecure/i18n": "^3.2.0",
     "@nodesecure/npm-registry-sdk": "^1.5.2",
-    "@nodesecure/ossf-scorecard-sdk": "^1.1.1",
+    "@nodesecure/ossf-scorecard-sdk": "^2.0.0",
     "@nodesecure/rc": "^1.4.0",
     "@nodesecure/scanner": "^4.0.0",
     "@nodesecure/utils": "^1.1.0",
