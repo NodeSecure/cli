@@ -64,7 +64,7 @@
     "@nodesecure/size-satisfies": "^1.1.0",
     "@nodesecure/vis-network": "^1.4.0",
     "@types/node": "^20.2.5",
-    "c8": "^7.14.0",
+    "c8": "^8.0.1",
     "cross-env": "^7.0.3",
     "esbuild": "^0.17.19",
     "eslint": "^8.41.0",
