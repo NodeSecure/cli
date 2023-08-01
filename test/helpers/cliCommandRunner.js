@@ -31,12 +31,15 @@ export async function* runProcess(options) {
 export function prepareProcess(command, args = process.argv.slice(2)) {
   process.once("message", (undiciMockAgentOptions) => {
     if (undiciMockAgentOptions) {
-      const { baseUrl, intercept, response } = undiciMockAgentOptions;
       const mockAgent = new MockAgent();
-      const pool = mockAgent.get(baseUrl);
+      for (const mock of undiciMockAgentOptions) {
+        const { baseUrl, intercept, response } = mock;
+        const pool = mockAgent.get(baseUrl);
+
+        pool.intercept(intercept).reply(response.status, () => response.body);
+      }
 
       mockAgent.disableNetConnect();
-      pool.intercept(intercept).reply(response.status, () => response.body);
       setGlobalDispatcher(mockAgent);
     }
 
