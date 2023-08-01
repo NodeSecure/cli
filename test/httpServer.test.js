@@ -35,12 +35,13 @@ const kConfigKey = "cli-config";
 describe("httpServer", () => {
   let httpServer;
 
-  before((done) => {
+  before(async() => {
     httpServer = buildServer(JSON_PATH, {
       port: HTTP_PORT,
       openLink: false
     });
-    httpServer.server.on("listening", () => done(1));
+    await once(httpServer.server, "listening");
+
     enableDestroy(httpServer.server);
   }, { timeout: 5000 });
 
