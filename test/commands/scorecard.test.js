@@ -38,7 +38,7 @@ test("scorecard should display fastify scorecard", async() => {
   const scorecardCliOptions = {
     path: kProcessPath,
     args: [packageName],
-    undiciMockAgentOptions: {
+    undiciMockAgentOptions: [{
       baseUrl: API_URL,
       intercept: {
         path: `/projects/github.com/${packageName}`,
@@ -48,8 +48,22 @@ test("scorecard should display fastify scorecard", async() => {
         body: mockBody,
         status: 200
       }
-    }
+    },
+    {
+      baseUrl: "https://api.github.com",
+      intercept: {
+        path: "/repos/fastify/fastify",
+        method: "GET"
+      },
+      response: {
+        body: {
+          full_name: "fastify/fastify"
+        },
+        status: 200
+      }
+    }]
   };
+
 
   const givenLines = await arrayFromAsync(runProcess(scorecardCliOptions));
   const expectedLines = getExpectedScorecardLines(packageName, mockBody);
@@ -62,7 +76,7 @@ test("should not display scorecard for unknown repository", async() => {
   const scorecardCliOptions = {
     path: kProcessPath,
     args: [packageName],
-    undiciMockAgentOptions: {
+    undiciMockAgentOptions: [{
       baseUrl: API_URL,
       intercept: {
         path: `/projects/github.com/${packageName}`,
@@ -72,7 +86,7 @@ test("should not display scorecard for unknown repository", async() => {
         body: {},
         status: 500
       }
-    }
+    }]
   };
 
   const expectedLines = [
