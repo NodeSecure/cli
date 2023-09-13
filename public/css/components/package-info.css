@@ -338,6 +338,18 @@ section#package-info ul li.clickable:hover {
   font-size: 18px;
 }
 
+#pan-scorecard .score-header .visualizer a {
+  color: #cfd8dc;
+  margin-top: 6px;
+}
+
+#pan-scorecard .score-header .visualizer .logo {
+  vertical-align: sub;
+  width: 21px;
+  /* https://codepen.io/sosuke/pen/Pjoqqp */
+  filter: invert(99%) sepia(36%) saturate(748%) hue-rotate(170deg) brightness(93%) contrast(84%);
+}
+
 #pan-scorecard .check {
   display: flex;
   height: 26px;

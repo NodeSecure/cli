@@ -37,7 +37,15 @@ await esbuild.build({
 });
 
 await Promise.all([
-  ...["github-mark.png", "github-black.png", "npm-icon.svg", "nodejs.png", "snyk.png", "sonatype.png", "avatar-default.png"]
-    .map((name) => fs.copyFile(path.join(kImagesDir, name), path.join(kOutDir, name))),
+  ...[
+    "github-mark.png",
+    "github-black.png",
+    "npm-icon.svg",
+    "nodejs.png",
+    "snyk.png",
+    "sonatype.png",
+    "avatar-default.png",
+    "ext-link.svg"
+  ].map((name) => fs.copyFile(path.join(kImagesDir, name), path.join(kOutDir, name))),
   fs.copyFile(path.join(kPublicDir, "favicon.ico"), path.join(kOutDir, "favicon.ico"))
 ]);
