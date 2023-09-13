@@ -10,6 +10,7 @@ import { UnpkgCodeFetcher } from "./unpkgCodeFetcher.js";
 
 const kSocketDevLink = 'https://socket.dev/npm/package/';
 const kSnykAdvisorLink = 'https://snyk.io/advisor/npm-package/';
+const kScorecardVisualizer = (repo) => `https://kooltheba.github.io/openssf-scorecard-api-visualizer/#/projects/github.com/${repo}`;
 
 export class PackageInfo {
   static DOMElementName = "package-info";
@@ -751,6 +752,7 @@ export class PackageInfo {
 
     document.getElementById('ossf-score').innerText = score;
     document.getElementById('head-score').innerText = score;
+    document.querySelector(".score-header .visualizer a").setAttribute('href', kScorecardVisualizer(repoName));
 
     const checksNodes = checksContainerElement.childNodes;
     checksNodes.forEach((check, checkKey) => {
