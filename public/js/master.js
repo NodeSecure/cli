@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.settings = await new Settings().fetchUserConfig();
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
+  let currentNodeParams = null;
 
   const secureDataSet = new NodeSecureDataSet({
     flagsToIgnore: window.settings.config.ignore.flags,
@@ -30,6 +31,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   const nsn = new NodeSecureNetwork(secureDataSet);
   nsn.network.on("click", updateShowInfoMenu);
 
+  window.addEventListener("settings-saved", async(event) => {
+    secureDataSet.warningsToIgnore = new Set(event.detail.ignore.warnings);
+    secureDataSet.flagsToIgnore = new Set(event.detail.ignore.flags);
+
+    await secureDataSet.init(secureDataSet.data);
+    const { nodes } = secureDataSet.build();
+    nsn.nodes.update(nodes.get());
+
+    if (currentNodeParams) {
+      window.navigation.setNavByName("network--view");
+      nsn.neighbourHighlight(currentNodeParams);
+      updateShowInfoMenu(currentNodeParams);
+    }
+  });
+
   // Initialize searchbar
   {
     const dataListElement = document.getElementById("package-list");
@@ -42,12 +58,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function updateShowInfoMenu(params) {
     if (params.nodes.length === 0) {
+      currentNodeParams = null;
+
       return PackageInfo.close();
     }
 
-    const currentNode = params.nodes[0];
+    currentNodeParams = params;
+    const currentNode = currentNodeParams.nodes[0];
     const selectedNode = secureDataSet.linker.get(
-      Number(params.nodes[0])
+      Number(currentNode)
     );
     new PackageInfo(selectedNode, currentNode, secureDataSet.data.dependencies[selectedNode.name], nsn);
   }

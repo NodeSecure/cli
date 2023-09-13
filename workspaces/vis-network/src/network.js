@@ -93,6 +93,7 @@ export default class NodeSecureNetwork {
       this.isLoaded = true;
       this.network.stopSimulation();
       this.network.on("click", this.neighbourHighlight.bind(this));
+      this.network.setOptions({ physics: false });
     });
 
     this.network.stabilize(500);
