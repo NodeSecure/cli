@@ -8,7 +8,7 @@ import assert from "node:assert";
 import { once } from "node:events";
 
 // Import Third-party Dependencies
-import { get } from "@myunisoft/httpie";
+import { get, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@myunisoft/httpie";
 import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
@@ -18,8 +18,6 @@ import cacache from "cacache";
 
 // Require Internal Dependencies
 import { buildServer } from "../src/http-server/index.js";
-import * as root from "../src/http-server/endpoints/root.js";
-import * as config from "../src/http-server/endpoints/config.js";
 
 // CONSTANTS
 const HTTP_PORT = 17049;
@@ -31,11 +29,16 @@ const INDEX_HTML = readFileSync(path.join(__dirname, "..", "views", "index.html"
 
 const kCachePath = path.join(os.tmpdir(), "nsecure-cli");
 const kConfigKey = "cli-config";
+const kGlobalDispatcher = getGlobalDispatcher();
+const kMockAgent = new MockAgent();
+const kBundlephobiaPool = kMockAgent.get("https://bundlephobia.com");
 
 describe("httpServer", () => {
   let httpServer;
 
   before(async() => {
+    setGlobalDispatcher(kMockAgent);
+
     httpServer = buildServer(JSON_PATH, {
       port: HTTP_PORT,
       openLink: false
@@ -47,6 +50,8 @@ describe("httpServer", () => {
 
   after(() => {
     httpServer.server.destroy();
+    kBundlephobiaPool.close();
+    setGlobalDispatcher(kGlobalDispatcher);
   });
 
   test("'/' should return index.html content", async() => {
@@ -154,6 +159,15 @@ describe("httpServer", () => {
   });
 
   test("'/bundle/:name/:version' should return the bundle size", async() => {
+    kBundlephobiaPool.intercept({
+      path: () => true
+    }).reply(200, {
+      gzip: 1,
+      size: 1,
+      dependencySizes: {
+        foo: 1
+      }
+    }, { headers: { "content-type": "application/json" } });
     const result = await get(new URL("/bundle/flatstr/1.0.12", HTTP_URL));
 
     assert.equal(result.statusCode, 200);
@@ -162,6 +176,9 @@ describe("httpServer", () => {
   });
 
   test("'/bundle/:name/:version' should return an error if it fails", async() => {
+    kBundlephobiaPool.intercept({
+      path: () => true
+    }).reply(404);
     const wrongVersion = undefined;
 
     await assert.rejects(async() => {
@@ -175,6 +192,15 @@ describe("httpServer", () => {
   });
 
   test("'/bundle/:name' should return the bundle size of the last version", async() => {
+    kBundlephobiaPool.intercept({
+      path: () => true
+    }).reply(200, {
+      gzip: 1,
+      size: 1,
+      dependencySizes: {
+        foo: 1
+      }
+    }, { headers: { "content-type": "application/json" } });
     const result = await get(new URL("/bundle/flatstr", HTTP_URL));
 
     assert.equal(result.statusCode, 200);
@@ -183,6 +209,9 @@ describe("httpServer", () => {
   });
 
   test("'/bundle/:name' should return an error if it fails", async() => {
+    kBundlephobiaPool.intercept({
+      path: () => true
+    }).reply(404);
     const wrongPackageName = "br-br-br-brah";
 
     await assert.rejects(async() => {

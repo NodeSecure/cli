@@ -76,6 +76,8 @@ export class Settings {
     });
     this.config = newConfig;
     this.saveButton.classList.add("disabled");
+
+    window.dispatchEvent(new CustomEvent("settings-saved", { detail: this.config }));
   }
 
   updateSettings() {

@@ -59,6 +59,9 @@ export default class NodeSecureDataSet extends EventTarget {
     const dataEntries = Object.entries(data.dependencies);
     this.dependenciesCount = dataEntries.length;
 
+    this.rawEdgesData = [];
+    this.rawNodesData = [];
+
     for (const [packageName, descriptor] of dataEntries) {
       for (const [currVersion, opt] of Object.entries(descriptor.versions)) {
         const { id, usedBy, flags, size, license, author, composition, warnings } = opt;
