@@ -30,6 +30,6 @@
   },
   "devDependencies": {
     "@nodesecure/flags": "^2.4.0",
-    "@nodesecure/scanner": "^3.7.0"
+    "@nodesecure/scanner": "^5.0.0"
   }
 }
