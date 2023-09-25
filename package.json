@@ -81,7 +81,7 @@
     "@nodesecure/npm-registry-sdk": "^1.6.1",
     "@nodesecure/ossf-scorecard-sdk": "^2.0.0",
     "@nodesecure/rc": "^1.4.0",
-    "@nodesecure/scanner": "^4.0.0",
+    "@nodesecure/scanner": "^5.0.1",
     "@nodesecure/utils": "^1.1.0",
     "@nodesecure/vuln": "^1.7.0",
     "@openally/result": "^1.2.0",
