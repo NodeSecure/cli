@@ -49,7 +49,7 @@ The CLI allow to load the JSON into a Webpage with the **open** command. The pag
 
 ## 🚧 Requirements
 
-- [Node.js](https://nodejs.org/en/) LTS 16.x or higher
+- [Node.js](https://nodejs.org/en/) v18 or higher
 
 ## 💃 Getting Started
 
