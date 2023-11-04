@@ -9,7 +9,7 @@
   },
   "type": "module",
   "engines": {
-    "node": ">=16.1.0"
+    "node": ">=18"
   },
   "scripts": {
     "eslint": "eslint bin src test",
