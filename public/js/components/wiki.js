@@ -2,7 +2,7 @@
 import * as documentationUI from "@nodesecure/documentation-ui";
 
 // Import Internal Dependencies
-import { PackageInfo } from "./package.info.js";
+import { PackageInfo } from "./package/package.js";
 
 export class Wiki {
   constructor() {
