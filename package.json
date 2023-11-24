@@ -14,7 +14,7 @@
   "scripts": {
     "eslint": "eslint bin src test",
     "eslint-fix": "npm run eslint -- --fix",
-    "prepublishOnly": "npm run build && pkg-ok",
+    "prepublishOnly": "rimraf ./dist && npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run eslint",
     "test-only": "node --loader=esmock --no-warnings --test test/",
@@ -72,6 +72,7 @@
     "http-server": "^14.1.1",
     "pkg-ok": "^3.0.0",
     "pretty-bytes": "^6.1.1",
+    "rimraf": "^5.0.5",
     "strip-ansi": "^7.1.0"
   },
   "dependencies": {

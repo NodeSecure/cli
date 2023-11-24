@@ -1,5 +1,5 @@
 // Import Internal Dependencies
-import { PackageInfo } from "./package.info.js";
+import { PackageInfo } from "./package/package.js";
 
 export class ViewNavigation {
   static DefaultActiveMenu = "network--view";
