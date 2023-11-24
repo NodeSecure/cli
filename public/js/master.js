@@ -5,7 +5,7 @@ import { NodeSecureDataSet, NodeSecureNetwork } from "@nodesecure/vis-network";
 
 // Import UI Components
 import { ViewNavigation } from "./components/navigation.js";
-import { PackageInfo } from "./components/package.info.js";
+import { PackageInfo } from "./components/package/package.js";
 import { Wiki } from "./components/wiki.js";
 import { SearchBar } from "./components/searchbar.js";
 import { Settings } from "./components/settings.js";
