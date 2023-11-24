@@ -77,7 +77,8 @@ Then the **nsecure** binary will be available in your terminal. Give a try with 
 $ nsecure auto express
 ```
 
-> ⚠️ Setup an [npm token](https://github.com/NodeSecure/cli#private-packages--registry) to avoid hiting the maximum request limit of the npm registry API.
+> [!TIP]
+> Setup an [npm token](https://github.com/NodeSecure/cli#private-packages--registry) to avoid hiting the maximum request limit of the npm registry API.
 
 ## 👀 Usage example
 
@@ -198,7 +199,8 @@ If you have already cloned and installed the project with npm locally, you still
 $ npm run build
 ```
 
-> **Warning** restart this command when modifying files in the public root folder
+> [!IMPORTANT]
+> Restart this command when modifying files in the public root folder
 
 Once you have finished your development, check that the tests (and linter) are still good by running the following script:
 
@@ -206,7 +208,8 @@ Once you have finished your development, check that the tests (and linter) are s
 $ npm test
 ```
 
-> **Note** If you add a feature, try adding tests for it along.
+> [!CAUTION]
+> If you add a feature, try adding tests for it along.
 
 ## Workspaces
 
