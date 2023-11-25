@@ -63,6 +63,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       return PackageInfo.close();
     }
 
+    if (currentNodeParams?.nodes[0] === params.nodes[0]) {
+      return;
+    }
+
     currentNodeParams = params;
     const currentNode = currentNodeParams.nodes[0];
     const selectedNode = secureDataSet.linker.get(
