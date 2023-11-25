@@ -3,6 +3,15 @@ import avatarURL from "../img/avatar-default.png";
 
 window.activeLegendElement = null;
 
+export function getGithubRepositoryPath(url) {
+  const github = new URL(url);
+
+  return github.pathname.slice(
+    1,
+    github.pathname.includes(".git") ? -4 : github.pathname.length
+  );
+}
+
 /**
  * @param {keyof HTMLElementTagNameMap} kind
  * @param {object} [options]

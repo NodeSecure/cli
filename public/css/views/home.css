@@ -9,10 +9,66 @@
 
 #home--view .home--header {
   display: flex;
-  flex-direction: column;
 }
 
-#home--view .home--header>.top {
+.home--header--scorecard {
+  display: none;
+  flex-shrink: 0;
+  margin-left: 40px;
+  overflow: hidden;
+  border-radius: 4px;
+  font-family: 'mononoki';
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.home--header--scorecard .description {
+  width: 120px;
+  background: linear-gradient(to bottom,  #37474f 0%,#263238 100%);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.home--header--scorecard .description > img {
+  height: 40px;
+}
+
+.home--header--scorecard .description > p {
+  margin-left: 10px;
+}
+
+.home--header--scorecard .score {
+  width: 73px;
+  color: #FFF;
+  display: flex;
+  font-size: 20px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 1px 1px 5px #0000007a;
+  box-shadow: 2px 2px 10px #1e1e1e69 inset;
+}
+.home--header--scorecard .score.green {
+  background-color: rgb(113 203 45);
+}
+.home--header--scorecard .score.red {
+  background-color: rgb(219 80 58);
+}
+.home--header--scorecard .score.orange {
+  background-color: rgb(252 196 39);
+}
+.home--header--scorecard .score.blue {
+  background-color: rgb(39 144 252);
+}
+
+.home--header--title  {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.home--header--title .top {
   display: flex;
   height: 40px;
   align-items: center;
@@ -21,37 +77,37 @@
   border-bottom: 2px solid #cecec9;
 }
 
-#home--view .home--header>.top #project-name {
+.home--header--title .top #project-name {
   color: var(--primary-lighter);
 }
 
-#home--view .home--header>.top #project-version {
+.home--header--title .top #project-version {
   color: var(--secondary-darker);
   margin-left: 15px;
   font-size: 20px;
   margin-top: 5px;
 }
 
-#home--view .home--header>.bottom {
+.home--header--title .bottom {
   display: flex;
   height: 26px;
   align-items: center;
   margin-top: 5px;
 }
 
-#home--view .home--header>.bottom #project-description {
+.home--header--title .bottom #project-description {
   color: var(--primary);
   letter-spacing: 1px;
   font-family: system-ui;
 }
 
-#home--view .home--header>.bottom>ul {
+.home--header--title .bottom>ul {
   margin-left: auto;
   height: inherit;
   display: flex;
 }
 
-#home--view .home--header>.bottom>ul li {
+.home--header--title .bottom>ul li {
   display: flex;
   align-items: center;
   color: #425964;
@@ -59,18 +115,18 @@
   letter-spacing: 0.5px;
 }
 
-#home--view .home--header>.bottom>ul li:hover {
+.home--header--title .bottom>ul li:hover {
   text-decoration: underline;
   cursor: pointer;
 }
 
-#home--view .home--header>.bottom>ul li img {
+.home--header--title .bottom>ul li img {
   width: 20px;
   height: 20px;
   margin-right: 5px;
 }
 
-#home--view .home--header>.bottom>ul li+li {
+.home--header--title .bottom>ul li+li {
   margin-left: 40px;
 }
 
