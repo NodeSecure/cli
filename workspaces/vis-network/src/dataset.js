@@ -131,13 +131,15 @@ export default class NodeSecureDataSet extends EventTarget {
   }
 
   computeAuthor(author) {
-    const user = "name" in author ? author : { name: null };
-
-    if (this.authors.has(user.name)) {
-      this.authors.get(user.name).count++;
+    if (author === null) {
+      return;
     }
-    else if (user.name !== null) {
-      this.authors.set(user.name, Object.assign({}, user, { count: 1 }));
+
+    if (this.authors.has(author.name)) {
+      this.authors.get(author.name).count++;
+    }
+    else {
+      this.authors.set(author.name, Object.assign({}, author, { count: 1 }));
     }
   }
 

@@ -16,9 +16,11 @@ export class Overview {
 
   get author() {
     const author = this.package.dependencyVersion.author;
-    const flatAuthorFullname = typeof author === "string" ? author : (author?.name ?? "Unknown");
+    if (author === null) {
+      return "Unknown";
+    }
 
-    return flatAuthorFullname.length > 26 ? `${flatAuthorFullname.slice(0, 26)}...` : flatAuthorFullname;
+    return author.name.length > 26 ? `${author.name.slice(0, 26)}...` : author.name;
   }
 
   /**
