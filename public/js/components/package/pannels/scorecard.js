@@ -62,6 +62,20 @@ export class Scorecard {
     });
   }
 
+  getScoreColor(score) {
+    if (score < 4) {
+      return "red";
+    }
+    if (score < 6.5) {
+      return "orange";
+    }
+    if (score < 8.5) {
+      return "blue";
+    }
+
+    return "green";
+  }
+
   renderScorecard(data, repoName) {
     const { score, checks } = data;
 
@@ -74,6 +88,9 @@ export class Scorecard {
     }
 
     document.getElementById('ossf-score').innerText = score;
+    document.getElementById('scorecard-menu').classList.add(
+      this.getScoreColor(score)
+    );
     document.getElementById('head-score').innerText = score;
     document
       .querySelector(".score-header .visualizer a")

@@ -88,3 +88,20 @@ section#package-info>.package-navigation>div>.signal {
 section#package-info>.package-navigation>div#scorecard-menu {
   display: none;
 }
+
+section#package-info>.package-navigation>div#scorecard-menu.red {
+  border: 2px solid #EF5350;
+  color: #FF80AB;
+}
+section#package-info>.package-navigation>div#scorecard-menu.orange {
+  border: 2px solid #FDD835;
+  color: #FFD740;
+}
+section#package-info>.package-navigation>div#scorecard-menu.blue {
+  border: 2px solid #2962FF;
+  color: #BBDEFB;
+}
+section#package-info>.package-navigation>div#scorecard-menu.green {
+  border: 2px solid #00E676;
+  color: #B2FF59;
+}
