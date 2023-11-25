@@ -153,7 +153,7 @@ export default class NodeSecureNetwork {
    * @yields {number} The next neighbour node
    */
   * searchForNeighbourIds(selectedNode) {
-    const { name, version } = this.linker.get(selectedNode);
+    const { name, version } = this.linker.get(Number(selectedNode));
 
     for (const descriptor of Object.values(this.secureDataSet.data.dependencies)) {
       for (const { id, usedBy } of Object.values(descriptor.versions)) {
