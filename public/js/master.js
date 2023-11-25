@@ -15,8 +15,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.settings = await new Settings().fetchUserConfig();
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
-  let currentNodeParams = null;
-
+  let currentNodeParams;
+  const levelNodesParams = new Map();
   const secureDataSet = new NodeSecureDataSet({
     flagsToIgnore: window.settings.config.ignore.flags,
     warningsToIgnore: window.settings.config.ignore.warnings
@@ -29,9 +29,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Initialize vis Network
   NodeSecureNetwork.networkElementId = "dependency-graph";
   const nsn = new NodeSecureNetwork(secureDataSet);
+  const rootNodeParams = {
+    nodes: [0],
+    edges: nsn.network.getConnectedEdges(0)
+  };
+  currentNodeParams = rootNodeParams;
+  levelNodesParams.set(0, rootNodeParams);
+
   nsn.network.on("click", updateShowInfoMenu);
 
-  window.addEventListener("settings-saved", async(event) => {
+  window.addEventListener("settings-saved", async (event) => {
     secureDataSet.warningsToIgnore = new Set(event.detail.ignore.warnings);
     secureDataSet.flagsToIgnore = new Set(event.detail.ignore.flags);
 
@@ -58,8 +65,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function updateShowInfoMenu(params) {
     if (params.nodes.length === 0) {
-      currentNodeParams = null;
-
       return PackageInfo.close();
     }
 
@@ -74,4 +79,121 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
     new PackageInfo(selectedNode, currentNode, secureDataSet.data.dependencies[selectedNode.name], nsn);
   }
+
+  // Defines level of dependency. 0 is the root node, 1 is the first level of dependency, etc.
+  let level = 0;
+  document.addEventListener("keydown", (event) => {
+    const nodeDependencyName = secureDataSet.linker.get(currentNodeParams.nodes[0]).name;
+    const usedBy = [...secureDataSet.linker].filter(([id, opt]) => Object.keys(secureDataSet.linker.get(currentNodeParams.nodes[0]).usedBy).includes(opt.name));
+    const use = [...secureDataSet.linker].filter(([id, opt]) => Reflect.has(opt.usedBy, nodeDependencyName));
+
+    switch (event.code) {
+      case "ArrowLeft":
+        {
+          if (level === 0) {
+            break;
+          }
+
+          const previousNodeDependencyName = secureDataSet.linker.get(levelNodesParams.get(level === 0 ? 0 : level - 1).nodes[0]).name;
+          const useByPrevious = [...secureDataSet.linker].filter(([id, opt]) =>
+            Reflect.has(opt.usedBy, previousNodeDependencyName) &&
+            opt.id !== currentNodeParams.nodes[0] &&
+            opt.id !== levelNodesParams.get(level - 1).nodes[0]
+          );
+          if (useByPrevious.length <= 1) {
+            break;
+          }
+
+          useByPrevious.sort(([aId], [bId]) => bId - aId)
+          const activeNode = (useByPrevious.find(([id]) => id < currentNodeParams.nodes[0]) ?? useByPrevious[0])[0];
+          nsn.focusNodeById(activeNode);
+
+          currentNodeParams = {
+            nodes: [activeNode],
+            edges: nsn.network.getConnectedEdges(activeNode)
+          };
+          levelNodesParams.set(level, currentNodeParams);
+        }
+        break;
+      case "ArrowRight":
+        {
+          if (level === 0) {
+            break;
+          }
+
+          const previousNodeDependencyName = secureDataSet.linker.get(levelNodesParams.get(level === 0 ? 0 : level - 1).nodes[0]).name;
+          const useByPrevious = [...secureDataSet.linker].filter(([id, opt]) =>
+            Reflect.has(opt.usedBy, previousNodeDependencyName) &&
+            opt.id !== currentNodeParams.nodes[0] &&
+            opt.id !== levelNodesParams.get(level - 1).nodes[0]
+          );
+          if (useByPrevious.length <= 1) {
+            break;
+          }
+
+          useByPrevious.sort(([aId], [bId]) => aId - bId);
+          const activeNode = (useByPrevious.find(([id]) => { console.log(id); return id > currentNodeParams.nodes[0] }) ?? useByPrevious[0])[0];
+          nsn.focusNodeById(activeNode);
+
+          currentNodeParams = {
+            nodes: [activeNode],
+            edges: nsn.network.getConnectedEdges(activeNode)
+          };
+          levelNodesParams.set(level, currentNodeParams);
+        }
+        break;
+      case "ArrowUp":
+        if (use.length === 0) {
+          break;
+        }
+
+        function setNextLevel(node) {
+          const activeNode = node[0];
+          currentNodeParams = {
+            nodes: [activeNode],
+            edges: nsn.network.getConnectedEdges(activeNode)
+          };
+          nsn.focusNodeById(activeNode);
+          level++;
+          levelNodesParams.set(level, currentNodeParams);
+        }
+
+        const nextLevelNodeMatchingUseDependencies = use.find(([id]) => id === levelNodesParams.get(level + 1)?.nodes[0]);
+        if (nextLevelNodeMatchingUseDependencies) {
+          setNextLevel(nextLevelNodeMatchingUseDependencies);
+        }
+        else {
+          setNextLevel(use[0]);
+        }
+
+        break;
+      case "ArrowDown":
+        if (level === 0) {
+          break;
+        }
+
+        function setPreviousLevel(node) {
+          const activeNode = node[0];
+          currentNodeParams = {
+            nodes: [activeNode],
+            edges: nsn.network.getConnectedEdges(activeNode)
+          };
+          nsn.focusNodeById(activeNode);
+          level--;
+          levelNodesParams.set(level, currentNodeParams);
+        }
+
+        const previousLevelNodeMatchingUsedByDependencies = usedBy.find(([id]) => id === levelNodesParams.get(level - 1)?.nodes[0]);
+        if (previousLevelNodeMatchingUsedByDependencies) {
+          setPreviousLevel(previousLevelNodeMatchingUsedByDependencies);
+        }
+        else {
+          setPreviousLevel(usedBy[0]);
+        }
+
+        break;
+      default:
+        break;
+    }
+  });
 });
