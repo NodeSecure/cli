@@ -3,7 +3,7 @@ import { fork } from "node:child_process";
 import { createInterface } from "node:readline";
 
 // Import Third-party Dependencies
-import { MockAgent, setGlobalDispatcher } from "@myunisoft/httpie";
+import { MockAgent, setGlobalDispatcher } from "undici";
 import stripAnsi from "strip-ansi";
 
 export async function* runProcess(options) {
