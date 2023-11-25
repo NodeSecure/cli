@@ -108,13 +108,17 @@ export function createFileBox(options = {}) {
       ...(severity === null ? [] : [
         createDOMElement("span", { classList: [severity], text: severity.charAt(0).toUpperCase() })
       ]),
-      createDOMElement("a", {
-        text: title,
-        attributes: {
-          href: titleHref, ...defaultHrefProperties
-        }
-      }),
+      titleHref === null ?
+        createDOMElement("p", { text: title, className: "box-title" }) :
+        createDOMElement("a", {
+          text: title,
+          className: "box-title",
+          attributes: {
+            href: titleHref, ...defaultHrefProperties
+          }
+        }),
       createDOMElement("p", {
+        className: "box-file",
         childs: [
           createDOMElement("i", { classList: ["icon-docs"] }),
           fileDomElement
@@ -127,7 +131,7 @@ export function createFileBox(options = {}) {
     classList: ["box-file-info"],
     childs: [
       boxHeader,
-      ...childs
+      ...childs.filter((element) => element !== null)
     ]
   });
 }

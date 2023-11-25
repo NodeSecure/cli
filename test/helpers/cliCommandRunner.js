@@ -3,7 +3,7 @@ import { fork } from "node:child_process";
 import { createInterface } from "node:readline";
 
 // Import Third-party Dependencies
-import { MockAgent, setGlobalDispatcher } from "undici";
+import { MockAgent, setGlobalDispatcher } from "@myunisoft/httpie";
 import stripAnsi from "strip-ansi";
 
 export async function* runProcess(options) {
@@ -36,7 +36,13 @@ export function prepareProcess(command, args = process.argv.slice(2)) {
         const { baseUrl, intercept, response } = mock;
         const pool = mockAgent.get(baseUrl);
 
-        pool.intercept(intercept).reply(response.status, () => response.body);
+        pool
+          .intercept(intercept)
+          .reply(
+            response.status,
+            () => response.body,
+            { headers: { "content-type": "application/json" } }
+          );
       }
 
       mockAgent.disableNetConnect();

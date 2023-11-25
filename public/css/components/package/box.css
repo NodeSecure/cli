@@ -46,7 +46,7 @@ section#package-info .box-file-info>.box-header>span.Information {
   background: #0288d1ab;
 }
 
-section#package-info .box-file-info>.box-header>a {
+section#package-info .box-file-info>.box-header>.box-title {
   font-size: 18px;
   font-variant: small-caps;
   font-family: "mononoki";
@@ -61,22 +61,22 @@ section#package-info .box-file-info>.box-header>a:hover {
   cursor: pointer;
 }
 
-section#package-info .box-file-info>.box-header>p {
+section#package-info .box-file-info>.box-header>.box-file {
   margin-left: auto;
   color: #B3E5FC;
   display: flex;
 }
 
-section#package-info .box-file-info>.box-header>p a {
+section#package-info .box-file-info>.box-header>.box-file a {
   color: inherit;
   text-decoration: none;
 }
 
-section#package-info .box-file-info>.box-header>p a:hover {
+section#package-info .box-file-info>.box-header>.box-file a:hover {
   text-decoration: underline;
 }
 
-section#package-info .box-file-info>.box-header>p i {
+section#package-info .box-file-info>.box-header>.box-file i {
   margin-right: 6px;
 }
 

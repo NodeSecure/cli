@@ -34,7 +34,8 @@ Portable documentation/wiki UI for NodeSecure tools like [CLI](https://github.co
 - Render [NodeSecure JS-X-RAY SAST Warnings](https://github.com/NodeSecure/js-x-ray).
 - Written in vanilla.js for maximum performance.
 
-> **Note** The content is retrieved from the github API (and sometimes it transform raw markdown response to HTML, that's why we use [markdown-it](https://github.com/markdown-it/markdown-it#readme) as dependency).
+> [!NOTE]
+> The content is retrieved from the github API (and sometimes it transform raw markdown response to HTML, that's why we use [markdown-it](https://github.com/markdown-it/markdown-it#readme) as dependency).
 
 ## 💃 Getting Started
 

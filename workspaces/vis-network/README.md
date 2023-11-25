@@ -45,7 +45,8 @@ The project scripts are used for those who want to test the code.
 - **npm start** to start an httpserver from `./dist`
 - **npm run build** to build the `./example` with esbuild.
 
-> **Note**: The start command run the build command before launching the http server.
+> [!NOTE]
+> The start command run the build command before launching the http server.
 
 ## License
 

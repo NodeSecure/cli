@@ -10,7 +10,7 @@ export class Warnings {
     this.package = pkg;
   }
 
-  get isLocalProject() {
+  get isPrincipalRootProject() {
     return this.package.currentNode === 0 ||
       this.package.dependencyVersion.flags.includes("isGit");
   }
@@ -55,9 +55,6 @@ export class Warnings {
       if (window.settings.warnings.has(warning.kind)) {
         continue;
       }
-      const multipleLocation = warning.kind === "encoded-literal" ?
-        warning.location.map((loc) => locationToString(loc)).join(" // ") :
-        locationToString(warning.location);
 
       const id = Math.random().toString(36).slice(2);
       const hasNoInspection =
@@ -72,7 +69,7 @@ export class Warnings {
         ]
       });
 
-      if (this.isLocalProject || hasNoInspection) {
+      if (this.isPrincipalRootProject || hasNoInspection) {
         viewMoreElement.style.display = "none";
       }
       else {
@@ -102,10 +99,12 @@ export class Warnings {
           viewMoreElement
         ]
       });
-      const boxPosition = utils.createDOMElement("div", {
+      const boxPosition = warning.location === null ? null : utils.createDOMElement("div", {
         className: "box-source-code-position",
         childs: [
-          utils.createDOMElement("p", { text: multipleLocation })
+          utils.createDOMElement("p", {
+            text: this.getWarningLocation(warning)
+          })
         ]
       });
 
@@ -113,7 +112,8 @@ export class Warnings {
         title: warning.kind,
         fileName: warning.file.length > 20 ? `${warning.file.slice(0, 20)}...` : warning.file,
         childs: [boxContainer, boxPosition],
-        titleHref: `https://github.com/NodeSecure/js-x-ray/blob/master/docs/${warning.kind}.md`,
+        titleHref: warning.kind === "invalid-semver" ?
+          null : `https://github.com/NodeSecure/js-x-ray/blob/master/docs/${warning.kind}.md`,
         fileHref: `${unpkgRoot}${warning.file}`,
         severity: warning.severity ?? "Information"
       })
@@ -121,5 +121,14 @@ export class Warnings {
     }
 
     return fragment;
+  }
+
+  getWarningLocation(warning) {
+    if (warning.kind === "encoded-literal") {
+      return warning.location
+        .map((loc) => locationToString(loc)).join(" // ");
+    }
+
+    return locationToString(warning.location);;
   }
 }

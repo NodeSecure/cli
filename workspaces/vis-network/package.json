@@ -10,7 +10,7 @@
     "test": "node --test test/",
     "test:c8": "c8 npm run test",
     "start": "npm run build && http-server ./dist",
-    "build": "node esbuild.config.js"
+    "build": "rimraf ./dist && node esbuild.config.js"
   },
   "files": [
     "index.js",
@@ -25,11 +25,11 @@
   "license": "MIT",
   "dependencies": {
     "pretty-bytes": "^6.0.0",
-    "vis-data": "^7.1.6",
-    "vis-network": "^9.1.6"
+    "vis-data": "^7.1.9",
+    "vis-network": "^9.1.9"
   },
   "devDependencies": {
     "@nodesecure/flags": "^2.4.0",
-    "@nodesecure/scanner": "^3.7.0"
+    "@nodesecure/scanner": "^5.0.1"
   }
 }
