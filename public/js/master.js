@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function updateShowInfoMenu(params) {
     if (params.nodes.length === 0) {
+      currentNodeParams = null;
       return PackageInfo.close();
     }
 
@@ -83,6 +84,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Defines level of dependency. 0 is the root node, 1 is the first level of dependency, etc.
   let level = 0;
   document.addEventListener("keydown", (event) => {
+    if (currentNodeParams === null) {
+      currentNodeParams = rootNodeParams;
+    }
+
     const nodeDependencyName = secureDataSet.linker.get(currentNodeParams.nodes[0]).name;
     const usedBy = [...secureDataSet.linker].filter(([id, opt]) => Object.keys(secureDataSet.linker.get(currentNodeParams.nodes[0]).usedBy).includes(opt.name));
     const use = [...secureDataSet.linker].filter(([id, opt]) => Reflect.has(opt.usedBy, nodeDependencyName));
