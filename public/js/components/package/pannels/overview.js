@@ -16,7 +16,7 @@ export class Overview {
 
   get author() {
     const author = this.package.dependencyVersion.author;
-    if (author === null) {
+    if (author === null || !("name" in author)) {
       return "Unknown";
     }
 
