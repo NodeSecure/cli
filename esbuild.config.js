@@ -45,6 +45,7 @@ await Promise.all([
     "snyk.png",
     "sonatype.png",
     "avatar-default.png",
+    "scorecard.png",
     "ext-link.svg"
   ].map((name) => fs.copyFile(path.join(kImagesDir, name), path.join(kOutDir, name))),
   fs.copyFile(path.join(kPublicDir, "favicon.ico"), path.join(kOutDir, "favicon.ico"))

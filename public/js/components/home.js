@@ -4,6 +4,7 @@ import { NodeSecureDataSet, getJSON } from "@nodesecure/vis-network";
 // Import Internal Dependencies
 import * as utils from "../utils.js";
 import { Gauge } from "./gauge.js";
+import { fetchScorecardData, getScoreColor, getScorecardLink } from "../scorecard.js";
 
 export class HomeView {
   /**
@@ -12,12 +13,34 @@ export class HomeView {
   constructor(secureDataSet) {
     this.secureDataSet = secureDataSet;
 
+    this.generateScorecard();
     this.generateHeader();
     this.generateOverview();
     this.generateWarnings();
     this.generateExtensions();
     this.generateLicenses();
     this.generateMaintainers();
+  }
+
+  generateScorecard() {
+    const { repository } = this.secureDataSet.linker.get(0);
+    const repoName = utils.getGithubRepositoryPath(
+      utils.parseRepositoryUrl(repository)
+    )
+
+    fetchScorecardData(repoName).then((data) => {
+      if (data !== null) {
+        document
+          .querySelector(".home--header--scorecard .score")
+          .classList.add(getScoreColor(data.score));
+        document.getElementById("home-scorecard-score").innerHTML = data.score;
+        const scorescardElement = document.querySelector(".home--header--scorecard");
+        scorescardElement.addEventListener("click", () => {
+          window.open(getScorecardLink(repoName), "_blank");
+        });
+        scorescardElement.style.display = "flex";
+      }
+    });
   }
 
   generateHeader() {

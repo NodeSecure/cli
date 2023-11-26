@@ -1,32 +1,10 @@
-// Import Third-party Dependencies
-import { getJSON } from "@nodesecure/vis-network";
-
 // Import Internal Dependencies
 import * as utils from "../../../utils.js";
+import { fetchScorecardData, getScoreColor, getScorecardLink } from "../../../scorecard.js";
 
 export class Scorecard {
-  static ExternalLinks = {
-    visualizer: "https://kooltheba.github.io/openssf-scorecard-api-visualizer/#/projects/github.com/"
-  }
-
   constructor(pkg) {
     this.package = pkg;
-  }
-
-  async fetchScorecardData(repoName) {
-    try {
-      const { data } = (await getJSON(`/scorecard/${repoName}`));
-      if (!data) {
-        return null;
-      }
-
-      return data;
-    }
-    catch (error) {
-      console.error(error);
-
-      return null;
-    }
   }
 
   hide() {
@@ -45,14 +23,9 @@ export class Scorecard {
       return this.hide();
     }
 
-    const github = new URL(githubURL.href);
-    const repoName = github.pathname.slice(
-      1,
-      github.pathname.includes(".git") ? -4 : github.pathname.length
-    );
-
+    const repoName = utils.getGithubRepositoryPath(githubURL.href);
     const pannel = clone.getElementById("pan-scorecard");
-    this.fetchScorecardData(repoName).then((data) => {
+    fetchScorecardData(repoName).then((data) => {
       if (!data) {
         return this.hide();
       }
@@ -60,20 +33,6 @@ export class Scorecard {
       pannel.appendChild(this.renderScorecard(data, repoName));
       document.getElementById('scorecard-menu').style.display = 'flex';
     });
-  }
-
-  getScoreColor(score) {
-    if (score < 4) {
-      return "red";
-    }
-    if (score < 6.5) {
-      return "orange";
-    }
-    if (score < 8.5) {
-      return "blue";
-    }
-
-    return "green";
   }
 
   renderScorecard(data, repoName) {
@@ -89,12 +48,12 @@ export class Scorecard {
 
     document.getElementById('ossf-score').innerText = score;
     document.getElementById('scorecard-menu').classList.add(
-      this.getScoreColor(score)
+      getScoreColor(score)
     );
     document.getElementById('head-score').innerText = score;
     document
       .querySelector(".score-header .visualizer a")
-      .setAttribute('href', Scorecard.ExternalLinks.visualizer + repoName);
+      .setAttribute('href', getScorecardLink(repoName));
 
     container.childNodes.forEach((check, checkKey) => {
       check.addEventListener('click', () => {
