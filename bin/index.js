@@ -55,7 +55,7 @@ defaultScannerCommand("from <package>")
     await commands.scanner.from(...options);
   });
 
-defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vuln.strategies.SECURITY_WG })
+defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vuln.strategies.NPM_AUDIT })
   .describe(i18n.getTokenSync("cli.commands.auto.desc"))
   .option("-k, --keep", i18n.getTokenSync("cli.commands.auto.option_keep"), false)
   .action(commands.scanner.auto);

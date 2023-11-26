@@ -41,7 +41,7 @@ await Promise.all([
     "github-mark.png",
     "github-black.png",
     "npm-icon.svg",
-    "nodejs.png",
+    "node.png",
     "snyk.png",
     "sonatype.png",
     "avatar-default.png",
