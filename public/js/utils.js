@@ -61,7 +61,21 @@ export function parseRepositoryUrl(repository = {}, defaultValue = null) {
   if (repository.url.startsWith("git://")) {
     return `https${repository.url.slice(3)}`;
   }
-  return repository.url;
+  if (repository.url.startsWith("git@")) {
+    const execResult = /git@(?<platform>[a-zA-Z.]+):(?<repo>.+)\.git/gm.exec(repository.url);
+    if (execResult === null) {
+      return defaultValue;
+    }
+
+    return `https://${execResult.groups.platform}/${execResult.groups.repo}`;
+  }
+
+  try {
+    return new URL(repository.url).href;
+  }
+  catch {
+    return defaultValue;
+  }
 }
 
 export function createAvatarImageElement(email = null) {
