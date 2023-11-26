@@ -6,8 +6,7 @@
 
 .gauge>.line {
   display: flex;
-  height: 24px;
-  align-items: center;
+  flex-direction: column;
   color: #546884;
 }
 
@@ -19,7 +18,25 @@
   margin-top: 5px;
 }
 
-.gauge>.line .item-name {
+.gauge>.line>.line--column {
+  display: flex;
+  height: 24px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.gauge>.line>.line--column span {
+  width: 20px;
+  text-align: right;
+  font-family: "mononoki";
+  color: var(--secondary-darker);
+}
+.gauge>.line>.line--column.border-bottom {
+  border-bottom: 1px solid #8080803d;
+  padding-bottom: 5px;
+}
+
+.gauge .item-name {
   width: 130px;
   flex-shrink: 0;
   white-space: nowrap;
@@ -30,7 +47,7 @@
   letter-spacing: 1px;
 }
 
-.gauge>.line .gauge--bar {
+.gauge .gauge--bar {
   flex-grow: 1;
   margin: 0 10px;
   background: #e1e4e6;
@@ -38,14 +55,21 @@
   border-radius: 4px;
   overflow: hidden;
 }
-.gauge>.line .gauge--bar >.usage {
+.gauge .gauge--bar >.usage {
   height: inherit;
   background-color: var(--secondary-darker);
 }
 
-.gauge>.line span {
-  width: 20px;
-  text-align: right;
+.gauge .chip {
   font-family: "mononoki";
-  color: var(--secondary-darker);
+  background: #8dabe536;
+  border-radius: 8px;
+  font-size: 14px;
+  padding: 3px 5px;
+}
+.gauge .chip:last-child {
+  margin-right: 30px;
+}
+.gauge .chip + .chip {
+  margin-left: 10px;
 }

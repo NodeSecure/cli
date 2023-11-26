@@ -3,13 +3,16 @@ import * as utils from "../utils.js";
 
 export class Gauge {
   /**
-   * @param {[string, number][]} data
+   * @param {{ name: string, value: number, chips?: string[] }[]} data
    */
-  constructor(data, options = {}) {
-    this.searchName = options.searchName ?? null;
+  constructor(
+    data,
+    options = {}
+  ) {
+    this.maxLength = options.maxLength ?? 8;
 
     this.data = data;
-    this.length = data.reduce((prev, curr) => prev + curr[1], 0);
+    this.length = data.reduce((prev, curr) => prev + curr.value, 0);
   }
 
   pourcentFromValue(value) {
@@ -28,44 +31,70 @@ export class Gauge {
     });
   }
 
-  createLine(text, value) {
+  *createChips(chips) {
+    for (const text of chips) {
+      yield utils.createDOMElement("div", {
+        className: "chip",
+        text
+      });
+    }
+  }
+
+  /**
+   * @param {!string} text
+   * @param {!number} value
+   * @param {string[]} chips
+   * @returns {HTMLDivElement}
+   */
+  createLine(
+    text,
+    value,
+    chips
+  ) {
+    const columnsLines = [
+      utils.createDOMElement("div", {
+        className: "line--column",
+        childs: [
+          utils.createDOMElement("p", { className: "item-name", text }),
+          this.createGaugeBar(this.pourcentFromValue(value)),
+          utils.createDOMElement("span", { text: value })
+        ]
+      })
+    ];
+    if (chips !== null) {
+      columnsLines.push(
+        utils.createDOMElement("div", {
+          classList: ["line--column", "border-bottom"],
+          childs: [...this.createChips(chips)]
+        })
+      );
+    }
+
     return utils.createDOMElement("div", {
       className: "line",
-      childs: [
-        utils.createDOMElement("p", { className: "item-name", text }),
-        this.createGaugeBar(this.pourcentFromValue(value)),
-        utils.createDOMElement("span", { text: value })
-      ]
+      childs: columnsLines
     });
   }
 
   render() {
     const childs = [];
-    const hideItemsLength = 8;
-    const hideItems = this.data.length > hideItemsLength;
+    const hideItems = this.data.length > this.maxLength;
 
     for (let id = 0; id < this.data.length; id++) {
-      const [name, value] = this.data[id];
+      const { name, value, chips = null } = this.data[id];
       if (value === 0) {
         continue;
       }
 
-      const line = this.createLine(name, value);
-      // if (this.searchName !== null) {
-      //   line.addEventListener("click", () => {
-      //     console.log(name, value);
-      //     window.searchbar.addNewSearchText(this.searchName, name);
-      //   });
-      // }
-
-      if (hideItems && id >= hideItemsLength) {
+      const line = this.createLine(name, value, chips);
+      if (hideItems && id >= this.maxLength) {
         line.classList.add("hidden");
       }
       childs.push(line);
     }
 
     if (hideItems) {
-      childs.push(utils.createExpandableSpan(hideItemsLength));
+      childs.push(utils.createExpandableSpan(this.maxLength));
     }
 
     return utils.createDOMElement("div", {

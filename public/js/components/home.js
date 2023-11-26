@@ -1,5 +1,6 @@
 // Import Third-party Dependencies
 import { NodeSecureDataSet, getJSON } from "@nodesecure/vis-network";
+import { licenseIdConformance } from "@nodesecure/licenses-conformance";
 
 // Import Internal Dependencies
 import * as utils from "../utils.js";
@@ -151,16 +152,33 @@ export class HomeView {
 
   generateExtensions() {
     const extensions = [...Object.entries(this.secureDataSet.extensions)]
-      .sort(([, left], [, right]) => right - left);
+      .sort(([, left], [, right]) => right - left)
+      .map(([name, value]) => ({ name, value }));
 
     document.getElementById("home-extensions").appendChild(
-      new Gauge(extensions, { searchName: "ext" }).render()
+      new Gauge(extensions).render()
     );
   }
 
   generateLicenses() {
     const licenses = [...Object.entries(this.secureDataSet.licenses)]
-      .sort(([, left], [, right]) => right - left);
+      .sort(([, left], [, right]) => right - left)
+      .flatMap(([name, value]) => {
+        const result = licenseIdConformance(name);
+        if (!result.ok) {
+          return [];
+        }
+
+        return [
+          {
+            name,
+            value,
+            chips: Object.entries(result.value.spdx)
+              .filter(([key]) => key !== "includesDeprecated")
+              .map(([key, value]) => `${value ? "✔️" : "❌"} ${key}`)
+          }
+        ];
+      });
 
     document.getElementById("home-licenses").appendChild(
       new Gauge(licenses).render()
