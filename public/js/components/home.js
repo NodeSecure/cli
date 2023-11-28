@@ -27,6 +27,9 @@ export class HomeView {
     const repoName = utils.getGithubRepositoryPath(
       utils.parseRepositoryUrl(repository)
     )
+    if (repoName === null) {
+      return;
+    }
 
     fetchScorecardData(repoName).then((data) => {
       if (data !== null) {

@@ -24,6 +24,9 @@ export class Scorecard {
     }
 
     const repoName = utils.getGithubRepositoryPath(githubURL.href);
+    if (repoName === null) {
+      return;
+    }
     const pannel = clone.getElementById("pan-scorecard");
     fetchScorecardData(repoName).then((data) => {
       if (!data) {
