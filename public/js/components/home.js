@@ -206,14 +206,20 @@ export class HomeView {
 
     const authors = [...this.secureDataSet.authors.entries()]
       .sort((left, right) => right[1].count - left[1].count);
-    for (const [name, data] of authors) {
+    const maxAuthors = 8;
+    const hideItems = authors.length > maxAuthors;
+
+    for (let id = 0; id<authors.length; id++) {
+      const [name, data] = authors[id];
       const { count, email, url = null } = data;
 
+      const hasURL = typeof url === "string";
       const person = utils.createDOMElement("div", {
         className: "person",
         childs: [
           utils.createAvatarImageElement(email),
           createWhois(name, email),
+          hasURL ? utils.createDOMElement("i", { className: "icon-link" }) : null,
           utils.createDOMElement("div", {
             className: "packagescount",
             childs: [
@@ -223,12 +229,22 @@ export class HomeView {
           })
         ]
       });
-      if (typeof url === "string") {
+      if (hideItems && id >= maxAuthors) {
+        person.classList.add("hidden");
+      }
+
+      if (hasURL) {
+        person.classList.add("url");
         person.addEventListener("click", () => window.open(url, "_blank"));
       }
+
       fragment.appendChild(person);
     }
+    if (hideItems) {
+      fragment.appendChild(utils.createExpandableSpan(maxAuthors));
+    }
 
+    document.getElementById("authors-count").innerHTML = authors.length;
     document.querySelector(".home--maintainers").appendChild(fragment);
   }
 }

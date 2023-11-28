@@ -35,7 +35,9 @@ export function createDOMElement(kind = "div", options = {}) {
     el.className = className;
   }
   classList.forEach((name) => el.classList.add(name));
-  childs.forEach((child) => el.appendChild(child));
+  childs
+    .filter((child) => child !== null)
+    .forEach((child) => el.appendChild(child));
 
   for (const [key, value] of Object.entries(attributes)) {
     el.setAttribute(key, value);
