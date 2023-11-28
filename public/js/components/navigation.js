@@ -1,6 +1,13 @@
 // Import Internal Dependencies
 import { PackageInfo } from "./package/package.js";
 
+// CONSTANTS
+const kAvailableView = new Set([
+  "network--view",
+  "home--view",
+  "settings--view"
+]);
+
 export class ViewNavigation {
   static DefaultActiveMenu = "network--view";
 
@@ -8,12 +15,13 @@ export class ViewNavigation {
     this.activeMenu = null;
     this.menus = new Map();
 
+    const defaultMenu = this.getAnchor();
     const navElements = document.querySelectorAll("#view-navigation li");
     for (const navigationMenu of navElements) {
       const menuName = navigationMenu.getAttribute("data-menu");
       this.menus.set(menuName, navigationMenu);
 
-      if (menuName === ViewNavigation.DefaultActiveMenu) {
+      if (menuName === defaultMenu) {
         this.setNewActiveMenu(navigationMenu);
       }
 
@@ -54,6 +62,7 @@ export class ViewNavigation {
 
     document.getElementById(menuName).classList.remove("hidden");
     selectedNav.classList.add("active");
+    this.setAnchor(menuName);
 
     this.activeMenu = selectedNav;
   }
@@ -64,6 +73,20 @@ export class ViewNavigation {
 
     this.activeMenu.classList.remove("active");
     view.classList.add("hidden");
+  }
+
+  getAnchor() {
+    const documentURL = new URL(document.URL);
+    const anchorName = documentURL.searchParams.get("view") ?? ViewNavigation.DefaultActiveMenu;
+
+    return kAvailableView.has(anchorName) ? anchorName : ViewNavigation.DefaultActiveMenu;
+  }
+
+  setAnchor(anchorName) {
+    const newDocumentURL = new URL(document.URL);
+    newDocumentURL.searchParams.set("view", anchorName);
+
+    window.history.replaceState(void 0, void 0, newDocumentURL);
   }
 
   /**
