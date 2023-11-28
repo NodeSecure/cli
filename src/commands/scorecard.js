@@ -14,7 +14,7 @@ function separatorLine() {
   return grey("-".repeat(80));
 }
 
-export function getCurrentRepository() {
+export function getCurrentRepository(vcs = "github") {
   const config = ini.parse(fs.readFileSync(".git/config", "utf-8"));
 
   const originMetadata = config["remote \"origin\""];
@@ -22,20 +22,26 @@ export function getCurrentRepository() {
     return Err("Cannot find origin remote.");
   }
 
-  const [, rawPkg] = originMetadata.url.match(/github\.com(.+)\.git/) ?? [];
+  const [, rawPkg] = originMetadata.url.match(/(?:github|gitlab)\.com(.+)\.git/) ?? [];
+
   if (!rawPkg) {
-    return Err("OSSF Scorecard supports projects hosted on Github only.");
+    return Err("Cannot find version control host.");
   }
 
-  return Ok(rawPkg.slice(1));
+  // vcs is github by default.
+  return Ok([rawPkg.slice(1), originMetadata.url.includes("gitlab") ? "gitlab" : vcs]);
 }
 
-export async function main(repo) {
-  const result = typeof repo === "string" ? Ok(repo) : getCurrentRepository();
+export async function main(repo, opts) {
+  const vcs = opts.vcs.toLowerCase();
+  const result = typeof repo === "string" ? Ok([repo, vcs]) : getCurrentRepository(vcs);
 
   let repository;
+  let platform;
   try {
-    repository = result.unwrap();
+    const [repo, vcs] = result.unwrap();
+    repository = repo;
+    platform = vcs.slice(-4) === ".com" ? vsc : `${vcs}.com`;
   }
   catch (error) {
     console.log(white().bold(result.err));
@@ -45,7 +51,10 @@ export async function main(repo) {
 
   let data;
   try {
-    data = await scorecard.result(repository);
+    data = await scorecard.result(repository, {
+      resolveOnVersionControl: Boolean(process.env.GITHUB_TOKEN || opts.resolveOnVersionControl),
+      platform
+    });
   }
   catch (error) {
     console.log(

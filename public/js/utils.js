@@ -3,17 +3,63 @@ import avatarURL from "../img/avatar-default.png";
 
 window.activeLegendElement = null;
 
-export function getGithubRepositoryPath(url) {
-  try {
-    const github = new URL(url);
+function getVCSRepositoryPath(url) {
+  if (!url) {
+    return null;
+  }
 
-    return github.pathname.slice(
+  try {
+    const repo = new URL(url);
+
+    return repo.pathname.slice(
       1,
-      github.pathname.includes(".git") ? -4 : github.pathname.length
+      repo.pathname.includes(".git") ? -4 : repo.pathname.length
     );
+  } catch {
+    return null;
+  }
+}
+
+function getVCSRepositoryPlatform(url) {
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const repo = new URL(url);
+
+    return repo.host;
+  } catch {
+    return null;
+  }
+}
+
+export function getRepositoryName(repository) {
+  return getVCSRepositoryPath(repository.links?.github?.href) ??
+    getVCSRepositoryPath(repository.links?.gitlab?.href) ??
+    getVCSRepositoryPath(repository.links?.homepage?.href) ??
+    getVCSRepositoryPath(repository.metadata?.homepage) ??
+    repository.name;
+}
+
+export function getRepositoryPlatform(repository) {
+  return getVCSRepositoryPlatform(repository.links?.github?.href) ??
+    getVCSRepositoryPlatform(repository.links?.gitlab?.href) ??
+    getVCSRepositoryPlatform(repository.links?.homepage) ??
+    getVCSRepositoryPlatform(repository.metadata?.homepage) ??
+    "github.com";
+}
+
+export function isGitLabHost(host) {
+  if (!host) {
+    return false;
+  }
+
+  try {
+    return new URL(host).host === "gitlab.com";
   }
   catch {
-    return null;
+    return false;
   }
 }
 

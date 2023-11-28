@@ -18,27 +18,23 @@ export class Scorecard {
    * @param {!HTMLTemplateElement} clone
    */
   generate(clone) {
-    const githubURL = this.package.links.github;
-    if (!githubURL.href) {
-      return this.hide();
-    }
+    const repoName = utils.getRepositoryName(this.package);
 
-    const repoName = utils.getGithubRepositoryPath(githubURL.href);
-    if (repoName === null) {
-      return;
-    }
     const pannel = clone.getElementById("pan-scorecard");
-    fetchScorecardData(repoName).then((data) => {
+    const isGitlab = this.package.links.gitlab || utils.isGitLabHost(this.package.links.homepage?.href);
+    const platform = isGitlab ? "gitlab.com" : "github.com";
+
+    fetchScorecardData(repoName, platform).then((data) => {
       if (!data) {
         return this.hide();
       }
 
-      pannel.appendChild(this.renderScorecard(data, repoName));
+      pannel.appendChild(this.renderScorecard(data, repoName, platform));
       document.getElementById('scorecard-menu').style.display = 'flex';
     });
   }
 
-  renderScorecard(data, repoName) {
+  renderScorecard(data, repoName, platform) {
     const { score, checks } = data;
 
     const container = utils.createDOMElement('div', {
@@ -56,7 +52,7 @@ export class Scorecard {
     document.getElementById('head-score').innerText = score;
     document
       .querySelector(".score-header .visualizer a")
-      .setAttribute('href', getScorecardLink(repoName));
+      .setAttribute('href', getScorecardLink(repoName, platform));
 
     container.childNodes.forEach((check, checkKey) => {
       check.addEventListener('click', () => {

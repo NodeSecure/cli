@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
   let currentNodeParams;
+  let packageInfoOpened = false;
   const levelNodesParams = new Map();
   const secureDataSet = new NodeSecureDataSet({
     flagsToIgnore: window.settings.config.ignore.flags,
@@ -34,6 +35,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     edges: nsn.network.getConnectedEdges(0)
   };
   levelNodesParams.set(0, rootNodeParams);
+
+  window.addEventListener("package-info-closed", () => {
+    currentNodeParams = null;
+    packageInfoOpened = false;
+  })
 
   nsn.network.on("click", updateShowInfoMenu);
 
@@ -68,10 +74,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       return PackageInfo.close();
     }
 
-    if (currentNodeParams?.nodes[0] === params.nodes[0]) {
+    if (currentNodeParams?.nodes[0] === params.nodes[0] && packageInfoOpened === true) {
       return;
     }
 
+    packageInfoOpened = true;
     currentNodeParams = params;
     const currentNode = currentNodeParams.nodes[0];
     const selectedNode = secureDataSet.linker.get(
@@ -83,12 +90,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Defines level of dependency. 0 is the root node, 1 is the first level of dependency, etc.
   let level = 0;
   document.addEventListener("keydown", (event) => {
-    if (currentNodeParams === null) {
-      currentNodeParams = rootNodeParams;
-    }
-
-    const nodeDependencyName = secureDataSet.linker.get(currentNodeParams.nodes[0]).name;
-    const usedBy = [...secureDataSet.linker].filter(([id, opt]) => Object.keys(secureDataSet.linker.get(currentNodeParams.nodes[0]).usedBy).includes(opt.name));
+    const nodeParam = currentNodeParams ?? rootNodeParams;
+    const nodeDependencyName = secureDataSet.linker.get(nodeParam.nodes[0]).name;
+    const usedBy = [...secureDataSet.linker].filter(([id, opt]) => Object.keys(secureDataSet.linker.get(nodeParam.nodes[0]).usedBy).includes(opt.name));
     const use = [...secureDataSet.linker].filter(([id, opt]) => Reflect.has(opt.usedBy, nodeDependencyName));
 
     switch (event.code) {
@@ -101,7 +105,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           const previousNodeDependencyName = secureDataSet.linker.get(levelNodesParams.get(level === 0 ? 0 : level - 1).nodes[0]).name;
           const useByPrevious = [...secureDataSet.linker].filter(([id, opt]) =>
             Reflect.has(opt.usedBy, previousNodeDependencyName) &&
-            opt.id !== currentNodeParams.nodes[0] &&
+            opt.id !== nodeParam.nodes[0] &&
             opt.id !== levelNodesParams.get(level - 1).nodes[0]
           );
           if (useByPrevious.length <= 1) {
@@ -109,14 +113,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
 
           useByPrevious.sort(([aId], [bId]) => bId - aId)
-          const activeNode = (useByPrevious.find(([id]) => id < currentNodeParams.nodes[0]) ?? useByPrevious[0])[0];
+          const activeNode = (useByPrevious.find(([id]) => id < nodeParam.nodes[0]) ?? useByPrevious[0])[0];
           nsn.focusNodeById(activeNode);
 
           currentNodeParams = {
             nodes: [activeNode],
             edges: nsn.network.getConnectedEdges(activeNode)
           };
-          levelNodesParams.set(level, currentNodeParams);
+          levelNodesParams.set(level, nodeParam);
         }
         break;
       case "ArrowRight":
@@ -128,7 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           const previousNodeDependencyName = secureDataSet.linker.get(levelNodesParams.get(level === 0 ? 0 : level - 1).nodes[0]).name;
           const useByPrevious = [...secureDataSet.linker].filter(([id, opt]) =>
             Reflect.has(opt.usedBy, previousNodeDependencyName) &&
-            opt.id !== currentNodeParams.nodes[0] &&
+            opt.id !== nodeParam.nodes[0] &&
             opt.id !== levelNodesParams.get(level - 1).nodes[0]
           );
           if (useByPrevious.length <= 1) {
@@ -136,14 +140,14 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
 
           useByPrevious.sort(([aId], [bId]) => aId - bId);
-          const activeNode = (useByPrevious.find(([id]) => { console.log(id); return id > currentNodeParams.nodes[0] }) ?? useByPrevious[0])[0];
+          const activeNode = (useByPrevious.find(([id]) => { console.log(id); return id > nodeParam.nodes[0] }) ?? useByPrevious[0])[0];
           nsn.focusNodeById(activeNode);
 
           currentNodeParams = {
             nodes: [activeNode],
             edges: nsn.network.getConnectedEdges(activeNode)
           };
-          levelNodesParams.set(level, currentNodeParams);
+          levelNodesParams.set(level, nodeParam);
         }
         break;
       case "ArrowUp":
@@ -159,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           };
           nsn.focusNodeById(activeNode);
           level++;
-          levelNodesParams.set(level, currentNodeParams);
+          levelNodesParams.set(level, nodeParam);
         }
 
         const nextLevelNodeMatchingUseDependencies = use.find(([id]) => id === levelNodesParams.get(level + 1)?.nodes[0]);
@@ -184,7 +188,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           };
           nsn.focusNodeById(activeNode);
           level--;
-          levelNodesParams.set(level, currentNodeParams);
+          levelNodesParams.set(level, nodeParam);
         }
 
         const previousLevelNodeMatchingUsedByDependencies = usedBy.find(([id]) => id === levelNodesParams.get(level - 1)?.nodes[0]);

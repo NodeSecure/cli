@@ -74,7 +74,7 @@ test("scorecard should display fastify scorecard", async() => {
 });
 
 test("should not display scorecard for unknown repository", async() => {
-  const packageName = "unkown/repository";
+  const packageName = "fastify/fastify";
   const scorecardCliOptions = {
     path: kProcessPath,
     args: [packageName],
@@ -109,7 +109,7 @@ test("should retrieve repository whithin git config", async() => {
     }
   });
 
-  assert.deepEqual(testingModule.getCurrentRepository(), Ok("myawesome/repository"));
+  assert.deepEqual(testingModule.getCurrentRepository(), Ok(["myawesome/repository", "github"]));
 });
 
 test("should not find origin remote", async() => {
@@ -122,24 +122,4 @@ test("should not find origin remote", async() => {
 
   assert.equal(result.err, true);
   assert.equal(result.val, "Cannot find origin remote.");
-});
-
-test("should support github only", async() => {
-  const testingModule = await esmock("../../src/commands/scorecard.js", {
-    fs: {
-      readFileSync: () => [
-        "[remote \"origin\"]",
-        "\turl = git@gitlab.com:myawesome/repository.git"
-      ].join("\n")
-    }
-  });
-  // NOTE: we can then test that the only expected one console.log is correct
-  // it's a bit simpler that running the process to parse stdout
-  const logs = [];
-  console.log = (str) => logs.push(str);
-
-  await testingModule.main();
-
-  assert.equal(logs.length, 1);
-  assert.equal(stripAnsi(logs[0]), "OSSF Scorecard supports projects hosted on Github only.");
 });
