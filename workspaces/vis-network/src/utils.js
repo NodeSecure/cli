@@ -17,6 +17,15 @@ export async function getJSON(path, customHeaders = Object.create(null)) {
     headers: Object.assign({}, headers, customHeaders)
   });
 
+  if (raw.ok === false) {
+    const { status, statusText } = raw;
+
+    return {
+      status,
+      statusText
+    };
+  }
+
   return raw.json();
 }
 

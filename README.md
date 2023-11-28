@@ -167,7 +167,7 @@ Since version 0.6.0 of Node-secure the UI include a brand new searchbar that all
 - author (author name/email/url).
 - ext (list of available file extensions in the current payload/tree).
 - builtin (available Node.js core module name).
-- size (see [here](https://github.com/NodeSecure/size-satisfies#usage-example)
+- size (see [here](https://github.com/NodeSecure/size-satisfies#usage-example)).
 
 Exemple of query:
 
@@ -187,7 +187,6 @@ other side will bundle and remove most of the useless files from the tarball (Li
 ### Why some packages don't have OSSF Scorecard ?
 See [Scorecard Public Data](https://github.com/ossf/scorecard#public-data):
 > We run a weekly Scorecard scan of the 1 million most critical open source projects judged by their direct dependencies and publish the results in a BigQuery public dataset.
-> Currently, this list is derived from projects hosted on GitHub ONLY.
 
 ## Contributors guide
 

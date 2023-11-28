@@ -289,6 +289,13 @@ describe("httpServer", () => {
     assert.equal(result.data.data.repo.name, "github.com/NodeSecure/cli");
   });
 
+  test("'/scorecard/:org/:pkgName' should return scorecard data for GitLab repo", async() => {
+    const result = await get(new URL("/scorecard/gitlab-org/gitlab-ui?platform=gitlab.com", HTTP_URL));
+
+    assert.equal(result.statusCode, 200);
+    assert.equal(result.data.data.repo.name, "gitlab.com/gitlab-org/gitlab-ui");
+  });
+
   test("'/scorecard/:org/:pkgName' should not find repo", async() => {
     const wrongPackageName = "br-br-br-brah";
 

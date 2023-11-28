@@ -4,9 +4,9 @@ import { getJSON } from "@nodesecure/vis-network";
 /**
  * @param {!string} repoName
  */
-export async function fetchScorecardData(repoName) {
+export async function fetchScorecardData(repoName, platform = "github.com") {
   try {
-    const { data } = (await getJSON(`/scorecard/${repoName}`));
+    const { data } = (await getJSON(`/scorecard/${repoName}?platform=${platform}`));
     if (!data) {
       return null;
     }
@@ -39,7 +39,8 @@ export function getScoreColor(score) {
 }
 
 export function getScorecardLink(
-  repoName
+  repoName,
+  platform
 ) {
-  return `https://kooltheba.github.io/openssf-scorecard-api-visualizer/#/projects/github.com/` + repoName;
+  return `https://kooltheba.github.io/openssf-scorecard-api-visualizer/#/projects/${platform}/${repoName}`;
 }

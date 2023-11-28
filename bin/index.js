@@ -83,6 +83,7 @@ prog
 prog
   .command("scorecard [repository]")
   .describe(i18n.getTokenSync("cli.commands.scorecard.desc"))
+  .option("--vcs", "Version control platform (GitHub, GitLab", "github")
   .action(commands.scorecard.main);
 
 prog

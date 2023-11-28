@@ -24,15 +24,16 @@ export class HomeView {
   }
 
   generateScorecard() {
-    const { repository } = this.secureDataSet.linker.get(0);
-    const repoName = utils.getGithubRepositoryPath(
-      utils.parseRepositoryUrl(repository)
-    )
+    const { name } = this.secureDataSet.linker.get(0);
+    const pkg = this.secureDataSet.data.dependencies[name];
+    const repoName = utils.getRepositoryName(pkg);
+    const platform = utils.getRepositoryPlatform(pkg);
+
     if (repoName === null) {
       return;
     }
 
-    fetchScorecardData(repoName).then((data) => {
+    fetchScorecardData(repoName, platform).then((data) => {
       if (data !== null) {
         document
           .querySelector(".home--header--scorecard .score")
@@ -40,7 +41,7 @@ export class HomeView {
         document.getElementById("home-scorecard-score").innerHTML = data.score;
         const scorescardElement = document.querySelector(".home--header--scorecard");
         scorescardElement.addEventListener("click", () => {
-          window.open(getScorecardLink(repoName), "_blank");
+          window.open(getScorecardLink(repoName, platform), "_blank");
         });
         scorescardElement.style.display = "flex";
       }
@@ -209,7 +210,7 @@ export class HomeView {
     const maxAuthors = 8;
     const hideItems = authors.length > maxAuthors;
 
-    for (let id = 0; id<authors.length; id++) {
+    for (let id = 0; id < authors.length; id++) {
       const [name, data] = authors[id];
       const { count, email, url = null } = data;
 

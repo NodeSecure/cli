@@ -11,6 +11,8 @@ export class PackageInfo {
     if (domElement.classList.contains("slide-in")) {
       domElement.setAttribute("class", "slide-out");
     }
+
+    window.dispatchEvent(new CustomEvent("package-info-closed", { detail: null }));
   }
 
   /**

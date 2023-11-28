@@ -81,7 +81,7 @@
     "@nodesecure/i18n": "^3.4.0",
     "@nodesecure/licenses-conformance": "^2.1.0",
     "@nodesecure/npm-registry-sdk": "^1.6.1",
-    "@nodesecure/ossf-scorecard-sdk": "^2.0.0",
+    "@nodesecure/ossf-scorecard-sdk": "^3.1.0",
     "@nodesecure/rc": "^1.5.0",
     "@nodesecure/scanner": "^5.1.0",
     "@nodesecure/utils": "^1.1.0",
