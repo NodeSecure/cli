@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     nodes: [0],
     edges: nsn.network.getConnectedEdges(0)
   };
-  currentNodeParams = rootNodeParams;
   levelNodesParams.set(0, rootNodeParams);
 
   nsn.network.on("click", updateShowInfoMenu);
