@@ -27,12 +27,12 @@ div.package-head-information>.package-name>.version {
   align-items: end;
 }
 
-div.package-head-information>.package-name>ul {
-  margin-left: auto;
+div.package-head-information>ul.package-flags {
   display: flex;
-  align-items: center;
-  font-size: 16px;
-  padding-left: 10px;
+  font-size: 18px;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 div.package-head-information>.package-description {
@@ -46,7 +46,6 @@ div.package-head-information>.package-description {
 div.package-head-information>.package-links {
   height: 20px;
   display: flex;
-  margin-top: 20px;
   justify-content: center;
 }
 

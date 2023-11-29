@@ -34,7 +34,7 @@ export class PackageHeader {
       clone.querySelector(".package-description"),
       clone.querySelector(".package-links"),
       clone.querySelector(".package-flags")
-    ]
+    ];
 
     // Name and Version
     nameDomElement.textContent = packageName;
@@ -198,9 +198,13 @@ export class PackageHeader {
         .entries(this.package.nsn.secureDataSet.FLAGS)
         .map(([name, row]) => [row.emoji, { ...row, name }])
     );
+    const segmenter = new Intl.Segmenter("en", {
+      granularity: "grapheme"
+    });
+    const segitr = segmenter.segment(textContent.replaceAll(" ", ""));
 
     const fragment = document.createDocumentFragment();
-    for (const icon of textContent) {
+    for (const icon of Array.from(segitr, ({ segment }) => segment)) {
       if (flagsMap.has(icon)) {
         const tooltipElement = utils.createTooltip(icon, flagsMap.get(icon).tooltipDescription);
         tooltipElement.addEventListener("click", () => {
