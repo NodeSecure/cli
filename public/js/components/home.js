@@ -177,6 +177,7 @@ export class HomeView {
           {
             name,
             value,
+            link: result.value.spdxLicenseLinks?.[0] ?? null,
             chips: Object.entries(result.value.spdx)
               .filter(([key]) => key !== "includesDeprecated")
               .map(([key, value]) => `${value ? "✔️" : "❌"} ${key}`)
