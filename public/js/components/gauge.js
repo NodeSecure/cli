@@ -81,7 +81,7 @@ export class Gauge {
     const hideItems = this.data.length > this.maxLength;
 
     for (let id = 0; id < this.data.length; id++) {
-      const { name, value, chips = null } = this.data[id];
+      const { name, value, link = null, chips = null } = this.data[id];
       if (value === 0) {
         continue;
       }
@@ -90,6 +90,11 @@ export class Gauge {
       if (hideItems && id >= this.maxLength) {
         line.classList.add("hidden");
       }
+      if (link !== null) {
+        line.classList.add("clickable");
+        line.addEventListener("click", () => window.open(link, "_blank"));
+      }
+
       childs.push(line);
     }
 
