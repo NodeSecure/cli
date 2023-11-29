@@ -35,6 +35,8 @@ export class Settings {
     this.config = config;
     this.warnings = new Set(this.config.ignore.warnings);
     this.flags = new Set(this.config.ignore.flags);
+    this.config.ignore.warnings = this.warnings;
+    this.config.ignore.flags = this.flags;
   }
 
   async fetchUserConfig() {
@@ -52,20 +54,23 @@ export class Settings {
 
     const newConfig = {
       defaultPackageMenu: this.dom.defaultPackageMenu.value || Settings.defaultMenuName,
-      ignore: { flags: [], warnings: [] }
+      ignore: { flags: new Set(), warnings: new Set() }
     };
 
     for (const checkbox of this.dom.warningsCheckbox) {
       if (checkbox.checked) {
-        newConfig.ignore.warnings.push(checkbox.getAttribute("value"));
+        newConfig.ignore.warnings.add(checkbox.getAttribute("value"));
       }
     }
 
     for (const checkbox of this.dom.flagsCheckbox) {
       if (checkbox.checked) {
-        newConfig.ignore.flags.push(checkbox.getAttribute("value"));
+        newConfig.ignore.flags.add(checkbox.getAttribute("value"));
       }
     }
+
+    newConfig.ignore.warnings = [...newConfig.ignore.warnings];
+    newConfig.ignore.flags = [...newConfig.ignore.flags];
 
     await fetch("/config", {
       method: "put",

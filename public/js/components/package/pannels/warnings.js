@@ -39,7 +39,7 @@ export class Warnings {
     const { warnings } = this.package.dependencyVersion;
     this.package.addNavigationSignal(
       clone.getElementById("warnings-nav-menu"),
-      warnings.filter((warning) => !window.settings.warnings.has(warning.kind)).length
+      warnings.filter((warning) => !window.settings.config.ignore.warnings.has(warning.kind)).length
     );
   }
 
@@ -52,7 +52,7 @@ export class Warnings {
     const codeFetcher = new UnpkgCodeFetcher(unpkgRoot);
 
     for (const warning of warnings) {
-      if (window.settings.warnings.has(warning.kind)) {
+      if (window.settings.config.ignore.warnings.has(warning.kind)) {
         continue;
       }
 
