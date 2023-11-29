@@ -322,3 +322,18 @@ export function copyToClipboard(str) {
     document.getSelection().addRange(selected);   // Restore the original selection
   }
 };
+
+export function hideOnClickOutside(element, blacklistElements = []) {
+  const outsideClickListener = (event) => {
+    if (!element.contains(event.target) && !blacklistElements.includes(event.target)) {
+      element.classList.add("hidden");
+      removeClickListener();
+    }
+  }
+
+  const removeClickListener = () => {
+    document.removeEventListener('click', outsideClickListener);
+  }
+
+  document.addEventListener('click', outsideClickListener);
+}

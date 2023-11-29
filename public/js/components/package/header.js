@@ -28,9 +28,10 @@ export class PackageHeader {
       flags
     } = this.package.dependencyVersion;
 
-    const [nameDomElement, versionDomElement, descriptionDomElement, linksDomElement, flagsDomElement] = [
+    const [nameDomElement, versionDomElement, menuDomElement, descriptionDomElement, linksDomElement, flagsDomElement] = [
       clone.querySelector(".name"),
       clone.querySelector(".version"),
+      clone.querySelector(".info"),
       clone.querySelector(".package-description"),
       clone.querySelector(".package-links"),
       clone.querySelector(".package-flags")
@@ -42,6 +43,20 @@ export class PackageHeader {
       nameDomElement.classList.add("lowsize");
     }
     versionDomElement.textContent = `v${packageVersion}`;
+
+    // Menu
+    const menu = this.renderMenu(packageName);
+    menuDomElement.insertAdjacentElement("afterend", menu);
+    menuDomElement.addEventListener("click", () => {
+      const menu = menuDomElement.parentNode.querySelector(".info-menu");
+      if (menu.classList.contains("hidden")) {
+        menu.classList.remove("hidden");
+      }
+      else {
+        menu.classList.add("hidden");
+      }
+      utils.hideOnClickOutside(menu, [menuDomElement]);
+    });
 
     // Description
     const description = packageDescription.trim();
@@ -89,12 +104,6 @@ export class PackageHeader {
         icon: "icon-vcard",
         showInHeader: true
       },
-      thirdParty: {
-        menu: this.renderToolsMenu(packageName),
-        text: 'Tools',
-        icon: 'icon-link',
-        showInHeader: true
-      }
     };
     linksDomElement.appendChild(this.renderLinks(links));
 
@@ -159,31 +168,32 @@ export class PackageHeader {
    * @param {!string} packageName
    * @returns {HTMLElement[]}
    */
-  renderToolsMenu(packageName) {
+  renderMenu(packageName) {
     const { snykAdvisor, socket } = PackageHeader.ExternalLinks;
 
-    return [
-      utils.createDOMElement('span', { text: 'Tools' }),
-      utils.createDOMElement('div', {
-        classList: ['tools-menu'],
-        childs: [
-          utils.createDOMElement('a', {
-            text: 'Snyk',
-            attributes: {
-              href: snykAdvisor + packageName,
-              target: "_blank",
-            }
-          }),
-          utils.createDOMElement('a', {
-            text: 'Socket.dev',
-            attributes: {
-              href: socket + packageName,
-              target: "_blank",
-            }
-          })
-        ]
-      })
-    ]
+    return utils.createDOMElement('div', {
+      classList: ['info-menu', 'hidden'],
+      childs: [
+        utils.createDOMElement("div", {
+          text: "Third-party tools",
+          classList: ['info-menu-title'],
+        }),
+        utils.createDOMElement('a', {
+          text: 'Snyk',
+          attributes: {
+            href: snykAdvisor + packageName,
+            target: "_blank",
+          }
+        }),
+        utils.createDOMElement('a', {
+          text: 'Socket.dev',
+          attributes: {
+            href: socket + packageName,
+            target: "_blank",
+          }
+        })
+      ]
+    });
   }
 
   renderFlags(flags) {

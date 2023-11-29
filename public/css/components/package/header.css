@@ -26,6 +26,38 @@ div.package-head-information>.package-name>.version {
   display: flex;
   align-items: end;
 }
+div.package-head-information>.package-name>.info {
+  background: url("../../../img/arrow-right-solid.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  width: 18px;
+  height: 22px;
+  border: none;
+  margin-left: auto;
+  cursor: pointer;
+  /* https://codepen.io/sosuke/pen/Pjoqqp */
+  filter: invert(71%) sepia(22%) saturate(6942%) hue-rotate(149deg) brightness(101%) contrast(106%);
+}
+div.package-head-information>.package-name>.info-menu {
+  background: #f7f7f7;
+  padding: 16px;
+  border: none;
+  border-radius: 6px;
+  position: absolute;
+  left: 420px;
+  width: 160px;
+  text-shadow: none;
+}
+div.package-head-information>.package-name>.info-menu>.info-menu-title {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 12px;
+  color: rgb(39, 38, 38);
+}
+div.package-head-information>.package-name>.info-menu>a {
+  display: block;
+  margin-bottom: 4px;
+}
 
 div.package-head-information>ul.package-flags {
   display: flex;
