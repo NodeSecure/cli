@@ -16,9 +16,11 @@ const kSASTWarnings = [
   "unsafe-import",
   "unsafe-regex",
   "unsafe-stmt",
+  "shady-link",
   "encoded-literal",
   "short-identifiers",
   "suspicious-literal",
+  "suspicious-file",
   "obfuscated-code",
   "weak-crypto"
 ].map((name) => ({ name }));
@@ -80,7 +82,8 @@ export function render(rootElement, options = {}) {
 
   const header = new Header(kHeaderMenus, { defaultName: "flags" });
   const mainContainer = utils.createDOMElement("div", {
-    className: "documentation--main", childs: [header.dom, ...containers]
+    className: "documentation--main",
+    childs: [header.dom, ...containers]
   });
 
   for (const node of rootElement.childNodes) {

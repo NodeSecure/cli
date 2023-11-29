@@ -13,11 +13,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kPublicDir = path.join(__dirname, "public");
 const kOutDir = path.join(__dirname, "dist");
 const kImagesDir = path.join(kPublicDir, "img");
+const kNodeModulesDir = path.join(__dirname, "node_modules");
 
 await esbuild.build({
   entryPoints: [
     path.join(kPublicDir, "js", "master.js"),
     path.join(kPublicDir, "css", "style.css"),
+    path.join(kNodeModulesDir, "highlight.js", "styles", "github.css"),
     ...getBuildConfiguration().entryPoints
   ],
   loader: {
