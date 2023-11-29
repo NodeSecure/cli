@@ -1,6 +1,6 @@
 // Import Node.js Dependencies
-import fs from "fs";
-import { pipeline } from "stream";
+import fs from "node:fs";
+import { pipeline } from "node:stream";
 
 // Import Internal Dependencies
 import { context } from "../context.js";
