@@ -35,7 +35,7 @@ section#package-info .package-container {
   border-radius: 0 0 8px 8px;
   overflow-y: auto;
   overflow-x: hidden;
-  height: calc(100vh - 275px);
+  height: calc(100vh - 300px);
 }
 
 section#package-info>.package-navigation>div {
