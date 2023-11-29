@@ -11,7 +11,13 @@ section#package-info .package-scripts>.expandable {
 section#package-info .package-scripts .script {
   display: flex;
   flex-direction: column;
-  padding: 2px 0;
+  padding: 5px;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+section#package-info .package-scripts .script.suspicious {
+  background: #8776464f;
 }
 
 section#package-info .package-scripts .script:nth-child(even) {
@@ -20,6 +26,10 @@ section#package-info .package-scripts .script:nth-child(even) {
 
 section#package-info .package-scripts .script+.script {
   margin-top: 5px;
+}
+
+section#package-info .package-scripts .script.suspicious p.name {
+  color: #efe493;
 }
 
 section#package-info .package-scripts .script p.name {
@@ -34,4 +44,5 @@ section#package-info .package-scripts .script p.value {
   font-size: 13px;
   color: #f3e4f8;
   font-family: 'mononoki';
+  margin-top: 5px;
 }

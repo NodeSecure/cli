@@ -1,6 +1,15 @@
 // Import Internal Dependencies
 import * as utils from "../../../utils.js";
 
+// CONSTANTS
+const kUnsafeNpmScripts = new Set([
+  "install",
+  "preinstall",
+  "postinstall",
+  "preuninstall",
+  "postuninstall"
+]);
+
 export class Scripts {
   static SimulationTimeout = null;
 
@@ -43,15 +52,19 @@ export class Scripts {
     const hideItems = scripts.length > hideItemsLength;
 
     for (let id = 0; id < scripts.length; id++) {
-      const [key, value] = scripts[id];
+      const [scriptName, scriptContent] = scripts[id];
 
+      const isSuspicious = kUnsafeNpmScripts.has(scriptName);
       const script = utils.createDOMElement("div", {
         className: "script",
         childs: [
-          createPElement("name", key),
-          createPElement("value", value)
+          createPElement("name", (isSuspicious ? "⚠️ " : "") + scriptName),
+          createPElement("value", scriptContent)
         ]
       });
+      if (isSuspicious) {
+        script.classList.add("suspicious");
+      }
       if (hideItems && id >= hideItemsLength) {
         script.classList.add("hidden");
       }
