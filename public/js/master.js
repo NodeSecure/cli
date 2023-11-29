@@ -44,8 +44,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   nsn.network.on("click", updateShowInfoMenu);
 
   window.addEventListener("settings-saved", async (event) => {
-    secureDataSet.warningsToIgnore = new Set(event.detail.ignore.warnings);
-    secureDataSet.flagsToIgnore = new Set(event.detail.ignore.flags);
+    const warningsToIgnore = new Set(event.detail.ignore.warnings);
+    const flagsToIgnore = new Set(event.detail.ignore.flags);
+    secureDataSet.warningsToIgnore = warningsToIgnore;
+    secureDataSet.flagsToIgnore = flagsToIgnore;
+    window.settings.config.ignore.warnings = warningsToIgnore;
+    window.settings.config.ignore.flags = flagsToIgnore;
 
     await secureDataSet.init(secureDataSet.data);
     const { nodes } = secureDataSet.build();
