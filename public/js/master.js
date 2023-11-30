@@ -51,7 +51,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.settings.config.ignore.warnings = warningsToIgnore;
     window.settings.config.ignore.flags = flagsToIgnore;
 
-    await secureDataSet.init(secureDataSet.data);
+    await secureDataSet.init(
+      secureDataSet.data,
+      secureDataSet.FLAGS
+    );
     const { nodes } = secureDataSet.build();
     nsn.nodes.update(nodes.get());
 
