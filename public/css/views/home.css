@@ -24,16 +24,16 @@
 
 .home--header--scorecard .description {
   width: 190px;
-  background: linear-gradient(to bottom,  #37474f 0%,#263238 100%);
+  background: linear-gradient(to bottom, #37474f 0%, #263238 100%);
   display: flex;
   align-items: center;
 }
 
-.home--header--scorecard .description > img {
+.home--header--scorecard .description>img {
   height: 73px;
 }
 
-.home--header--scorecard .description > p {
+.home--header--scorecard .description>p {
   margin-left: 10px;
 }
 
@@ -48,20 +48,24 @@
   text-shadow: 1px 1px 5px #0000007a;
   box-shadow: 2px 2px 10px #1e1e1e69 inset;
 }
+
 .home--header--scorecard .score.green {
   background-color: rgb(113 203 45);
 }
+
 .home--header--scorecard .score.red {
   background-color: rgb(219 80 58);
 }
+
 .home--header--scorecard .score.orange {
   background-color: rgb(252 196 39);
 }
+
 .home--header--scorecard .score.blue {
   background-color: rgb(39 144 252);
 }
 
-.home--header--title  {
+.home--header--title {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -142,6 +146,7 @@
   color: var(--secondary-darker);
   flex-grow: 1;
   flex-basis: 100%;
+  margin-top: 10px;
 }
 
 #home--view .home--body .pannel {
@@ -209,6 +214,22 @@
   min-height: 20px;
 }
 
+#home--view .home--body .module>.content+.content {
+  margin-top: 10px;
+}
+
+#home--view .home--body .module>.content>p {
+  color: #7a7595;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  font-family: "system-ui";
+  font-weight: 500;
+  letter-spacing: 1.1px;
+  padding: 10px;
+}
+
 /**
  * WARNINGS BEGIN
  */
@@ -221,16 +242,13 @@
 
 .home--warnings>p {
   padding: 10px;
-  background: -moz-linear-gradient(left, rgba(140, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0) 100%);
-  background: -webkit-linear-gradient(left, rgba(140, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0) 100%);
-  background: linear-gradient(to right, rgba(140, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3d8c0000', endColorstr='#00000000', GradientType=1);
-
-  color: #4a0000;
+  border-left: 2px solid #da4e44;
+  background: linear-gradient(to right, rgb(231, 206, 195) 0%, rgba(255, 255, 255, 0) 100%);
+  color: #992323;
   border-radius: 4px;
 }
 
-.home--warnings>p + p {
+.home--warnings>p+p {
   margin-top: 5px;
 }
 
@@ -282,6 +300,63 @@
   margin-top: 10px;
 }
 
+.home--packages--overview {
+  display: flex;
+  flex-direction: column;
+  margin-left: -10px;
+  margin-top: -10px;
+}
+
+.home--packages--overview>div {
+  background: linear-gradient(to right, rgb(231 216 195) 0%, rgba(255, 255, 255, 0) 100%);
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  position: relative;
+  box-sizing: border-box;
+  border-radius: 4px;
+  font-family: "mononoki";
+  margin-left: 10px;
+  margin-top: 10px;
+  border-left: 2px solid #da9744;
+  color: #992323;
+  font-size: 16px;
+  flex-wrap: wrap;
+  transition: 0.5s linear all;
+}
+
+.home--packages--overview>div:hover {
+  border-color: #da4e44;
+  cursor: pointer;
+  background: linear-gradient(to right, rgb(231, 206, 195) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.home--packages--overview>div span {
+  color: #6d5703;
+  margin-left: 10px;
+}
+
+.home--packages--overview>div>div.chips {
+  margin-left: auto;
+  display: flex;
+  font-size: 15px;
+  font-family: 'Roboto';
+  font-weight: 500;
+}
+
+.home--packages--overview>div>div.chips>p {
+  padding: 5px;
+  background: linear-gradient(to bottom, rgba(252, 252, 252, 1) 0%, rgba(232, 232, 232, 1) 100%);
+  border-radius: 4px;
+  box-shadow: 2px 2px 6px 0px #71060633;
+  border: 1px solid #8f0e0e54;
+  color: #611717;
+}
+
+.home--packages--overview>div>div.chips>p+p {
+  margin-left: 10px;
+}
+
 /**
  * OVERVIEW END
  */
@@ -299,7 +374,8 @@
 .home--maintainers>.person {
   height: 50px;
   flex-basis: 300px;
-  display : flex;
+  background: linear-gradient(to bottom, rgba(252, 252, 252, 1) 0%, rgba(232, 232, 232, 1) 100%);
+  display: flex;
   position: relative;
   box-sizing: border-box;
   border-radius: 4px;
@@ -317,7 +393,7 @@
 }
 
 .home--maintainers>.person.url:hover {
-  border-color: var(--primary);
+  border-color: var(--secondary-darker);
   cursor: pointer;
 }
 
@@ -325,7 +401,7 @@
   width: 50px;
 }
 
-.home--maintainers>.person>i{
+.home--maintainers>.person>i {
   margin-right: 10px;
   display: flex;
   align-items: center;

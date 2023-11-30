@@ -24,12 +24,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   await secureDataSet.init();
 
-  new HomeView(secureDataSet);
   window.vulnerabilityStrategy = secureDataSet.data.vulnerabilityStrategy;
 
   // Initialize vis Network
   NodeSecureNetwork.networkElementId = "dependency-graph";
   const nsn = new NodeSecureNetwork(secureDataSet);
+  new HomeView(secureDataSet, nsn);
   const rootNodeParams = {
     nodes: [0],
     edges: nsn.network.getConnectedEdges(0)

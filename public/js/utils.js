@@ -63,6 +63,15 @@ export function isGitLabHost(host) {
   }
 }
 
+export function extractEmojis(strWithEmojis) {
+  const segmenter = new Intl.Segmenter("en", {
+    granularity: "grapheme"
+  });
+  const segitr = segmenter.segment(strWithEmojis.replaceAll(" ", ""));
+
+  return Array.from(segitr, ({ segment }) => segment);
+}
+
 /**
  * @param {keyof HTMLElementTagNameMap} kind
  * @param {object} [options]
