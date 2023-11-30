@@ -23,8 +23,15 @@ export class Scripts {
   generate(clone) {
     this.setupSignal(clone);
 
-    clone.querySelector(".package-scripts")
-      .appendChild(this.renderScripts());
+    const fragment = this.renderScripts();
+    const packageScriptsElement = clone.querySelector(".package-scripts");
+    if (fragment === null) {
+      clone.getElementById("script-title").style.display = "none";
+      packageScriptsElement.style.display = "none";
+    }
+    else {
+      packageScriptsElement.appendChild(this.renderScripts());
+    }
     this.renderDependencies(clone);
     this.showHideDependenciesInTree(clone);
   }
@@ -48,6 +55,9 @@ export class Scripts {
     const createPElement = (className, text) => utils.createDOMElement("p", { className, text });
 
     const scripts = Object.entries(this.package.dependencyVersion.scripts);
+    if (scripts.length === 0) {
+      return null;
+    }
     const hideItemsLength = 4;
     const hideItems = scripts.length > hideItemsLength;
 
