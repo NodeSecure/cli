@@ -25,12 +25,10 @@ export class Header {
 
     const ul = utils.createDOMElement("ul", {
       childs: [
-        ...menu.map((item) => {
-          return utils.createDOMElement("li", {
-            text: item.name,
-            attributes: { "data-menu": item.title }
-          });
-        })
+        ...menu.map((item) => utils.createDOMElement("li", {
+          text: item.name,
+          attributes: { "data-menu": item.title }
+        }))
       ]
     });
 

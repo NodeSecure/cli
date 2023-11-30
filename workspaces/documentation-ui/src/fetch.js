@@ -3,11 +3,19 @@ import * as CONSTANTS from "./constants.js";
 
 // Import Third-party Dependencies
 import MarkdownIt from "markdown-it";
+import hljs from "highlight.js/lib/core";
+import javascript from "highlight.js/lib/languages/javascript";
+import json from "highlight.js/lib/languages/json";
+
+hljs.registerLanguage("javascript", javascript);
+hljs.registerLanguage("json", json);
 
 // CONSTANTS
 const kRawGithubFlagsURL = "https://raw.githubusercontent.com/NodeSecure/flags/main/src/flags";
 const kRawGithubWarningsURL = "https://raw.githubusercontent.com/NodeSecure/js-x-ray/master/docs";
-const kMarkdownConvertor = new MarkdownIt();
+const kMarkdownConvertor = new MarkdownIt({
+  html: true
+});
 
 /** @type {Map<string, string>} */
 export const cache = new Map();
@@ -55,7 +63,14 @@ export async function fetchNodeSecureWarningsByTitle(title, options = {}) {
 
   const httpResponse = await fetch(`${kRawGithubWarningsURL}/${title}.md`);
   const markdownResponse = await httpResponse.text();
-  const htmlResponse = kMarkdownConvertor.render(markdownResponse);
+  const htmlResponse = kMarkdownConvertor.render(
+    markdownResponse
+      .replaceAll("[!IMPORTANT]", "🚨")
+      .replaceAll("[!NOTE]", "📝")
+      .replaceAll("[!CAUTION]", "🔶")
+      .replaceAll("[!WARNING]", "⚠️")
+      .replaceAll("[!TIP]", "💡")
+  );
 
   if (cacheReponse) {
     cache.set(cacheTitle, htmlResponse);
@@ -78,4 +93,5 @@ export async function fetchAndRenderByMenu(menuElement, kind = "flags") {
 
   const documentContentElement = document.querySelector(`.documentation--${kind} .${CONSTANTS.DIV_CONTENT}`);
   documentContentElement.innerHTML = kind === "flags" ? htmlResponse : `<div>${htmlResponse}</div>`;
+  hljs.highlightAll();
 }
