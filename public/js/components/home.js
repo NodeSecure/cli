@@ -213,6 +213,9 @@ export class HomeView {
 
     for (let id = 0; id < authors.length; id++) {
       const [name, data] = authors[id];
+      if (typeof name === "undefined") {
+        continue;
+      }
       const { count, email, url = null } = data;
 
       const hasURL = typeof url === "string";
