@@ -194,6 +194,11 @@ export class PackageHeader {
   }
 
   renderFlags(flags) {
+    const { warnings } = this.package.dependencyVersion;
+    const warningsLength = warnings.filter(
+      (warning) => !window.settings.config.ignore.warnings.has(warning.kind)
+    ).length;
+
     const textContent = getFlagsEmojisInlined(flags, new Set(window.settings.config.ignore.flags));
 
     if (textContent === "") {
@@ -213,6 +218,11 @@ export class PackageHeader {
     const fragment = document.createDocumentFragment();
     for (const icon of Array.from(segitr, ({ segment }) => segment)) {
       if (flagsMap.has(icon)) {
+        const { name } = flagsMap.get(icon);
+        if (name === "warnings" && warningsLength === 0) {
+          continue;
+        }
+
         const tooltipElement = utils.createTooltip(icon, flagsMap.get(icon).tooltipDescription);
         tooltipElement.addEventListener("click", () => {
           const { name } = flagsMap.get(icon);
