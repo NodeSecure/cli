@@ -18,6 +18,14 @@ export default class NodeSecureDataSet extends EventTarget {
 
     this.flagsToIgnore = new Set(flagsToIgnore);
     this.warningsToIgnore = new Set(warningsToIgnore);
+    this.reset();
+  }
+
+  get prettySize() {
+    return prettyBytes(this.size);
+  }
+
+  reset() {
     this.warnings = [];
     this.packages = [];
     this.linker = new Map();
@@ -34,13 +42,14 @@ export default class NodeSecureDataSet extends EventTarget {
     this.indirectDependencies = 0;
   }
 
-  get prettySize() {
-    return prettyBytes(this.size);
-  }
-
-  async init(initialPayload = null, initialFlags = {}) {
+  async init(
+    initialPayload = null,
+    initialFlags = {}
+  ) {
     console.log("[NodeSecureDataSet] Initialization started...");
-    let FLAGS; let data;
+    let FLAGS;
+    let data;
+    this.reset();
 
     if (initialPayload) {
       data = initialPayload;

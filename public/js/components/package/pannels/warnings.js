@@ -58,9 +58,10 @@ export class Warnings {
 
       const id = Math.random().toString(36).slice(2);
       const hasNoInspection =
-        warning.file.includes(".min") &&
-        warning.kind === "short-identifiers" &&
-        warning.kind === "obfuscated-code";
+        warning.file.includes(".min") ||
+        warning.kind === "short-identifiers" ||
+        warning.kind === "obfuscated-code" ||
+        warning.kind === "zero-semver";
 
       const viewMoreElement = utils.createDOMElement("div", {
         className: "view-more",

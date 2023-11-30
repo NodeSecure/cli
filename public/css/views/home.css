@@ -230,6 +230,10 @@
   border-radius: 4px;
 }
 
+.home--warnings>p + p {
+  margin-top: 5px;
+}
+
 /**
  * WARNINGS END
  */
