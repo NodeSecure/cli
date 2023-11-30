@@ -112,9 +112,6 @@ export class PackageHeader {
     if (flagFragment) {
       flagsDomElement.appendChild(flagFragment);
     }
-    else {
-      flagsDomElement.style.display = "none";
-    }
 
     return links;
   }
