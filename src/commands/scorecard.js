@@ -84,7 +84,6 @@ export async function main(repo, opts) {
   );
   ui.div(separatorLine());
 
-
   for (const check of data.checks) {
     const { score, name, reason } = check;
     ui.div(

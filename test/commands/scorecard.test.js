@@ -66,7 +66,6 @@ test("scorecard should display fastify scorecard", async() => {
     ]
   };
 
-
   const givenLines = await arrayFromAsync(runProcess(scorecardCliOptions));
   const expectedLines = getExpectedScorecardLines(packageName, mockBody);
 

@@ -45,15 +45,15 @@
     <ul id="view-navigation">
       <li data-menu="home--view">
         <i class="icon-home"></i>
-        <span>H</span>
+        <span></span>
       </li>
       <li data-menu="network--view">
         <i class="icon-globe-alt-outline"></i>
-        <span>N</span>
+        <span></span>
       </li>
       <li data-menu="settings--view" class="bottom-nav">
         <i class="icon-cog"></i>
-        <span>S</span>
+        <span></span>
       </li>
     </ul>
   </nav>
@@ -162,79 +162,105 @@
         <div class="line">
           <p>SAST Warnings to ignore:</p>
           <div>
-            <input type="checkbox" checked name="warnings" value="parsing-error">
-            <p>parsing error</p>
+            <input type="checkbox" checked name="warnings" value="parsing-error" id="parsing-error">
+            <label for="parsing-error">parsing error</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="unsafe-import">
-            <p>unsafe import</p>
+            <input type="checkbox" checked name="warnings" value="unsafe-import" id="unsafe-import">
+            <label for="unsafe-import">unsafe import</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="unsafe-regex">
-            <p>unsafe regex</p>
+            <input type="checkbox" checked name="warnings" value="unsafe-regex" id="unsafe-regex">
+            <label for="unsafe-regex">unsafe regex</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="unsafe-stmt">
-            <p>unsafe stmt</p>
+            <input type="checkbox" checked name="warnings" value="unsafe-stmt" id="unsafe-stmt">
+            <label for="unsafe-stmt">unsafe stmt</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="unsafe-assign">
-            <p>unsafe assign</p>
+            <input type="checkbox" checked name="warnings" value="unsafe-assign" id="unsafe-assign">
+            <label for="unsafe-assign">unsafe assign</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="encoded-literal">
-            <p>encoded literal</p>
+            <input type="checkbox" checked name="warnings" value="encoded-literal" id="encoded-literal">
+            <label for="encoded-literal">encoded literal</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="short-identifiers">
-            <p>short identifiers</p>
+            <input type="checkbox" checked name="warnings" value="short-identifiers" id="short-identifiers">
+            <label for="short-identifiers">short identifiers</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="suspicious-literal">
-            <p>suspicious literal</p>
+            <input type="checkbox" checked name="warnings" value="suspicious-literal" id="suspicious-literal">
+            <label for="suspicious-literal">suspicious literal</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="obfuscated-code">
-            <p>obfuscated code</p>
+            <input type="checkbox" checked name="warnings" value="suspicious-file" id="suspicious-file">
+            <label for="suspicious-file">suspicious file</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="weak-crypto">
-            <p>weak crypto</p>
+            <input type="checkbox" checked name="warnings" value="obfuscated-code" id="obfuscated-code">
+            <label for="obfuscated-code">obfuscated code</label>
           </div>
           <div>
-            <input type="checkbox" checked name="warnings" value="zero-semver">
-            <p>zero semver (0.x.x)</p>
+            <input type="checkbox" checked name="warnings" value="weak-crypto" id="weak-crypto">
+            <label for="weak-crypto">weak crypto</label>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="shady-link" id="shady-link">
+            <label for="shady-link">shady link</label>
+          </div>
+          <div>
+            <input type="checkbox" checked name="warnings" value="zero-semver" id="zero-semver">
+            <label for="zero-semver">zero semver (0.x.x)</label>
           </div>
         </div>
         <div class="line">
           <p>Flags to ignore:</p>
           <div>
-            <input type="checkbox" name="flags" value="hasManyPublishers">
-            <p>👥 hasManyPublishers</p>
+            <input type="checkbox" name="flags" value="hasManyPublishers" id="hasManyPublishers">
+            <label for="hasManyPublishers">👥 hasManyPublishers</label>
           </div>
           <div>
-            <input type="checkbox" name="flags" value="hasIndirectDependencies">
-            <p>🌲 hasIndirectDependencies</p>
+            <input type="checkbox" name="flags" value="hasIndirectDependencies" id="hasIndirectDependencies">
+            <label for="hasIndirectDependencies">🌲 hasIndirectDependencies</label>
           </div>
           <div>
-            <input type="checkbox" name="flags" value="hasMissingOrUnusedDependency">
-            <p>👀 hasMissingOrUnusedDependency</p>
+            <input type="checkbox" name="flags" value="hasMissingOrUnusedDependency" id="hasMissingOrUnusedDependency">
+            <label for="hasMissingOrUnusedDependency">👀 hasMissingOrUnusedDependency</label>
           </div>
           <div>
-            <input type="checkbox" name="flags" value="isDead">
-            <p>💀 isDead</p>
+            <input type="checkbox" name="flags" value="isDead" id="isDead">
+            <label for="isDead">💀 isDead</label>
           </div>
           <div>
-            <input type="checkbox" name="flags" value="isOutdated">
-            <p>⌚️ isOutdated</p>
+            <input type="checkbox" name="flags" value="isOutdated" id="isOutdated">
+            <label for="isOutdated">⌚️ isOutdated</label>
           </div>
           <div>
-            <input type="checkbox" name="flags" value="isDuplicate">
-            <p>🎭 isDuplicate</p>
+            <input type="checkbox" name="flags" id="flags" value="isDuplicate">
+            <label for="flags">🎭 isDuplicate</label>
           </div>
         </div>
       </form>
       <button class="save">save</button>
+      <div class="line">
+        <h2><i class="icon-keyboard"></i>Shortcuts</h2>
+        <div class="shortcuts">
+          <div class="note">💡 Click on hotkey to update</div>
+          <div>
+            <input readonly id="home" class="hotkey">
+            <label for="home">Goto Home view</label>
+          </div>
+          <div>
+            <input readonly id="network" class="hotkey">
+            <label for="home">Goto Network view</label>
+          </div>
+          <div>
+            <input readonly id="settings" class="hotkey">
+            <label for="home">Goto Settings view</label>
+          </div>
+        </div>
+      </div>
     </div>
 
     <section id="package-info"></section>
@@ -247,7 +273,6 @@
   </div>
   <div class="documentation-render-container"></div>
 </section>
-
 
 <div id="searchbar">
   <div class="search-items"></div>
