@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  a Node.js CLI to deeply analyze the dependency tree of a given package / directory
+  a Node.js CLI to deeply analyze the dependency tree of a given NPM package or Node.js local app
 </p>
 
 <p align="center">
@@ -28,24 +28,15 @@
 <img src="https://res.cloudinary.com/practicaldev/image/fetch/s--uxkBbhI2--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zxtg6o2v2ahmpsjfhs71.PNG">
 </p>
 
-## 📢 About
-
-[Node.js](https://nodejs.org/en/) security Command Line Interface. The goal of the project is to a design a CLI/API that will fetch and deeply analyze the dependency tree of a given **npm** package (Or a local project with a **package.json**) and output a **.json file** that will contains all metadata and flags about each packages. All this data will allow to quickly identify different issues across projects and packages (related to security and quality).
-
-The CLI allow to load the JSON into a Webpage with the **open** command. The page will draw a Network of all dependencies with [vis.js](https://visjs.org/) (example in the screenshot above). We also wrote a little Google drive document a while ago that summarizes some of these points:
-
-- [NodeSecure G.Drive Design document](https://docs.google.com/document/d/1853Uwup9mityAYqAOnen1KSqSA6hlBgpKU0u0ygGY4Y/edit?usp=sharing)
-
 ## 📜 Features
 
-- Run an AST analysis on each .js/.mjs file in the packages tarball and sort out warnings (unsafe-regex, unsafe-import etc) and the complete list of required expr and statements (files, node.js module, etc.).
+- Run a static scan on every JavaScript files and sort out warnings (unsafe-regex, unsafe-import etc) and the complete list of required expr and statements (files, node.js module, etc.).
 - Return complete composition for each packages (extensions, files, tarball size, etc).
 - Packages metadata from the npm registry API (number of releases, last publish date, maintainers etc).
 - Search for licenses files in the tarball and return the [SPDX](https://spdx.org/licenses/) expression conformance of each detected licenses.
-- Link vulnerabilities from the [Security-WG repository](https://github.com/nodejs/security-wg/tree/master/vuln/npm) to the package version node.
-- Add flags to each packages versions to identify well known patterns and potential security threats easily.
-- Analyze npm packages and local Node.js projects.
-- Supports [OpenSSF Scorecard](https://github.com/ossf/scorecard).
+- Link vulnerabilities from the multiple sources like GitHub Advisory, Sonatype or Snyk using [Vulnera](https://github.com/NodeSecure/vulnera). 
+- Add flags (emojis) to each packages versions to identify well known patterns and potential security threats easily.
+- First-class support of open source security initiatives like [OpenSSF Scorecard](https://github.com/ossf/scorecard).
 
 ## 🚧 Requirements
 
@@ -94,7 +85,7 @@ $ nsecure --help
 $ nsecure cwd
 
 # Run an analysis for a given 'npm' package (must be in the npm registry).
-$ nsecure from @sindresorhus/is
+$ nsecure from mocha
 ```
 
 Then a `nsecure-result.json` will be writted at the current CLI location. To open it on a web page just run
@@ -136,13 +127,14 @@ Some options are available on both `cwd`, `from` and `auto` commands. The output
 $ nsecure from express -d 10 -o express-security-report
 ```
 
-## Private packages / registry
+## Private registry / Verdaccio
 
-Nsecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contains an [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
+NodeSecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contains an [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
 
-> 💬 If you link the package by yourself with npm you can create a `.env` file at the root of the project too.
+> [!TIP]
+> If you `npm link` the package by yourself you can create a `.env` file at the root of the project too.
 
-Nsecure is capable to work behind a custom private npm registry too by searching the default registry URL in your local npm configuration.
+NodeSecure is capable to work behind a custom private npm registry too by searching the default registry URL in your local npm configuration.
 
 ```bash
 $ npm config get registry
