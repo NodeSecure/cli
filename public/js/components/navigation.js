@@ -28,21 +28,23 @@ export class ViewNavigation {
       navigationMenu.addEventListener("click", () => this.onNavigationSelected(navigationMenu));
     }
 
+
     document.addEventListener("keydown", (event) => {
       if (window.searchbar.background.classList.contains("show")) {
         return;
       }
 
-      switch(event.code) {
-        case "KeyH": {
+      const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
+      switch (event.key.toUpperCase()) {
+        case hotkeys.home: {
           this.onNavigationSelected(this.menus.get("home--view"));
           break;
         }
-        case "KeyN": {
+        case hotkeys.network: {
           this.onNavigationSelected(this.menus.get("network--view"));
           break;
         }
-        case "KeyS": {
+        case hotkeys.settings: {
           this.onNavigationSelected(this.menus.get("settings--view"));
           break;
         }

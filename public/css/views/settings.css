@@ -7,7 +7,7 @@
   overflow-y: auto;
 }
 
-#settings--view>h1 {
+#settings--view>h1, #settings--view h2 {
   height: 40px;
   border-bottom: 2px solid var(--primary);
   margin-bottom: 20px;
@@ -16,6 +16,20 @@
   color: var(--primary);
   font-size: 24px;
   font-family: 'mononoki';
+}
+
+#settings--view h2 {
+  margin-top: 30px;
+}
+
+#settings--view .icon-keyboard {
+  background: url("../../img/keyboard-solid.svg");
+  background-position: 10%  center;
+  background-repeat: no-repeat;
+  width: 34px;
+  height: 20px;
+  margin-right: 2px;
+  filter: invert(14%) sepia(80%) saturate(5663%) hue-rotate(252deg) brightness(69%) contrast(98%);
 }
 
 #settings--view>h1 i {
@@ -37,13 +51,54 @@
   box-sizing: border-box;
 }
 
-#settings--view>form .line label,
-#settings--view>form .line>p {
+#settings--view>form .line p, #settings--view>form .line label {
   font-size: 15px;
-  margin-bottom: 6px;
   color: #4a5e68;
-  font-weight: bold;
   letter-spacing: 0.5px;
+}
+
+#settings--view>form .line>p, #settings--view>form .line>label {
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+#settings--view .shortcuts div:nth-child(n+1) {
+  margin-top: 10px;
+}
+
+#settings--view .shortcuts .note {
+  border-left: 3px solid #01579B;
+  padding: 10px 15px;
+  background: #81d4fa59;
+  color: #283593;
+  font-weight: 400;
+  border-radius: 2px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+#settings--view .shortcuts label {
+  color: #4a5e68;
+  margin-left: 10px;
+  font-weight: 500;
+}
+
+#settings--view .shortcuts input:read-only {
+  background: transparent;
+  border-color: rgb(168, 168, 168);
+  color: rgb(141, 140, 140);
+  border-style: solid;
+}
+
+#settings--view .shortcuts input {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  text-align: center;
+  font-family: system-ui;
+  font-size: 20px;
+  font-weight: 500;
+  border-bottom-width: 4px;
 }
 
 #settings--view>form .line>div {

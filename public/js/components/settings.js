@@ -1,6 +1,18 @@
 // Import Third-party Dependencies
 import { getJSON } from "@nodesecure/vis-network";
 
+// CONSTANTS
+const kAllowedHotKeys = new Set([
+  "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+  "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+  "u", "w", "x", "y", "z"
+]);
+const kDefaultHotKeys = {
+  home: "H",
+  network: "N",
+  settings: "S"
+}
+
 export class Settings {
   static defaultMenuName = "info";
 
@@ -12,7 +24,9 @@ export class Settings {
       /** @type {HTMLInputElement[]} */
       warningsCheckbox: document.querySelectorAll("input[name='warnings']"),
       /** @type {HTMLInputElement[]} */
-      flagsCheckbox: document.querySelectorAll("input[name='flags']")
+      flagsCheckbox: document.querySelectorAll("input[name='flags']"),
+      /** @type {HTMLInputElement} */
+      shortcutsSection: document.querySelector(".shortcuts"),
     }
 
     this.saveButton = document.querySelector(".save");
@@ -23,6 +37,88 @@ export class Settings {
     for (const checkbox of [...this.dom.warningsCheckbox, ...this.dom.flagsCheckbox]) {
       checkbox.addEventListener("change", () => this.enableSaveButton());
     }
+
+    const that = this;
+    this.dom.shortcutsSection.querySelectorAll(".hotkey").forEach((input) => {
+      input.addEventListener("click", () => {
+        if (!input.readOnly) {
+          return;
+        }
+
+        const currentValue = input.value;
+        input.readOnly = false;
+        input.value = "";
+
+        const onKeyDown = (event) => {
+          // Prevent the app to change view if key is equal to view's hotkey
+          event.preventDefault();
+          event.stopPropagation();
+
+          function setValue(value) {
+            input.value = value;
+            input.readOnly = true;
+            input.blur();
+            input.removeEventListener("keydown", onKeyDown);
+            that.updateHotKeys();
+          }
+          if (event.key === currentValue) {
+            setValue(currentValue);
+          }
+
+          if (kAllowedHotKeys.has(event.key.toLowerCase())) {
+            const isHotKeyAlreadyUsed = [...this.dom.shortcutsSection.querySelectorAll(".hotkey")].find((input) => {
+              return input.value === event.key.toUpperCase();
+            });
+
+            setValue(isHotKeyAlreadyUsed ? currentValue : event.key.toUpperCase());
+          }
+        }
+        input.addEventListener("keydown", onKeyDown);
+      });
+    });
+
+    if (localStorage.getItem("hotkeys") === null) {
+      localStorage.setItem("hotkeys", JSON.stringify(kDefaultHotKeys));
+    }
+
+    const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
+    this.updateNavigationHotKey(hotkeys);
+    this.updateFormHotKeys(hotkeys);
+  }
+
+  updateNavigationHotKey(hotkeys) {
+    const navigationElement = document.getElementById("view-navigation");
+    navigationElement.querySelectorAll("span").forEach((span) => {
+      // network--view -> network
+      const viewName = span.parentElement.getAttribute("data-menu").split("--")[0];
+      const hotkey = hotkeys[viewName];
+      span.textContent = hotkey;
+    });
+  }
+
+  updateFormHotKeys(hotkeys) {
+    const hotkeysInputs = [...this.dom.shortcutsSection.querySelectorAll(".hotkey")];
+
+    for (const input of hotkeysInputs) {
+      const viewName = input.getAttribute("id");
+      const hotkey = hotkeys[viewName];
+      input.value = hotkey;
+    }
+  }
+
+  updateHotKeys() {
+    const hotkeys = {};
+    const hotkeysInputs = [...this.dom.shortcutsSection.querySelectorAll(".hotkey")];
+
+    for (const input of hotkeysInputs) {
+      const viewName = input.getAttribute("id");
+      const hotkey = input.value;
+      hotkeys[viewName] = hotkey;
+    }
+
+    this.updateNavigationHotKey(hotkeys);
+
+    localStorage.setItem("hotkeys", JSON.stringify(hotkeys));
   }
 
   enableSaveButton() {
