@@ -28,7 +28,6 @@ export class ViewNavigation {
       navigationMenu.addEventListener("click", () => this.onNavigationSelected(navigationMenu));
     }
 
-
     document.addEventListener("keydown", (event) => {
       if (window.searchbar.background.classList.contains("show")) {
         return;

@@ -68,7 +68,6 @@ section#package-info>.package-navigation>div.active:before {
   border-top: 8px solid var(--secondary);
 }
 
-
 section#package-info>.package-navigation>div>.signal {
   position: absolute;
   bottom: -2px;

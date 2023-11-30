@@ -36,7 +36,6 @@ export class UnpkgCodeFetcher {
     }
   }
 
-
   async fetchCodeLine(event, options = {}) {
     const { file, location, id } = options;
 

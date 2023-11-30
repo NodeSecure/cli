@@ -294,7 +294,6 @@ section#package-info ul li.clickable:hover {
   word-wrap: break-word;
 }
 
-
 #pan-scorecard {
   padding: 10px;
   border-radius: 8px 8px 0 0;
@@ -375,7 +374,6 @@ section#package-info ul li.clickable:hover {
 #pan-scorecard .check.visible:before {
   content: '▼';
 }
-
 
 #pan-scorecard .check:hover {
   background: #3722af;
