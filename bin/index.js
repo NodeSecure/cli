@@ -3,7 +3,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Import Node.js Dependencies
+import path from "node:path";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 
 // Import Third-party Dependencies
 import kleur from "kleur";
@@ -16,11 +18,17 @@ import { loadRegistryURLFromLocalSystem } from "@nodesecure/npm-registry-sdk";
 // Import Internal Dependencies
 import * as commands from "../src/commands/index.js";
 
+// CONSTANTS
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 // TODO: replace with await import() when available
 const require = createRequire(import.meta.url);
 const manifest = require("../package.json");
 
 await i18n.getLocalLang();
+await i18n.extendFromSystemPath(
+  path.join(__dirname, "..", "i18n")
+);
 
 console.log(kleur.grey().bold(`\n > ${i18n.getTokenSync("cli.executing_at")}: ${kleur.yellow().bold(process.cwd())}\n`));
 
