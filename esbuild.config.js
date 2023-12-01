@@ -17,8 +17,8 @@ const kNodeModulesDir = path.join(__dirname, "node_modules");
 
 await esbuild.build({
   entryPoints: [
-    path.join(kPublicDir, "js", "master.js"),
-    path.join(kPublicDir, "css", "style.css"),
+    path.join(kPublicDir, "main.js"),
+    path.join(kPublicDir, "main.css"),
     path.join(kNodeModulesDir, "highlight.js", "styles", "github.css"),
     ...getBuildConfiguration().entryPoints
   ],
@@ -38,17 +38,10 @@ await esbuild.build({
   outdir: kOutDir
 });
 
+const imagesFiles = await fs.readdir(kImagesDir);
+
 await Promise.all([
-  ...[
-    "github-mark.png",
-    "github-black.png",
-    "npm-icon.svg",
-    "node.png",
-    "snyk.png",
-    "sonatype.png",
-    "avatar-default.png",
-    "scorecard.png",
-    "ext-link.svg"
-  ].map((name) => fs.copyFile(path.join(kImagesDir, name), path.join(kOutDir, name))),
+  ...imagesFiles
+    .map((name) => fs.copyFile(path.join(kImagesDir, name), path.join(kOutDir, name))),
   fs.copyFile(path.join(kPublicDir, "favicon.ico"), path.join(kOutDir, "favicon.ico"))
 ]);

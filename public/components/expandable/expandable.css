@@ -1,0 +1,42 @@
+span.expandable {
+  display: flex;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 35px;
+  font-size: 13px;
+  font-family: "mononoki";
+  background: none;
+  color: #00B0FF;
+  text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
+  transition: all 0.2s linear;
+  margin-top: 5px;
+}
+
+span.expandable[data-value="opened"] {
+  color: #F44336 !important;
+}
+
+span.expandable:hover {
+  cursor: pointer;
+}
+
+span.expandable i {
+  margin-right: 4px;
+  margin-top: 1px;
+}
+
+/**
+ * CUSTOM CSS
+ */
+.package-scripts>.expandable {
+  margin-top: 10px;
+}
+
+.home--body .expandable {
+  text-shadow: none;
+  font-size: 15px;
+  color: var(--secondary-darker);
+  flex-grow: 1;
+  flex-basis: 100%;
+  margin-top: 10px;
+}

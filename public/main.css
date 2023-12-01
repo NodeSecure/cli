@@ -1,0 +1,94 @@
+@import url("./css/reset.css");
+@import url("./css/light.css");
+@import url("./css/animation.css");
+@import url("./font/fontello/fontello.css");
+@import url("./font/roboto/roboto.css");
+@import url("./font/mononoki/mononoki.css");
+
+@import url("./components/file-box/file-box.css");
+@import url("./components/expandable/expandable.css");
+@import url("./components/navigation/navigation.css");
+@import url("./components/bundlephobia/bundlephobia.css");
+@import url("./components/package/package.css");
+@import url("./components/searchbar/searchbar.css");
+@import url("./components/views/home/home.css");
+@import url("./components/views/network/network.css");
+@import url("./components/views/settings/settings.css");
+@import url("./components/wiki/wiki.css");
+@import url("./components/gauge/gauge.css");
+
+body,
+html {
+  height: 100%;
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+}
+
+body {
+  position: relative;
+  overflow: hidden;
+}
+
+main>section.content ::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 4px;
+}
+
+main>section.content ::-webkit-scrollbar-track-piece {
+  /* Fond */
+  background: transparent none;
+  border: solid 4px transparent;
+  border-right-width: 6px;
+  margin: 4px;
+}
+
+main ::-webkit-scrollbar-track-piece:horizontal {
+  /* Fond pour la barre du bas */
+  border-right-width: 4px;
+  border-bottom-width: 8px;
+}
+
+main>section.content ::-webkit-scrollbar-thumb {
+  /* Barre */
+  border: solid 0 transparent;
+  border-right-width: 4px;
+  -webkit-border-radius: 5px;
+  -webkit-border-top-right-radius: 9px 5px;
+  -webkit-border-bottom-right-radius: 9px 5px;
+  -webkit-box-shadow: inset 0 0 0 1px #3722AF,
+    inset 0 0 0 6px #3f27c7;
+}
+
+main>section.content ::-webkit-scrollbar-thumb:horizontal {
+  /* Barre du bas */
+  border-right-width: 0;
+  border-bottom-width: 4px;
+  -webkit-border-top-right-radius: 5px;
+  -webkit-border-bottom-right-radius: 5px 9px;
+  -webkit-border-bottom-left-radius: 5px 9px;
+}
+
+main {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+main>section.content {
+  flex-grow: 1;
+  position: relative;
+  display: flex;
+}
+
+main>section.content .view {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.hidden {
+  display: none;
+}

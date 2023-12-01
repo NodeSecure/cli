@@ -1,0 +1,22 @@
+.package-code {
+  visibility: hidden;
+  position: absolute;
+  z-index: 21;
+  min-width: 120px;
+  max-width: 600px;
+  max-height: 300px;
+  overflow-y: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+  background: #191919;
+  border: 1px solid #121212;
+  color: #FFF;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: left;
+  font-size: 14px;
+  font-family: "mononoki";
+  letter-spacing: 0.5px;
+  word-wrap: break-word;
+}

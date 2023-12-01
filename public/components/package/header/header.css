@@ -1,0 +1,169 @@
+div.package-header {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+div.package-header>.package-name {
+  display: flex;
+  font-family: "mononoki";
+  text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
+}
+
+div.package-header>.package-name>.name {
+  color: #FFF;
+  font-size: 22px;
+}
+
+div.package-header>.package-name>.version {
+  color: var(--secondary);
+  font-size: 16px;
+  margin-left: 10px;
+  display: flex;
+  align-items: end;
+}
+
+/**
+ * RIGHT MENU (TOOLS ETC)
+ */
+div.package-header>.package-name>.info {
+  background: url("../../../img/arrow-right-solid.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  width: 18px;
+  height: 22px;
+  border: none;
+  margin-left: auto;
+  cursor: pointer;
+  /* https://codepen.io/sosuke/pen/Pjoqqp */
+  filter: invert(71%) sepia(22%) saturate(6942%) hue-rotate(149deg) brightness(101%) contrast(106%);
+}
+
+div.package-header>.package-name>.info-menu {
+  background: #f7f7f7;
+  padding: 16px;
+  border: none;
+  border-radius: 6px;
+  position: absolute;
+  left: 420px;
+  width: 160px;
+  text-shadow: none;
+}
+
+div.package-header>.package-name>.info-menu>.info-menu-title {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 12px;
+  color: rgb(39, 38, 38);
+}
+
+div.package-header>.package-name>.info-menu>a {
+  display: block;
+  margin-bottom: 4px;
+}
+
+/**
+ * DESC
+ */
+div.package-header>.description {
+  width: 100%;
+  color: #FFF;
+  text-align: left;
+  font-size: 15px;
+  margin-top: 7px;
+}
+
+/**
+ * FLAGS
+ */
+div.package-header>ul.flags {
+  display: flex;
+  font-size: 18px;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.flag-infobulle {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.flag-infobulle+.flag-infobulle {
+  margin-left: 5px;
+}
+
+.flag-infobulle>span {
+  visibility: hidden;
+  width: 300px;
+  background-color: #000;
+  color: #FFF;
+  text-align: center;
+  border-radius: 3px;
+  padding: 10px;
+  position: absolute;
+  z-index: 21;
+  font-size: 13px;
+  text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
+  top: 150%;
+  left: 50%;
+  margin-left: -140px;
+  font-family: "mononoki";
+}
+
+.flag-infobulle>span::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 44%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #000 transparent;
+}
+
+.flag-infobulle:hover span {
+  visibility: visible;
+}
+
+/**
+ * LINKS START
+ */
+div.package-header>.links {
+  height: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+div.package-header>.links div {
+  display: flex;
+  height: inherit;
+  align-items: center;
+}
+
+div.package-header>.links div+div {
+  margin-left: 20px;
+}
+
+div.package-header>.links div>img {
+  height: 20px;
+}
+
+div.package-header>.links div>i {
+  font-size: 20px;
+}
+
+div.package-header>.links div>a {
+  margin-left: 6px;
+  color: #FFF;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+div.package-header>.links div>a:hover {
+  text-decoration: underline;
+}
+/**
+ * LINKS END
+ */

@@ -6,11 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-<link rel="stylesheet" href="public/css/style.css" />
+<link rel="stylesheet" href="public/main.css" />
 <link rel="stylesheet" href="workspaces/documentation-ui/src/css/main.css" />
 <link rel="stylesheet" href="node_modules/highlight.js/styles/github.css" />
-<script src="public/js/master.js" defer></script>
-<title>Node-Secure</title>
+<script src="public/main.js" defer></script>
+<title>NodeSecure</title>
 
 <main>
   <nav>
@@ -297,15 +297,15 @@
 
 <template id="package-info-template">
   <div class="package-code"></div>
-  <div class="package-head-information">
+  <div class="package-header">
     <div class="package-name">
       <p class="name"></p>
       <p class="version"></p>
       <button class="info"></button>
     </div>
-    <p class="package-description"></p>
-    <ul class="package-flags"></ul>
-    <div class="package-links"></div>
+    <p class="description"></p>
+    <ul class="flags"></ul>
+    <div class="links"></div>
   </div>
 
   <div class="package-navigation">
@@ -479,7 +479,7 @@
         <p>[[=z.token('package_info.helpers.openSsf')]] <a href="https://github.com/ossf/scorecard" target="_blank"
             rel="noopener noreferrer">[[=z.token('package_info.helpers.here')]]</a></p>
       </div>
-      <div class="score-header mb-5">
+      <div class="score-header">
         <span class="score-text">SCORE</span>
         <span class="score-value">
           <span id="head-score"></span>/10
