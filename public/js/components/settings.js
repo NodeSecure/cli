@@ -10,7 +10,8 @@ const kAllowedHotKeys = new Set([
 const kDefaultHotKeys = {
   home: "H",
   network: "N",
-  settings: "S"
+  settings: "S",
+  wiki: "W"
 }
 
 export class Settings {
@@ -108,16 +109,14 @@ export class Settings {
 
   updateHotKeys() {
     const hotkeys = {};
-    const hotkeysInputs = [...this.dom.shortcutsSection.querySelectorAll(".hotkey")];
+    const hotkeysInputs = this.dom.shortcutsSection.querySelectorAll(".hotkey");
 
     for (const input of hotkeysInputs) {
-      const viewName = input.getAttribute("id");
-      const hotkey = input.value;
-      hotkeys[viewName] = hotkey;
+      const hotkeyName = input.getAttribute("id");
+      hotkeys[hotkeyName] = input.value;
     }
 
     this.updateNavigationHotKey(hotkeys);
-
     localStorage.setItem("hotkeys", JSON.stringify(hotkeys));
   }
 

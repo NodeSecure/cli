@@ -29,6 +29,14 @@ export class Wiki {
     this.openButton.addEventListener("click", () => {
       this[this.isOpen ? "close" : "open"]();
     });
+
+    document.addEventListener("keydown", (event) => {
+      const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
+
+      if (event.key.toUpperCase() === hotkeys.wiki) {
+        this[this.isOpen ? "close" : "open"]();
+      }
+    });
   }
 
   get isOpen() {
