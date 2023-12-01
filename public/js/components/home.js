@@ -1,5 +1,5 @@
 // Import Third-party Dependencies
-import { NodeSecureDataSet, getJSON } from "@nodesecure/vis-network";
+import { NodeSecureDataSet, getFlagsEmojisInlined, getJSON } from "@nodesecure/vis-network";
 import { licenseIdConformance } from "@nodesecure/licenses-conformance";
 
 // Import Internal Dependencies
@@ -7,16 +7,35 @@ import * as utils from "../utils.js";
 import { Gauge } from "./gauge.js";
 import { fetchScorecardData, getScoreColor, getScorecardLink } from "../scorecard.js";
 
+// CONSTANTS
+const kFlagsToWatch = new Set([
+  "hasBannedFile",
+  "isDeprecated",
+  "hasVulnerabilities",
+  "hasScript"
+]);
+
+const kEmojiDescription = {
+  "📦": "scripts",
+  "⚔️": "sensitive files",
+  "🚨": "vulnerabilities"
+};
+
 export class HomeView {
   /**
    * @param {!NodeSecureDataSet} secureDataSet
    */
-  constructor(secureDataSet) {
+  constructor(
+    secureDataSet,
+    nsn
+  ) {
     this.secureDataSet = secureDataSet;
+    this.nsn = nsn;
 
     this.generateScorecard();
     this.generateHeader();
     this.generateOverview();
+    this.generatePackagesToWatch();
     this.generateWarnings();
     this.generateExtensions();
     this.generateLicenses();
@@ -135,6 +154,77 @@ export class HomeView {
     catch {
       // DO NOTHING
     }
+  }
+
+  generatePackagesToWatch() {
+    const maxPackages = 4;
+    const fragment = document.createDocumentFragment();
+
+    const deps = [];
+    for (const dependency of Object.values(this.secureDataSet.data.dependencies)) {
+      for (const dependencyVer of Object.values(dependency.versions)) {
+        const { flags } = dependencyVer;
+
+        const hasFlag = flags.some((name) => kFlagsToWatch.has(name));
+        if (hasFlag) {
+          deps.push(dependencyVer);
+        }
+      }
+    }
+
+    const hideItems = deps.length > maxPackages;
+    for (let id = 0; id < deps.length; id++) {
+      const dependency = deps[id];
+
+      const element = this.renderPackage(dependency);
+      element.addEventListener("click", () => {
+        window.navigation.setNavByName("network--view");
+        setTimeout(() => this.nsn.focusNodeByName(dependency.name), 25);
+      });
+      if (hideItems && id >= maxPackages) {
+        element.classList.add("hidden");
+      }
+
+      fragment.appendChild(element);
+    }
+
+    if (fragment.children.length === 0) {
+      document.querySelector(".home--to--watch").style.display = "none";
+    }
+    else {
+      if (hideItems) {
+        fragment.appendChild(utils.createExpandableSpan(maxPackages));
+      }
+
+      document.querySelector(".home--packages--overview")
+        .appendChild(fragment);
+    }
+  }
+
+  renderPackage(dependencyVer) {
+    const { name, version, flags } = dependencyVer;
+    const inlinedEmojis = getFlagsEmojisInlined(
+      flags.filter((name) => kFlagsToWatch.has(name)),
+      new Set(window.settings.config.ignore.flags)
+    );
+
+    const childs = utils.extractEmojis(inlinedEmojis)
+      .map((emoji) => utils.createDOMElement("p", { text: `${emoji} ${kEmojiDescription[emoji]}` }));
+
+    return utils.createDOMElement("div", {
+      childs: [
+        utils.createDOMElement("p", {
+          childs: [
+            document.createTextNode(name),
+            utils.createDOMElement("span", { text: `v${version}` })
+          ]
+        }),
+        utils.createDOMElement("div", {
+          className: "chips",
+          childs
+        })
+      ]
+    });
   }
 
   generateWarnings() {
