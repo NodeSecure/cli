@@ -1,0 +1,228 @@
+.home--maintainers {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -10px;
+  margin-top: -10px;
+}
+
+.home--maintainers>.person {
+  height: 65px;
+  flex-basis: 330px;
+  background: linear-gradient(to bottom, rgb(255 255 255) 0%, rgb(245 252 255) 100%);
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-left: 10px;
+  margin-top: 10px;
+  box-shadow: 1px 1px 4px 0px #271e792b;
+  color: #546884;
+  flex-grow: 1;
+}
+
+.home--maintainers>.person:hover {
+  border-color: var(--secondary-darker);
+  cursor: pointer;
+}
+
+.home--maintainers>.person>img {
+  width: 65px;
+  flex-shrink: 0;
+}
+
+.home--maintainers>.person>i {
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  color: #1976D2;
+  font-size: 18px;
+}
+
+.home--maintainers>.person>.whois {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 10px;
+  font-size: 15px;
+  font-family: "mononoki";
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.home--maintainers>.person>.whois>span {
+  color: var(--secondary-darker);
+  font-size: 14px;
+  margin-top: 5px;
+  font-family: monospace;
+}
+
+.home--maintainers>.person>div.packagescount {
+  display: flex;
+  align-items: center;
+  font-family: "mononoki";
+  font-size: 18px;
+  margin-right: 15px;
+  flex-basis: 40px;
+  flex-shrink: 0;
+}
+
+.home--maintainers>.person>div.packagescount>i {
+  margin-right: 4px;
+}
+
+/**
+ * POPUP
+ **/
+.maintainers--popup {
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  margin: 5px;
+}
+
+.maintainers--popup>.header {
+  height: 80px;
+  display: flex;
+  flex-shrink: 0;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 25px;
+}
+
+.maintainers--popup>.header>.avatar {
+  width: 80px;
+  overflow: hidden;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: 8px;
+  box-sizing: border-box;
+  box-shadow: 2px 2px 6px 0px #00000012;
+}
+
+.maintainers--popup>.header>.avatar>img {
+  width: 80px;
+}
+
+.maintainers--popup>.header>.informations {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+  font-family: "mononoki";
+  margin: 0 10px;
+}
+
+.maintainers--popup>.header>.informations>p.name {
+  color: #546884;
+}
+
+.maintainers--popup>.header>.informations>p.email {
+  color: var(--secondary-darker);
+  margin-top: 10px;
+  font-family: monospace;
+}
+
+.maintainers--popup>.header>.icons {
+  display: flex;
+  align-items: center;
+}
+
+.maintainers--popup>.header>.icons>i {
+  height: 40px;
+  width: 40px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary-darker);
+  border-radius: 100%;
+  color: #FFF;
+  box-shadow: 2px 2px 6px 0px #00000012;
+}
+
+.maintainers--popup>.header>.icons>i:hover {
+  cursor: pointer;
+  background-color: var(--primary);
+}
+
+.maintainers--popup>.header>.icons>i+i {
+  margin-left: 10px;
+}
+
+.maintainers--popup>.separator {
+  height: 2px;
+  background: #d3d3d387;
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.maintainers--popup>.separator>p {
+  background: #f5f4f4;
+  padding: 0 10px;
+  font-family: "roboto";
+  font-weight: bold;
+  letter-spacing: 1.2px;
+  color: #255471;
+}
+
+.maintainers--popup>ul {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 240px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.maintainers--popup>ul li {
+  height: 36px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(to right, rgb(221 229 251) 0%, rgba(255, 255, 255, 0) 100%);
+  border-left: 2px solid #4480da;
+  color: #234c99;
+  border-radius: 4px;
+  font-family: "mononoki";
+  flex-shrink: 0;
+  font-size: 15px;
+}
+
+.maintainers--popup>ul li>p{
+  color: #234c99;
+}
+
+.maintainers--popup>ul li>span{
+  color: #2470b3;
+  margin-left: 10px;
+}
+
+.maintainers--popup>ul li>i{
+  margin-left: auto;
+  margin-right: 13px;
+  background: #4ab968;
+  color: #FFF;
+  border-radius: 100%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 2px 2px 6px 0px #00000012;
+}
+.maintainers--popup>ul li>i:hover {
+  background: #4ab8b9;
+  cursor: pointer;
+}
+
+.maintainers--popup>ul li+li {
+  margin-top: 5px;
+}

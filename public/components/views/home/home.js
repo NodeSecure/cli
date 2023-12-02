@@ -8,6 +8,9 @@ import { Gauge } from "../../gauge/gauge.js";
 import { createExpandableSpan } from "../../expandable/expandable.js";
 import { fetchScorecardData, getScoreColor, getScorecardLink } from "../../../common/scorecard.js";
 
+// Import Components
+import { Maintainers } from "./maintainers/maintainers.js";
+
 // CONSTANTS
 const kFlagsToWatch = new Set([
   "hasBannedFile",
@@ -189,7 +192,7 @@ export class HomeView {
     }
 
     if (fragment.children.length === 0) {
-      document.querySelector(".home--to--watch").style.display = "none";
+      document.getElementById("homewatch").style.display = "none";
     }
     else {
       if (hideItems) {
@@ -283,65 +286,7 @@ export class HomeView {
   }
 
   generateMaintainers() {
-    const fragment = document.createDocumentFragment();
-
-    const createWhois = (name, email) => {
-      const childs = [
-        utils.createDOMElement("p", { text: name })
-      ];
-      if (typeof email === "string") {
-        childs.push(utils.createDOMElement("span", { text: email }));
-      }
-
-      return utils.createDOMElement("div", {
-        className: "whois", childs
-      });
-    };
-
-    const authors = [...this.secureDataSet.authors.entries()]
-      .sort((left, right) => right[1].count - left[1].count);
-    const maxAuthors = 8;
-    const hideItems = authors.length > maxAuthors;
-
-    for (let id = 0; id < authors.length; id++) {
-      const [name, data] = authors[id];
-      if (typeof name === "undefined") {
-        continue;
-      }
-      const { count, email, url = null } = data;
-
-      const hasURL = typeof url === "string";
-      const person = utils.createDOMElement("div", {
-        className: "person",
-        childs: [
-          utils.createAvatarImageElement(email),
-          createWhois(name, email),
-          hasURL ? utils.createDOMElement("i", { className: "icon-link" }) : null,
-          utils.createDOMElement("div", {
-            className: "packagescount",
-            childs: [
-              utils.createDOMElement("i", { className: "icon-cube" }),
-              utils.createDOMElement("p", { text: count })
-            ]
-          })
-        ]
-      });
-      if (hideItems && id >= maxAuthors) {
-        person.classList.add("hidden");
-      }
-
-      if (hasURL) {
-        person.classList.add("url");
-        person.addEventListener("click", () => window.open(url, "_blank"));
-      }
-
-      fragment.appendChild(person);
-    }
-    if (hideItems) {
-      fragment.appendChild(createExpandableSpan(maxAuthors));
-    }
-
-    document.getElementById("authors-count").innerHTML = authors.length;
-    document.querySelector(".home--maintainers").appendChild(fragment);
+    new Maintainers(this.secureDataSet, this.nsn)
+      .render();
   }
 }

@@ -55,12 +55,12 @@ test("NodeSecureDataSet.computeLicenses", () => {
 test("NodeSecureDataSet.computeAuthors", () => {
   const nsDataSet = new NodeSecureDataSet();
   nsDataSet.computeAuthor({ name: "John Doe" });
-  assert.equal(nsDataSet.authors.get("John Doe").count, 1, "should have 1 author: John Doe");
+  assert.equal(nsDataSet.authors.get("John Doe").packages.size, 1, "should have 1 author: John Doe");
 
   nsDataSet.computeAuthor({ name: "John Doe" });
 
   assert.equal(nsDataSet.authors.size, 1, "should have 1 author: John Doe (after the 2nd contribution");
-  assert.equal(nsDataSet.authors.get("John Doe").count, 2, "should have 1 author: John Doe (2nd time)");
+  assert.equal(nsDataSet.authors.get("John Doe").packages.size, 2, "should have 1 author: John Doe (2nd time)");
 });
 
 test("NodeSecureDataSet.build", () => {

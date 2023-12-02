@@ -3,6 +3,7 @@ import prettyBytes from "pretty-bytes";
 
 // Import Internal Dependencies
 import * as utils from "../../../../common/utils.js";
+import { PopupMaintainer } from "../../../views/home/maintainers/maintainers.js";
 
 // CONSTANTS
 const kEnGBDateFormat = Intl.DateTimeFormat("en-GB", {
@@ -122,8 +123,31 @@ export class Overview {
     const fragment = document.createDocumentFragment();
 
     for (const author of metadata.maintainers) {
-      const img = utils.createAvatarImageElement(author.email);
-      fragment.appendChild(utils.createDOMElement("div", { childs: [img] }));
+      const divElement = utils.createDOMElement("div", {
+        childs: [
+          utils.createAvatarImageElement(author.email),
+          utils.createDOMElement("p", {
+            text: author.name
+          }),
+          "version" in author ?
+            utils.createDOMElement("span", { text: `v${author.version}` }) :
+            null
+        ]
+      });
+
+      divElement.addEventListener("click", () => {
+        const result = this.package.nsn.secureDataSet.getAuthorByEmail(author.email);
+        if (result === null) {
+          return;
+        }
+        const [name, data] = result;
+
+        window.popup.open(
+          new PopupMaintainer(name, data, this.package.nsn).render()
+        );
+      });
+
+      fragment.appendChild(divElement);
     }
 
     return fragment;

@@ -1,3 +1,5 @@
+@import url("./maintainers/maintainers.css");
+
 #home--view {
   z-index: 10;
   flex-direction: column;
@@ -350,82 +352,4 @@
 
 /**
  * OVERVIEW END
- */
-
-/**
- * MAINTAINERS BEGIN
- */
-.home--maintainers {
-  display: flex;
-  flex-wrap: wrap;
-  margin-left: -10px;
-  margin-top: -10px;
-}
-
-.home--maintainers>.person {
-  height: 50px;
-  flex-basis: 300px;
-  background: linear-gradient(to bottom, rgba(252, 252, 252, 1) 0%, rgba(232, 232, 232, 1) 100%);
-  display: flex;
-  position: relative;
-  box-sizing: border-box;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-left: 10px;
-  margin-top: 10px;
-  box-shadow: 2px 2px 6px 0px #00000012;
-  border: 1px solid #bfbfbf;
-  color: #546884;
-  flex-grow: 1;
-}
-
-.home--maintainers>.person.url:hover {
-  border-color: var(--secondary-darker);
-  cursor: pointer;
-}
-
-.home--maintainers>.person>img {
-  width: 50px;
-}
-
-.home--maintainers>.person>i {
-  margin-right: 10px;
-  display: flex;
-  align-items: center;
-  color: #1976D2;
-}
-
-.home--maintainers>.person>.whois {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin-left: 10px;
-  font-size: 13px;
-  font-family: "mononoki";
-  flex-grow: 1;
-  margin-right: 10px;
-}
-
-.home--maintainers>.person>.whois>span {
-  color: var(--secondary-darker);
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-.home--maintainers>.person>div.packagescount {
-  display: flex;
-  align-items: center;
-  font-family: "mononoki";
-  font-size: 14px;
-  margin-right: 10px;
-  flex-basis: 40px;
-  flex-shrink: 0;
-}
-
-.home--maintainers>.person>div.packagescount>i {
-  margin-right: 4px;
-}
-
-/**
- * MAINTAINERS END
  */
