@@ -3,5 +3,11 @@
     "parserOptions": {
         "sourceType": "module",
         "requireConfigFile": false
+    },
+    "rules": {
+      "func-style": "off",
+      "no-invalid-this": "off",
+      "no-inner-declarations": "off",
+      "no-case-declarations": "off"
     }
 }
