@@ -22,7 +22,8 @@ const kFlagsToWatch = new Set([
 const kEmojiDescription = {
   "📦": "scripts",
   "⚔️": "sensitive files",
-  "🚨": "vulnerabilities"
+  "🚨": "vulnerabilities",
+  "⛔️": "deprecated"
 };
 
 export class HomeView {
