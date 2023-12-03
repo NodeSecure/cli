@@ -73,7 +73,7 @@ export default class NodeSecureDataSet extends EventTarget {
 
     for (const [packageName, descriptor] of dataEntries) {
       for (const [currVersion, opt] of Object.entries(descriptor.versions)) {
-        const { id, usedBy, flags, size, license, author, composition, warnings } = opt;
+        const { id, usedBy, flags, size, license, author, composition, warnings, links } = opt;
 
         const filteredWarnings = warnings
           .filter((row) => !this.warningsToIgnore.has(row.kind));
@@ -102,7 +102,8 @@ export default class NodeSecureDataSet extends EventTarget {
           name: packageName,
           version: currVersion,
           hasWarnings,
-          flags: flagStr.replace(/\s/g, "")
+          flags: flagStr.replace(/\s/g, ""),
+          links
         });
 
         const label = `<b>${packageName}@${currVersion}</b>${flagStr}\n<b>[${prettyBytes(size)}]</b>`;

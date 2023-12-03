@@ -18,11 +18,10 @@ export class Scorecard {
    * @param {!HTMLTemplateElement} clone
    */
   generate(clone) {
-    const repoName = utils.getRepositoryName(this.package);
-
+    // Note: links.github.href can be a gitlab link
+    // Both links.github & links.gitlab are same, the showInHeader defines wheither its a gitlab or github link
+    const [repoName, platform] = utils.getVCSRepositoryPathAndPlatform(this.package.links.github.href) ?? [];
     const pannel = clone.getElementById("pan-scorecard");
-    const isGitlab = this.package.links.gitlab || utils.isGitLabHost(this.package.links.homepage?.href);
-    const platform = isGitlab ? "gitlab.com" : "github.com";
 
     fetchScorecardData(repoName, platform).then((data) => {
       if (!data) {

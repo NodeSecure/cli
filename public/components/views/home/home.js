@@ -48,14 +48,15 @@ export class HomeView {
   }
 
   generateScorecard() {
-    const { name } = this.secureDataSet.linker.get(0);
+    const { name, version } = this.secureDataSet.linker.get(0);
     const pkg = this.secureDataSet.data.dependencies[name];
-    const repoName = utils.getRepositoryName(pkg);
-    const platform = utils.getRepositoryPlatform(pkg);
+    const { repository } = pkg.versions[version].links;
 
-    if (repoName === null) {
+    if (repository === null) {
       return;
     }
+
+    const [repoName, platform] = utils.getVCSRepositoryPathAndPlatform(repository) ?? [];
 
     fetchScorecardData(repoName, platform).then((data) => {
       if (data !== null) {
