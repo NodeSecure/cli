@@ -80,7 +80,7 @@
     "@nodesecure/flags": "^2.4.0",
     "@nodesecure/i18n": "^3.5.0",
     "@nodesecure/licenses-conformance": "^2.1.0",
-    "@nodesecure/npm-registry-sdk": "^1.6.1",
+    "@nodesecure/npm-registry-sdk": "^2.0.0",
     "@nodesecure/ossf-scorecard-sdk": "^3.1.0",
     "@nodesecure/rc": "^1.5.0",
     "@nodesecure/scanner": "^5.1.0",
