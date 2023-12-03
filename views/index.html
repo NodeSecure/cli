@@ -90,23 +90,11 @@
             <div class="content">
               <div class="home--overview"></div>
             </div>
-            <div class="content" class="home--to--watch">
+            <div class="content" id="homewatch">
               <p>Packages in the dependency tree requiring greater attention</p>
               <div class="home--packages--overview"></div>
             </div>
           </div>
-          <div class="module">
-            <div class="title">
-              <i class="icon-users"></i>
-              <p>Authors</p>
-              <span class="count" id="authors-count">0</span>
-            </div>
-            <div class="content">
-              <div class="home--maintainers"></div>
-            </div>
-          </div>
-        </div>
-        <div class="pannel">
           <div class="module" id="warnings-module">
             <div class="title warning">
               <i class="icon-warning"></i>
@@ -123,6 +111,18 @@
               <p>Extensions</p>
             </div>
             <div class="content" id="home-extensions"></div>
+          </div>
+        </div>
+        <div class="pannel">
+          <div class="module">
+            <div class="title">
+              <i class="icon-users"></i>
+              <p>Authors</p>
+              <span class="count" id="authors-count">0</span>
+            </div>
+            <div class="content">
+              <div class="home--maintainers"></div>
+            </div>
           </div>
           <div class="module">
             <div class="title">
@@ -275,6 +275,10 @@
   </section>
 </main>
 
+<section id="popup--background">
+  <div class="popup"></div>
+</section>
+
 <section id="documentation-root-element">
   <div class="open-button">
     <i class="icon-book-open"></i>
@@ -294,6 +298,26 @@
     </div>
   </div>
 </div>
+
+<template id="maintainers-popup-template">
+  <div class="maintainers--popup">
+    <div class="header">
+      <div class="avatar"></div>
+      <div class="informations">
+        <p class="name"></p>
+        <p class="email"></p>
+      </div>
+      <div class="icons">
+        <i class="icon-link"></i>
+        <i class="icon-globe-alt-outline" style="display: none"></i>
+      </div>
+    </div>
+    <div class="separator">
+      <p>packages in tree</p>
+    </div>
+    <ul class="maintainers--packages"></ul>
+  </div>
+</template>
 
 <template id="package-info-template">
   <div class="package-code"></div>

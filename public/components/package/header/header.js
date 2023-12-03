@@ -52,7 +52,9 @@ export class PackageHeader {
       else {
         menu.classList.add("hidden");
       }
-      utils.hideOnClickOutside(menu, [menuDomElement]);
+      utils.hideOnClickOutside(menu, {
+        blacklist: [menuDomElement]
+      });
     });
 
     // Description

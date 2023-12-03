@@ -5,6 +5,7 @@
 @import url("./font/roboto/roboto.css");
 @import url("./font/mononoki/mononoki.css");
 
+@import url("./components/popup/popup.css");
 @import url("./components/file-box/file-box.css");
 @import url("./components/expandable/expandable.css");
 @import url("./components/navigation/navigation.css");
@@ -29,12 +30,12 @@ body {
   overflow: hidden;
 }
 
-main>section.content ::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 8px;
   border-radius: 4px;
 }
 
-main>section.content ::-webkit-scrollbar-track-piece {
+::-webkit-scrollbar-track-piece {
   /* Fond */
   background: transparent none;
   border: solid 4px transparent;
@@ -42,13 +43,13 @@ main>section.content ::-webkit-scrollbar-track-piece {
   margin: 4px;
 }
 
-main ::-webkit-scrollbar-track-piece:horizontal {
+::-webkit-scrollbar-track-piece:horizontal {
   /* Fond pour la barre du bas */
   border-right-width: 4px;
   border-bottom-width: 8px;
 }
 
-main>section.content ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   /* Barre */
   border: solid 0 transparent;
   border-right-width: 4px;
@@ -59,7 +60,7 @@ main>section.content ::-webkit-scrollbar-thumb {
     inset 0 0 0 6px #3f27c7;
 }
 
-main>section.content ::-webkit-scrollbar-thumb:horizontal {
+::-webkit-scrollbar-thumb:horizontal {
   /* Barre du bas */
   border-right-width: 0;
   border-bottom-width: 4px;
@@ -90,5 +91,5 @@ main>section.content .view {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }

@@ -86,7 +86,7 @@ export default class NodeSecureDataSet extends EventTarget {
 
         this.computeExtension(composition.extensions);
         this.computeLicense(license);
-        this.computeAuthor(author);
+        this.computeAuthor(author, `${packageName}@${currVersion}`);
 
         if (flags.includes("hasIndirectDependencies")) {
           this.indirectDependencies++;
@@ -120,6 +120,16 @@ export default class NodeSecureDataSet extends EventTarget {
     console.log("[NodeSecureDataSet] Initialization done!");
   }
 
+  getAuthorByEmail(emailToMatch) {
+    for (const [name, data] of this.authors.entries()) {
+      if (data.email === emailToMatch) {
+        return [name, data];
+      }
+    }
+
+    return null;
+  }
+
   computeExtension(extensions) {
     for (const extName of extensions) {
       if (extName !== "") {
@@ -139,16 +149,19 @@ export default class NodeSecureDataSet extends EventTarget {
     }
   }
 
-  computeAuthor(author) {
+  computeAuthor(author, spec) {
     if (author === null) {
       return;
     }
 
     if (this.authors.has(author.name)) {
-      this.authors.get(author.name).count++;
+      this.authors.get(author.name).packages.add(spec);
     }
     else {
-      this.authors.set(author.name, Object.assign({}, author, { count: 1 }));
+      this.authors.set(
+        author.name,
+        Object.assign({}, author, { packages: new Set([spec]) })
+      );
     }
   }
 

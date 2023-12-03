@@ -253,10 +253,28 @@ export function copyToClipboard(str) {
   }
 }
 
-export function hideOnClickOutside(element, blacklistElements = []) {
+export function hideOnClickOutside(
+  element,
+  options = {}
+) {
+  const {
+    reverse = false,
+    blacklist = [],
+    hiddenTarget = element,
+    callback = () => void 0
+  } = options;
+
   const outsideClickListener = (event) => {
-    if (!element.contains(event.target) && !blacklistElements.includes(event.target)) {
-      element.classList.add("hidden");
+    if (!element.contains(event.target) && !blacklist.includes(event.target)) {
+      if (hiddenTarget) {
+        if (reverse) {
+          hiddenTarget.classList.remove("show");
+        }
+        else {
+          hiddenTarget.classList.add("hidden");
+        }
+      }
+      callback();
       removeClickListener();
     }
   };
@@ -266,4 +284,6 @@ export function hideOnClickOutside(element, blacklistElements = []) {
   };
 
   document.addEventListener("click", outsideClickListener);
+
+  return outsideClickListener;
 }

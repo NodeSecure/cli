@@ -6,12 +6,14 @@ import { PackageInfo } from "./components/package/package.js";
 import { ViewNavigation } from "./components/navigation/navigation.js";
 import { Wiki } from "./components/wiki/wiki.js";
 import { SearchBar } from "./components/searchbar/searchbar.js";
+import { Popup } from "./components/popup/popup.js";
 
 // Import Views Components
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 
 document.addEventListener("DOMContentLoaded", async() => {
+  window.popup = new Popup();
   window.settings = await new Settings().fetchUserConfig();
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
