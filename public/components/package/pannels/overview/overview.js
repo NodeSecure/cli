@@ -135,17 +135,17 @@ export class Overview {
         ]
       });
 
-      divElement.addEventListener("click", () => {
-        const result = this.package.nsn.secureDataSet.getAuthorByEmail(author.email);
-        if (result === null) {
-          return;
-        }
-        const [name, data] = result;
+      const result = this.package.nsn.secureDataSet.getAuthorByEmail(author.email);
+      if (result !== null) {
+        divElement.addEventListener("click", () => {
+          const [name, data] = result;
 
-        window.popup.open(
-          new PopupMaintainer(name, data, this.package.nsn).render()
-        );
-      });
+          window.popup.open(
+            new PopupMaintainer(name, data, this.package.nsn).render()
+          );
+        });
+        divElement.classList.add("clickable");
+      }
 
       fragment.appendChild(divElement);
     }

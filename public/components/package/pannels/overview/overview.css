@@ -14,7 +14,7 @@ div.package-maintainers>div {
   background: linear-gradient(to right, rgb(43 68 137) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
-div.package-maintainers>div:hover {
+div.package-maintainers>div.clickable:hover {
   background: linear-gradient(to right, rgb(43, 87, 137) 0%, rgba(255, 255, 255, 0) 100%);
   cursor: pointer;
   color: yellow;
