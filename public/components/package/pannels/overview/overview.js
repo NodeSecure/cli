@@ -44,11 +44,31 @@ export class Overview {
       }
     );
 
-    // Fetch Github stats
+    // Fetch Github/Gitlab stats
     const githubLink = this.package.links.github;
-    if (githubLink.href !== null) {
+    if (githubLink.showInHeader) {
+      setTimeout(() => {
+        document.querySelector(".gitlab-overview")?.classList.add("hidden");
+      });
+
       this.fetchGithubStats(githubLink.href)
         .catch(console.error);
+    }
+    else {
+      setTimeout(() => {
+        document.querySelector(".github-overview")?.classList.add("hidden");
+      });
+
+      const gitlabLink = this.package.links.gitlab;
+      if (gitlabLink.showInHeader) {
+        this.fetchGitlabStats(gitlabLink.href)
+          .catch(console.error);
+      }
+      else {
+        setTimeout(() => {
+          document.querySelector(".gitlab-overview").classList.add("hidden");
+        });
+      }
     }
 
     clone.querySelector(".package-maintainers")
@@ -72,6 +92,24 @@ export class Overview {
     document.querySelector(".github-stars").innerHTML = `<i class='icon-star'></i> ${stargazers_count}`;
     document.querySelector(".github-issues").textContent = open_issues_count;
     document.querySelector(".github-forks").textContent = forks_count;
+  }
+
+  async fetchGitlabStats(gitlabLink) {
+    const gitlab = new URL(gitlabLink);
+    const repoName = gitlab.pathname.slice(
+      1,
+      gitlab.pathname.includes(".git") ? -4 : gitlab.pathname.length
+    );
+
+
+    const {
+      star_count,
+      forks_count
+    } = await fetch(`https://gitlab.com/api/v4/projects/${encodeURIComponent(repoName)}`)
+      .then((value) => value.json());
+
+    document.querySelector(".gitlab-stars").innerHTML = `<i class='icon-star'></i> ${star_count}`;
+    document.querySelector(".gitlab-forks").textContent = forks_count;
   }
 
   renderTopFields() {
