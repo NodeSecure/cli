@@ -184,7 +184,7 @@ export class HomeView {
       const element = this.renderPackage(dependency);
       element.addEventListener("click", () => {
         window.navigation.setNavByName("network--view");
-        setTimeout(() => this.nsn.focusNodeByName(dependency.name), 25);
+        setTimeout(() => this.nsn.focusNodeByNameAndVersion(dependency.name, dependency.version), 25);
       });
       if (hideItems && id >= maxPackages) {
         element.classList.add("hidden");
