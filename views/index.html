@@ -12,6 +12,8 @@
 <script src="public/main.js" defer></script>
 <title>NodeSecure</title>
 
+<div id="lang" data-lang="[[=z.i18nLangName]]" style="display: none;"></div>
+
 <main>
   <nav>
     <a class="nsecure-logo" href="https://github.com/NodeSecure" target="_blank" rel="noopener">
@@ -85,20 +87,20 @@
           <div class="module">
             <div class="title">
               <i class="icon-eye"></i>
-              <p>Overview</p>
+              <p>[[=z.token('home.overview.title')]]</p>
             </div>
             <div class="content">
               <div class="home--overview"></div>
             </div>
             <div class="content" id="homewatch">
-              <p>Packages in the dependency tree requiring greater attention</p>
+              <p>[[=z.token('home.watch')]]</p>
               <div class="home--packages--overview"></div>
             </div>
           </div>
           <div class="module" id="warnings-module">
             <div class="title warning">
               <i class="icon-warning"></i>
-              <p>Critical Warnings</p>
+              <p>[[=z.token('home.criticalWarnings')]]</p>
               <span class="count">1</span>
             </div>
             <div class="content">
@@ -117,7 +119,7 @@
           <div class="module">
             <div class="title">
               <i class="icon-users"></i>
-              <p>Authors</p>
+              <p>[[=z.token('home.maintainers')]]</p>
               <span class="count" id="authors-count">0</span>
             </div>
             <div class="content">
@@ -150,21 +152,21 @@
       </div>
     </div>
     <div id="settings--view" class="view hidden">
-      <h1><i class="icon-cog"></i>General</h1>
+      <h1><i class="icon-cog"></i>[[=z.token('settings.general.title')]]</h1>
       <form>
         <div class="line">
-          <label for="default_package_menu">Default Package Menu:</label>
+          <label for="default_package_menu">[[=z.token('settings.general.defaultPannel')]]:</label>
           <select name="defaultPackageMenu" id="default_package_menu">
-            <option value="info">overview</option>
-            <option value="files">files</option>
-            <option value="dependencies">scripts & dependencies</option>
-            <option value="warnings">warnings</option>
-            <option value="vulnerabilities">vulnerabilities</option>
-            <option value="licenses" selected>licenses conformance</option>
+            <option value="info">[[=z.token('package_info.navigation.overview')]]</option>
+            <option value="files">[[=z.token('package_info.navigation.files')]]</option>
+            <option value="dependencies">[[=z.token('package_info.navigation.dependencies')]]</option>
+            <option value="warnings">[[=z.token('package_info.navigation.warnings')]]</option>
+            <option value="vulnerabilities">[[=z.token('package_info.navigation.vulnerabilities')]]</option>
+            <option value="licenses" selected>[[=z.token('package_info.navigation.licenses')]]</option>
           </select>
         </div>
         <div class="line">
-          <p>SAST Warnings to ignore:</p>
+          <p>[[=z.token('settings.general.warnings')]]:</p>
           <div>
             <input type="checkbox" checked name="warnings" value="parsing-error" id="parsing-error">
             <label for="parsing-error">parsing error</label>
@@ -219,7 +221,7 @@
           </div>
         </div>
         <div class="line">
-          <p>Flags to ignore:</p>
+          <p>[[=z.token('settings.general.flags')]]:</p>
           <div>
             <input type="checkbox" name="flags" value="hasManyPublishers" id="hasManyPublishers">
             <label for="hasManyPublishers">👥 hasManyPublishers</label>
@@ -246,26 +248,26 @@
           </div>
         </div>
       </form>
-      <button class="save">save</button>
+      <button class="save">[[=z.token('settings.general.save')]]</button>
       <div class="line">
-        <h2><i class="icon-keyboard"></i>Shortcuts</h2>
+        <h2><i class="icon-keyboard"></i>[[=z.token('settings.shortcuts.title')]]</h2>
         <div class="shortcuts">
-          <div class="note">💡 Click on hotkey to update</div>
+          <div class="note">💡 [[=z.token('settings.shortcuts.blockquote')]]</div>
           <div>
             <input readonly id="home" class="hotkey">
-            <label for="home">Goto Home view</label>
+            <label for="home">[[=z.token('settings.shortcuts.goto')]] Home view</label>
           </div>
           <div>
             <input readonly id="network" class="hotkey">
-            <label for="network">Goto Network view</label>
+            <label for="network">[[=z.token('settings.shortcuts.goto')]] Network view</label>
           </div>
           <div>
             <input readonly id="settings" class="hotkey">
-            <label for="settings">Goto Settings view</label>
+            <label for="settings">[[=z.token('settings.shortcuts.goto')]] Settings view</label>
           </div>
           <div>
             <input readonly id="wiki" class="hotkey">
-            <label for="wiki">Open/Close wiki</label>
+            <label for="wiki">[[=z.token('settings.shortcuts.openCloseWiki')]]</label>
           </div>
         </div>
       </div>
@@ -313,7 +315,7 @@
       </div>
     </div>
     <div class="separator">
-      <p>packages in tree</p>
+      <p>[[=z.token('popup.maintainer.intree')]]</p>
     </div>
     <ul class="maintainers--packages"></ul>
   </div>
@@ -333,7 +335,7 @@
   </div>
 
   <div class="package-navigation">
-    <span class="container-title">overview</span>
+    <span class="container-title">[[=z.token('package_info.navigation.overview')]]</span>
 
     <div class="active" data-menu="info" data-title="[[=z.token('package_info.navigation.overview')]]">
       <i class="icon-cube"></i>
@@ -375,21 +377,39 @@
     </div>
     <div class="list-item line" id="usedby" style="margin-top: 0px;"></div>
 
-    <div class="head-title">
-      <p>github</p>
+    <div class="github-overview">
+      <div class="head-title">
+        <p>github</p>
+      </div>
+      <div class="bundlephobia" style="margin-bottom: 10px;">
+        <div>
+          <b class="github-stars">N/A</b>
+          <span>STARS</span>
+        </div>
+        <div>
+          <b class="github-issues">N/A</b>
+          <span>ISSUES</span>
+        </div>
+        <div>
+          <b class="github-forks">N/A</b>
+          <span>FORKS</span>
+        </div>
+      </div>
     </div>
-    <div class="bundlephobia" style="margin-bottom: 10px;">
-      <div>
-        <b class="github-stars">N/A</b>
-        <span>STARS</span>
+
+    <div class="gitlab-overview">
+      <div class="head-title">
+        <p>gitlab</p>
       </div>
-      <div>
-        <b class="github-issues">N/A</b>
-        <span>ISSUES</span>
-      </div>
-      <div>
-        <b class="github-forks">N/A</b>
-        <span>FORKS</span>
+      <div class="bundlephobia" style="margin-bottom: 10px;">
+        <div>
+          <b class="gitlab-stars">N/A</b>
+          <span>STARS</span>
+        </div>
+        <div>
+          <b class="gitlab-forks">N/A</b>
+          <span>FORKS</span>
+        </div>
       </div>
     </div>
 

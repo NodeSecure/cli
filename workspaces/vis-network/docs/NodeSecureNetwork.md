@@ -5,6 +5,7 @@ const nsn = new NodeSecureNetwork(secureDataSet);
 
 nsn.focusNodeById(0); // 0 is root Node
 nsn.focusNodeByName("express"); // Focus by package name
+nsn.focusNodeByNameAndVersion("express", "4.18.2"); // Focus by package name and version
 
 // Search for neighbours id of root Node
 const ids = [...nsn.searchForNeighbourIds(0)];

@@ -136,7 +136,7 @@ export class PopupMaintainer {
     const fragment = document.createDocumentFragment();
 
     for (const spec of this.data.packages) {
-      const { name, version } = this.parseNpmSpec(spec);
+      const { name, version } = utils.parseNpmSpec(spec);
 
       const iconNetwork = utils.createDOMElement("i", {
         className: "icon-right-open-big"
@@ -144,7 +144,7 @@ export class PopupMaintainer {
       iconNetwork.addEventListener("click", () => {
         window.popup.close();
         window.navigation.setNavByName("network--view");
-        setTimeout(() => this.nsn.focusNodeByName(name), 25);
+        setTimeout(() => this.nsn.focusNodeByNameAndVersion(name, version), 25);
       });
 
       fragment.appendChild(
@@ -160,13 +160,5 @@ export class PopupMaintainer {
 
     clone.querySelector(".maintainers--packages")
       .appendChild(fragment);
-  }
-
-  parseNpmSpec(spec) {
-    const parts = spec.split("@");
-
-    return spec.startsWith("@") ?
-      { name: `@${parts[1]}`, version: parts[2] } :
-      { name: parts[0], version: parts[1] };
   }
 }

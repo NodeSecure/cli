@@ -67,29 +67,32 @@ export class PackageHeader {
     }
 
     // Links
-    const packageHomePage = this.package.dependency.metadata.homepage || null;
-    const packageGithubPage = utils.parseRepositoryUrl(
-      repository,
-      packageHomePage !== null && new URL(packageHomePage).hostname === "github.com" ? packageHomePage : null
-    );
-
     const hasNoLicense = license === "unkown license";
+    const repositoryUrl = this.package.dependency.versions[packageVersion].links.repository;
+    const repositoryUrlHostname = repositoryUrl ? new URL(repositoryUrl).hostname : null;
+
     const links = {
       npm: {
-        href: `https://www.npmjs.com/package/${packageName}/v/${packageVersion}`,
+        href: this.package.dependency.versions[packageVersion].links.npm,
         text: "NPM",
         image: "npm-icon.svg",
         showInHeader: true
       },
       homepage: {
-        href: packageHomePage,
+        href: this.package.dependency.versions[packageVersion].links.homepage,
         showInHeader: false
       },
       github: {
-        href: packageGithubPage,
+        href: repositoryUrl,
         text: "GitHub",
         image: "github-mark.png",
-        showInHeader: true
+        showInHeader: repositoryUrlHostname === "github.com"
+      },
+      gitlab: {
+        href: repositoryUrl,
+        text: "GitLab",
+        image: "gitlab-logo.png",
+        showInHeader: repositoryUrlHostname === "gitlab.com"
       },
       unpkg: {
         href: `https://unpkg.com/${packageName}@${packageVersion}/`,

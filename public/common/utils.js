@@ -7,7 +7,7 @@ import { createExpandableSpan } from "../components/expandable/expandable";
 
 window.activeLegendElement = null;
 
-function getVCSRepositoryPath(url) {
+export function getVCSRepositoryPathAndPlatform(url) {
   if (!url) {
     return null;
   }
@@ -15,57 +15,15 @@ function getVCSRepositoryPath(url) {
   try {
     const repo = new URL(url);
 
-    return repo.pathname.slice(
+    const platform = repo.pathname.slice(
       1,
       repo.pathname.includes(".git") ? -4 : repo.pathname.length
     );
+
+    return [platform, repo.host];
   }
   catch {
     return null;
-  }
-}
-
-function getVCSRepositoryPlatform(url) {
-  if (!url) {
-    return null;
-  }
-
-  try {
-    const repo = new URL(url);
-
-    return repo.host;
-  }
-  catch {
-    return null;
-  }
-}
-
-export function getRepositoryName(repository) {
-  return getVCSRepositoryPath(repository.links?.github?.href) ??
-    getVCSRepositoryPath(repository.links?.gitlab?.href) ??
-    getVCSRepositoryPath(repository.links?.homepage?.href) ??
-    getVCSRepositoryPath(repository.metadata?.homepage) ??
-    repository.name;
-}
-
-export function getRepositoryPlatform(repository) {
-  return getVCSRepositoryPlatform(repository.links?.github?.href) ??
-    getVCSRepositoryPlatform(repository.links?.gitlab?.href) ??
-    getVCSRepositoryPlatform(repository.links?.homepage) ??
-    getVCSRepositoryPlatform(repository.metadata?.homepage) ??
-    "github.com";
-}
-
-export function isGitLabHost(host) {
-  if (!host) {
-    return false;
-  }
-
-  try {
-    return new URL(host).host === "gitlab.com";
-  }
-  catch {
-    return false;
   }
 }
 
@@ -117,6 +75,14 @@ export function createLink(href, text = null) {
   };
 
   return createDOMElement("a", { text, attributes });
+}
+
+export function parseNpmSpec(spec) {
+  const parts = spec.split("@");
+
+  return spec.startsWith("@") ?
+    { name: `@${parts[1]}`, version: parts[2] } :
+    { name: parts[0], version: parts[1] };
 }
 
 export function parseRepositoryUrl(repository = {}, defaultValue = null) {

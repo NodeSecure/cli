@@ -48,14 +48,15 @@ export class HomeView {
   }
 
   generateScorecard() {
-    const { name } = this.secureDataSet.linker.get(0);
+    const { name, version } = this.secureDataSet.linker.get(0);
     const pkg = this.secureDataSet.data.dependencies[name];
-    const repoName = utils.getRepositoryName(pkg);
-    const platform = utils.getRepositoryPlatform(pkg);
+    const { repository } = pkg.versions[version].links;
 
-    if (repoName === null) {
+    if (repository === null) {
       return;
     }
+
+    const [repoName, platform] = utils.getVCSRepositoryPathAndPlatform(repository) ?? [];
 
     fetchScorecardData(repoName, platform).then((data) => {
       if (data !== null) {
@@ -183,7 +184,7 @@ export class HomeView {
       const element = this.renderPackage(dependency);
       element.addEventListener("click", () => {
         window.navigation.setNavByName("network--view");
-        setTimeout(() => this.nsn.focusNodeByName(dependency.name), 25);
+        setTimeout(() => this.nsn.focusNodeByNameAndVersion(dependency.name, dependency.version), 25);
       });
       if (hideItems && id >= maxPackages) {
         element.classList.add("hidden");
