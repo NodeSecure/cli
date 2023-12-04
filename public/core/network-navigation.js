@@ -116,6 +116,10 @@ export class NetworkNavigation {
 
       this.#currentNode = this.#nodes.find(([id]) => id === nodeParam.nodes[0]);
 
+      if (this.#currentLevel > 0 && this.#dependenciesMapByLevel.get(this.#currentLevel - 1) === undefined) {
+        this.#dependenciesMapByLevel.set(this.#currentLevel - 1, { nodes: [this.#currentNodeUsedBy[0][0]] });
+      }
+
       switch (event.code) {
         case "ArrowLeft":
           this.#moveToPreviousDependency();
