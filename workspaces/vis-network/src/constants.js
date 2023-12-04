@@ -85,24 +85,3 @@ export const COLORS = Object.freeze({
     }
   }
 });
-
-export const LABELS = Object.freeze({
-  INCOMING: {
-    label: "Dependency",
-    font: {
-      background: "#EEE"
-    }
-  },
-  OUTGOING: {
-    label: "Dependent",
-    font: {
-      background: "#EEE"
-    }
-  },
-  NONE: {
-    label: " ", // A space is used to simulate resetting the edge laebl
-    font: {
-      background: "Transparent",
-    }
-  }
-})
