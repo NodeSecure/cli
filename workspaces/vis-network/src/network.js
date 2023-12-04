@@ -28,6 +28,7 @@ export const NETWORK_OPTIONS = {
     selectionWidth: 3,
     width: 2,
     font: {
+      align: "middle",
       face: "Roboto",
       size: 35
     }
@@ -201,11 +202,6 @@ export default class NodeSecureNetwork {
     const allNodes = this.nodes.get({ returnType: "Object" });
     const allEdges = this.edges.get();
 
-    // reset all edge labels
-    for(let id = 0; id < allEdges.length; id++) {  
-      Object.assign(allEdges[id], CONSTANTS.LABELS.NONE);
-    }
-
     // if something is selected:
     if (params.nodes.length > 0) {
       this.highlightEnabled = true;
@@ -214,6 +210,10 @@ export default class NodeSecureNetwork {
       // mark all nodes as hard to read.
       for (const node of Object.values(allNodes)) {
         Object.assign(node, this.colors.HARDTOREAD);
+      }
+      // reset all edge labels
+      for(let id = 0; id < allEdges.length; id++) {  
+        Object.assign(allEdges[id], CONSTANTS.LABELS.NONE);
       }
 
       // get the second degree nodes
@@ -243,14 +243,15 @@ export default class NodeSecureNetwork {
       const connectedEdges = this.network.getConnectedEdges(selectedNode);
       for (let id = 0; id < connectedEdges.length; id++) {
         const edgeIndex = allEdges.findIndex(edge => edge.id === connectedEdges[id]);
+        // the arrow on the edge is set to point into the 'from' node
         if(allEdges[edgeIndex].from === selectedNode) {
-          Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.OUTGOING);
-        } else if(allEdges[edgeIndex].to === selectedNode){
           Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.INCOMING);
+        } else if(allEdges[edgeIndex].to === selectedNode){
+          Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.OUTGOING);
         } 
       }
 
-      // ofset set to 250 to compensate for the package info slide in on the left of screen
+      // offset set to 250 to compensate for the package info slide in on the left of screen
       this.network.focus(selectedNode, { animation: true, scale: 0.35, offset: { x:250, y:0 }});
     }
     else if (this.highlightEnabled) {
@@ -260,13 +261,6 @@ export default class NodeSecureNetwork {
 
         Object.assign(node, utils.getNodeColor(id, hasWarnings, this.theme));
       }
-    }
-
-    // label the selected edge
-    if(params.edges.length > 0) {
-      const selectedEdge = params.edges[0];
-      const edgeIndex = allEdges.findIndex(edge => edge.id === selectedEdge);
-      Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.INCOMING);
     }
 
     // transform the object into an array
