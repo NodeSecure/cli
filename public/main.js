@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   new HomeView(secureDataSet, nsn);
 
   window.addEventListener("package-info-closed", () => {
-    currentNodeParams = null;
+    networkNavigation.currentNodeParams = null;
     packageInfoOpened = false;
   });
 
@@ -76,8 +76,8 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     if (networkNavigation.currentNodeParams !== null) {
       window.navigation.setNavByName("network--view");
-      nsn.neighbourHighlight(currentNodeParams);
-      updateShowInfoMenu(currentNodeParams);
+      nsn.neighbourHighlight(networkNavigation.currentNodeParams);
+      updateShowInfoMenu(networkNavigation.currentNodeParams);
     }
   });
 

@@ -142,10 +142,10 @@ export default class NodeSecureNetwork {
    * @returns {boolean}
    */
   focusNodeByNameAndVersion(packageName, version) {
-    if (!version || !version.trim()){
+    if (!version || !version.trim()) {
       return this.focusNodeByName(packageName);
     }
-    
+
     let wantedId = null;
     for (const [id, opt] of this.linker) {
       if (opt.name === packageName && opt.version === version) {
@@ -203,7 +203,7 @@ export default class NodeSecureNetwork {
     const allEdges = this.edges.get();
 
     // reset all edge labels - even if user clicks on empty space
-    for(let id = 0; id < allEdges.length; id++) {  
+    for (let id = 0; id < allEdges.length; id++) {
       Object.assign(allEdges[id], CONSTANTS.LABELS.NONE);
     }
 
@@ -244,17 +244,18 @@ export default class NodeSecureNetwork {
       const connectedEdges = this.network.getConnectedEdges(selectedNode);
       this.network.selectEdges(connectedEdges);
       for (let id = 0; id < connectedEdges.length; id++) {
-        const edgeIndex = allEdges.findIndex(edge => edge.id === connectedEdges[id]);
+        const edgeIndex = allEdges.findIndex((edge) => edge.id === connectedEdges[id]);
         // the arrow on the edge is set to point into the 'from' node
-        if(allEdges[edgeIndex].from === selectedNode) {
+        if (allEdges[edgeIndex].from === selectedNode) {
           Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.INCOMING);
-        } else if(allEdges[edgeIndex].to === selectedNode){
+        }
+        else if (allEdges[edgeIndex].to === selectedNode) {
           Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.OUTGOING);
-        } 
+        }
       }
 
       // offset set to 250 to compensate for the package info slide in on the left of screen
-      this.network.focus(selectedNode, { animation: true, scale: 0.35, offset: { x:250, y:0 }});
+      this.network.focus(selectedNode, { animation: true, scale: 0.35, offset: { x: 250, y: 0 } });
     }
     else if (this.highlightEnabled) {
       this.highlightEnabled = false;
