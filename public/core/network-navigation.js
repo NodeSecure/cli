@@ -107,14 +107,18 @@ export class NetworkNavigation {
         return;
       }
 
+      if (window.searchbar.background.classList.contains("show")) {
+        return;
+      }
+
       const nodeParam = this.#currentNodeParams ?? this.rootNodeParams;
-      const nodeDependencyName = this.#secureDataSet.linker.get(nodeParam.nodes[0]).name;
+      const nodeDependencyName = this.#secureDataSet.linker.get(Number(nodeParam.nodes[0])).name;
 
       this.#currentNodeUsedBy = this.#nodes
-        .filter(([_, opt]) => Object.keys(this.#secureDataSet.linker.get(nodeParam.nodes[0]).usedBy).includes(opt.name));
+        .filter(([_, opt]) => Object.keys(this.#secureDataSet.linker.get(Number(nodeParam.nodes[0])).usedBy).includes(opt.name));
       this.#usedByCurrentNode = this.#nodes.filter(([_, opt]) => Reflect.has(opt.usedBy, nodeDependencyName));
 
-      this.#currentNode = this.#nodes.find(([id]) => id === nodeParam.nodes[0]);
+      this.#currentNode = this.#nodes.find(([id]) => id === Number(nodeParam.nodes[0]));
 
       if (this.#currentLevel > 0 && this.#dependenciesMapByLevel.get(this.#currentLevel - 1) === undefined) {
         this.#dependenciesMapByLevel.set(this.#currentLevel - 1, { nodes: [this.#currentNodeUsedBy[0][0]] });
