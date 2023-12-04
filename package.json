@@ -28,7 +28,8 @@
   ],
   "workspaces": [
     "workspaces/documentation-ui",
-    "workspaces/vis-network"
+    "workspaces/vis-network",
+    "workspaces/size-satisfies"
   ],
   "repository": {
     "type": "git",
