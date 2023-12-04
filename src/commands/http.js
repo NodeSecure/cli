@@ -46,11 +46,11 @@ function assertScannerVersion(
 
   if (!SemVer.satisfies(scannerVersion, kRequiredScannerRange)) {
     const error = i18n.getTokenSync(
-      "localI18n.startHttp.invalidScannerVersion",
+      "cli.startHttp.invalidScannerVersion",
       kleur.yellow(scannerVersion),
       kleur.yellow(kRequiredScannerRange)
     );
-    const regenerate = i18n.getTokenSync("localI18n.startHttp.regenerate");
+    const regenerate = i18n.getTokenSync("cli.startHttp.regenerate");
 
     console.log(" > " + path.basename(dataFilePath));
     console.log(" > " + kleur.red().bold(error));
