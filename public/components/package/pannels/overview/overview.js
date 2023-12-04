@@ -39,7 +39,7 @@ export class Overview {
       clone.getElementById("usedby"),
       Object.entries(usedBy).map(([name, version]) => `${name}@${version}`),
       {
-        onclick: (_, packageNameVer) => this.package.nsn.focusNodeByNameAndVersion(...packageNameVer.split("@")),
+        onclick: (_, npmSpec) => this.package.nsn.focusNodeByNameAndVersion(...Object.values(utils.parseNpmSpec(npmSpec))),
         hideItems: true
       }
     );

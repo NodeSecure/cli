@@ -119,6 +119,14 @@ export function createLink(href, text = null) {
   return createDOMElement("a", { text, attributes });
 }
 
+export function parseNpmSpec(spec) {
+  const parts = spec.split("@");
+
+  return spec.startsWith("@") ?
+    { name: `@${parts[1]}`, version: parts[2] } :
+    { name: parts[0], version: parts[1] };
+}
+
 export function parseRepositoryUrl(repository = {}, defaultValue = null) {
   if (typeof repository !== "object" || !("url" in repository)) {
     return defaultValue;
