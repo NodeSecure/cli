@@ -88,13 +88,13 @@ export const COLORS = Object.freeze({
 
 export const LABELS = Object.freeze({
   INCOMING: {
-    label: "Dependency",
+    label: "child of",
     font: {
       background: "#EEE"
     }
   },
   OUTGOING: {
-    label: "Dependent",
+    label: "parent of",
     font: {
       background: "#EEE"
     }

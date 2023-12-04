@@ -30,7 +30,7 @@ export const NETWORK_OPTIONS = {
     font: {
       align: "middle",
       face: "Roboto",
-      size: 35
+      size: 40
     }
   },
   physics: {
@@ -202,6 +202,11 @@ export default class NodeSecureNetwork {
     const allNodes = this.nodes.get({ returnType: "Object" });
     const allEdges = this.edges.get();
 
+    // reset all edge labels - even if user clicks on empty space
+    for(let id = 0; id < allEdges.length; id++) {  
+      Object.assign(allEdges[id], CONSTANTS.LABELS.NONE);
+    }
+
     // if something is selected:
     if (params.nodes.length > 0) {
       this.highlightEnabled = true;
@@ -210,10 +215,6 @@ export default class NodeSecureNetwork {
       // mark all nodes as hard to read.
       for (const node of Object.values(allNodes)) {
         Object.assign(node, this.colors.HARDTOREAD);
-      }
-      // reset all edge labels
-      for(let id = 0; id < allEdges.length; id++) {  
-        Object.assign(allEdges[id], CONSTANTS.LABELS.NONE);
       }
 
       // get the second degree nodes
@@ -239,8 +240,9 @@ export default class NodeSecureNetwork {
       // the main node gets its own color and its label back.
       Object.assign(allNodes[selectedNode], this.colors.SELECTED);
 
-      // label edges connected to the selected node
+      // select and label edges connected to the selected node
       const connectedEdges = this.network.getConnectedEdges(selectedNode);
+      this.network.selectEdges(connectedEdges);
       for (let id = 0; id < connectedEdges.length; id++) {
         const edgeIndex = allEdges.findIndex(edge => edge.id === connectedEdges[id]);
         // the arrow on the edge is set to point into the 'from' node
