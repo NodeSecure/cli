@@ -119,7 +119,7 @@ export class Overview {
     const fragment = document.createDocumentFragment();
 
     const { homepage } = this.package.links;
-    if (homepage.href !== null) {
+    if (typeof homepage.href === "string") {
       fragment.appendChild(utils.createLiField("Homepage", homepage.href, { isLink: true }));
     }
     fragment.appendChild(utils.createLiField("Author", this.author));
