@@ -135,6 +135,34 @@ export default class NodeSecureNetwork {
   }
 
   /**
+   * @description Focus/move to a Node by package name and version
+   * @param {!string} packageName
+   * @param {!string} version
+   * @returns {boolean}
+   */
+  focusNodeByNameAndVersion(packageName, version) {
+    if (!version || !version.trim()){
+      return this.focusNodeByName(packageName);
+    }
+    
+    let wantedId = null;
+    for (const [id, opt] of this.linker) {
+      if (opt.name === packageName && opt.version === version) {
+        wantedId = id;
+        break;
+      }
+    }
+
+    if (wantedId !== null) {
+      this.focusNodeById(wantedId);
+
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * @param {!number} node
    * @param {boolean} hidden
    */
@@ -235,7 +263,7 @@ export default class NodeSecureNetwork {
     }
 
     // label the selected edge
-    if(params.edges.length > 0) {
+    if(params.edges && params.edges.length > 0) {
       const selectedEdge = params.edges[0];
       const edgeIndex = allEdges.findIndex(edge => edge.id === selectedEdge);
       Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.INCOMING);

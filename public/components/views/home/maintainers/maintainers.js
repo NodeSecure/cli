@@ -144,7 +144,7 @@ export class PopupMaintainer {
       iconNetwork.addEventListener("click", () => {
         window.popup.close();
         window.navigation.setNavByName("network--view");
-        setTimeout(() => this.nsn.focusNodeByName(name), 25);
+        setTimeout(() => this.nsn.focusNodeByNameAndVersion(name, version), 25);
       });
 
       fragment.appendChild(

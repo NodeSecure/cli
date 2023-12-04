@@ -37,9 +37,9 @@ export class Overview {
 
     utils.createItemsList(
       clone.getElementById("usedby"),
-      Object.keys(usedBy),
+      Object.entries(usedBy).map(([name, version]) => `${name}@${version}`),
       {
-        onclick: (_, packageName) => this.package.nsn.focusNodeByName(packageName),
+        onclick: (_, packageNameVer) => this.package.nsn.focusNodeByNameAndVersion(...packageNameVer.split("@")),
         hideItems: true
       }
     );
