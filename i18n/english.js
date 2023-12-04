@@ -34,7 +34,8 @@ const ui = {
       title: "Shortcuts",
       blockquote: "Click on hotkey to update",
       goto: "Goto",
-      openCloseWiki: "Open/Close wiki"
+      openCloseWiki: "Open/Close wiki",
+      lock: "Lock/Unlock network"
     }
   }
 };

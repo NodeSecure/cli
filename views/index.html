@@ -147,8 +147,10 @@
         <p>[[=z.token('loading_nodes')]]</p>
         <p>[[=z.token('please_wait')]]</p>
       </div>
-      <div id="dependency-graph">
-
+      <div id="dependency-graph"></div>
+      <div id="network-locker">
+        <i class="icon-lock-open"></i>
+        <p>UNLOCKED</p>
       </div>
     </div>
     <div id="settings--view" class="view hidden">
@@ -269,6 +271,10 @@
             <input readonly id="wiki" class="hotkey">
             <label for="wiki">[[=z.token('settings.shortcuts.openCloseWiki')]]</label>
           </div>
+          <div>
+            <input readonly id="lock" class="hotkey">
+            <label for="lock">[[=z.token('settings.shortcuts.lock')]]</label>
+          </div>
         </div>
       </div>
     </div>
@@ -311,7 +317,7 @@
       </div>
       <div class="icons">
         <i class="icon-link"></i>
-        <i class="icon-globe-alt-outline" style="display: none"></i>
+        <i class="icon-globe-alt-outline"></i>
       </div>
     </div>
     <div class="separator">

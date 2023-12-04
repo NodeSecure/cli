@@ -34,7 +34,8 @@ const ui = {
       title: "Raccourcis",
       blockquote: "Cliquer sur le raccourci clavier pour mettre à jour",
       goto: "Ouvrir",
-      openCloseWiki: "Ouverture/Fermeture du wiki"
+      openCloseWiki: "Ouverture/Fermeture du wiki",
+      lock: "Verrouiller/Déverrouiller le réseau"
     }
   }
 };

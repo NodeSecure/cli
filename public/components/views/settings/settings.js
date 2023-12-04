@@ -11,7 +11,8 @@ const kDefaultHotKeys = {
   home: "H",
   network: "N",
   settings: "S",
-  wiki: "W"
+  wiki: "W",
+  lock: "L"
 };
 
 export class Settings {

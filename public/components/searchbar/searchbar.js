@@ -104,7 +104,6 @@ export class SearchBar {
         if (this.activeQuery.size === 0) {
           this.allSearchPackages.forEach((element) => element.classList.add("hide"));
         }
-
         // if backspace is received and that we have active queries
         // then we want the query to be re-inserted in the input field!
         else if (event.key === "Backspace") {
@@ -115,6 +114,17 @@ export class SearchBar {
           else {
             confirmBackspace = true;
           }
+        }
+        else if (event.key === "Enter") {
+          const nodeIds = [];
+
+          for (const pkgElement of this.allSearchPackages) {
+            if (!pkgElement.classList.contains("hide")) {
+              nodeIds.push(Number(pkgElement.getAttribute("data-value")));
+            }
+          }
+
+          this.focusMultipleNodeIds(nodeIds);
         }
 
         return;
@@ -164,6 +174,7 @@ export class SearchBar {
         this.input.value.slice(currentActiveQueryName.length + 1).trim();
 
       this.showHelperByInputText(text);
+
       if (text.length === 0) {
         return;
       }
@@ -186,6 +197,7 @@ export class SearchBar {
           return;
         }
       }
+
       this.showResultsByIds(matchingIds);
     });
 
@@ -201,7 +213,7 @@ export class SearchBar {
     const self = this;
     for (const domElement of this.allSearchPackages) {
       domElement.addEventListener("click", function clikEvent() {
-        self.resultRowClick(this.getAttribute("data-value"));
+        self.focusNodeById(this.getAttribute("data-value"));
       });
     }
   }
@@ -381,10 +393,27 @@ export class SearchBar {
     return storedIds.size === 0 ? matchingIds : new Set([...matchingIds].filter((value) => storedIds.has(value)));
   }
 
-  resultRowClick(dataValue) {
+  focusNodeById(nodeId) {
     window.navigation.setNavByName("network--view");
     this.delayOpenSearchBar = false;
-    this.network.focusNodeById(dataValue);
+    this.network.focusNodeById(nodeId);
+    this.close();
+
+    setTimeout(() => {
+      this.delayOpenSearchBar = true;
+    }, 5);
+  }
+
+  focusMultipleNodeIds(nodeIds) {
+    window.navigation.setNavByName("network--view");
+    this.delayOpenSearchBar = false;
+
+    if (window.locker.locked) {
+      this.network.resetHighlight();
+    }
+    this.network.highlightMultipleNodes(nodeIds);
+    window.locker.lock();
+
     this.close();
 
     setTimeout(() => {
