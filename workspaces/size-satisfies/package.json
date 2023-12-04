@@ -1,0 +1,41 @@
+{
+  "name": "@nodesecure/size-satisfies",
+  "version": "1.1.0",
+  "description": "Same as SemVer.satisfies but for file size!",
+  "type": "module",
+  "exports": "./index.js",
+  "scripts": {
+    "lint": "eslint index.js",
+    "test-only": "node --test test/",
+    "test": "npm run lint && npm run test-only"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NodeSecure/cli.git"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "keywords": [
+    "size",
+    "satisfies",
+    "utility",
+    "parse",
+    "parser",
+    "convert",
+    "converter"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NodeSecure/cli/issues"
+  },
+  "homepage": "https://github.com/NodeSecure/cli/master/workspaces/size-satisfies#readme",
+  "dependencies": {
+    "bytes": "^3.1.2"
+  }
+}
