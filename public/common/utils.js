@@ -15,12 +15,12 @@ export function getVCSRepositoryPathAndPlatform(url) {
   try {
     const repo = new URL(url);
 
-    const platform = repo.pathname.slice(
+    const repoPath = repo.pathname.slice(
       1,
       repo.pathname.includes(".git") ? -4 : repo.pathname.length
     );
 
-    return [platform, repo.host];
+    return [repoPath, repo.host];
   }
   catch {
     return null;

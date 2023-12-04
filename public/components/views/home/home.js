@@ -52,7 +52,7 @@ export class HomeView {
     const pkg = this.secureDataSet.data.dependencies[name];
     const { repository } = pkg.versions[version].links;
 
-    if (repository === null) {
+    if (repository === null || repository === undefined) {
       return;
     }
 
