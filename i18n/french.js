@@ -8,4 +8,35 @@ const cli = {
   }
 };
 
-export default { cli };
+const ui = {
+  popup: {
+    maintainer: {
+      intree: "packages dans l'abre de dépendances"
+    }
+  },
+  home: {
+    overview: {
+      title: "Vue d'ensemble"
+    },
+    watch: "Packages dans l'arbre de dépendance nécessitant une plus grande attention",
+    criticalWarnings: "Avertissements critiques",
+    maintainers: "Mainteneurs"
+  },
+  settings: {
+    general: {
+      title: "Général",
+      save: "sauvegarder",
+      defaultPannel: "Panneau par défaut",
+      warnings: "Avertissements à ignorer",
+      flags: "Drapeau (emojis) à ignorer"
+    },
+    shortcuts: {
+      title: "Raccourcis",
+      blockquote: "Cliquer sur le raccourci clavier pour mettre à jour",
+      goto: "Ouvrir",
+      openCloseWiki: "Ouverture/Fermeture du wiki"
+    }
+  }
+};
+
+export default { cli, ui };
