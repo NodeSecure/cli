@@ -1,11 +1,11 @@
 // Import Node.js Dependencies
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { after, before, describe, test } from "node:test";
+import { once } from "node:events";
 import path from "node:path";
 import os from "node:os";
-import { after, before, describe, test } from "node:test";
 import assert from "node:assert";
-import { once } from "node:events";
 
 // Import Third-party Dependencies
 import { get, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@myunisoft/httpie";
@@ -44,6 +44,9 @@ describe("httpServer", () => {
       openLink: false
     });
     await once(httpServer.server, "listening");
+    await i18n.extendFromSystemPath(
+      path.join(__dirname, "..", "i18n")
+    );
 
     enableDestroy(httpServer.server);
   }, { timeout: 5000 });
@@ -55,7 +58,7 @@ describe("httpServer", () => {
   });
 
   test("'/' should return index.html content", async() => {
-    await i18n.getLocalLang();
+    const i18nLangName = await i18n.getLocalLang();
     const result = await get(HTTP_URL);
 
     assert.equal(result.statusCode, 200);
@@ -63,6 +66,7 @@ describe("httpServer", () => {
 
     const templateStr = zup(INDEX_HTML)({
       lang: i18n.getTokenSync("lang"),
+      i18nLangName,
       token: (tokenName) => i18n.getTokenSync(`ui.${tokenName}`)
     });
     assert.equal(result.data, templateStr);
