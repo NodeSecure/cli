@@ -65,6 +65,7 @@ export class Maintainers {
         person.classList.add("hidden");
       }
       person.addEventListener("click", () => {
+        // TODO: close package info?
         window.popup.open(
           new PopupMaintainer(name, data, this.nsn).render()
         );
@@ -115,10 +116,34 @@ export class PopupMaintainer {
       linkElement.style.display = "none";
     }
 
-    const focusGlobElement = clone.querySelector(".icon-globe-alt-outline");
-    focusGlobElement.addEventListener("click", () => {
+    const globeElement = clone.querySelector(".icon-globe-alt-outline");
+    const packagesList = [...this.data.packages]
+      .map((spec) => {
+        const { name, version } = utils.parseNpmSpec(spec);
+
+        return `${name}@${version}`;
+      });
+
+    globeElement.addEventListener("click", () => {
+      const nodeIds = [...this.nsn.findNodeIds(new Set(packagesList))];
+
+      this.nsn.resetHighlight();
+      this.nsn.highlightMultipleNodes(nodeIds);
+      if (!window.locker.locked) {
+        window.locker.lock(true);
+      }
+
       window.popup.close();
       window.navigation.setNavByName("network--view");
+
+      const moveTo = window.networkNav.currentNodeParams === null ||
+        !nodeIds.includes(window.networkNav.currentNodeParams.nodes[0]);
+      if (moveTo) {
+        this.nsn.network.moveTo({
+          position: this.nsn.network.getPosition(nodeIds[0]),
+          animation: true
+        });
+      }
     });
 
     this.generatePackagesList(clone);

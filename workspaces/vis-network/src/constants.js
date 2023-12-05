@@ -15,6 +15,18 @@ export const COLORS = Object.freeze({
         color: "#FFF"
       }
     },
+    SELECTED_GROUP: {
+      color: "#0D47A1",
+      font: {
+        color: "#FFF"
+      }
+    },
+    SELECTED_LOCK: {
+      color: "#1A237E",
+      font: {
+        color: "#FFF"
+      }
+    },
     DEFAULT: {
       color: "#E3F2FD",
       font: {
@@ -100,9 +112,10 @@ export const LABELS = Object.freeze({
     }
   },
   NONE: {
-    label: " ", // A space is used to simulate resetting the edge laebl
+    // A space is used to simulate resetting the edge laebl
+    label: " ",
     font: {
-      background: "Transparent",
+      background: "Transparent"
     }
   }
-})
+});

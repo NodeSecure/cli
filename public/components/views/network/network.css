@@ -1,5 +1,14 @@
 #network--view {
   z-index: 10;
+  transition: 0.3s all linear;
+}
+
+#network--view:not(.locked) {
+  box-shadow: -2px -2px 10px #6d29b5b8 inset;
+}
+
+#network--view.locked {
+  box-shadow: -2px -2px 10px #b52929b8 inset;
 }
 
 #network-loader {

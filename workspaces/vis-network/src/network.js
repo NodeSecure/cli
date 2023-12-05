@@ -69,6 +69,9 @@ export default class NodeSecureNetwork {
     this.secureDataSet = secureDataSet;
     this.highlightEnabled = false;
     this.isLoaded = false;
+
+    this.locked = false;
+    this.lastHighlightedIds = null;
     const { nodes, edges } = secureDataSet.build();
 
     const theme = options.theme?.toUpperCase() ?? "LIGHT";
@@ -102,6 +105,38 @@ export default class NodeSecureNetwork {
     });
 
     this.network.stabilize(500);
+  }
+
+  lock() {
+    if (this.locked) {
+      return;
+    }
+
+    this.locked = true;
+    this.network.emit("lock", this.locked);
+  }
+
+  unlock() {
+    if (!this.locked) {
+      return;
+    }
+
+    this.locked = false;
+    this.network.emit("lock", this.locked);
+  }
+
+  /**
+   * @param {!Set<string>} packages
+   * @returns {IterableIterator<number>}
+   */
+  * findNodeIds(packages) {
+    for (const [id, opt] of this.linker) {
+      const spec = `${opt.name}@${opt.version}`;
+
+      if (packages.has(opt.name) || packages.has(spec)) {
+        yield id;
+      }
+    }
   }
 
   /**
@@ -178,6 +213,59 @@ export default class NodeSecureNetwork {
     this.nodes.update(updatedNodes);
   }
 
+  highlightMultipleNodes(nodeIds) {
+    if (this.locked) {
+      return;
+    }
+    this.network.startSimulation();
+
+    const allNodes = this.nodes.get({ returnType: "Object" });
+    const allEdges = this.edges.get();
+
+    // mark all nodes as hard to read.
+    const nodeIdsToHighlight = new Set(nodeIds);
+    for (const node of Object.values(allNodes)) {
+      const color = nodeIdsToHighlight.has(node.id) ?
+        this.colors.SELECTED_GROUP :
+        this.colors.HARDTOREAD;
+
+      Object.assign(node, color);
+    }
+
+    for (const nodeId of nodeIdsToHighlight) {
+      const connectedNodes = this.network.getConnectedNodes(nodeId);
+      const allConnectedNodes = [];
+      for (let id = 0; id < connectedNodes.length; id++) {
+        allConnectedNodes.push(...this.network.getConnectedNodes(connectedNodes[id]));
+      }
+
+      // all second degree nodes get a different color and their label back
+      for (let id = 0; id < allConnectedNodes.length; id++) {
+        const node = allNodes[allConnectedNodes[id]];
+        if (nodeIdsToHighlight.has(node.id)) {
+          continue;
+        }
+
+        Object.assign(node, this.colors.DEFAULT);
+      }
+    }
+
+    // reset all edge labels - even if user clicks on empty space
+    for (let id = 0; id < allEdges.length; id++) {
+      Object.assign(allEdges[id], {
+        label: " ",
+        font: {
+          background: "Transparent"
+        }
+      });
+    }
+
+    this.lastHighlightedIds = nodeIdsToHighlight;
+    this.nodes.update(Object.values(allNodes));
+    this.edges.update(allEdges);
+    this.network.stopSimulation();
+  }
+
   /**
    * Search for neighbours nodes of a given node
    *
@@ -198,7 +286,85 @@ export default class NodeSecureNetwork {
     }
   }
 
+  lockedNeighbourHighlight(params) {
+    if (!params || params.nodes.length === 0) {
+      return true;
+    }
+
+    const selectedNode = params.nodes[0];
+    if (!this.lastHighlightedIds.has(selectedNode)) {
+      return false;
+    }
+
+    this.network.startSimulation();
+    const allNodes = this.nodes.get({ returnType: "Object" });
+    for (const node of Object.values(allNodes)) {
+      if (!this.lastHighlightedIds.has(node.id)) {
+        continue;
+      }
+
+      const color = node.id === selectedNode ?
+        this.colors.SELECTED_LOCK :
+        this.colors.SELECTED_GROUP;
+
+      Object.assign(node, color);
+    }
+
+    // get the second degree nodes
+    const connectedNodes = this.network.getConnectedNodes(selectedNode);
+    const allConnectedNodes = [];
+    for (let id = 0; id < connectedNodes.length; id++) {
+      allConnectedNodes.push(...this.network.getConnectedNodes(connectedNodes[id]));
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (let id = 0; id < allConnectedNodes.length; id++) {
+      const node = allNodes[allConnectedNodes[id]];
+      if (this.lastHighlightedIds.has(node.id)) {
+        continue;
+      }
+
+      Object.assign(node, this.colors.DEFAULT);
+    }
+
+
+    this.nodes.update(Object.values(allNodes));
+    this.network.stopSimulation();
+
+    return true;
+  }
+
+  resetHighlight() {
+    this.network.startSimulation();
+
+    const allNodes = this.nodes.get();
+    const allEdges = this.edges.get();
+
+    // reset all edge labels - even if user clicks on empty space
+    for (let id = 0; id < allEdges.length; id++) {
+      Object.assign(allEdges[id], CONSTANTS.LABELS.NONE);
+    }
+
+    this.highlightEnabled = false;
+    for (const node of allNodes) {
+      const { id, hasWarnings } = this.linker.get(Number(node.id));
+
+      Object.assign(node, utils.getNodeColor(id, hasWarnings, this.theme));
+    }
+
+    this.locked = false;
+    this.lastHighlightedIds = null;
+
+    this.nodes.update(allNodes);
+    this.edges.update(allEdges);
+    this.network.stopSimulation();
+  }
+
   neighbourHighlight(params) {
+    if (this.lastHighlightedIds !== null && this.locked && this.lockedNeighbourHighlight(params)) {
+      return;
+    }
+
     const allNodes = this.nodes.get({ returnType: "Object" });
     const allEdges = this.edges.get();
 
@@ -208,7 +374,7 @@ export default class NodeSecureNetwork {
     }
 
     // if something is selected:
-    if (params.nodes.length > 0) {
+    if (params && params.nodes.length > 0) {
       this.highlightEnabled = true;
       const selectedNode = params.nodes[0];
 
@@ -267,8 +433,13 @@ export default class NodeSecureNetwork {
     }
 
     // transform the object into an array
+    this.lastHighlightedIds = null;
+    this.locked = false;
+
     this.nodes.update(Object.values(allNodes));
     this.edges.update(allEdges);
     this.network.stopSimulation();
+
+    this.network.emit("highlight_done");
   }
 }

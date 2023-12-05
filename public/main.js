@@ -7,6 +7,7 @@ import { ViewNavigation } from "./components/navigation/navigation.js";
 import { Wiki } from "./components/wiki/wiki.js";
 import { SearchBar } from "./components/searchbar/searchbar.js";
 import { Popup } from "./components/popup/popup.js";
+import { Locker } from "./components/locker/locker.js";
 
 // Import Views Components
 import { Settings } from "./components/views/settings/settings.js";
@@ -14,6 +15,7 @@ import { HomeView } from "./components/views/home/home.js";
 import { NetworkNavigation } from "./core/network-navigation.js";
 
 document.addEventListener("DOMContentLoaded", async() => {
+  window.locker = null;
   window.popup = new Popup();
   window.settings = await new Settings().fetchUserConfig();
   window.navigation = new ViewNavigation();
@@ -30,6 +32,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   // Initialize vis Network
   NodeSecureNetwork.networkElementId = "dependency-graph";
   const nsn = new NodeSecureNetwork(secureDataSet);
+  window.locker = new Locker(nsn);
   new HomeView(secureDataSet, nsn);
 
   window.addEventListener("package-info-closed", () => {
@@ -58,6 +61,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   }
 
   const networkNavigation = new NetworkNavigation(secureDataSet, nsn);
+  window.networkNav = networkNavigation;
 
   window.addEventListener("settings-saved", async(event) => {
     const warningsToIgnore = new Set(event.detail.ignore.warnings);
