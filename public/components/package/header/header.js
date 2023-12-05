@@ -63,7 +63,8 @@ export class PackageHeader {
       descriptionDomElement.style.display = "none";
     }
     else {
-      descriptionDomElement.textContent = description;
+      descriptionDomElement.textContent =
+        description.length > 100 ? description.slice(0, 98) + "..." : description;
     }
 
     // Links
