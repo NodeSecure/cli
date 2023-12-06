@@ -3,7 +3,7 @@ import semver from "semver";
 import sizeSatisfies from "@nodesecure/size-satisfies";
 
 // Import Internal Dependencies
-import { createDOMElement } from "../../common/utils.js";
+import { createDOMElement, vec2Distance } from "../../common/utils.js";
 
 // CONSTANTS
 const kFiltersName = new Set(["package", "version", "flag", "license", "author", "ext", "builtin", "size"]);
@@ -408,11 +408,27 @@ export class SearchBar {
     window.navigation.setNavByName("network--view");
     this.delayOpenSearchBar = false;
 
-    if (window.locker.locked) {
-      this.network.resetHighlight();
-    }
     this.network.highlightMultipleNodes(nodeIds);
     window.locker.lock();
+
+    const currentSelectedNode = window.networkNav.currentNodeParams;
+    const moveTo = !currentSelectedNode || !nodeIds.includes(currentSelectedNode.nodes[0]);
+    if (moveTo) {
+      const origin = this.network.network.getViewPosition();
+      const closestNode = nodeIds
+        .map((id) => {
+          return { id, pos: this.network.network.getPosition(id) };
+        })
+        .reduce(
+          (a, b) => (vec2Distance(origin, a.pos) < vec2Distance(origin, b.pos) ? a : b)
+        );
+
+      const scale = nodeIds.length > 3 ? 0.25 : 0.35;
+      this.network.network.focus(closestNode.id, {
+        animation: true,
+        scale
+      });
+    }
 
     this.close();
 

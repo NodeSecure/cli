@@ -7,6 +7,12 @@ import { createExpandableSpan } from "../components/expandable/expandable";
 
 window.activeLegendElement = null;
 
+export function vec2Distance(location, pos) {
+  return Math.sqrt(
+    Math.pow(location.x - pos.x, 2) + Math.pow(location.y - pos.y, 2)
+  );
+}
+
 export function getVCSRepositoryPathAndPlatform(url) {
   if (!url) {
     return null;
