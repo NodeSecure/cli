@@ -4,7 +4,9 @@ export class Locker {
     this.dom = document.getElementById("network-locker");
     this.networkView = document.getElementById("network--view");
     this.nsn = nsn;
-    this.unlock();
+    this.locked = false;
+    this.unlockAuthorized = true;
+    this.renderUnlock();
 
     document.addEventListener("keydown", (event) => {
       const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
@@ -15,33 +17,62 @@ export class Locker {
         }
       }
     });
-    this.dom.addEventListener("click", () => {
-      this.auto();
-    });
+    this.dom.addEventListener("click", () => this.auto());
+    this.nsn.network.on("highlight_done", this.highlightDone.bind(this));
+  }
 
-    this.nsn.network.on("highlight_done", () => {
-      this.unlock();
-    });
+  highlightDone() {
+    if (!this.unlockAuthorized) {
+      return;
+    }
+
+    console.log("[LOCKER] highlight done emitted");
+    this.unlockAuthorized = false;
+    setTimeout(() => {
+      this.unlockAuthorized = true;
+    }, 1);
+
+    this.unlock();
   }
 
   auto() {
-    const wasLocked = this.locked === true;
-    this[this.locked ? "unlock" : "lock"]();
+    // Refuse locking if there is no multi selections
+    if (this.nsn.lastHighlightedIds === null) {
+      return;
+    }
 
-    if (wasLocked) {
-      if (window.networkNav.currentNodeParams === null) {
-        this.nsn.resetHighlight();
-      }
-      else {
-        this.nsn.neighbourHighlight(window.networkNav.currentNodeParams);
-      }
+    this[this.locked ? "unlock" : "lock"]();
+  }
+
+  lock() {
+    if (!this.locked) {
+      console.log("[LOCKER] lock triggered");
+      this.renderLock();
+      this.locked = true;
     }
   }
 
-  lock(force = false) {
-    if (window.networkNav.currentNodeParams !== null && !force) {
+  unlock() {
+    if (!this.locked) {
       return;
     }
+
+    console.log("[LOCKER] unlock triggered");
+    this.renderUnlock();
+    this.locked = false;
+
+    // No node selected, so we reset highlight
+    const selectedNode = window.networkNav.currentNodeParams;
+    if (selectedNode === null) {
+      this.nsn.resetHighlight();
+    }
+    else if (this.nsn.lastHighlightedIds !== null) {
+      this.nsn.lastHighlightedIds = null;
+      this.nsn.neighbourHighlight(selectedNode);
+    }
+  }
+
+  renderLock() {
     this.dom.classList.add("enabled");
     this.dom.querySelector("p").textContent = "LOCKED";
     this.networkView.classList.add("locked");
@@ -50,12 +81,9 @@ export class Locker {
     iconElement.classList.remove("icon-lock-open");
     iconElement.classList.add("icon-lock");
     iconElement.classList.add("enabled");
-
-    this.nsn.lock();
-    this.locked = true;
   }
 
-  unlock() {
+  renderUnlock() {
     this.dom.classList.remove("enabled");
     this.dom.querySelector("p").textContent = "UNLOCKED";
     this.networkView.classList.remove("locked");
@@ -64,8 +92,5 @@ export class Locker {
     iconElement.classList.remove("icon-lock");
     iconElement.classList.remove("enabled");
     iconElement.classList.add("icon-lock-open");
-
-    this.nsn.unlock();
-    this.locked = false;
   }
 }

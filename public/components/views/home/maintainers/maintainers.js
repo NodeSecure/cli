@@ -127,21 +127,27 @@ export class PopupMaintainer {
     globeElement.addEventListener("click", () => {
       const nodeIds = [...this.nsn.findNodeIds(new Set(packagesList))];
 
-      this.nsn.resetHighlight();
       this.nsn.highlightMultipleNodes(nodeIds);
-      if (!window.locker.locked) {
-        window.locker.lock(true);
-      }
-
+      window.locker.lock();
       window.popup.close();
       window.navigation.setNavByName("network--view");
 
-      const moveTo = window.networkNav.currentNodeParams === null ||
-        !nodeIds.includes(window.networkNav.currentNodeParams.nodes[0]);
+      const currentSelectedNode = window.networkNav.currentNodeParams;
+      const moveTo = currentSelectedNode === null || !nodeIds.includes(currentSelectedNode.nodes[0]);
       if (moveTo) {
-        this.nsn.network.moveTo({
-          position: this.nsn.network.getPosition(nodeIds[0]),
-          animation: true
+        const origin = this.nsn.network.getViewPosition();
+        const closestNode = nodeIds
+          .map((id) => {
+            return { id, pos: this.nsn.network.getPosition(id) };
+          })
+          .reduce(
+            (a, b) => (utils.vec2Distance(origin, a.pos) < utils.vec2Distance(origin, b.pos) ? a : b)
+          );
+
+        const scale = nodeIds.length > 3 ? 0.25 : 0.35;
+        this.nsn.network.focus(closestNode.id, {
+          animation: true,
+          scale
         });
       }
     });
