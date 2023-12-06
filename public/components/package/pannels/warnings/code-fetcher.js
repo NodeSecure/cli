@@ -1,5 +1,19 @@
+import hljs from "highlight.js/lib/core";
+window.hljs = hljs;
+require("highlightjs-line-numbers.js/dist/highlightjs-line-numbers.min.js");
+
 // CONSTANTS
 const kLoadingMessage = "Loading ...";
+
+function removeTags(str) {
+  if ((str === null) || (str === "")) {
+    return false;
+  }
+  // eslint-disable-next-line no-param-reassign
+  str = str.toString();
+
+  return str.replace(/<\/?[^>]+(>|$)/ig, "");
+}
 
 export class CodeFetcher {
   static setupDocumentClickHandler = true;
@@ -7,7 +21,7 @@ export class CodeFetcher {
   static getLineFromFile(code, location) {
     const [[startLine]] = location;
 
-    return code.split("\n")[startLine - 1];
+    return code.split("\n").slice(startLine >= 10 ? startLine - 10 : 0, startLine + 10).join("\n");
   }
 
   static hide(event) {
@@ -17,12 +31,12 @@ export class CodeFetcher {
     }
 
     if (
-      (packageCodeElement.innerHTML && packageCodeElement.innerHTML !== kLoadingMessage) &&
+      (packageCodeElement.innerText && packageCodeElement.innerText !== kLoadingMessage) &&
       !packageCodeElement.contains(event.target)
       && packageCodeElement.style.visibility === "visible"
     ) {
       packageCodeElement.style.visibility = "hidden";
-      packageCodeElement.innerHTML = "";
+      packageCodeElement.innerText = "";
     }
   }
 
@@ -37,13 +51,16 @@ export class CodeFetcher {
   }
 
   async fetchCodeLine(event, options = {}) {
-    const { file, location, id } = options;
+    const { file, location, id, value } = options;
 
     this.container = document.querySelector(".package-code");
     this.container.style.visibility = "visible";
+    const isJS = file.slice(-3) === ".js" || [".cjs", ".mjs"].includes(file.slice(-4));
+    const isJSON = file.slice(-5) === ".json";
 
     if (this.cache.has(id)) {
-      this.container.innerText = this.cache.get(id);
+      this.container.innerHTML = this.cache.get(id);
+      hljs.initLineNumbersOnLoad();
       event.stopPropagation();
 
       return;
@@ -52,10 +69,58 @@ export class CodeFetcher {
     this.container.innerText = kLoadingMessage;
     const code = await fetch(`${this.unpkgRoot}${file}`).then((response) => response.text());
 
-    this.container.innerText = code.length ?
-      CodeFetcher.getLineFromFile(code, location) :
-      "Line not found ...";
-    this.cache.set(id, this.container.innerText);
+    if (code.length) {
+      this.container.innerText = "";
+
+      const titleElement = document.createElement("div");
+      titleElement.classList.add("file");
+      titleElement.innerHTML = `<a href="${this.unpkgRoot}${file}" target="_blank">${file}</a>`;
+
+      const preElement = document.createElement("pre");
+      preElement.appendChild(titleElement);
+
+      const codeElement = document.createElement("code");
+      codeElement.textContent = CodeFetcher.getLineFromFile(code, location);
+      // eslint-disable-next-line no-nested-ternary
+      codeElement.classList.add(`language-${isJS ? "js" : isJSON ? "json" : "text"}`, "hljs");
+      codeElement.setAttribute("data-ln-start-from", location[0][0] >= 10 ? location[0][0] - 9 : 1);
+
+      preElement.appendChild(codeElement);
+      this.container.appendChild(preElement);
+      hljs.highlightElement(codeElement);
+      hljs.initLineNumbersOnLoad();
+
+      // Highlight the relevant lines / code
+      codeElement.innerHTML = codeElement.innerHTML.split("\n").map((line, index) => {
+        const withoutTags = removeTags(line);
+        if (withoutTags === false) {
+          return line;
+        }
+        const incriminedCodeSingleLine = code.split("\n").slice(location[0][0] - 1, location[0][0]);
+        const isMultiLine = location[0][0] < location[1][0];
+        const [[startLine]] = location;
+        const lineIndex = startLine >= 10 ? 9 : startLine - 1;
+        const isRelevantLine = isMultiLine ?
+          lineIndex <= index && index <= location[1][0] - 1 :
+          // eslint-disable-next-line max-len
+          incriminedCodeSingleLine.includes(value) || (!isMultiLine && lineIndex === index && withoutTags.includes(value)) || (!value && lineIndex === index);
+
+        if (isRelevantLine) {
+          if (!isMultiLine && value && line.includes(value)) {
+            return line.replace(value, `<span class="relevant-line">${value}</span>`);
+          }
+
+          return `<span class="relevant-line">${line}</span>`;
+        }
+
+        return line;
+      }).join("\n");
+    }
+    else {
+      this.container.innerText = "Line not found ...";
+    }
+
+    this.cache.set(id, this.container.innerHTML);
 
     event.stopPropagation();
   }

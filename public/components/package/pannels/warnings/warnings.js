@@ -78,7 +78,7 @@ export class Warnings {
         const location = warning.kind === "encoded-literal" ? warning.location[0] : warning.location;
 
         viewMoreElement.addEventListener("click", (event) => {
-          codeFetcher.fetchCodeLine(event, { file: warning.file, location, id });
+          codeFetcher.fetchCodeLine(event, { file: warning.file, location, id, value: warning.value });
         });
       }
 
