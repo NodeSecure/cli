@@ -6,13 +6,11 @@ require("highlightjs-line-numbers.js/dist/highlightjs-line-numbers.min.js");
 const kLoadingMessage = "Loading ...";
 
 function removeTags(str) {
-  if ((str === null) || (str === "")) {
+  if (str === null || str === "") {
     return false;
   }
-  // eslint-disable-next-line no-param-reassign
-  str = str.toString();
 
-  return str.replace(/<\/?[^>]+(>|$)/ig, "");
+  return str.toString().replace(/(<([^>]+)>)/ig, "");
 }
 
 export class CodeFetcher {
@@ -96,20 +94,21 @@ export class CodeFetcher {
         if (withoutTags === false) {
           return line;
         }
-        const incriminedCodeSingleLine = code.split("\n").slice(location[0][0] - 1, location[0][0]);
-        const isMultiLine = location[0][0] < location[1][0];
-        const [[startLine]] = location;
+        const [[startLine], [endLine, endColumn]] = location;
+        const isMultiLine = startLine < endLine;
         const lineIndex = startLine >= 10 ? 9 : startLine - 1;
-        const isRelevantLine = isMultiLine ?
-          lineIndex <= index && index <= location[1][0] - 1 :
+        const startFrom = startLine >= 10 ? startLine - 9 : 1;
+
+        if (isMultiLine && lineIndex <= index && endLine >= startFrom + index) {
+          return `<span class="relevant-line">${line}</span>`;
+        }
+        else if (!isMultiLine && value && line.includes(value)) {
+          const indexStart = line.indexOf(value);
+
           // eslint-disable-next-line max-len
-          incriminedCodeSingleLine.includes(value) || (!isMultiLine && lineIndex === index && withoutTags.includes(value)) || (!value && lineIndex === index);
-
-        if (isRelevantLine) {
-          if (!isMultiLine && value && line.includes(value)) {
-            return line.replace(value, `<span class="relevant-line">${value}</span>`);
-          }
-
+          return `${line.slice(0, indexStart)}<span class="relevant-line">${line.slice(indexStart, indexStart + endColumn)}</span>${line.slice(indexStart + endColumn)}`;
+        }
+        else if (!isMultiLine && startFrom + index === startLine) {
           return `<span class="relevant-line">${line}</span>`;
         }
 
