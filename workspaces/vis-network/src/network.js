@@ -329,6 +329,11 @@ export default class NodeSecureNetwork {
 
 
     this.nodes.update(Object.values(allNodes));
+    this.network.focus(selectedNode, {
+      animation: true,
+      scale: 0.35,
+      offset: { x: 250, y: 0 }
+    });
     this.network.stopSimulation();
 
     return true;
@@ -421,7 +426,11 @@ export default class NodeSecureNetwork {
       }
 
       // offset set to 250 to compensate for the package info slide in on the left of screen
-      this.network.focus(selectedNode, { animation: true, scale: 0.35, offset: { x: 250, y: 0 } });
+      this.network.focus(selectedNode, {
+        animation: true,
+        scale: 0.35,
+        offset: { x: 250, y: 0 }
+      });
     }
     else if (this.highlightEnabled) {
       this.highlightEnabled = false;
