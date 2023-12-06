@@ -5,14 +5,10 @@
   min-width: 120px;
   max-width: 600px;
   max-height: 300px;
-  overflow-y: auto;
+  left: calc(50% + 500px);
   top: 50%;
-  left: 50%;
-  transform: translate(-50%);
-  background: #191919;
-  border: 1px solid #121212;
+  transform: translate(-50%, -50%);
   color: #FFF;
-  padding: 10px;
   border-radius: 4px;
   text-align: left;
   font-size: 14px;
@@ -20,3 +16,74 @@
   letter-spacing: 0.5px;
   word-wrap: break-word;
 }
+
+.package-code pre {
+  background: white;
+  margin: 0;
+  padding: 0;
+  box-shadow:  0px 5px 3px rgba(0, 0, 0, 0.2);
+}
+
+.package-code code {
+  scrollbar-width: thin;
+}
+
+.package-code pre code.hljs {
+  padding-top: 0;
+}
+
+.package-code pre div.file {
+  padding: 8px;
+  text-align: right;
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(232,232,232,1) 100%);
+  margin-bottom: 5px;
+}
+
+
+.package-code pre div a {
+  color: var(--secondary-darker);
+}
+
+.relevant-line {
+  background: rgb(255 221 124 / 27%);
+  padding: 2px 0px;
+}
+
+.hljs-ln-numbers {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  text-align: center;
+  color: #ccc;
+  border-right: 1px solid #CCC;
+  vertical-align: top;
+  padding-right: 10px !important;
+}
+
+.hljs-ln-code {
+  padding-left: 10px;
+}
+
+.hljs-ln-n {
+  text-align: right;
+}
+
+.package-code table, .package-code table tr {
+  width: auto;
+  background: white;
+  height: auto;
+  line-height: normal;
+}
+
+.package-code table tr, .package-code table td {
+  border: none;
+  padding: 0;
+  text-align: left;
+  height: auto;
+  line-height: normal;
+}
+
