@@ -24,7 +24,8 @@
     "bin",
     "dist",
     "src",
-    "views"
+    "views",
+    "i18n"
   ],
   "workspaces": [
     "workspaces/documentation-ui",
