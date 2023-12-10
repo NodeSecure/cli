@@ -103,11 +103,9 @@ export class NetworkNavigation {
 
     document.addEventListener("keydown", (event) => {
       const isNetworkView = document.getElementById("network--view").classList.contains("hidden") === false;
-      if (isNetworkView === false) {
-        return;
-      }
-
-      if (window.searchbar.background.classList.contains("show")) {
+      const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
+      const isSearchOpen = window.searchbar.background.classList.contains("show");
+      if (isNetworkView === false || isWikiOpen || isSearchOpen) {
         return;
       }
 
