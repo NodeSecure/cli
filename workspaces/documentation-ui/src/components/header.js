@@ -69,4 +69,15 @@ export class Header {
       this.active = liElement;
     }
   }
+
+  switchActiveView() {
+    const next = this.active.nextElementSibling;
+    if (next === null) {
+      const first = this.active.parentElement.firstElementChild;
+      this.setNewActiveView(first.getAttribute("data-menu"));
+    }
+    else {
+      this.setNewActiveView(next.getAttribute("data-menu"));
+    }
+  }
 }
