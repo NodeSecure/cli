@@ -65,6 +65,19 @@ export class Navigation extends EventTarget {
    */
   setNewActiveMenu(name) {
     const domElement = this.menus.get(name);
+    if (domElement.parentElement?.clientHeight < domElement.offsetTop + domElement.offsetHeight) {
+      domElement.parentElement?.scrollTo({
+        top: domElement.offsetTop,
+        behavior: "smooth"
+      });
+    }
+    else if (domElement.parentElement?.scrollTop > domElement.offsetTop) {
+      domElement.parentElement?.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
     if (domElement !== this.active) {
       if (this.active !== null) {
         this.active.classList.remove("active");
@@ -75,6 +88,20 @@ export class Navigation extends EventTarget {
 
       this.fetchCallback(name, domElement);
       this.dispatchEvent(new CustomEvent("menuActivated", { detail: name }));
+    }
+  }
+
+  next() {
+    const next = this.active.nextElementSibling;
+    if (next !== null) {
+      this.setNewActiveMenu(next.querySelector(".description").innerHTML);
+    }
+  }
+
+  previous() {
+    const previous = this.active.previousElementSibling;
+    if (previous !== null) {
+      this.setNewActiveMenu(previous.querySelector(".description").innerHTML);
     }
   }
 }

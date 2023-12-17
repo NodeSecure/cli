@@ -91,6 +91,32 @@ export function render(rootElement, options = {}) {
   }
   rootElement.appendChild(mainContainer);
 
+  document.addEventListener("keydown", (event) => {
+    const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
+    // should not be possible but just in case
+    const isSearchOpen = window.searchbar.background.classList.contains("show");
+    if (!isWikiOpen || isSearchOpen) {
+      return;
+    }
+
+    const activeNav = navigation[header.active.getAttribute("data-menu")];
+
+    switch (event.key) {
+      case "ArrowLeft":
+      case "ArrowRight":
+        header.switchActiveView();
+        break;
+      case "ArrowUp":
+        activeNav.previous();
+        break;
+      case "ArrowDown":
+        activeNav.next();
+        break;
+      default:
+        break;
+    }
+  });
+
   return {
     header,
     navigation
