@@ -89,31 +89,44 @@ export class CodeFetcher {
       hljs.initLineNumbersOnLoad();
 
       // Highlight the relevant lines / code
-      codeElement.innerHTML = codeElement.innerHTML.split("\n").map((line, index) => {
-        const withoutTags = removeTags(line);
-        if (withoutTags === false) {
+      const [[startLine], [endLine, endColumn]] = location;
+      const isMultiLine = startLine < endLine;
+      const lineIndex = startLine >= 10 ? 9 : startLine - 1;
+      const startFrom = startLine >= 10 ? startLine - 9 : 1;
+
+      if (isMultiLine) {
+        setTimeout(() => {
+          const tdsElement = codeElement.parentElement.querySelectorAll("table tbody tr td:nth-child(2)");
+          for (let i = 0; i < tdsElement.length; i++) {
+            const tdElement = tdsElement[i];
+
+            if (lineIndex <= i && endLine >= startFrom + i) {
+              console.log("ta mere nan ?");
+              tdElement.classList.add("relevant-line");
+            }
+          }
+        });
+      }
+      else {
+        codeElement.innerHTML = codeElement.innerHTML.split("\n").map((line, index) => {
+          const withoutTags = removeTags(line);
+          if (withoutTags === false) {
+            return line;
+          }
+
+          if (value && line.includes(value)) {
+            const indexStart = line.indexOf(value);
+
+            // eslint-disable-next-line max-len
+            return `${line.slice(0, indexStart)}<span class="relevant-line">${line.slice(indexStart, indexStart + endColumn)}</span>${line.slice(indexStart + endColumn)}`;
+          }
+          else if (startFrom + index === startLine) {
+            return `<span class="relevant-line">${line}</span>`;
+          }
+
           return line;
-        }
-        const [[startLine], [endLine, endColumn]] = location;
-        const isMultiLine = startLine < endLine;
-        const lineIndex = startLine >= 10 ? 9 : startLine - 1;
-        const startFrom = startLine >= 10 ? startLine - 9 : 1;
-
-        if (isMultiLine && lineIndex <= index && endLine >= startFrom + index) {
-          return `<span class="relevant-line">${line}</span>`;
-        }
-        else if (!isMultiLine && value && line.includes(value)) {
-          const indexStart = line.indexOf(value);
-
-          // eslint-disable-next-line max-len
-          return `${line.slice(0, indexStart)}<span class="relevant-line">${line.slice(indexStart, indexStart + endColumn)}</span>${line.slice(indexStart + endColumn)}`;
-        }
-        else if (!isMultiLine && startFrom + index === startLine) {
-          return `<span class="relevant-line">${line}</span>`;
-        }
-
-        return line;
-      }).join("\n");
+        }).join("\n");
+      }
     }
     else {
       this.container.innerText = "Line not found ...";
