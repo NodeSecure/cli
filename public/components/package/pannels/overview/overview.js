@@ -163,7 +163,7 @@ export class Overview {
     for (const author of metadata.maintainers) {
       const divElement = utils.createDOMElement("div", {
         childs: [
-          utils.createAvatarImageElement(author.email),
+          utils.createAvatarImageElementForAuthor(author),
           utils.createDOMElement("p", {
             text: author.name
           }),

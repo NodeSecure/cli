@@ -119,19 +119,25 @@ export function parseRepositoryUrl(repository = {}, defaultValue = null) {
   }
 }
 
-export function createAvatarImageElement(email = null) {
+function createImageElement(baseUrl, id = null){
   const imageElement = document.createElement("img");
-  if (email === null || email === "") {
+  if (id === null || id === "") {
     imageElement.src = `${avatarURL}`;
   }
   else {
-    imageElement.src = `https://unavatar.io/${email}`;
+    imageElement.src = `${baseUrl}/${id}`;
     imageElement.onerror = () => {
       imageElement.src = `${avatarURL}`;
     };
   }
 
   return imageElement;
+}
+
+export function createAvatarImageElementForAuthor(author = {}) {
+  return author.npmAvatar
+    ? createImageElement("https://www.npmjs.com", author.npmAvatar)
+    : createImageElement("https://unavatar.io", author.email);
 }
 
 export function createAvatar(name, desc) {
@@ -143,7 +149,7 @@ export function createAvatar(name, desc) {
     classList: ["avatar"], childs: [pElement, aElement]
   });
 
-  const imgEl = createAvatarImageElement(desc.email);
+  const imgEl = createAvatarImageElementForAuthor({ email: desc.email });
   imgEl.alt = name;
   aElement.appendChild(imgEl);
 

@@ -49,7 +49,7 @@ export class Maintainers {
       const person = utils.createDOMElement("div", {
         className: "person",
         childs: [
-          utils.createAvatarImageElement(email),
+          utils.createAvatarImageElementForAuthor(data),
           Maintainers.whois(name, email),
           hasURL ? utils.createDOMElement("i", { className: "icon-link" }) : null,
           utils.createDOMElement("div", {
@@ -96,7 +96,7 @@ export class PopupMaintainer {
     const clone = templateElement.content.cloneNode(true);
 
     clone.querySelector(".avatar").appendChild(
-      utils.createAvatarImageElement(email)
+      utils.createAvatarImageElementForAuthor(this.data)
     );
     clone.querySelector(".name").textContent = this.name;
     const emailElement = clone.querySelector(".email");

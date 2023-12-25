@@ -72,6 +72,7 @@ export default class NodeSecureDataSet extends EventTarget {
     this.rawNodesData = [];
 
     for (const [packageName, descriptor] of dataEntries) {
+      const contributors = [descriptor.metadata.author, ...descriptor.metadata.maintainers, ...descriptor.metadata.publishers]
       for (const [currVersion, opt] of Object.entries(descriptor.versions)) {
         const { id, usedBy, flags, size, license, author, composition, warnings, links } = opt;
 
@@ -86,7 +87,7 @@ export default class NodeSecureDataSet extends EventTarget {
 
         this.computeExtension(composition.extensions);
         this.computeLicense(license);
-        this.computeAuthor(author, `${packageName}@${currVersion}`);
+        this.computeAuthor(author, `${packageName}@${currVersion}`, contributors);
 
         if (flags.includes("hasIndirectDependencies")) {
           this.indirectDependencies++;
@@ -150,10 +151,11 @@ export default class NodeSecureDataSet extends EventTarget {
     }
   }
 
-  computeAuthor(author, spec) {
+  computeAuthor(author, spec, contributors = []) {
     if (author === null) {
       return;
     }
+    const contributor = contributors.find((contributor) => contributor.email === author.email && contributor.npmAvatar !== null);
 
     if (this.authors.has(author.name)) {
       this.authors.get(author.name).packages.add(spec);
@@ -163,6 +165,9 @@ export default class NodeSecureDataSet extends EventTarget {
         author.name,
         Object.assign({}, author, { packages: new Set([spec]) })
       );
+    }
+    if (contributor && contributor.npmAvatar) {
+      this.authors.get(author.name).npmAvatar = contributor.npmAvatar;
     }
   }
 
