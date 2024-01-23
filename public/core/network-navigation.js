@@ -52,6 +52,16 @@ export class NetworkNavigation {
    * @type {[number, import("@nodesecure/vis-network").NodeSecureDataSet["linker"][number]][]}
    */
   #usedByCurrentNode;
+  /**
+   * Represents the locked nodes.
+   *
+   *  @type {[number, import("@nodesecure/vis-network").NodeSecureDataSet["linker"][number]][]}
+   */
+  #lockedNodes = [];
+  /**
+   * Represents the active locked node index.
+   */
+  #lockedNodesActiveIndex = 0;
 
   set currentNodeParams(params) {
     this.#currentNodeParams = params;
@@ -110,6 +120,28 @@ export class NetworkNavigation {
       }
 
       const nodeParam = this.#currentNodeParams ?? this.rootNodeParams;
+
+      if (this.#nsn.lastHighlightedIds === null) {
+        this.#lockedNodes = [];
+      }
+      else {
+        this.#lockedNodes = this.#sortByAngle(
+          [...this.#nsn.lastHighlightedIds].map(
+            (id) => [id, {
+              ...this.#secureDataSet.linker.get(id),
+              position: nsn.network.getPosition(id)
+            }]
+          ),
+          { ...nsn.network.getPosition(this.rootNodeParams.nodes[0]) }
+        );
+      }
+
+      if (this.#lockedNodes.length > 0) {
+        this.#navigateBetweenLockedNodes(event);
+
+        return;
+      }
+
       const nodeDependencyName = this.#secureDataSet.linker.get(Number(nodeParam.nodes[0])).name;
 
       this.#currentNodeUsedBy = this.#nodes
@@ -301,5 +333,34 @@ export class NetworkNavigation {
 
     const nearthestNode = sortedNodes[this.#currentLevelDependenciesIndex];
     this.#navigateTreeLevel(nearthestNode);
+  }
+
+  #navigateBetweenLockedNodes(event) {
+    switch (event.code) {
+      case "ArrowLeft":
+        if (this.#lockedNodesActiveIndex === 0) {
+          this.#lockedNodesActiveIndex = this.#lockedNodes.length - 1;
+        }
+        else {
+          this.#lockedNodesActiveIndex--;
+        }
+        break;
+      case "ArrowRight":
+        if (this.#lockedNodesActiveIndex === this.#lockedNodes.length - 1) {
+          this.#lockedNodesActiveIndex = 0;
+        }
+        else {
+          this.#lockedNodesActiveIndex++;
+        }
+        break;
+      default:
+        return;
+    }
+
+    this.#nsn.network.focus(this.#lockedNodes[this.#lockedNodesActiveIndex][0], {
+      animation: true,
+      scale: 0.35,
+      offset: { x: 150, y: 0 }
+    });
   }
 }
