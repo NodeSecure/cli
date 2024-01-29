@@ -68,7 +68,7 @@
     "@types/node": "^20.5.3",
     "c8": "^8.0.1",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.19.2",
+    "esbuild": "^0.20.0",
     "eslint": "^8.47.0",
     "esmock": "^2.3.8",
     "http-server": "^14.1.1",
