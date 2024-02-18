@@ -119,7 +119,7 @@ export function parseRepositoryUrl(repository = {}, defaultValue = null) {
   }
 }
 
-function createImageElement(baseUrl, id = null){
+function createImageElement(baseUrl, id = null) {
   const imageElement = document.createElement("img");
   if (id === null || id === "") {
     imageElement.src = `${avatarURL}`;
@@ -264,4 +264,10 @@ export function hideOnClickOutside(
   document.addEventListener("click", outsideClickListener);
 
   return outsideClickListener;
+}
+
+export function currentLang() {
+  const detectedLang = document.getElementById("lang").dataset.lang;
+
+  return detectedLang in window.i18n ? detectedLang : "english";
 }

@@ -1,3 +1,6 @@
+// Import Internal Dependencies
+import * as utils from "./utils.js";
+
 /**
  * SELECTED -> The color when a Node is selected.
  * CONNECTED_IN -> The color for first-degree nodes connected in the selected one.
@@ -99,17 +102,21 @@ export const COLORS = Object.freeze({
 });
 
 export const LABELS = Object.freeze({
-  INCOMING: {
-    label: "child of",
-    font: {
-      background: "#EEE"
-    }
+  INCOMING: (i18n) => {
+    return {
+      label: i18n.network.childOf,
+      font: {
+        background: "#EEE"
+      }
+    };
   },
-  OUTGOING: {
-    label: "parent of",
-    font: {
-      background: "#EEE"
-    }
+  OUTGOING: (i18n) => {
+    return {
+      label: i18n.network.parentOf,
+      font: {
+        background: "#EEE"
+      }
+    };
   },
   NONE: {
     // A space is used to simulate resetting the edge laebl

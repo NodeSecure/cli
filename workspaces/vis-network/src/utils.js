@@ -54,3 +54,10 @@ export function getFlagsEmojisInlined(flags, flagsToIgnore) {
     .filter((value) => value !== null && !flagsToIgnore.has(value))
     .reduce((acc, cur) => `${acc} ${cur}`, "");
 }
+
+// Note: this works only if vis-network is used within CLI UI, not as a standalone.
+export function currentLang() {
+  const detectedLang = document.getElementById("lang").dataset.lang;
+
+  return detectedLang in window.i18n ? detectedLang : "english";
+}

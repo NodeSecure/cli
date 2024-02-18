@@ -36,6 +36,7 @@ export class HomeView {
   ) {
     this.secureDataSet = secureDataSet;
     this.nsn = nsn;
+    this.lang = utils.currentLang();
 
     this.generateScorecard();
     this.generateHeader();
@@ -139,11 +140,18 @@ export class HomeView {
         directDependencies++;
       }
     }
-
-    fragment.appendChild(createOverviewDiv("icon-cubes", "# dependencies", this.secureDataSet.dependenciesCount));
-    fragment.appendChild(createOverviewDiv("icon-archive", "total size", this.secureDataSet.prettySize));
-    fragment.appendChild(createOverviewDiv("icon-link", "# direct deps", directDependencies));
-    fragment.appendChild(createOverviewDiv("icon-sitemap", "# transitive deps", this.secureDataSet.indirectDependencies));
+    fragment.appendChild(createOverviewDiv(
+      "icon-cubes", `# ${window.i18n[this.lang].home.overview.dependencies}`, this.secureDataSet.dependenciesCount
+    ));
+    fragment.appendChild(createOverviewDiv(
+      "icon-archive", window.i18n[this.lang].home.overview.totalSize, this.secureDataSet.prettySize
+    ));
+    fragment.appendChild(createOverviewDiv(
+      "icon-link", `# ${window.i18n[this.lang].home.overview.directDeps}`, directDependencies
+    ));
+    fragment.appendChild(createOverviewDiv(
+      "icon-sitemap", `# ${window.i18n[this.lang].home.overview.transitiveDeps}`, this.secureDataSet.indirectDependencies
+    ));
 
     const homeOverviewElement = document.querySelector(".home--overview");
     homeOverviewElement.appendChild(fragment);
@@ -153,7 +161,9 @@ export class HomeView {
 
       if (downloads) {
         const formattedNumber = new Intl.NumberFormat("de-DE").format(downloads);
-        homeOverviewElement.appendChild(createOverviewDiv("icon-chart-bar", "downloads last week", formattedNumber));
+        homeOverviewElement.appendChild(createOverviewDiv(
+          "icon-chart-bar", window.i18n[this.lang].home.overview.downloadsLastWeek, formattedNumber
+        ));
       }
     }
     catch {

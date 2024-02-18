@@ -3,7 +3,7 @@ import semver from "semver";
 import sizeSatisfies from "@nodesecure/size-satisfies";
 
 // Import Internal Dependencies
-import { createDOMElement, vec2Distance } from "../../common/utils.js";
+import { createDOMElement, vec2Distance, currentLang } from "../../common/utils.js";
 
 // CONSTANTS
 const kFiltersName = new Set(["package", "version", "flag", "license", "author", "ext", "builtin", "size"]);
@@ -283,7 +283,9 @@ export class SearchBar {
       });
     });
 
-    const titleText = Reflect.has(kHelpersTitleName, filterName) ? kHelpersTitleName[filterName] : "Options de recherche";
+    const titleText = window.i18n[currentLang()].search[
+      Reflect.has(kHelpersTitleName, filterName) ? kHelpersTitleName[filterName] : "default"
+    ];
     // eslint-disable-next-line max-len
     this.helper.innerHTML = `<div class="title"><p>${titleText}</p><a href="https://github.com/NodeSecure/cli#searchbar-filters" rel="noopener" target="_blank"><i class="icon-attention-circled"></i></a></div>`;
     this.helper.appendChild(clone);

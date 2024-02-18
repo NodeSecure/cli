@@ -12,12 +12,19 @@ import { Locker } from "./components/locker/locker.js";
 // Import Views Components
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
+
+// Import Core Components
 import { NetworkNavigation } from "./core/network-navigation.js";
+import { i18n } from "./core/i18n.js";
+
+// Import Utils
+import * as utils from "./common/utils.js";
 
 document.addEventListener("DOMContentLoaded", async() => {
   window.locker = null;
   window.popup = new Popup();
   window.settings = await new Settings().fetchUserConfig();
+  window.i18n = await new i18n().fetch();
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
   let packageInfoOpened = false;
@@ -31,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
   // Initialize vis Network
   NodeSecureNetwork.networkElementId = "dependency-graph";
-  const nsn = new NodeSecureNetwork(secureDataSet);
+  const nsn = new NodeSecureNetwork(secureDataSet, { i18n: window.i18n[utils.currentLang()] });
   window.locker = new Locker(nsn);
   new HomeView(secureDataSet, nsn);
 
@@ -80,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async() => {
 
     if (networkNavigation.currentNodeParams !== null) {
       window.navigation.setNavByName("network--view");
-      nsn.neighbourHighlight(networkNavigation.currentNodeParams);
+      nsn.neighbourHighlight(networkNavigation.currentNodeParams, window.i18n[utils.currentLang()]);
       updateShowInfoMenu(networkNavigation.currentNodeParams);
     }
   });

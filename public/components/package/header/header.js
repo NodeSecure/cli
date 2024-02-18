@@ -156,12 +156,13 @@ export class PackageHeader {
    */
   renderMenu(packageName) {
     const { snykAdvisor, socket } = PackageHeader.ExternalLinks;
+    const i18n = window.i18n[utils.currentLang()];
 
     return utils.createDOMElement("div", {
       classList: ["info-menu", "hidden"],
       childs: [
         utils.createDOMElement("div", {
-          text: "Third-party tools",
+          text: i18n.package_info.helpers.thirdPartyTools,
           classList: ["info-menu-title"]
         }),
         utils.createDOMElement("a", {
