@@ -49,6 +49,12 @@ export const NETWORK_OPTIONS = {
     }
   }
 };
+const kDefaultI18n = {
+  network: {
+    childOf: "child of",
+    parentOf: "parent of"
+  }
+};
 
 export default class NodeSecureNetwork {
   // DOM Elements
@@ -60,6 +66,7 @@ export default class NodeSecureNetwork {
    * @param {object} [options]
    * @param {"LIGHT" | "DARK"} [options.theme="LIGHT"]
    * @param {*} [options.colors]
+   * @param {*} [options.i18n]
    */
   constructor(secureDataSet, options = {}) {
     console.log("[Network] created");
@@ -86,6 +93,7 @@ export default class NodeSecureNetwork {
     this.edges = edges;
     this.linker = secureDataSet.linker;
     this.network = new Network(networkElement, { nodes, edges }, NETWORK_OPTIONS);
+    this.i18n = options.i18n ?? kDefaultI18n;
 
     this.network.on("stabilizationIterationsDone", () => {
       if (this.isLoaded) {
@@ -347,7 +355,7 @@ export default class NodeSecureNetwork {
     return true;
   }
 
-  neighbourHighlight(params) {
+  neighbourHighlight(params, i18n = this.i18n) {
     if (this.lockedNeighbourHighlight(params)) {
       console.log("[NETWORK] locked, stop neighbour highlight");
 
@@ -403,10 +411,10 @@ export default class NodeSecureNetwork {
         const edgeIndex = allEdges.findIndex((edge) => edge.id === connectedEdges[id]);
         // the arrow on the edge is set to point into the 'from' node
         if (allEdges[edgeIndex].from === selectedNode) {
-          Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.INCOMING);
+          Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.INCOMING(i18n));
         }
         else if (allEdges[edgeIndex].to === selectedNode) {
-          Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.OUTGOING);
+          Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.OUTGOING(i18n));
         }
       }
 

@@ -1,31 +1,17 @@
 // Import Internal Dependencies
-import { createDOMElement } from "../../common/utils";
-
-// TODO: migrate this to ./i18n ?
-const ki18nTranslaction = {
-  french: {
-    showMore: "voir plus",
-    showLess: "voir moins"
-  },
-  english: {
-    showMore: "show more",
-    showLess: "show less"
-  }
-};
+import { createDOMElement, currentLang } from "../../common/utils";
 
 export function createExpandableSpan(
   hideItemsLength,
   onclick = () => void 0
 ) {
-  const detectedLang = document.getElementById("lang").dataset.lang;
-  const lang = detectedLang in ki18nTranslaction ? detectedLang : "english";
-
+  const lang = currentLang();
   const span = createDOMElement("span", {
     classList: ["expandable"],
     attributes: { "data-value": "closed" },
     childs: [
       createDOMElement("i", { className: "icon-plus-squared-alt" }),
-      createDOMElement("p", { text: ki18nTranslaction[lang].showMore })
+      createDOMElement("p", { text: window.i18n[lang].home.showMore })
     ]
   });
   span.addEventListener("click", function itemListClickAction() {
@@ -37,7 +23,7 @@ export function createExpandableSpan(
     }
 
     this.querySelector("p").textContent = isClosed ?
-      ki18nTranslaction[lang].showLess : ki18nTranslaction[lang].showMore;
+      window.i18n[lang].home.showLess : window.i18n[lang].home.showMore;
     this.setAttribute("data-value", isClosed ? "opened" : "closed");
 
     for (let id = 0; id < this.parentNode.childNodes.length; id++) {

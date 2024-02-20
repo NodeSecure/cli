@@ -1,3 +1,5 @@
+// Import Internal Dependencies
+import * as utils from "../../common/utils.js";
 
 export class Locker {
   constructor(nsn) {
@@ -68,13 +70,13 @@ export class Locker {
     }
     else if (this.nsn.lastHighlightedIds !== null) {
       this.nsn.lastHighlightedIds = null;
-      this.nsn.neighbourHighlight(selectedNode);
+      this.nsn.neighbourHighlight(selectedNode, window.i18n[utils.currentLang()]);
     }
   }
 
   renderLock() {
     this.dom.classList.add("enabled");
-    this.dom.querySelector("p").textContent = "LOCKED";
+    this.dom.querySelector("p").textContent = window.i18n[utils.currentLang()].network.locked;
     this.networkView.classList.add("locked");
 
     const iconElement = this.dom.querySelector("i");
@@ -85,7 +87,7 @@ export class Locker {
 
   renderUnlock() {
     this.dom.classList.remove("enabled");
-    this.dom.querySelector("p").textContent = "UNLOCKED";
+    this.dom.querySelector("p").textContent = window.i18n[utils.currentLang()].network.unlocked;
     this.networkView.classList.remove("locked");
 
     const iconElement = this.dom.querySelector("i");

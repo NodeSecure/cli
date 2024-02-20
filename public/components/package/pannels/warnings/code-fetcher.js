@@ -101,7 +101,6 @@ export class CodeFetcher {
             const tdElement = tdsElement[i];
 
             if (lineIndex <= i && endLine >= startFrom + i) {
-              console.log("ta mere nan ?");
               tdElement.classList.add("relevant-line");
             }
           }

@@ -91,7 +91,7 @@ prog
 prog
   .command("scorecard [repository]")
   .describe(i18n.getTokenSync("cli.commands.scorecard.desc"))
-  .option("--vcs", "Version control platform (GitHub, GitLab", "github")
+  .option("--vcs", i18n.getTokenSync("cli.commands.scorecard.option_vcs"), "github")
   .action(commands.scorecard.main);
 
 prog
@@ -101,13 +101,13 @@ prog
 
 prog
   .command("config create [configuration]")
-  .option("-c, --cwd", "create config file at the cwd", false)
-  .describe("Init your Nodesecure config file")
+  .option("-c, --cwd", i18n.getTokenSync("cli.commands.configCreate.option_cwd"), false)
+  .describe(i18n.getTokenSync("cli.commands.configCreate.desc"))
   .action(commands.config.createConfigFile);
 
 prog
   .command("config")
-  .describe("Edit your nodesecure config file")
+  .describe(i18n.getTokenSync("cli.commands.config.desc"))
   .action(commands.config.editConfigFile);
 
 prog.parse(process.argv);
@@ -117,7 +117,7 @@ function defaultScannerCommand(name, options = {}) {
 
   const cmd = prog.command(name)
     .option("-d, --depth", i18n.getTokenSync("cli.commands.option_depth"), 4)
-    .option("--silent", "enable silent mode which disable CLI spinners", false);
+    .option("--silent", i18n.getTokenSync("cli.commands.option_silent"), false);
 
   if (includeOutput) {
     cmd.option("-o, --output", i18n.getTokenSync("cli.commands.option_output"), "nsecure-result");
@@ -134,7 +134,7 @@ function checkNodeSecureToken() {
     const varEnvName = kleur.yellow().bold("NODE_SECURE_TOKEN");
 
     console.log(
-      kleur.red().bold(`Environment variable ${varEnvName} is missing!\n`)
+      kleur.red().bold(`${i18n.getTokenSync("cli.missingEnv", varEnvName)}\n`)
     );
   }
 }

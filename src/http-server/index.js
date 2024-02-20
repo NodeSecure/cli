@@ -15,6 +15,7 @@ import * as config from "./endpoints/config.js";
 import * as bundle from "./endpoints/bundle.js";
 import * as npmDownloads from "./endpoints/npm-downloads.js";
 import * as scorecard from "./endpoints/ossf-scorecard.js";
+import * as locali18n from "./endpoints/i18n.js";
 import * as middleware from "./middleware.js";
 
 export function buildServer(dataFilePath, options = {}) {
@@ -32,6 +33,7 @@ export function buildServer(dataFilePath, options = {}) {
   httpServer.get("/data", data.get);
   httpServer.get("/config", config.get);
   httpServer.put("/config", config.save);
+  httpServer.get("/i18n", locali18n.get);
 
   httpServer.get("/flags", flags.getAll);
   httpServer.get("/flags/description/:title", flags.get);

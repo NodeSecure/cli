@@ -117,24 +117,41 @@ export class Overview {
     const { metadata } = this.package.dependency;
 
     const fragment = document.createDocumentFragment();
+    const i18n = window.i18n[utils.currentLang()];
 
     const { homepage } = this.package.links;
     if (typeof homepage.href === "string") {
-      fragment.appendChild(utils.createLiField("Homepage", homepage.href, { isLink: true }));
+      fragment.appendChild(utils.createLiField(
+        i18n.package_info.overview.homepage, homepage.href, { isLink: true }
+      ));
     }
-    fragment.appendChild(utils.createLiField("Author", this.author));
-    fragment.appendChild(utils.createLiField("Size on system", prettyBytes(size)));
-    fragment.appendChild(utils.createLiField("Number of dependencies", metadata.dependencyCount));
-    fragment.appendChild(utils.createLiField("Number of files", composition.files.length));
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.author, this.author
+    ));
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.size, prettyBytes(size)
+    ));
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.dependencies, metadata.dependencyCount
+    ));
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.files, composition.files.length
+    ));
     fragment.appendChild(
       utils.createLiField("README.md", composition.files.some((file) => /README\.md/gi.test(file)) ? "✔️" : "❌")
     );
-    fragment.appendChild(utils.createLiField("TS Typings", composition.files.some((file) => /d\.ts/gi.test(file)) ? "✔️" : "❌"));
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.tsTypings, composition.files.some((file) => /d\.ts/gi.test(file)) ? "✔️" : "❌"
+    ));
     if ("node" in engines) {
-      fragment.appendChild(utils.createLiField("Node.js compatibility", engines.node));
+      fragment.appendChild(utils.createLiField(
+        i18n.package_info.overview.npm, engines.node
+      ));
     }
     if ("npm" in engines) {
-      fragment.appendChild(utils.createLiField("NPM compatibility", engines.npm));
+      fragment.appendChild(utils.createLiField(
+        i18n.package_info.overview.npm, engines.npm
+      ));
     }
 
     return fragment;
@@ -143,15 +160,24 @@ export class Overview {
   renderReleases() {
     const { metadata } = this.package.dependency;
     const fragment = document.createDocumentFragment();
+    const i18n = window.i18n[utils.currentLang()];
 
     const lastUpdatedAt = kEnGBDateFormat.format(
       new Date(this.package.dependency.metadata.lastUpdateAt)
     );
 
-    fragment.appendChild(utils.createLiField("Last release version", metadata.lastVersion));
-    fragment.appendChild(utils.createLiField("Last release date", lastUpdatedAt));
-    fragment.appendChild(utils.createLiField("Number of published releases", metadata.publishedCount));
-    fragment.appendChild(utils.createLiField("Number of publisher(s)", metadata.publishers.length));
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.lastReleaseVersion, metadata.lastVersion
+    ));
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.lastReleaseDate, lastUpdatedAt
+    ));
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.publishedReleases, metadata.publishedCount
+    ));
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.numberPublishers, metadata.publishers.length
+    ));
 
     return fragment;
   }

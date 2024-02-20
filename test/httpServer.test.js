@@ -264,6 +264,14 @@ describe("httpServer", () => {
     });
   });
 
+  test("GET '/i18n' should return i18n", async() => {
+    const result = await get(new URL("/i18n", HTTP_URL));
+    assert.equal(result.statusCode, 200);
+
+    const keys = Object.keys(result.data);
+    assert.deepEqual(keys, ["english", "french"]);
+  });
+
   test("'/download/:pkgName' should return package downloads", async() => {
     const result = await get(new URL("/downloads/fastify", HTTP_URL));
 
