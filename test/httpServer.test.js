@@ -8,7 +8,7 @@ import os from "node:os";
 import assert from "node:assert";
 
 // Import Third-party Dependencies
-import { get, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@myunisoft/httpie";
+import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@myunisoft/httpie";
 import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
@@ -318,6 +318,14 @@ describe("httpServer", () => {
       statusCode: 404,
       statusMessage: "Not Found"
     });
+  });
+
+  test("'/report' should return a Buffer", async() => {
+    const result = await post(new URL("/report", HTTP_URL), { body: { title: "foo" } });
+
+    assert.equal(result.statusCode, 200);
+    const json = JSON.parse(result.data);
+    assert.strictEqual(json.data.type, "Buffer");
   });
 });
 

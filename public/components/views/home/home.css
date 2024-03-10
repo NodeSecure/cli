@@ -1,4 +1,5 @@
 @import url("./maintainers/maintainers.css");
+@import url("./report/report.css");
 
 #home--view {
   z-index: 10;
@@ -11,6 +12,12 @@
 
 #home--view .home--header {
   display: flex;
+}
+
+.home--header--aside {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
 }
 
 .home--header--scorecard {
@@ -65,6 +72,16 @@
 
 .home--header--scorecard .score.blue {
   background-color: rgb(39 144 252);
+}
+
+.home--header--report {
+  margin-top: 8px;
+  border: none;
+  padding: 12px 7px;
+  color: white;
+  background: #da4e44;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .home--header--title {

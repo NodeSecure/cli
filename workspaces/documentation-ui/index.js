@@ -92,6 +92,10 @@ export function render(rootElement, options = {}) {
   rootElement.appendChild(mainContainer);
 
   document.addEventListener("keydown", (event) => {
+    if (window.disableShortcuts) {
+      return;
+    }
+
     const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
     // should not be possible but just in case
     const isSearchOpen = window.searchbar.background.classList.contains("show");

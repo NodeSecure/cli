@@ -112,6 +112,10 @@ export class NetworkNavigation {
     this.#dependenciesMapByLevel.set(0, this.rootNodeParams);
 
     document.addEventListener("keydown", (event) => {
+      if (window.disableShortcuts) {
+        return;
+      }
+
       const isNetworkViewHidden = document.getElementById("network--view").classList.contains("hidden");
       const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
       const isSearchOpen = window.searchbar.background.classList.contains("show");

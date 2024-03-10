@@ -10,6 +10,7 @@ import { fetchScorecardData, getScoreColor, getScorecardLink } from "../../../co
 
 // Import Components
 import { Maintainers } from "./maintainers/maintainers.js";
+import { PopupReport } from "./report/report.js";
 
 // CONSTANTS
 const kFlagsToWatch = new Set([
@@ -46,6 +47,7 @@ export class HomeView {
     this.generateExtensions();
     this.generateLicenses();
     this.generateMaintainers();
+    this.handleReport();
   }
 
   generateScorecard() {
@@ -300,5 +302,13 @@ export class HomeView {
   generateMaintainers() {
     new Maintainers(this.secureDataSet, this.nsn)
       .render();
+  }
+
+  handleReport() {
+    document.querySelector(".home--header--report").addEventListener("click", async() => {
+      window.popup.open(
+        new PopupReport({ foo: "bar" }, this.nsn).render()
+      );
+    });
   }
 }

@@ -16,6 +16,7 @@ import * as bundle from "./endpoints/bundle.js";
 import * as npmDownloads from "./endpoints/npm-downloads.js";
 import * as scorecard from "./endpoints/ossf-scorecard.js";
 import * as locali18n from "./endpoints/i18n.js";
+import * as report from "./endpoints/report.js";
 import * as middleware from "./middleware.js";
 
 export function buildServer(dataFilePath, options = {}) {
@@ -41,6 +42,7 @@ export function buildServer(dataFilePath, options = {}) {
   httpServer.get("/bundle/:pkgName/:version", bundle.get);
   httpServer.get("/downloads/:pkgName", npmDownloads.get);
   httpServer.get("/scorecard/:org/:pkgName", scorecard.get);
+  httpServer.post("/report", report.post);
 
   httpServer.listen(httpConfigPort, async() => {
     const port = httpServer.server.address().port;

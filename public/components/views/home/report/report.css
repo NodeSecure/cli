@@ -1,0 +1,115 @@
+.report--popup {
+  min-width: 400px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.report--popup>.title {
+  height: 2px;
+  background: #d3d3d387;
+  margin: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.report--popup>.title>p {
+  background: #f5f4f4;
+  padding: 0 10px;
+  font-family: "roboto";
+  font-weight: bold;
+  letter-spacing: 1.2px;
+  color: #255471;
+}
+
+.report--popup>form {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.report--popup>form label {
+  color: #546884;
+  margin-bottom: 4px;
+}
+
+.report--popup>form input {
+  padding: 6px;
+  border: 1px solid #546884;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.report--popup>form>button {
+  margin-top: 16px;
+  border: none;
+  padding: 8px;
+  color: white;
+  background: #da4e44;
+  font-weight: bold;
+  cursor: pointer;
+  width: 120px;
+  margin: auto;
+  font-size: 16px;
+}
+
+.report--popup .spinner {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 3px solid white;
+  animation: spinner-from 0.8s infinite linear alternate, spinner-to 1.6s infinite linear;
+}
+
+
+@keyframes spinner-from {
+  0% {
+     clip-path: polygon(50% 50%, 0 0, 50% 0%, 50% 0%, 50% 0%, 50% 0%, 50% 0%);
+  }
+
+  12.5% {
+     clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 0%, 100% 0%, 100% 0%);
+  }
+
+  25% {
+     clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 100% 100%, 100% 100%);
+  }
+
+  50% {
+     clip-path: polygon(50% 50%, 0 0, 50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
+  }
+
+  62.5% {
+     clip-path: polygon(50% 50%, 100% 0, 100% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%);
+  }
+
+  75% {
+     clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 50% 100%, 0% 100%);
+  }
+
+  100% {
+     clip-path: polygon(50% 50%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 50% 100%, 0% 100%);
+  }
+}
+
+@keyframes spinner-to {
+  0% {
+     transform: scaleY(1) rotate(0deg);
+  }
+
+  49.99% {
+     transform: scaleY(1) rotate(135deg);
+  }
+
+  50% {
+     transform: scaleY(-1) rotate(0deg);
+  }
+
+  100% {
+     transform: scaleY(-1) rotate(-135deg);
+  }
+}
