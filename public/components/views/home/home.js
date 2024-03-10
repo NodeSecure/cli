@@ -307,7 +307,7 @@ export class HomeView {
   handleReport() {
     document.querySelector(".home--header--report").addEventListener("click", async() => {
       window.popup.open(
-        new PopupReport({ foo: "bar" }, this.nsn).render()
+        new PopupReport(this.secureDataSet.data.rootDependencyName).render()
       );
     });
   }

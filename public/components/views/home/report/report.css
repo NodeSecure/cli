@@ -22,37 +22,45 @@
   font-weight: bold;
   letter-spacing: 1.2px;
   color: #255471;
+  font-size: 20px;
 }
 
 .report--popup>form {
   display: flex;
   flex-direction: column;
   padding: 20px;
+  padding-bottom: 0;
 }
 
 .report--popup>form label {
   color: #546884;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 18px;
 }
 
 .report--popup>form input {
-  padding: 6px;
-  border: 1px solid #546884;
-  border-radius: 4px;
+  padding: 11px 6px;
+  border: none;
+  border-left: 4px solid #546884;
   margin-bottom: 10px;
+  border-radius: 2px;
+  box-shadow: 0px 3px 7px 1px rgba(0, 0, 0, 0.10);
+  font-size: 16px;
 }
 
 .report--popup>form>button {
-  margin-top: 16px;
   border: none;
   padding: 8px;
   color: white;
-  background: #da4e44;
+  background: #43a82f;
   font-weight: bold;
   cursor: pointer;
   width: 120px;
   margin: auto;
+  margin-top: 20px;
   font-size: 16px;
+  border-radius: 4px;
 }
 
 .report--popup .spinner {

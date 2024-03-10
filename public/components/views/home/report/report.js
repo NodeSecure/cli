@@ -2,8 +2,8 @@
 import { PopupTemplate } from "../../../popup/popup.js";
 
 export class PopupReport {
-  constructor(data) {
-    this.data = data;
+  constructor(rootDependencyName) {
+    this.rootDependencyName = rootDependencyName;
   }
 
   render() {
@@ -11,6 +11,7 @@ export class PopupReport {
     /** @type {HTMLElement} */
     const clone = templateElement.content.cloneNode(true);
     const form = clone.querySelector("form");
+    clone.querySelector("#title").placeholder = `${this.rootDependencyName}'s report`;
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 

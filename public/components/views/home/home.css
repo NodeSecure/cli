@@ -77,11 +77,13 @@
 .home--header--report {
   margin-top: 8px;
   border: none;
-  padding: 12px 7px;
-  color: white;
-  background: #da4e44;
+  padding: 10px;
+  color: #fffde4;
+  background: #1f9ad7;
   font-weight: bold;
   cursor: pointer;
+  border-radius: 4px;
+  text-shadow: 1px 1px 10px #0000007d;
 }
 
 .home--header--title {
