@@ -29,6 +29,10 @@ export class ViewNavigation {
     }
 
     document.addEventListener("keydown", (event) => {
+      if (window.disableShortcuts) {
+        return;
+      }
+
       if (window.searchbar.background.classList.contains("show")) {
         return;
       }

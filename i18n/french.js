@@ -129,6 +129,14 @@ const ui = {
   popup: {
     maintainer: {
       intree: "packages dans l'abre de dépendances"
+    },
+    report: {
+      title: "Générer un rapport",
+      form: {
+        title: "Titre du rapport",
+        includesAllDeps: "Inclure toutes les dépendances",
+        submit: "Générer"
+      }
     }
   },
   home: {
@@ -138,7 +146,8 @@ const ui = {
       totalSize: "poids total",
       directDeps: "dépendances directes",
       transitiveDeps: "dépendances transitives",
-      downloadsLastWeek: "téléchargements la semaine dernière"
+      downloadsLastWeek: "téléchargements la semaine dernière",
+      generateReport: "Générer un rapport"
     },
     watch: "Packages dans l'arbre de dépendance nécessitant une plus grande attention",
     criticalWarnings: "Avertissements critiques",

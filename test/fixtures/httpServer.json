@@ -1,3 +1,68 @@
 {
-  "foo": "bar"
+  "foo": "bar",
+  "rootDependencyName": "@foo/bar",
+  "dependencies": {
+    "@foo/bar": {
+      "versions": {
+        "1.1.1": {
+          "flags": [],
+          "warnings": [],
+          "composition": {
+            "extensions": [
+              ".js"
+            ],
+            "files": [
+              "LICENSE"
+            ],
+            "required_nodejs": [
+              "fs"
+            ]
+          },
+          "license": {
+            "uniqueLicenseIds": [
+              "MIT"
+            ],
+            "hasMultipleLicenses": false,
+            "licenses": [
+              {
+                "uniqueLicenseIds": [
+                  "MIT"
+                ],
+                "from": "package.json"
+              }
+            ]
+          },
+          "gitUrl": null
+        }
+      },
+      "metadata": {
+        "dependencyCount": 0,
+        "publishedCount": 12,
+        "lastUpdateAt": "2019-11-21T05:14:39.925Z",
+        "lastVersion": "3.0.0",
+        "hasManyPublishers": true,
+        "hasReceivedUpdateInOneYear": false,
+        "homepage": "https://github.com/blakeembrey/array-flatten",
+        "author": {
+          "name": "Blake Embrey",
+          "email": "hello@blakeembrey.com",
+          "url": "http://blakeembrey.me"
+        },
+        "publishers": [
+          {
+            "name": "blakeembrey",
+            "email": "hello@blakeembrey.com",
+            "version": "3.0.0",
+            "at": "2019-11-21T05:14:39.925Z"
+          }
+        ],
+        "maintainers": [
+          {
+            "name": "blakeembrey",
+            "email": "hello@blakeembrey.com"
+          }
+        ]
+      }
+    }
+  }
 }

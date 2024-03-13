@@ -72,14 +72,19 @@
             <ul id="project-links"></ul>
           </div>
         </div>
-        <div class="home--header--scorecard">
-          <div class="description">
-            <img src="scorecard.png">
-            <p>Scorecard</p>
+        <div class="home--header--aside">
+          <div class="home--header--scorecard">
+            <div class="description">
+              <img src="scorecard.png">
+              <p>Scorecard</p>
+            </div>
+            <div class="score">
+              <p id="home-scorecard-score">8.5</p>
+            </div>
           </div>
-          <div class="score">
-            <p id="home-scorecard-score">8.5</p>
-          </div>
+          <button class="home--header--report">
+            [[=z.token('home.overview.generateReport')]]
+          </button>
         </div>
       </div>
       <div class="home--body">
@@ -306,6 +311,27 @@
     </div>
   </div>
 </div>
+
+<template id="report-popup-template">
+  <div class="report--popup">
+    <div class="title">
+      <p>[[=z.token('popup.report.title')]]</p>
+    </div>
+    <form action="">
+      <label for="title">[[=z.token('popup.report.form.title')]]</label>
+      <input type="text" id="title" name="title" required>
+
+      <div>
+        <input type="checkbox" id="includesAllDeps" name="includesAllDeps" checked>
+        <label for="includesAllDeps">[[=z.token('popup.report.form.includesAllDeps')]]</label>
+      </div>
+
+      <button type="submit">
+        <span class="spinner hidden"></span> [[=z.token('popup.report.form.submit')]]
+      </button>
+    </form>
+  </div>
+</template>
 
 <template id="maintainers-popup-template">
   <div class="maintainers--popup">

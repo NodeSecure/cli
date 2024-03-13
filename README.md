@@ -37,6 +37,7 @@
 - Link vulnerabilities from the multiple sources like GitHub Advisory, Sonatype or Snyk using [Vulnera](https://github.com/NodeSecure/vulnera). 
 - Add flags (emojis) to each packages versions to identify well known patterns and potential security threats easily.
 - First-class support of open source security initiatives like [OpenSSF Scorecard](https://github.com/ossf/scorecard).
+- Generate security report (PDF).
 
 ## 🚧 Requirements
 

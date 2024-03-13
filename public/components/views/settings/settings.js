@@ -52,6 +52,10 @@ export class Settings {
         input.value = "";
 
         const onKeyDown = (event) => {
+          if (window.disableShortcuts) {
+            return;
+          }
+
           // Prevent the app to change view if key is equal to view's hotkey
           event.preventDefault();
           event.stopPropagation();

@@ -31,6 +31,10 @@ export class Wiki {
     });
 
     document.addEventListener("keydown", (event) => {
+      if (window.disableShortcuts) {
+        return;
+      }
+
       const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
 
       if (event.key.toUpperCase() === hotkeys.wiki) {

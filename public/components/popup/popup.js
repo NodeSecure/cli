@@ -25,6 +25,8 @@ export class Popup {
       return;
     }
 
+    window.disableShortcuts = true;
+
     this.templateName = template.name;
     this.dom.popup.appendChild(template.HTMLElement);
     // TODO: apply additional css customization
@@ -59,6 +61,7 @@ export class Popup {
       return;
     }
 
+    window.disableShortcuts = false;
     this.dom.popup.innerHTML = "";
     this.templateName = null;
     this.#cleanupClickOutside();

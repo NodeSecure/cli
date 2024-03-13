@@ -129,6 +129,14 @@ const ui = {
   popup: {
     maintainer: {
       intree: "packages in the dependency tree"
+    },
+    report: {
+      title: "Generate a report",
+      form: {
+        title: "Report title",
+        includesAllDeps: "Include all dependencies",
+        submit: "Generate"
+      }
     }
   },
   home: {
@@ -138,7 +146,8 @@ const ui = {
       totalSize: "total size",
       directDeps: "direct deps",
       transitiveDeps: "transitive deps",
-      downloadsLastWeek: "downloads last week"
+      downloadsLastWeek: "downloads last week",
+      generateReport: "Generate a report"
     },
     watch: "Packages in the dependency tree requiring greater attention",
     criticalWarnings: "Critical Warnings",

@@ -11,6 +11,10 @@ export class Locker {
     this.renderUnlock();
 
     document.addEventListener("keydown", (event) => {
+      if (window.disableShortcuts) {
+        return;
+      }
+
       const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
       switch (event.key.toUpperCase()) {
         case hotkeys.lock: {
