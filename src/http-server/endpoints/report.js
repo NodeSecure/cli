@@ -4,10 +4,10 @@ import fs from "node:fs";
 // Import Third-party Dependencikes
 import { report } from "@nodesecure/report";
 import send from "@polka/send-type";
-import * as coBody from "co-body";
 
 // Import Internal Dependencies
 import { context } from "../context.js";
+import { bodyParser } from "../bodyParser.js";
 
 // TODO: provide a non-file-based API on RC side ?
 const kReportPayload = {
@@ -46,7 +46,7 @@ const kReportPayload = {
 };
 
 export async function post(req, res) {
-  const body = await coBody.json(req);
+  const body = await bodyParser(req);
   const { title, includesAllDeps } = body;
 
   const { dataFilePath } = context.getStore();
