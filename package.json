@@ -1,6 +1,6 @@
 {
   "name": "@nodesecure/cli",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Node.js security CLI",
   "main": "./bin/index.js",
   "bin": {
