@@ -108,7 +108,7 @@ describe("httpServer", () => {
     await assert.rejects(async() => {
       await get(new URL("/flags/description/foobar", HTTP_URL));
     }, {
-      name: "Error",
+      name: "HttpieOnHttpError",
       statusCode: 404,
       statusMessage: "Not Found"
     });
@@ -189,7 +189,7 @@ describe("httpServer", () => {
       await get(new URL(`/bundle/flatstr/${wrongVersion}`, HTTP_URL));
     },
     {
-      name: "Error",
+      name: "HttpieOnHttpError",
       statusCode: 404,
       statusMessage: "Not Found"
     });
@@ -221,7 +221,7 @@ describe("httpServer", () => {
     await assert.rejects(async() => {
       await get(new URL(`/bundle/${wrongPackageName}`, HTTP_URL));
     }, {
-      name: "Error",
+      name: "HttpieOnHttpError",
       statusCode: 404,
       statusMessage: "Not Found"
     });
@@ -288,7 +288,7 @@ describe("httpServer", () => {
     await assert.rejects(async() => {
       await get(new URL(`/downloads/${wrongPackageName}`, HTTP_URL));
     }, {
-      name: "Error",
+      name: "HttpieOnHttpError",
       statusCode: 404,
       statusMessage: "Not Found"
     });
@@ -314,7 +314,7 @@ describe("httpServer", () => {
     await assert.rejects(async() => {
       await get(new URL(`/scorecard/NodeSecure/${wrongPackageName}`, HTTP_URL));
     }, {
-      name: "Error",
+      name: "HttpieOnHttpError",
       statusCode: 404,
       statusMessage: "Not Found"
     });
