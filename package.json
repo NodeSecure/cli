@@ -61,7 +61,7 @@
   },
   "homepage": "https://github.com/NodeSecure/cli#readme",
   "devDependencies": {
-    "@myunisoft/httpie": "^3.0.3",
+    "@myunisoft/httpie": "^4.0.1",
     "@nodesecure/eslint-config": "^1.9.0",
     "@nodesecure/size-satisfies": "^1.1.0",
     "@nodesecure/vis-network": "^1.4.0",
