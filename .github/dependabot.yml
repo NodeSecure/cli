@@ -23,6 +23,6 @@ updates:
         dependency-type: "development"
         exclude-patterns:
           - "@nodesecure/*"
-      @nodesecure-dependencies:
+      nodesecure-dependencies:
         patterns:
           - "@nodesecure/*"
