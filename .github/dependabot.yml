@@ -4,9 +4,25 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: npm
     directory: /
     versioning-strategy: widen
     schedule:
       interval: weekly
+    groups:
+      dependencies:
+        dependency-type: "production"
+        exclude-patterns:
+          - "@nodesecure/*"
+      development-dependencies:
+        dependency-type: "development"
+        exclude-patterns:
+          - "@nodesecure/*"
+      @nodesecure-dependencies:
+        patterns:
+          - "@nodesecure/*"
