@@ -96,7 +96,6 @@
     "@topcli/prompts": "^1.9.0",
     "@topcli/spinner": "^2.1.2",
     "cacache": "^18.0.2",
-    "co-body": "^6.1.0",
     "dotenv": "^16.4.4",
     "filenamify": "^6.0.0",
     "highlightjs-line-numbers.js": "^2.8.0",

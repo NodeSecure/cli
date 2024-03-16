@@ -24,7 +24,10 @@ export class PopupReport {
         body: JSON.stringify({
           title,
           includesAllDeps
-        })
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
       }).then(async(response) => {
         const { data: json } = await response.json();
         const url = window.URL.createObjectURL(
