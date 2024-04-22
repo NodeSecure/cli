@@ -1,6 +1,9 @@
+// Import Third-party Dependencies
+import { getScoreColor, getVCSRepositoryPathAndPlatform } from "@nodesecure/utils";
+
 // Import Internal Dependencies
 import * as utils from "../../../../common/utils.js";
-import { fetchScorecardData, getScoreColor, getScorecardLink } from "../../../../common/scorecard.js";
+import { fetchScorecardData, getScorecardLink } from "../../../../common/scorecard.js";
 
 export class Scorecard {
   constructor(pkg) {
@@ -20,7 +23,7 @@ export class Scorecard {
   generate(clone) {
     // Note: links.github.href can be a gitlab link
     // Both links.github & links.gitlab are same, the showInHeader defines wheither its a gitlab or github link
-    const [repoName, platform] = utils.getVCSRepositoryPathAndPlatform(this.package.links.github.href) ?? [];
+    const [repoName, platform] = getVCSRepositoryPathAndPlatform(this.package.links.github.href) ?? [];
     const pannel = clone.getElementById("pan-scorecard");
 
     fetchScorecardData(repoName, platform).then((data) => {

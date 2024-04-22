@@ -20,24 +20,6 @@ export async function fetchScorecardData(repoName, platform = "github.com") {
   }
 }
 
-/**
- * @param {!number} score
- * @returns {string}
- */
-export function getScoreColor(score) {
-  if (score < 4) {
-    return "red";
-  }
-  if (score < 6.5) {
-    return "orange";
-  }
-  if (score < 8.5) {
-    return "blue";
-  }
-
-  return "green";
-}
-
 export function getScorecardLink(
   repoName,
   platform
