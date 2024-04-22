@@ -1,12 +1,13 @@
 // Import Third-party Dependencies
 import { NodeSecureDataSet, getFlagsEmojisInlined, getJSON } from "@nodesecure/vis-network";
 import { licenseIdConformance } from "@nodesecure/licenses-conformance";
+import { getScoreColor, getVCSRepositoryPathAndPlatform } from "@nodesecure/utils";
 
 // Import Internal Dependencies
 import * as utils from "../../../common/utils.js";
 import { Gauge } from "../../gauge/gauge.js";
 import { createExpandableSpan } from "../../expandable/expandable.js";
-import { fetchScorecardData, getScoreColor, getScorecardLink } from "../../../common/scorecard.js";
+import { fetchScorecardData, getScorecardLink } from "../../../common/scorecard.js";
 
 // Import Components
 import { Maintainers } from "./maintainers/maintainers.js";
@@ -59,7 +60,7 @@ export class HomeView {
       return;
     }
 
-    const [repoName, platform] = utils.getVCSRepositoryPathAndPlatform(repository) ?? [];
+    const [repoName, platform] = getVCSRepositoryPathAndPlatform(repository) ?? [];
 
     fetchScorecardData(repoName, platform).then((data) => {
       if (data !== null) {

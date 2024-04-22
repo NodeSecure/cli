@@ -13,26 +13,6 @@ export function vec2Distance(location, pos) {
   );
 }
 
-export function getVCSRepositoryPathAndPlatform(url) {
-  if (!url) {
-    return null;
-  }
-
-  try {
-    const repo = new URL(url);
-
-    const repoPath = repo.pathname.slice(
-      1,
-      repo.pathname.includes(".git") ? -4 : repo.pathname.length
-    );
-
-    return [repoPath, repo.host];
-  }
-  catch {
-    return null;
-  }
-}
-
 export function extractEmojis(strWithEmojis) {
   const segmenter = new Intl.Segmenter("en", {
     granularity: "grapheme"
