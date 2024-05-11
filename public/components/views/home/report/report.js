@@ -11,6 +11,9 @@ export class PopupReport {
     /** @type {HTMLElement} */
     const clone = templateElement.content.cloneNode(true);
     const form = clone.querySelector("form");
+    const isLightPreference = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+    form.querySelector("#lightTheme").checked = isLightPreference;
+    form.querySelector("#darkTheme").checked = !isLightPreference;
     clone.querySelector("#title").placeholder = `${this.rootDependencyName}'s report`;
     form.addEventListener("submit", (e) => {
       e.preventDefault();
