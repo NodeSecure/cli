@@ -11,7 +11,6 @@ import { bodyParser } from "../bodyParser.js";
 
 // TODO: provide a non-file-based API on RC side ?
 const kReportPayload = {
-  theme: "light",
   includeTransitiveInternal: false,
   reporters: [
     "pdf"
@@ -47,8 +46,7 @@ const kReportPayload = {
 
 export async function post(req, res) {
   const body = await bodyParser(req);
-  const { title, includesAllDeps } = body;
-
+  const { title, includesAllDeps, theme } = body;
   const { dataFilePath } = context.getStore();
   const scannerPayload = JSON.parse(fs.readFileSync(dataFilePath, "utf-8"));
   const reportPayload = kReportPayload;
@@ -59,7 +57,8 @@ export async function post(req, res) {
     npm: {
       organizationPrefix: repo === undefined ? null : organizationPrefixOrRepo,
       packages: [repo === undefined ? organizationPrefixOrRepo : repo]
-    }
+    },
+    theme
   });
 
   try {

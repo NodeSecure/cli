@@ -135,6 +135,8 @@ const ui = {
       form: {
         title: "Report title",
         includesAllDeps: "Include all dependencies",
+        dark_theme: "Dark theme",
+        light_theme: "Light theme",
         submit: "Generate"
       }
     }

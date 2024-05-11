@@ -320,12 +320,18 @@
     <form action="">
       <label for="title">[[=z.token('popup.report.form.title')]]</label>
       <input type="text" id="title" name="title" required>
-
       <div>
         <input type="checkbox" id="includesAllDeps" name="includesAllDeps" checked>
         <label for="includesAllDeps">[[=z.token('popup.report.form.includesAllDeps')]]</label>
       </div>
-
+      <div>
+        <input type="radio" id="darkTheme" name="theme" value="dark" />
+        <label for="darkTheme">[[=z.token('popup.report.form.dark_theme')]]</label>
+      </div>
+      <div>
+        <input type="radio" id="lightTheme" name="theme" value="light" checked />
+        <label for="dewey">[[=z.token('popup.report.form.light_theme')]]</label>
+      </div>
       <button type="submit">
         <span class="spinner hidden"></span> [[=z.token('popup.report.form.submit')]]
       </button>

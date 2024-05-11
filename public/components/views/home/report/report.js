@@ -17,13 +17,15 @@ export class PopupReport {
 
       form.querySelector(".spinner").classList.remove("hidden");
       const title = form.querySelector("#title").value;
+      const theme = form.querySelector("#lightTheme").checked ? "light" : "dark";
       const includesAllDeps = form.querySelector("#includesAllDeps").checked;
 
       fetch("/report", {
         method: "POST",
         body: JSON.stringify({
           title,
-          includesAllDeps
+          includesAllDeps,
+          theme
         }),
         headers: {
           "Content-Type": "application/json"
