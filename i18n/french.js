@@ -135,6 +135,8 @@ const ui = {
       form: {
         title: "Titre du rapport",
         includesAllDeps: "Inclure toutes les dépendances",
+        dark_theme: "Thème sombre",
+        light_theme: "Thème clair",
         submit: "Générer"
       }
     }

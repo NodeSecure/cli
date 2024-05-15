@@ -11,19 +11,24 @@ export class PopupReport {
     /** @type {HTMLElement} */
     const clone = templateElement.content.cloneNode(true);
     const form = clone.querySelector("form");
+    const isLightPreference = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+    form.querySelector("#lightTheme").checked = isLightPreference;
+    form.querySelector("#darkTheme").checked = !isLightPreference;
     clone.querySelector("#title").placeholder = `${this.rootDependencyName}'s report`;
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
       form.querySelector(".spinner").classList.remove("hidden");
       const title = form.querySelector("#title").value;
+      const theme = form.querySelector("#lightTheme").checked ? "light" : "dark";
       const includesAllDeps = form.querySelector("#includesAllDeps").checked;
 
       fetch("/report", {
         method: "POST",
         body: JSON.stringify({
           title,
-          includesAllDeps
+          includesAllDeps,
+          theme
         }),
         headers: {
           "Content-Type": "application/json"
