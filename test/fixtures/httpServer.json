@@ -1,8 +1,8 @@
 {
   "foo": "bar",
-  "rootDependencyName": "@foo/bar",
+  "rootDependencyName": "conf",
   "dependencies": {
-    "@foo/bar": {
+    "conf": {
       "versions": {
         "1.1.1": {
           "flags": [],

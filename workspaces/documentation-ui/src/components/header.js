@@ -16,7 +16,7 @@ export class Header {
       childs: [
         utils.createDOMElement("img", {
           attributes: {
-            src: "https://cdn.discordapp.com/attachments/850363535568928768/962763278663188520/Logo_sans_fond2x.png"
+            src: "https://static.thenounproject.com/png/3946692-200.png"
           }
         }),
         utils.createDOMElement("p", { text: "NodeSecure wiki" })
