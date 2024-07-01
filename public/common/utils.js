@@ -1,4 +1,3 @@
-/* eslint-disable no-invalid-this */
 // Import static
 import avatarURL from "../img/avatar-default.png";
 

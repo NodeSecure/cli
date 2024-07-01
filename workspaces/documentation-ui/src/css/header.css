@@ -18,6 +18,7 @@
 .documentation--header>.title>img {
   width: 70px;
   margin-right: 10px;
+  filter: invert(100%) sepia(0%) saturate(7494%) hue-rotate(315deg) brightness(96%) contrast(107%);
 }
 
 .documentation--header>.title>p {

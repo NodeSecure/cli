@@ -40,8 +40,7 @@ const kReportPayload = {
       type: "horizontalBar",
       interpolation: "d3.interpolateSinebow"
     }
-  ],
-  logoUrl: "https://avatars0.githubusercontent.com/u/29552883?s=200&v=4"
+  ]
 };
 
 export async function post(req, res) {
