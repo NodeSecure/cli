@@ -16,7 +16,6 @@ export default [{
   ignores: ["**/node_modules/", "**/tmp/", "**/dist/", "**/coverage/", "**/fixtures/"]
 }, ...compat.extends("@nodesecure/eslint-config"), {
   languageOptions: {
-    ecmaVersion: 2015,
     sourceType: "module",
 
     parserOptions: {
