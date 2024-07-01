@@ -72,7 +72,7 @@ export default class NodeSecureDataSet extends EventTarget {
     this.rawNodesData = [];
 
     for (const [packageName, descriptor] of dataEntries) {
-      const contributors = [descriptor.metadata.author, ...descriptor.metadata.maintainers, ...descriptor.metadata.publishers]
+      const contributors = [descriptor.metadata.author, ...descriptor.metadata.maintainers, ...descriptor.metadata.publishers];
       for (const [currVersion, opt] of Object.entries(descriptor.versions)) {
         const { id, usedBy, flags, size, license, author, composition, warnings, links } = opt;
 

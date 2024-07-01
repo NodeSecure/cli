@@ -12,7 +12,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "eslint": "eslint bin src test",
+    "eslint": "eslint bin src test workspaces",
     "eslint-fix": "npm run eslint -- --fix",
     "prepublishOnly": "rimraf ./dist && npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
@@ -62,13 +62,13 @@
   "homepage": "https://github.com/NodeSecure/cli#readme",
   "devDependencies": {
     "@myunisoft/httpie": "^5.0.0",
-    "@nodesecure/eslint-config": "^1.9.0",
+    "@nodesecure/eslint-config": "2.0.0-beta.0",
     "@nodesecure/size-satisfies": "^1.1.0",
     "@nodesecure/vis-network": "^1.4.0",
     "@types/node": "^20.14.9",
     "c8": "^10.1.2",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.21.5",
+    "esbuild": "^0.22.0",
     "eslint": "^9.6.0",
     "esmock": "^2.6.6",
     "glob": "^10.4.2",
