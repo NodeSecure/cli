@@ -83,7 +83,7 @@
     "@nodesecure/flags": "^2.4.0",
     "@nodesecure/i18n": "^4.0.1",
     "@nodesecure/licenses-conformance": "^2.1.0",
-    "@nodesecure/npm-registry-sdk": "^2.1.1",
+    "@nodesecure/npm-registry-sdk": "^3.0.0",
     "@nodesecure/ossf-scorecard-sdk": "^3.2.1",
     "@nodesecure/rc": "^2.1.0",
     "@nodesecure/report": "^1.2.1",
