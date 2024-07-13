@@ -13,6 +13,7 @@ const kHelpersTitleName = {
   license: "Available licenses",
   flag: "Available flags"
 };
+const kFocusHelperBgColor = "#1976d2";
 const kHelpersTemplateName = {
   flag: "search_helpers_flags",
   license(linker) {
@@ -92,11 +93,82 @@ export class SearchBar {
     this.forceNewItem = false;
     let confirmBackspace = false;
     let currentActiveQueryName = null;
+    let helperSelectionIndex = null;
 
     this.container.addEventListener("click", () => this.open());
 
     this.input.addEventListener("keyup", (event) => {
+      const shownPackages = document.querySelectorAll(".search-result-pannel > .package:not(.hide)");
+      const shownHelpers = document.querySelectorAll(".helpers > .line:not(.hide)");
+      const shownItems = [...shownHelpers, ...shownPackages];
+
+      if (event.key === "ArrowDown") {
+        if (helperSelectionIndex === null) {
+          helperSelectionIndex = 0;
+        }
+        else {
+          helperSelectionIndex++;
+          if (helperSelectionIndex >= shownItems.length) {
+            helperSelectionIndex = 0;
+          }
+        }
+
+        shownItems.forEach((line, index) => {
+          line.style.backgroundColor = "initial";
+
+          if (index === helperSelectionIndex) {
+            line.style.backgroundColor = kFocusHelperBgColor;
+          }
+        });
+
+        return;
+      }
+      else if (event.key === "ArrowUp") {
+        if (helperSelectionIndex === null) {
+          helperSelectionIndex = shownItems.length - 1;
+        }
+        else {
+          helperSelectionIndex--;
+          if (helperSelectionIndex < 0) {
+            helperSelectionIndex = shownItems.length - 1;
+          }
+        }
+
+        shownItems.forEach((line, index) => {
+          line.style.backgroundColor = "initial";
+
+          if (index === helperSelectionIndex) {
+            line.style.backgroundColor = kFocusHelperBgColor;
+          }
+        });
+
+        return;
+      }
+      else if (event.key !== "Enter") {
+        helperSelectionIndex = null;
+      }
       if ((this.input.value === null || this.input.value === "")) {
+        if (event.key === "Enter" && helperSelectionIndex !== null) {
+          const line = shownItems[helperSelectionIndex];
+          if (line.classList.contains("package")) {
+            helperSelectionIndex = null;
+            this.close();
+            this.focusNodeById(line.getAttribute("data-value"));
+
+            return;
+          }
+          this.input.value = line.getAttribute("data-value");
+
+          const [keyword] = this.input.value.split(":");
+          if (kFiltersName.has(keyword)) {
+            currentActiveQueryName = keyword;
+            this.showPannelHelper(currentActiveQueryName);
+            helperSelectionIndex = null;
+          }
+
+          return;
+        }
+
         // we always want to show the default helpers when the input is empty!
         this.showPannelHelper();
 
@@ -168,6 +240,29 @@ export class SearchBar {
         return;
       }
 
+      if (event.key === "Enter" && helperSelectionIndex !== null) {
+        const line = shownItems[helperSelectionIndex];
+        helperSelectionIndex = null;
+        if (line.classList.contains("package")) {
+          line.style.backgroundColor = "initial";
+          this.close();
+          this.focusNodeById(line.getAttribute("data-value"));
+        }
+        else {
+          if (line.getAttribute("data-value").startsWith(this.input.value)) {
+            this.input.value = line.getAttribute("data-value");
+            const [keyword] = this.input.value.split(":");
+            currentActiveQueryName = keyword;
+            this.showPannelHelper(currentActiveQueryName);
+
+            return;
+          }
+
+          this.input.value += line.getAttribute("data-value");
+
+          this.helper.classList.add("hide");
+        }
+      }
       // fetch the search text
       const text = isPackageSearch ?
         this.input.value.trim() :
@@ -192,10 +287,7 @@ export class SearchBar {
         this.showPannelHelper();
         currentActiveQueryName = null;
         this.input.value = "";
-
-        if (!isPackageSearch && !this.forceNewItem) {
-          return;
-        }
+        helperSelectionIndex = null;
       }
 
       this.showResultsByIds(matchingIds);
@@ -205,6 +297,7 @@ export class SearchBar {
       if (!this.container.contains(event.target)
         && this.background.classList.contains("show")
         && !this.inputUpdateValue && !this.forceNewItem) {
+        helperSelectionIndex = null;
         this.close();
       }
     });
@@ -213,6 +306,7 @@ export class SearchBar {
     const self = this;
     for (const domElement of this.allSearchPackages) {
       domElement.addEventListener("click", function clikEvent() {
+        helperSelectionIndex = null;
         self.focusNodeById(this.getAttribute("data-value"));
       });
     }
@@ -220,8 +314,6 @@ export class SearchBar {
 
   addNewSearchText(filterName, searchedValue) {
     const matchingIds = this.computeText(filterName, searchedValue);
-    // this.input.focus();
-    // this.input.click();
 
     this.showResultsByIds(matchingIds);
 
