@@ -24,5 +24,5 @@ export function getScorecardLink(
   repoName,
   platform
 ) {
-  return `https://kooltheba.github.io/openssf-scorecard-api-visualizer/#/projects/${platform}/${repoName}`;
+  return `https://ossf.github.io/scorecard-visualizer/#/projects/${platform}/${repoName}`;
 }
