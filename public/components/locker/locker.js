@@ -11,7 +11,10 @@ export class Locker {
     this.renderUnlock();
 
     document.addEventListener("keydown", (event) => {
-      if (window.disableShortcuts) {
+      const isNetworkViewHidden = this.networkView.classList.contains("hidden");
+      const isTargetInput = event.target.tagName === "INPUT";
+      const isTargetPopup = event.target.id === "popup--background";
+      if (isNetworkViewHidden || isTargetInput || isTargetPopup) {
         return;
       }
 
