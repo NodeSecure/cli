@@ -31,7 +31,9 @@ export class Wiki {
     });
 
     document.addEventListener("keydown", (event) => {
-      if (window.disableShortcuts) {
+      const isTargetInput = event.target.tagName === "INPUT";
+      const isTargetPopup = event.target.id === "popup--background";
+      if (isTargetInput || isTargetPopup) {
         return;
       }
 

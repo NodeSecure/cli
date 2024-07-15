@@ -29,11 +29,10 @@ export class ViewNavigation {
     }
 
     document.addEventListener("keydown", (event) => {
-      if (window.disableShortcuts) {
-        return;
-      }
-
-      if (window.searchbar.background.classList.contains("show")) {
+      const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
+      const isTargetPopup = event.target.id === "popup--background";
+      const isTargetInput = event.target.tagName === "INPUT";
+      if (isTargetPopup || isWikiOpen || isTargetInput) {
         return;
       }
 

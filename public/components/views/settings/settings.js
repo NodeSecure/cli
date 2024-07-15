@@ -14,6 +14,7 @@ const kDefaultHotKeys = {
   wiki: "W",
   lock: "L"
 };
+const kShortcutInputTargetIds = new Set(Object.keys(kDefaultHotKeys));
 
 export class Settings {
   static defaultMenuName = "info";
@@ -52,7 +53,7 @@ export class Settings {
         input.value = "";
 
         const onKeyDown = (event) => {
-          if (window.disableShortcuts) {
+          if (kShortcutInputTargetIds.has(event.target.id) === false) {
             return;
           }
 
