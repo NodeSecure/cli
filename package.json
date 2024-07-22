@@ -71,11 +71,11 @@
     "esbuild": "^0.23.0",
     "eslint": "^9.6.0",
     "esmock": "^2.6.6",
-    "glob": "^10.4.2",
+    "glob": "^11.0.0",
     "http-server": "^14.1.1",
     "pkg-ok": "^3.0.0",
     "pretty-bytes": "^6.1.1",
-    "rimraf": "^5.0.7",
+    "rimraf": "^6.0.1",
     "strip-ansi": "^7.1.0"
   },
   "dependencies": {
