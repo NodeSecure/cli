@@ -48,7 +48,7 @@ export async function post(req, res) {
   const { title, includesAllDeps, theme } = body;
   const { dataFilePath } = context.getStore();
   const scannerPayload = JSON.parse(fs.readFileSync(dataFilePath, "utf-8"));
-  const reportPayload = kReportPayload;
+  const reportPayload = structuredClone(kReportPayload);
   const rootDependencyName = scannerPayload.rootDependencyName;
   const [organizationPrefixOrRepo, repo] = rootDependencyName.split("/");
   Object.assign(reportPayload, {
@@ -62,8 +62,8 @@ export async function post(req, res) {
 
   try {
     const data = await report(
-      reportPayload,
-      includesAllDeps ? scannerPayload.dependencies : { [rootDependencyName]: scannerPayload.dependencies[rootDependencyName] }
+      includesAllDeps ? scannerPayload.dependencies : { [rootDependencyName]: scannerPayload.dependencies[rootDependencyName] },
+      reportPayload
     );
 
     return send(res, 200, {
@@ -72,7 +72,9 @@ export async function post(req, res) {
       "Content-type": "application/pdf"
     });
   }
-  catch {
+  catch (err) {
+    console.error(err);
+
     return send(
       res,
       500

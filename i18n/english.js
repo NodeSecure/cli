@@ -54,6 +54,13 @@ const cli = {
       desc: "Display the OSSF Scorecard for a given repository or the current working directory (Github only, e.g. fastify/fastify)",
       option_vcs: "Version control platform (GitHub, GitLab)"
     },
+    report: {
+      desc: "Generate a report from a package",
+      option_includesAllDeps: "Include all dependencies",
+      option_theme: "Report theme ('dark', 'light')",
+      option_title: "Report title",
+      option_reporters: "List of reporters to use: 'html', 'pdf'"
+    },
     config: {
       desc: "Edit your NodeSecure config file"
     },
