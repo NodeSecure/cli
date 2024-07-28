@@ -95,6 +95,15 @@ prog
   .action(commands.scorecard.main);
 
 prog
+  .command("report [repository]")
+  .describe(i18n.getTokenSync("cli.commands.report.desc"))
+  .option("-t, --theme", i18n.getTokenSync("cli.commands.report.option_theme"), "white")
+  .option("-i, --includesAllDeps", i18n.getTokenSync("cli.commands.report.option_includesAllDeps"), true)
+  .option("-l, --title", i18n.getTokenSync("cli.commands.report.option_title"), "NodeSecure Report")
+  .option("-r, --reporters", i18n.getTokenSync("cli.commands.report.option_reporters"), ["html"])
+  .action(commands.report.main);
+
+prog
   .command("lang")
   .describe(i18n.getTokenSync("cli.commands.lang.desc"))
   .action(commands.lang.set);

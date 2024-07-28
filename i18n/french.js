@@ -54,6 +54,13 @@ const cli = {
       desc: "Afficher la fiche de score OSSF du repo donné ou du repertoire actuel (Github uniquement ex. fastify/fastify)",
       option_vcs: "Logiciel de gestion de versions (GitHub, GitLab)"
     },
+    report: {
+      desc: "Générer un rapport à partir d'un package",
+      option_includesAllDeps: "Inclure toutes les dépendances, true par défaut",
+      option_theme: "Thème du rapport ('dark', 'light'), 'light' par défaut",
+      option_title: "Titre du rapport",
+      option_reporters: "Liste des reporters à utiliser 'html', 'pdf'"
+    },
     config: {
       desc: "Modifier le fichier de configuration NodeSecure"
     },
