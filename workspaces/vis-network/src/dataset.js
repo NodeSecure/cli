@@ -71,6 +71,12 @@ export default class NodeSecureDataSet extends EventTarget {
     this.rawEdgesData = [];
     this.rawNodesData = [];
 
+    const rootDependency = dataEntries.find(([name]) => name === data.rootDependencyName);
+    const rootContributors = [
+      rootDependency[1].metadata.author,
+      ...rootDependency[1].metadata.maintainers,
+      ...rootDependency[1].metadata.publishers
+    ];
     for (const [packageName, descriptor] of dataEntries) {
       const contributors = [descriptor.metadata.author, ...descriptor.metadata.maintainers, ...descriptor.metadata.publishers];
       for (const [currVersion, opt] of Object.entries(descriptor.versions)) {
@@ -98,17 +104,35 @@ export default class NodeSecureDataSet extends EventTarget {
           flags,
           hasWarnings ? this.flagsToIgnore : new Set([...this.flagsToIgnore, "hasWarnings"])
         );
+        const isFriendly = window.settings.config.showFriendlyDependencies & rootContributors.some(
+          (rootContributor) => contributors.some((contributor) => {
+            if (contributor.email && contributor.email === rootContributor.email) {
+              return true;
+            }
+            else if (contributor.name && contributor.name === rootContributor.name) {
+              return true;
+            }
+
+            return false;
+          })
+        );
+        opt.isFriendly = isFriendly;
         this.packages.push({
           id,
           name: packageName,
           version: currVersion,
           hasWarnings,
           flags: flagStr.replace(/\s/g, ""),
-          links
+          links,
+          isFriendly
         });
 
         const label = `<b>${packageName}@${currVersion}</b>${flagStr}\n<b>[${prettyBytes(size)}]</b>`;
-        const color = utils.getNodeColor(id, hasWarnings);
+        const color = utils.getNodeColor({
+          id,
+          hasWarnings,
+          isFriendly
+        });
         color.font.multi = "html";
 
         this.linker.set(Number(id), opt);

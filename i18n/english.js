@@ -192,6 +192,11 @@ const ui = {
     "Available licenses": "Available licenses",
     "Available flags": "Available flags",
     default: "Search options"
+  },
+  legend: {
+    default: "The package is fine.",
+    warn: "The package has warnings.",
+    friendly: "The package is maintained by the same authors as the root package."
   }
 };
 

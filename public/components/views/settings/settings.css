@@ -123,6 +123,10 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
+label {
+  color: #4a5e68;
+}
+
 button.save {
   height: 30px;
   width: 100px;

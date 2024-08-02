@@ -41,25 +41,25 @@ assert.equal(
 );
 
 assert.equal(
-  getNodeColor(0),
+  getNodeColor({ id: 0 }),
   CONSTANTS.COLORS.LIGHT.SELECTED,
   "id 0 is the root package (so by default he is highlighted as selected)."
 );
 
 assert.equal(
-  getNodeColor(1, true),
+  getNodeColor({ id: 1, hasWarnings: true }),
   CONSTANTS.COLORS.LIGHT.WARN,
   "hasWarnings is true, so the node is highlighted as warning."
 );
 
 assert.equal(
-  getNodeColor(1, false),
+  getNodeColor({ id: 1, hasWarnings: false }),
   CONSTANTS.COLORS.LIGHT.DEFAULT,
   "the node is highlighted as default."
 );
 
 assert.equal(
-  getNodeColor(1, false, "DARK"),
+  getNodeColor({ id: 1, hasWarnings: false, theme: "DARK" }),
   CONSTANTS.COLORS.DARK.DEFAULT,
   "the node is highlighted as default and the theme is DARK."
 );

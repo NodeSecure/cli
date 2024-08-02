@@ -30,18 +30,29 @@ export async function getJSON(path, customHeaders = Object.create(null)) {
 }
 
 /**
- * @param {!number} id
- * @param {boolean} [hasWarnings=false]
- * @param {string} [theme=LIGHT] theme
- * @returns {{color: string, font: {color: string }}}
+ * @params {object} options
+ * @param {string} options.id
+ * @param {string} options.hasWarnings
+ * @param {string} options.theme
+ * @param {string} options.isFriendly
  */
-export function getNodeColor(id, hasWarnings = false, theme = "LIGHT") {
+export function getNodeColor(options) {
+  const {
+    id,
+    hasWarnings = false,
+    theme = "LIGHT",
+    isFriendly = false
+  } = options;
+
   // id 0 is the root package (so by default he is highlighted as selected).
   if (id === 0) {
     return CONSTANTS.COLORS[theme].SELECTED;
   }
   else if (hasWarnings) {
     return CONSTANTS.COLORS[theme].WARN;
+  }
+  else if (isFriendly) {
+    return CONSTANTS.COLORS[theme].FRIENDLY;
   }
 
   return CONSTANTS.COLORS[theme].DEFAULT;

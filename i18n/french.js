@@ -192,6 +192,11 @@ const ui = {
     "Available licenses": "Licences disponibles",
     "Available flags": "Drapeaux disponibles",
     default: "Options de recherche"
+  },
+  legend: {
+    default: "Rien à signaler.",
+    warn: "La dépendance contient des menaces.",
+    friendly: "La dépendance est maintenu par des auteurs du package principal."
   }
 };
 
