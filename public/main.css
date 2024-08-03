@@ -6,6 +6,7 @@
 @import url("./font/mononoki/mononoki.css");
 
 @import url("./components/locker/locker.css");
+@import url("./components/legend/legend.css");
 @import url("./components/popup/popup.css");
 @import url("./components/file-box/file-box.css");
 @import url("./components/expandable/expandable.css");

@@ -1,6 +1,3 @@
-// Import Internal Dependencies
-import * as utils from "./utils.js";
-
 /**
  * SELECTED -> The color when a Node is selected.
  * CONNECTED_IN -> The color for first-degree nodes connected in the selected one.
@@ -42,6 +39,12 @@ export const COLORS = Object.freeze({
         color: "#FFF"
       }
     },
+    FRIENDLY: {
+      color: "#e3fde3",
+      font: {
+        color: "#0e4522"
+      }
+    },
     CONNECTED_IN: {
       color: "#C8E6C9",
       font: {
@@ -64,6 +67,18 @@ export const COLORS = Object.freeze({
   DARK: {
     SELECTED: {
       color: "#01579B",
+      font: {
+        color: "#FFF"
+      }
+    },
+    SELECTED_GROUP: {
+      color: "#1A237E",
+      font: {
+        color: "#FFF"
+      }
+    },
+    SELECTED_LOCK: {
+      color: "#0D47A1",
       font: {
         color: "#FFF"
       }

@@ -266,9 +266,9 @@ export default class NodeSecureNetwork {
 
     this.highlightEnabled = false;
     for (const node of allNodes) {
-      const { id, hasWarnings } = this.linker.get(Number(node.id));
+      const { id, hasWarnings, isFriendly } = this.linker.get(Number(node.id));
 
-      Object.assign(node, utils.getNodeColor(id, hasWarnings, this.theme));
+      Object.assign(node, utils.getNodeColor({ id, hasWarnings, theme: this.theme, isFriendly }));
     }
 
     this.lastHighlightedIds = null;
@@ -427,9 +427,9 @@ export default class NodeSecureNetwork {
     else if (this.highlightEnabled) {
       this.highlightEnabled = false;
       for (const node of Object.values(allNodes)) {
-        const { id, hasWarnings } = this.linker.get(Number(node.id));
+        const { id, hasWarnings, isFriendly } = this.linker.get(Number(node.id));
 
-        Object.assign(node, utils.getNodeColor(id, hasWarnings, this.theme));
+        Object.assign(node, utils.getNodeColor({ id, hasWarnings, theme: this.theme, isFriendly }));
       }
     }
 

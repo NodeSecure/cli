@@ -29,7 +29,9 @@ export class Settings {
       /** @type {HTMLInputElement[]} */
       flagsCheckbox: document.querySelectorAll("input[name='flags']"),
       /** @type {HTMLInputElement} */
-      shortcutsSection: document.querySelector(".shortcuts")
+      shortcutsSection: document.querySelector(".shortcuts"),
+      /** @type {HTMLInputElement} */
+      showFriendlyDependenciesCheckbox: document.querySelector("#show-friendly")
     };
 
     this.saveButton = document.querySelector(".save");
@@ -37,7 +39,7 @@ export class Settings {
     this.saveButton.classList.add("disabled");
 
     this.dom.defaultPackageMenu.addEventListener("change", () => this.enableSaveButton());
-    for (const checkbox of [...this.dom.warningsCheckbox, ...this.dom.flagsCheckbox]) {
+    for (const checkbox of [...this.dom.warningsCheckbox, ...this.dom.flagsCheckbox, this.dom.showFriendlyDependenciesCheckbox]) {
       checkbox.addEventListener("change", () => this.enableSaveButton());
     }
 
@@ -154,7 +156,8 @@ export class Settings {
 
     const newConfig = {
       defaultPackageMenu: this.dom.defaultPackageMenu.value || Settings.defaultMenuName,
-      ignore: { flags: new Set(), warnings: new Set() }
+      ignore: { flags: new Set(), warnings: new Set() },
+      showFriendlyDependencies: this.dom.showFriendlyDependenciesCheckbox.checked
     };
 
     for (const checkbox of this.dom.warningsCheckbox) {

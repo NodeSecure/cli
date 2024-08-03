@@ -8,6 +8,7 @@ import { Wiki } from "./components/wiki/wiki.js";
 import { SearchBar } from "./components/searchbar/searchbar.js";
 import { Popup } from "./components/popup/popup.js";
 import { Locker } from "./components/locker/locker.js";
+import { Legend } from "./components/legend/legend.js";
 
 // Import Views Components
 import { Settings } from "./components/views/settings/settings.js";
@@ -40,6 +41,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   NodeSecureNetwork.networkElementId = "dependency-graph";
   const nsn = new NodeSecureNetwork(secureDataSet, { i18n: window.i18n[utils.currentLang()] });
   window.locker = new Locker(nsn);
+  const legend = new Legend({ show: window.settings.config.showFriendlyDependencies });
   new HomeView(secureDataSet, nsn);
 
   window.addEventListener("package-info-closed", () => {
@@ -89,6 +91,13 @@ document.addEventListener("DOMContentLoaded", async() => {
       window.navigation.setNavByName("network--view");
       nsn.neighbourHighlight(networkNavigation.currentNodeParams, window.i18n[utils.currentLang()]);
       updateShowInfoMenu(networkNavigation.currentNodeParams);
+    }
+
+    if (event.detail.showFriendlyDependencies) {
+      legend.show();
+    }
+    else {
+      legend.hide();
     }
   });
 

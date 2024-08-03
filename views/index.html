@@ -157,6 +157,8 @@
         <i class="icon-lock-open"></i>
         <p>[[=z.token('network.unlocked')]]</p>
       </div>
+      <div id="legend">
+      </div>
     </div>
     <div id="settings--view" class="view hidden">
       <h1><i class="icon-cog"></i>[[=z.token('settings.general.title')]]</h1>
@@ -253,6 +255,13 @@
             <input type="checkbox" name="flags" id="flags" value="isDuplicate">
             <label for="flags">🎭 isDuplicate</label>
           </div>
+        </div>
+
+        <hr>
+
+        <div>
+          <input type="checkbox" id="show-friendly" name="show-friendly"/>
+          <label for="show-friendly">Show friendly dependencies</label>
         </div>
       </form>
       <button class="save">[[=z.token('settings.general.save')]]</button>
