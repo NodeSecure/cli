@@ -144,7 +144,7 @@ Flags and emojis legends are documented [here](https://github.com/NodeSecure/fla
 
 ## Searchbar filters
 
-Since version 0.6.0 of Node-secure the UI include a brand new searchbar that allow to search anything on the tree (graph) by multiple criteria (filters). The current available filters are:
+Since version **0.6.0**, the UI includes a brand new search bar that allows you to search anything within the tree (graph) using multiple criteria (filters). The currently available filters are:
 
 - package (**the default filter if there is none**).
 - version (take a semver range as an argument).
@@ -164,11 +164,10 @@ version: >=1.2 | 2, ext: .js, builtin: fs
 ## FAQ
 
 ### Why some nodes are red in the UI ?
-Nodes are red when the project/package has been flagged with 🔬 `hasMinifiedCode` or ⚠️ `hasWarnings`.
+Nodes are highlighted in red when the project/package is flagged with 🔬 `hasMinifiedCode` or ⚠️ `hasWarnings`. You can deactivate specific warnings in the options if desired.
 
-### Why the node-secure package size is so different from Bundlephobia ?
-Node-secure will analyze the complete size of the npm tarball with no filters or particular optimization. Bundlephobia on the
-other side will bundle and remove most of the useless files from the tarball (Like the documentation, etc.).
+### Why the package size is so different from Bundlephobia ?
+The back-end scanner will analyze the complete size of the npm tarball without any filters or specific optimizations. In contrast, Bundlephobia will bundle the package and remove most of the unnecessary files from the tarball, such as documentation and other non-essential items.
 
 ### Why some packages don't have OSSF Scorecard ?
 See [Scorecard Public Data](https://github.com/ossf/scorecard#public-data):
@@ -178,9 +177,9 @@ See [Scorecard Public Data](https://github.com/ossf/scorecard#public-data):
 
 ## Contributors guide
 
-If you are a developer **wishing to contribute** to the project, you must first read the [CONTRIBUTING](./CONTRIBUTING.md) guide.
+If you are a developer **looking to contribute** to the project, you must first read the [CONTRIBUTING](./CONTRIBUTING.md) guide.
 
-If you have already cloned and installed the project with npm locally, you still need to build and bundle front-end assets using the npm `build` script:
+If you have already cloned and installed the project locally with npm, you still need to build and bundle front-end assets using the npm `build` script:
 
 ```bash
 $ npm run build
@@ -197,6 +196,20 @@ $ npm test
 
 > [!CAUTION]
 > If you add a feature, try adding tests for it along.
+
+### Publishing package and SLSA
+
+The package is published on [NPM with provenance](https://docs.npmjs.com/generating-provenance-statements), ensuring that this project is compliant with [SLSA Level 3](https://slsa.dev/spec/v0.1/levels?ref=fossa.com) standards. The build and publication process is managed through the GitHub [npm-provenance.yml](https://github.com/NodeSecure/cli/blob/master/.github/workflows/npm-provenance.yml) workflow, which is automatically triggered upon the creation of a new release.
+
+To create a local version of the package using npm and Git, follow these commands:
+
+```bash
+$ npm version [patch | minor | major]
+$ git commit -am "chore: x.x.x"
+$ git push origin master --tags
+```
+
+These commands will increment the package version, commit the changes, and push them along with the tags to the repository
 
 ## Workspaces
 
