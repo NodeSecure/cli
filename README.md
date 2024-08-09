@@ -103,36 +103,23 @@ $ nsecure open --port 8080
 
 ### Command Documentation
 
+
 For complete details on each command, refer to the following documents:
 
-- [Commande `cwd`](./docs/cli/cwd.md)
-- [Commande `hydrate-db`](./docs/cli/hydrate-db.md)
-- [Commande `from`](./docs/cli/from.md)
-- [Commande `auto`](./docs/cli/auto.md)
-- [Commande `open`](./docs/cli/open.md)
-- [Commande `verify`](./docs/cli/verify.md)
-- [Commande `summary`](./docs/cli/summary.md)
-- [Commande `scorecard`](./docs/cli/scorecard.md)
-- [Commande `report`](./docs/cli/report.md)
-- [Commande `lang`](./docs/cli/lang.md)
-- [Commande `config create`](./docs/cli/config-create.md)
-- [Commande `config`](./docs/cli/config.md)
+- [`cwd`](./docs/cli/cwd.md)
+- [`hydrate-db`](./docs/cli/hydrate-db.md)
+- [`from`](./docs/cli/from.md)
+- [`auto`](./docs/cli/auto.md)
+- [`open`](./docs/cli/open.md)
+- [`verify`](./docs/cli/verify.md)
+- [`summary`](./docs/cli/summary.md)
+- [`scorecard`](./docs/cli/scorecard.md)
+- [`report`](./docs/cli/report.md)
+- [`lang`](./docs/cli/lang.md)
+- [`config create`](./docs/cli/config-create.md)
+- [`config`](./docs/cli/config.md)
 
 Each link redirects you to the complete documentation of the command, with additional details, options, and usage examples.
-
-```bash
-$ nsecure auto jest
-
-# if no package is given to the auto command then it will run the cwd command instead of from.
-$ nsecure auto
-```
-
-> 👀 By default with the auto command the .json file is deleted when the http server is closed. It's possible to disable this behavior by using the CLI option `--keep`, `-k`.
-
----
-```bash
-$ nsecure from express -d 10 -o express-security-report
-```
 
 ## Private registry / Verdaccio
 
@@ -185,6 +172,8 @@ other side will bundle and remove most of the useless files from the tarball (Li
 
 ### Why some packages don't have OSSF Scorecard ?
 See [Scorecard Public Data](https://github.com/ossf/scorecard#public-data):
+
+> [!NOTE]
 > We run a weekly Scorecard scan of the 1 million most critical open source projects judged by their direct dependencies and publish the results in a BigQuery public dataset.
 
 ## Contributors guide
