@@ -1,6 +1,6 @@
 // Import Third-party Dependencikes
 import { report } from "@nodesecure/report";
-import * as scanner from "@nodesecure/scanner";
+import * as Scanner from "@nodesecure/scanner";
 
 // CONSTANTS
 const kSupportedReporters = new Set(["html", "pdf"]);
@@ -62,7 +62,7 @@ export async function main(repository, options) {
     reporters: [...formattedReporters],
     saveOnDisk: true
   };
-  const scannerPayload = await scanner.from(repository);
+  const scannerPayload = await Scanner.from(repository);
 
   const reportPath = await report(
     includesAllDeps ? scannerPayload.dependencies : { [repository]: scannerPayload.dependencies[repository] },

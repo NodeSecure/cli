@@ -18,20 +18,9 @@
               "fs"
             ]
           },
-          "license": {
-            "uniqueLicenseIds": [
-              "MIT"
-            ],
-            "hasMultipleLicenses": false,
-            "licenses": [
-              {
-                "uniqueLicenseIds": [
-                  "MIT"
-                ],
-                "from": "package.json"
-              }
-            ]
-          },
+          "uniqueLicenseIds": [
+            "MIT"
+          ],
           "gitUrl": null
         }
       },

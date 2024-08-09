@@ -24,12 +24,12 @@
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "pretty-bytes": "^6.0.0",
+    "pretty-bytes": "^6.1.1",
     "vis-data": "^7.1.9",
     "vis-network": "^9.1.9"
   },
   "devDependencies": {
     "@nodesecure/flags": "^2.4.0",
-    "@nodesecure/scanner": "^5.0.1"
+    "@nodesecure/scanner": "^6.0.2"
   }
 }

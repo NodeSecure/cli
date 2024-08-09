@@ -23,7 +23,7 @@ export class PackageHeader {
       name: packageName,
       version: packageVersion,
       description: packageDescription,
-      license,
+      licenses,
       repository,
       flags
     } = this.package.dependencyVersion;
@@ -68,7 +68,7 @@ export class PackageHeader {
     }
 
     // Links
-    const hasNoLicense = license === "unkown license";
+    const hasNoLicense = licenses.length === 0;
     const repositoryUrl = this.package.dependency.versions[packageVersion].links.repository;
     const repositoryUrlHostname = repositoryUrl ? new URL(repositoryUrl).hostname : null;
 
@@ -101,12 +101,7 @@ export class PackageHeader {
         icon: "icon-cubes",
         showInHeader: true
       },
-      license: {
-        href: hasNoLicense ? "#" : (license.licenses[0]?.spdxLicenseLinks[0] ?? "#"),
-        text: hasNoLicense ? "unkown" : license.uniqueLicenseIds.join(", ").toUpperCase(),
-        icon: "icon-vcard",
-        showInHeader: true
-      }
+      licenses: this.getLicenses(licenses)
     };
     linksDomElement.appendChild(this.renderLinks(links));
 
@@ -117,6 +112,26 @@ export class PackageHeader {
     }
 
     return links;
+  }
+
+  getLicenses(licenses) {
+    const licensesResult = Object.create(null);
+
+    for (const license of licenses) {
+      for (const [licenseName, licenseUrl] of Object.entries(license.licenses)) {
+        if (licenseName in licensesResult) {
+          continue;
+        }
+        licensesResult[licenseName] = {
+          href: licenseUrl,
+          text: licenseName.toLocaleUpperCase(),
+          icon: "icon-vcard",
+          showInHeader: true
+        };
+      }
+    }
+
+    return Object.values(licensesResult);
   }
 
   renderLinks(links) {
