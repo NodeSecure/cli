@@ -16,17 +16,17 @@ export class Licenses {
   }
 
   renderLicenses() {
-    const { license: packageLicense } = this.package.dependencyVersion;
-
+    const { licenses } = this.package.dependencyVersion;
     const fragment = document.createDocumentFragment();
-    if (typeof packageLicense === "string") {
-      return fragment;
-    }
-
     const unpkgRoot = this.package.links.unpkg.href;
-    for (const license of packageLicense.licenses) {
-      const [licenseName] = license.uniqueLicenseIds;
-      const [licenseLink] = license.spdxLicenseLinks;
+    const processedLicenses = new Set();
+
+    for (const license of licenses) {
+      const [licenseName, licenseLink] = Object.entries(license.licenses)[0];
+      if (processedLicenses.has(licenseName)) {
+        continue;
+      }
+      processedLicenses.add(licenseName);
 
       const spdx = Object.entries(license.spdx)
         .map(([key, value]) => `${value ? "✔️" : "❌"} ${key}`);

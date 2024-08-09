@@ -113,7 +113,7 @@ export class Overview {
   }
 
   renderTopFields() {
-    const { size, composition, engines } = this.package.dependencyVersion;
+    const { size, composition, engines = {} } = this.package.dependencyVersion;
     const { metadata } = this.package.dependency;
 
     const fragment = document.createDocumentFragment();

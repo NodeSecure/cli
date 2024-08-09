@@ -80,8 +80,7 @@ export default class NodeSecureDataSet extends EventTarget {
     for (const [packageName, descriptor] of dataEntries) {
       const contributors = [descriptor.metadata.author, ...descriptor.metadata.maintainers, ...descriptor.metadata.publishers];
       for (const [currVersion, opt] of Object.entries(descriptor.versions)) {
-        const { id, usedBy, flags, size, license, author, composition, warnings, links } = opt;
-
+        const { id, usedBy, flags, size, uniqueLicenseIds, author, composition, warnings, links } = opt;
         const filteredWarnings = warnings
           .filter((row) => !this.warningsToIgnore.has(row.kind));
         const hasWarnings = filteredWarnings.length > 0;
@@ -92,7 +91,7 @@ export default class NodeSecureDataSet extends EventTarget {
         opt.hasWarnings = hasWarnings;
 
         this.computeExtension(composition.extensions);
-        this.computeLicense(license);
+        this.computeLicense(uniqueLicenseIds);
         this.computeAuthor(author, `${packageName}@${currVersion}`, contributors);
 
         if (flags.includes("hasIndirectDependencies")) {
@@ -164,14 +163,9 @@ export default class NodeSecureDataSet extends EventTarget {
     }
   }
 
-  computeLicense(license) {
-    if (typeof license === "string") {
-      this.licenses.Unknown++;
-    }
-    else {
-      for (const licenseName of license.uniqueLicenseIds) {
-        this.licenses[licenseName] = Reflect.has(this.licenses, licenseName) ? ++this.licenses[licenseName] : 1;
-      }
+  computeLicense(uniqueLicenseIds) {
+    for (const licenseName of uniqueLicenseIds) {
+      this.licenses[licenseName] = Reflect.has(this.licenses, licenseName) ? ++this.licenses[licenseName] : 1;
     }
   }
 

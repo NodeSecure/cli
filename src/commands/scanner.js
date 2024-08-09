@@ -9,7 +9,7 @@ import filenamify from "filenamify";
 import { Spinner } from "@topcli/spinner";
 import ms from "ms";
 import * as i18n from "@nodesecure/i18n";
-import * as scanner from "@nodesecure/scanner";
+import * as Scanner from "@nodesecure/scanner";
 
 // Import Internal Dependencies
 import * as http from "./http.js";
@@ -46,7 +46,7 @@ export async function cwd(opts) {
     depth: maxDepth = 4, output, nolock, full, vulnerabilityStrategy, silent
   } = opts;
 
-  const payload = await scanner.cwd(
+  const payload = await Scanner.cwd(
     process.cwd(),
     { maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy },
     initLogger(void 0, !silent)
@@ -58,7 +58,7 @@ export async function cwd(opts) {
 export async function from(packageName, opts) {
   const { depth: maxDepth = 4, output, silent } = opts;
 
-  const payload = await scanner.from(packageName, { maxDepth }, initLogger(packageName, !silent));
+  const payload = await Scanner.from(packageName, { maxDepth }, initLogger(packageName, !silent));
 
   return await logAndWrite(payload, output);
 }
@@ -89,7 +89,7 @@ function initLogger(packageName, verbose = true) {
     }
   };
 
-  const logger = new scanner.Logger();
+  const logger = new Scanner.Logger();
   logger.on("start", (eventName) => {
     if (!(eventName in spinner)) {
       return;
