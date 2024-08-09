@@ -106,7 +106,7 @@ $ nsecure open --port 8080
 
 | name | shortcut | default value | description |
 | --- | --- | --- | --- |
-| --port | -p |  | Define the running port, can also be define through the environment variable `PORT` |
+| --port | -p | 0 | Define the running port, can also be define through the environment variable `PORT` |
 
 The `auto` command can be used to chain `cwd/from` and `open` commands automatically.
 
@@ -117,7 +117,8 @@ $ nsecure auto jest
 $ nsecure auto
 ```
 
-> 👀 By default with the auto command the .json file is deleted when the http server is closed. It's possible to disable this behavior by using the CLI option `--keep`, `-k`.
+> [!IMPORTANT]
+> By default with the auto command the .json file is deleted when the http server is closed. It's possible to disable this behavior by using the CLI option `--keep`, `-k`.
 
 ---
 Some options are available on both `cwd`, `from` and `auto` commands. The output option is not available for the `auto` command.
@@ -182,6 +183,8 @@ other side will bundle and remove most of the useless files from the tarball (Li
 
 ### Why some packages don't have OSSF Scorecard ?
 See [Scorecard Public Data](https://github.com/ossf/scorecard#public-data):
+
+> [!NOTE]
 > We run a weekly Scorecard scan of the 1 million most critical open source projects judged by their direct dependencies and publish the results in a BigQuery public dataset.
 
 ## Contributors guide
