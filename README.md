@@ -130,13 +130,6 @@ $ nsecure auto
 > 👀 By default with the auto command the .json file is deleted when the http server is closed. It's possible to disable this behavior by using the CLI option `--keep`, `-k`.
 
 ---
-Some options are available on both `cwd`, `from` and `auto` commands. The output option is not available for the `auto` command.
-
-| name | shortcut | default value | description |
-| --- | --- | --- | --- |
-| --depth | -d | **4** | the maximum depth we must walk (when we fetch the whole tree). |
-| --output | -o | **nsecure-result** | the name that the outputted .json file will have |
-
 ```bash
 $ nsecure from express -d 10 -o express-security-report
 ```
