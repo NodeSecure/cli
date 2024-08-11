@@ -12,7 +12,7 @@ import kleur from "kleur";
 import sade from "sade";
 import semver from "semver";
 import * as i18n from "@nodesecure/i18n";
-import * as vuln from "@nodesecure/vuln";
+import * as vulnera from "@nodesecure/vulnera";
 import { loadRegistryURLFromLocalSystem } from "@nodesecure/npm-registry-sdk";
 
 // Import Internal Dependencies
@@ -42,12 +42,7 @@ loadRegistryURLFromLocalSystem();
 
 const prog = sade("nsecure").version(manifest.version);
 
-prog
-  .command("hydrate-db")
-  .describe(i18n.getTokenSync("cli.commands.hydrate_db.desc"))
-  .action(commands.vulnerability.hydrate);
-
-defaultScannerCommand("cwd", { strategy: vuln.strategies.NPM_AUDIT })
+defaultScannerCommand("cwd", { strategy: vulnera.strategies.GITHUB_ADVISORY })
   .describe(i18n.getTokenSync("cli.commands.cwd.desc"))
   .option("-n, --nolock", i18n.getTokenSync("cli.commands.cwd.option_nolock"), false)
   .option("-f, --full", i18n.getTokenSync("cli.commands.cwd.option_full"), false)
@@ -63,7 +58,7 @@ defaultScannerCommand("from <package>")
     await commands.scanner.from(...options);
   });
 
-defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vuln.strategies.NPM_AUDIT })
+defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vulnera.strategies.GITHUB_ADVISORY })
   .describe(i18n.getTokenSync("cli.commands.auto.desc"))
   .option("-k, --keep", i18n.getTokenSync("cli.commands.auto.option_keep"), false)
   .action(commands.scanner.auto);

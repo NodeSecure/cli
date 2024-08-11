@@ -14,11 +14,6 @@ const cli = {
     option_output: "Json file output name",
     option_silent: "enable silent mode which disable CLI spinners",
     strategy: "Vulnerabilities source to use",
-    hydrate_db: {
-      desc: "Hydrate the vulnerabilities db",
-      running: tS`Hydrating local vulnerabilities with the '${0}' database...`,
-      success: tS`Successfully hydrated vulnerabilities database in ${0}`
-    },
     cwd: {
       desc: "Run security analysis on the current working dir",
       option_nolock: "Disable usage of package-lock.json",
