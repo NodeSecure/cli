@@ -1,15 +1,9 @@
-# Commande `hydrate-db`
+# 💧 Command `hydrate-db`
 
-La commande `hydrate-db` permet de mettre à jour la base de données des vulnérabilités en téléchargeant les dernières informations disponibles.
+The `hydrate-db` command is responsible for downloading and updating the vulnerability database used by the tool to scan projects. Ensuring this database is up-to-date is crucial for accurate security analysis.
 
-## Syntaxe
+## 📜 Syntax
 
 ```bash
 nsecure hydrate-db
 ```
-
-## Description
-
-Cette commande télécharge et met à jour la base de données des vulnérabilités utilisées par l'outil pour scanner les projets. Elle est essentielle pour s'assurer que les données de vulnérabilité sont à jour, ce qui améliore la précision des analyses de sécurité.
-
-

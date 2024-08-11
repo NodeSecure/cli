@@ -1,17 +1,14 @@
-# Commande `auto`
+## ⚙️ Options
 
-La commande `auto` permet d'automatiser le scan d'un package ou du projet courant avec des options spécifiques.
+- **`-k, --keep`**: Preserve temporary files after execution. Default: `false`.
 
-## Syntaxe
+## 📝 Description
 
-```bash
-nsecure auto [package] [options]
-```
+The `auto` command is designed to simplify and accelerate the security analysis of a project or package. By automatically combining the `cwd` and `from` commands, this tool allows you to quickly generate a comprehensive security report. Additionally, it can serve the results via an HTTP server for easy access and review.
 
-## Options
+## 🛠️ Available Options
 
-- **`-k, --keep`** : Conserver les fichiers temporaires après l'exécution. Par défaut : `false`.
+| **Name** | **Shortcut** | **Default Value** | **Description**                                                              |
+|----------|--------------|-------------------|------------------------------------------------------------------------------|
+| `--keep` | `-k`         | `false`           | Preserve temporary files after execution.                                    |
 
-## Description
-
-La commande `auto` permet d'automatiser le scan d'un package ou du projet courant avec des options spécifiques. Cette commande exécute une analyse automatique en combinant les commandes `cwd` et `from`, et peut ensuite ouvrir les résultats dans un serveur HTTP. Elle est utile pour effectuer une analyse rapide et complète en une seule commande.

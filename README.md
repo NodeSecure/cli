@@ -100,12 +100,10 @@ $ nsecure open
 # If you want to define a specific port use the --port option.
 $ nsecure open --port 8080
 ```
----
 
+### Command Documentation
 
-## Documentation des Commandes
-
-Pour des détails complets sur chaque commande, consultez les documents suivants :
+For complete details on each command, refer to the following documents:
 
 - [Commande `cwd`](./docs/cli/cwd.md)
 - [Commande `hydrate-db`](./docs/cli/hydrate-db.md)
@@ -120,16 +118,7 @@ Pour des détails complets sur chaque commande, consultez les documents suivants
 - [Commande `config create`](./docs/cli/config-create.md)
 - [Commande `config`](./docs/cli/config.md)
 
-Chaque lien vous redirige vers la documentation complète de la commande, avec des détails supplémentaires, des options, et des exemples d'utilisation.
-
-
-##### Available options
-
-| name | shortcut | default value | description |
-| --- | --- | --- | --- |
-| --port | -p |  | Define the running port, can also be define through the environment variable `PORT` |
-
-The `auto` command can be used to chain `cwd/from` and `open` commands automatically.
+Each link redirects you to the complete documentation of the command, with additional details, options, and usage examples.
 
 ```bash
 $ nsecure auto jest

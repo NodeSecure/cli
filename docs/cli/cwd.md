@@ -1,22 +1,22 @@
-# Commande `cwd`
+# 📂 Command `cwd`
 
-La commande `cwd` permet d'analyser le projet situé dans le répertoire courant en utilisant les stratégies définies dans l'outil.
+The `cwd` command allows you to scan the project located in the current working directory using the strategies defined by the tool. This command is useful for analyzing the security of a Node.js project by inspecting the dependencies installed locally in the current working directory.
 
-## Syntaxe
+## 📜 Syntax
 
 ```bash
 nsecure cwd [options]
 ```
-## Options
+## 📝 Description
 
-- **`-n, --nolock`** : Ne pas utiliser de fichier lock (`package-lock.json` ou `yarn.lock`) pour l'analyse. Par défaut : `false`.
-- **`-f, --full`** : Effectuer une analyse complète du projet, y compris toutes les dépendances. Par défaut : `false`.
-- **`-d, --depth <niveau>`** : Spécifie la profondeur d'analyse des dépendances. Par défaut : `4`.
-- **`--silent`** : Supprime les sorties console, rendant l'exécution silencieuse. Par défaut : `false`.
-- **`-o, --output <chemin>`** : Spécifie le fichier de sortie pour les résultats. Par défaut : `nsecure-result`.
-- **`-s, --vulnerabilityStrategy <stratégie>`** : Définir la stratégie de vulnérabilité à utiliser. Par défaut : `NPM_AUDIT`.
+The `cwd` command scans the dependencies of the project in the current working directory using the specified options to detect potential vulnerabilities. This is particularly useful for evaluating the security of a Node.js project by analyzing the packages installed in the current working directory.
 
+## ⚙️ Available Options
 
-## Description
-
-La commande `cwd` scanne les dépendances du projet situé dans le répertoire courant en utilisant les options spécifiées pour détecter les vulnérabilités potentielles. Cette commande est utile pour évaluer la sécurité d'un projet Node.js en analysant les packages installés localement dans le répertoire de travail actuel.
+| **Name**    | **Shortcut** | **Default Value**   | **Description**                                                              |
+|-------------|--------------|---------------------|------------------------------------------------------------------------------|
+| `--nolock`  | `-n`         | `false`             | Do not use a lock file (package-lock.json or yarn.lock) for the analysis.     |
+| `--full`    | `-f`         | `false`             | Perform a full analysis of the project, including all dependencies.           |
+| `--depth`   | `-d`         | `4`                 | Specify the depth of dependency analysis.                                     |
+| `--silent`  |              |                     | Suppress console output, making execution silent.                             |
+| `--output`  | `-o`         | `nsecure-result`    | Specify the output file for the results.                                      |
