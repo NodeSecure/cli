@@ -102,6 +102,27 @@ $ nsecure open --port 8080
 ```
 ---
 
+
+## Documentation des Commandes
+
+Pour des détails complets sur chaque commande, consultez les documents suivants :
+
+- [Commande `cwd`](./docs/cli/cwd.md)
+- [Commande `hydrate-db`](./docs/cli/hydrate-db.md)
+- [Commande `from`](./docs/cli/from.md)
+- [Commande `auto`](./docs/cli/auto.md)
+- [Commande `open`](./docs/cli/open.md)
+- [Commande `verify`](./docs/cli/verify.md)
+- [Commande `summary`](./docs/cli/summary.md)
+- [Commande `scorecard`](./docs/cli/scorecard.md)
+- [Commande `report`](./docs/cli/report.md)
+- [Commande `lang`](./docs/cli/lang.md)
+- [Commande `config create`](./docs/cli/config-create.md)
+- [Commande `config`](./docs/cli/config.md)
+
+Chaque lien vous redirige vers la documentation complète de la commande, avec des détails supplémentaires, des options, et des exemples d'utilisation.
+
+
 ##### Available options
 
 | name | shortcut | default value | description |
