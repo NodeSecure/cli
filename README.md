@@ -106,8 +106,8 @@ $ nsecure open --port 8080
 
 For complete details on each command, refer to the following documents:
 
+
 - [`cwd`](./docs/cli/cwd.md)
-- [`hydrate-db`](./docs/cli/hydrate-db.md)
 - [`from`](./docs/cli/from.md)
 - [`auto`](./docs/cli/auto.md)
 - [`open`](./docs/cli/open.md)
@@ -118,6 +118,7 @@ For complete details on each command, refer to the following documents:
 - [`lang`](./docs/cli/lang.md)
 - [`config create`](./docs/cli/config-create.md)
 - [`config`](./docs/cli/config.md)
+
 
 Each link redirects you to the complete documentation of the command, with additional details, options, and usage examples.
 
