@@ -76,6 +76,7 @@
     "pkg-ok": "^3.0.0",
     "pretty-bytes": "^6.1.1",
     "rimraf": "^6.0.1",
+    "server-destroy": "^1.0.1",
     "strip-ansi": "^7.1.0"
   },
   "dependencies": {
@@ -85,11 +86,11 @@
     "@nodesecure/licenses-conformance": "^2.1.0",
     "@nodesecure/npm-registry-sdk": "^3.0.0",
     "@nodesecure/ossf-scorecard-sdk": "^3.2.1",
-    "@nodesecure/rc": "^3.0.0",
+    "@nodesecure/rc": "^4.0.0",
     "@nodesecure/report": "^3.0.0",
-    "@nodesecure/scanner": "^6.0.2",
+    "@nodesecure/scanner": "^6.1.0",
     "@nodesecure/utils": "^2.2.0",
-    "@nodesecure/vuln": "^1.7.0",
+    "@nodesecure/vulnera": "^2.0.1",
     "@openally/result": "^1.3.0",
     "@polka/send-type": "^0.5.2",
     "@topcli/cliui": "^1.1.0",
@@ -106,7 +107,6 @@
     "polka": "^0.5.2",
     "sade": "^1.8.1",
     "semver": "^7.6.3",
-    "server-destroy": "^1.0.1",
     "sirv": "^2.0.4",
     "zup": "0.0.2"
   }

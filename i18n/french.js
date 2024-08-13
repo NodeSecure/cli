@@ -14,11 +14,6 @@ const cli = {
     option_output: "Nom de sortie du fichier json",
     option_silent: "Activer le mode silencieux qui désactive les spinners du CLI",
     strategy: "Source de vulnérabilités à utiliser",
-    hydrate_db: {
-      desc: "Mise à jour de la base de vulnérabilité",
-      running: tS`Mise à jour locale des vulnérabilités avec la base '${0}'...`,
-      success: tS`Base de vulnérabilités mise à jour avec succès en ${0}`
-    },
     cwd: {
       desc: "Démarre une analyse de sécurité sur le dossier courant",
       option_nolock: "Désactive l'utilisation du package-lock.json",

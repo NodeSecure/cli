@@ -101,10 +101,19 @@ $ nsecure open
 $ nsecure open --port 8080
 ```
 
+
 ### Command Documentation
+
+| name | shortcut | default value | description |
+| --- | --- | --- | --- |
+| --port | -p | 0 | Define the running port, can also be define through the environment variable `PORT` |
+
 
 
 For complete details on each command, refer to the following documents:
+
+> [!IMPORTANT]
+> By default with the auto command the .json file is deleted when the http server is closed. It's possible to disable this behavior by using the CLI option `--keep`, `-k`.
 
 
 - [`cwd`](./docs/cli/cwd.md)
