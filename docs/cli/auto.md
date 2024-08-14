@@ -8,8 +8,12 @@ The `auto` command is designed to simplify and accelerate the security analysis 
 
 ## ⚙️ Available Options
 
-| **Name**  | **Shortcut** | **Default Value**   | **Description**                                                       |
-|-----------|--------------|---------------------|------------------------------------------------------------------------|
-| `--depth` | `-d`         | **4**               | The maximum depth we must walk (when we fetch the whole tree).          |
+| **Name**   | **Shortcut** | **Default Value**   | **Description**                                                           |
+|------------|--------------|---------------------|---------------------------------------------------------------------------|
+| `--depth`  | `-d`         | `4`                 | Specify the depth of dependency analysis.                                  |
+| `--silent` |              |                     | Suppress console output, making execution silent.                          |
+| `--output` | `-o`         | `nsecure-result`    | Specify the output file for the results.                                   |
+| `--keep`   | `-k`         | `false`             | Preserve temporary files after execution.                                  |
+
 
 
