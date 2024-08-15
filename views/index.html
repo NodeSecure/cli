@@ -173,6 +173,11 @@
             <option value="vulnerabilities">[[=z.token('package_info.navigation.vulnerabilities')]]</option>
             <option value="licenses" selected>[[=z.token('package_info.navigation.licenses')]]</option>
           </select>
+          <p class="settings-line-title">[[=z.token('settings.general.network')]]:</p>
+          <div>
+            <input type="checkbox" id="show-friendly" name="show-friendly"/>
+            <label for="show-friendly">[[=z.token('settings.general.showFriendly')]]</label>
+          </div>
         </div>
         <div class="line">
           <p>[[=z.token('settings.general.warnings')]]:</p>
@@ -255,13 +260,6 @@
             <input type="checkbox" name="flags" id="flags" value="isDuplicate">
             <label for="flags">🎭 isDuplicate</label>
           </div>
-        </div>
-
-        <hr>
-
-        <div>
-          <input type="checkbox" id="show-friendly" name="show-friendly"/>
-          <label for="show-friendly">Show friendly dependencies</label>
         </div>
       </form>
       <button class="save">[[=z.token('settings.general.save')]]</button>

@@ -165,7 +165,9 @@ const ui = {
       save: "sauvegarder",
       defaultPannel: "Panneau par défaut",
       warnings: "Avertissements à ignorer",
-      flags: "Drapeau (emojis) à ignorer"
+      flags: "Drapeau (emojis) à ignorer",
+      network: "Réseau",
+      showFriendly: "Afficher les dépendances amicales"
     },
     shortcuts: {
       title: "Raccourcis",

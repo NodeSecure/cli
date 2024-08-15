@@ -22,7 +22,7 @@ export class PackageHeader {
     const {
       name: packageName,
       version: packageVersion,
-      description: packageDescription,
+      description: packageDescription = "",
       licenses,
       repository,
       flags

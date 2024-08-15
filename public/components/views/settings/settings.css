@@ -109,6 +109,14 @@
   margin-left: 10px;
 }
 
+#settings--view>form .line select {
+  margin-left: 10px;
+}
+
+#settings--view>form .line input[type="checkbox"] {
+  margin-left: 0;
+}
+
 #settings--view>form .line>div+div {
   margin-top: 5px;
 }
@@ -159,3 +167,10 @@ select {
   color: #0c5a9b;
 }
 
+.settings-line-title {
+  font-size: 15px;
+  color: #4a5e68;
+  letter-spacing: 0.5px;
+  margin: 30px 0 6px;
+  font-weight: bold;
+}
