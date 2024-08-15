@@ -165,7 +165,9 @@ const ui = {
       save: "save",
       defaultPannel: "Default Package Menu",
       warnings: "SAST Warnings to ignore",
-      flags: "Flags (emojis) to ignore"
+      flags: "Flags (emojis) to ignore",
+      network: "Network",
+      showFriendly: "Show friendly dependencies"
     },
     shortcuts: {
       title: "Shortcuts",
