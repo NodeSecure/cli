@@ -101,7 +101,6 @@ $ nsecure open
 $ nsecure open --port 8080
 ```
 
-
 ### Command Documentation
 
 For complete details on each command, refer to the following documents:

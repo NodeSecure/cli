@@ -1,6 +1,6 @@
 ## 📝 Description
 
-The `scorecard` command is used to generate a security scorecard for a specific repository. This command evaluates the repository and provides a security score based on various criteria.
+The `scorecard` command is used to generate an OpenSSF scorecard for a specific GIT repository or NPM package. This command evaluates the repository and provides a security score based on various criteria.
 
 ```bash
 nsecure scorecard [repository]
