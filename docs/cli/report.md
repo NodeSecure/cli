@@ -1,6 +1,8 @@
-## 📝 Description
+## 📝 Command `report`
 
 The `report` command is used to generate a detailed security report for a repository. This report can include all dependencies and be customized with various options such as theme, title, and format.
+
+## 📜 Syntax
 
 ```bash
 nsecure report [repository]

@@ -1,6 +1,8 @@
-## 📝 Description
+## 📝 Command `scorecard`
 
 The `scorecard` command is used to generate an OpenSSF scorecard for a specific GIT repository or NPM package. This command evaluates the repository and provides a security score based on various criteria.
+
+## 📜 Syntax
 
 ```bash
 nsecure scorecard [repository]

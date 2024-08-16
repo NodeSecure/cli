@@ -1,6 +1,8 @@
-## 📝 Description
+## 📝 Command `open`
 
 The `open` command is used to open a security report in a local HTTP server. This allows for easy access and review of the security report through a web browser.
+
+## 📜 Syntax
 
 ```bash
 nsecure open

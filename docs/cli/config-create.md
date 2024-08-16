@@ -8,10 +8,6 @@ The `config create` command allows you to create a new configuration file for No
 nsecure config create [configuration] [options]
 ```
 
-## 📝 Description
-
-The `config create` command is designed to help you easily create a new configuration file in the current working directory or in a specified location. This is particularly useful when you need to set up NodeSecure with custom settings specific to your project.
-
 ## ⚙️ Available Options
 
 | **Name** | **Shortcut** | **Default Value** | **Description**                                                               |

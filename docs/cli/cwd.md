@@ -7,9 +7,6 @@ The `cwd` command allows you to scan the project located in the current working 
 ```bash
 nsecure cwd [options]
 ```
-## 📝 Description
-
-The `cwd` command scans the dependencies of the project in the current working directory using the specified options to detect potential vulnerabilities. This is particularly useful for evaluating the security of a Node.js project by analyzing the packages installed in the current working directory.
 
 ## ⚙️ Available Options
 

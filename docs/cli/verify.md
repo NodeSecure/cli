@@ -1,6 +1,8 @@
-## 📝 Description
+## 📝 Command `verify`
 
 The `verify` command is used to verify the integrity and security of a specific package. This command checks the package against known vulnerabilities and integrity issues.
+
+## 📜 Syntax
 
 ```bash
 nsecure verify [package]

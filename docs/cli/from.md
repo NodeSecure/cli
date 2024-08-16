@@ -8,10 +8,6 @@ The `from` command allows you to run a security analysis on a specific npm packa
 nsecure from <package> [options]
 ```
 
-## 📝 Description
-
-The `from` command analyzes the specified npm package by scanning its dependencies to detect potential vulnerabilities. This is particularly useful for evaluating the security of a package you plan to include in your Node.js project.
-
 ## ⚙️ Available Options
 
 | **Name**    | **Shortcut** | **Default Value**   | **Description**                                                              |
