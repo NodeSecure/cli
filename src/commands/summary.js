@@ -105,14 +105,12 @@ function extractAnalysisData(dependencies) {
     licenceMap: {}
   };
 
-  for (const dependencyData of Object.values(dependencies)) {
-    const { versions, metadata } = dependencyData;
-
+  for (const { versions } of Object.values(dependencies)) {
     for (const version of Object.values(versions)) {
       extractVersionData(version, analysisAggregator);
     }
 
-    analysisAggregator.packagesCount += metadata.dependencyCount;
+    analysisAggregator.packagesCount += 1;
   }
 
   return analysisAggregator;
@@ -123,10 +121,8 @@ function extractVersionData(version, analysisAggregator) {
     addOccurrences(analysisAggregator.extensionMap, extension);
   }
 
-  if (version.license.uniqueLicenseIds) {
-    for (const licence of version.license.uniqueLicenseIds) {
-      addOccurrences(analysisAggregator.licenceMap, licence);
-    }
+  for (const licence of version.uniqueLicenseIds) {
+    addOccurrences(analysisAggregator.licenceMap, licence);
   }
 
   if (version.flags && version.flags.includes("hasIndirectDependencies")) {

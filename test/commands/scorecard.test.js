@@ -8,7 +8,6 @@ import assert from "node:assert";
 import esmock from "esmock";
 import { API_URL } from "@nodesecure/ossf-scorecard-sdk";
 import { Ok } from "@openally/result";
-import stripAnsi from "strip-ansi";
 
 // Import Internal Dependencies
 import { runProcess } from "../helpers/cliCommandRunner.js";
