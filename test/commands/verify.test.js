@@ -19,15 +19,28 @@ const kExpectVerifyJson = `{
 }`.split("\n");
 
 test("should execute verify command", async() => {
+  const expectedValues = VERIFY_EXPECTED_LINES.slice(0);
+
   for await (const line of runProcess({ path: path.join(kProcessDir, "verify.js") })) {
-    const expectedLine = VERIFY_EXPECTED_LINES.shift();
+    const expectedLine = expectedValues.shift();
     assert.equal(line.trimEnd(), expectedLine, `should be ${expectedLine}`);
   }
 });
 
 test("should execute verify command with json option", async() => {
+  const expectedValues = kExpectVerifyJson.slice(0);
+
   for await (const line of runProcess({ path: path.join(kProcessDir, "verify-json.js") })) {
-    const expectedLine = kExpectVerifyJson.shift();
+    const expectedLine = expectedValues.shift();
+    assert.equal(line.trimEnd(), expectedLine, `should be ${expectedLine}`);
+  }
+});
+
+test("should execute verify command with undefined package name and json option", async() => {
+  const expectedValues = kExpectVerifyJson.slice(0);
+
+  for await (const line of runProcess({ path: path.join(kProcessDir, "verify-undefined.js") })) {
+    const expectedLine = expectedValues.shift();
     assert.equal(line.trimEnd(), expectedLine, `should be ${expectedLine}`);
   }
 });
