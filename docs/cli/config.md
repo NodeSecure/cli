@@ -1,6 +1,6 @@
 # ⚙️ Command `config`
 
-The `config` command allows you to manage the configuration files used by NodeSecure. This command can be used to either create a new configuration file or edit an existing one.
+The `config` command allows you to manage the `.nodesecurerc` configuration file, which is used by NodeSecure components to customize their behavior. You can use this command to create a new configuration file or edit the existing one.
 
 ## 📜 Syntax
 
@@ -12,9 +12,9 @@ nsecure config [sub-command] [options]
 
 ### `create` Sub-command
 
-| **Name** | **Shortcut** | **Default Value** | **Description**                                                               |
-|----------|--------------|-------------------|-------------------------------------------------------------------------------|
-| `--cwd`  | `-c`         | `false`           | Create the configuration file in the current working directory instead of the default location. |
+| Name | Shortcut | Default Value | Description |
+|---|---|---|---|
+| `--cwd` | `-c` | `false` | Create the configuration file in the current working directory instead of the default location. |
 
 ### `edit` Sub-command
 

@@ -114,7 +114,7 @@ For complete details on each command, refer to the following documents:
 - [`scorecard`](./docs/cli/scorecard.md)
 - [`report`](./docs/cli/report.md)
 - [`lang`](./docs/cli/lang.md)
-- [`config create`](./docs/cli/config-create.md)
+- [`config create`](./docs/cli/config.md)
 - [`config`](./docs/cli/config.md)
 
 

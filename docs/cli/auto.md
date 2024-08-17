@@ -1,18 +1,18 @@
 # 🚀 Command `auto`
 
-The `auto` command is designed to simplify and accelerate the security analysis of a project or package. By automatically combining the `cwd` and `from` commands, this tool allows you to quickly generate a comprehensive security report. Additionally, it can serve the results via an HTTP server for easy access and review.
+The `auto` command combines the `cwd` and `from` commands to analyze and explore a local project or remote NPM packages in the WebUI.
 
 ## 📜 Syntax
 
 ```bash
-nsecure auto [options]
+nsecure auto [spec]
 ```
 
 ## ⚙️ Available Options
 
-| **Name**   | **Shortcut** | **Default Value**   | **Description**                                                           |
-|------------|--------------|---------------------|---------------------------------------------------------------------------|
-| `--depth`  | `-d`         | `4`                 | Specify the depth of dependency analysis.                                  |
-| `--silent` |              |                     | Suppress console output, making execution silent.                          |
-| `--output` | `-o`         | `nsecure-result`    | Specify the output file for the results.                                   |
-| `--keep`   | `-k`         | `false`             | Preserve temporary files after execution.                                  |
+| Name | Shortcut | Default Value | Description |
+|---|---|---|--|
+| `--depth` | `-d` | `4` | Specify the depth of dependency analysis. |
+| `--silent` |   |   | Suppress console output, making execution silent. |
+| `--output` | `-o` | `nsecure-result` | Specify the output file for the results. |
+| `--keep` | `-k` | `false` | Preserve temporary files after execution. |

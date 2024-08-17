@@ -10,9 +10,9 @@ nsecure from <package> [options]
 
 ## ⚙️ Available Options
 
-| **Name**    | **Shortcut** | **Default Value**   | **Description**                                                              |
-|-------------|--------------|---------------------|------------------------------------------------------------------------------|
-| `--depth`   | `-d`         | `4`                 | Specify the depth of dependency analysis.                                     |
-| `--output`  | `-o`         | `nsecure-result`    | Specify the output file for the results.                                      |
-| `--silent`  |              |                     | Suppress console output, making execution silent.                             |
+| Name | Shortcut | Default Value | Description |
+|---|---|---|---|
+| `--depth` | `-d` | `4` | Specify the depth of dependency analysis. |
+| `--output` | `-o` | `nsecure-result` | Specify the output file for the results. |
+| `--silent` |   |   | Suppress console output, making execution silent. |
 

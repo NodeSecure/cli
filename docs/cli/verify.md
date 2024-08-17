@@ -1,6 +1,6 @@
 ## 📝 Command `verify`
 
-The `verify` command is used to verify the integrity and security of a specific package. This command checks the package against known vulnerabilities and integrity issues.
+The `verify` command performs a deep analysis of a specified NPM package. It provides advanced information about the files in the tarball, including details on potential threats, file integrity, and more.
 
 ## 📜 Syntax
 
@@ -10,6 +10,6 @@ nsecure verify [package]
 
 ## ⚙️ Available Options
 
-| **Name** | **Shortcut** | **Default Value** | **Description**                           |
-|----------|--------------|-------------------|-------------------------------------------|
-| `--json` | `-j`         | `false`           | Output the results in JSON format.        |
+| Name | Shortcut | Default Value | Description |
+|---|---|---|---|
+| `--json` | `-j` | `false` | Output the results in JSON format. |

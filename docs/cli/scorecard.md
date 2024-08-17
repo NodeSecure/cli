@@ -10,7 +10,7 @@ nsecure scorecard [repository]
 
 ## ⚙️ Available Options
 
-| **Name** | **Shortcut** | **Default Value** | **Description**                                         |
-|----------|--------------|-------------------|---------------------------------------------------------|
-| `--vcs`  |              | `github`          | Specify the version control system (VCS) used by the repository. |
+| Name | Shortcut | Default Value | Description |
+|---|---|---|---|
+| `--vcs` |   | `github` | Specify the version control system (VCS) used by the repository. |
 

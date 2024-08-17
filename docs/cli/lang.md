@@ -1,6 +1,6 @@
 ## 📝 Command `lang`
 
-The `lang` command is used to set the language for the NodeSecure CLI tool. It allows users to choose their preferred language for the CLI interface.
+The `lang` command allows you to set your preferred language. Use this command to customize the language used in the CLI or Web interfaces
 
 ## 📜 Syntax
 
