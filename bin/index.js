@@ -120,7 +120,7 @@ function defaultScannerCommand(name, options = {}) {
   const { includeOutput = true, strategy = null } = options;
 
   const cmd = prog.command(name)
-    .option("-d, --depth", i18n.getTokenSync("cli.commands.option_depth"), 4)
+    .option("-d, --depth", i18n.getTokenSync("cli.commands.option_depth"), Infinity)
     .option("--silent", i18n.getTokenSync("cli.commands.option_silent"), false);
 
   if (includeOutput) {

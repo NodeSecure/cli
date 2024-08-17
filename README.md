@@ -58,12 +58,9 @@ or
 $ git clone https://github.com/NodeSecure/cli.git
 $ cd cli
 
-# install NPM dependencies
 $ npm install
-
-# run esbuild to bundle/compile front-end assets
+# bundle/compile front-end assets
 $ npm run build
-
 $ npm link
 ```
 
@@ -77,18 +74,12 @@ $ nsecure auto express
 
 ## 👀 Usage example
 
-To show the complete list of commands
 ```bash
-$ nsecure --help
-```
-
----
-
-```bash
-# Run an analysis on the current working dir (must have a package.json file).
+# Run a scan on the current working dir
+# Note: must have a package.json or node_modules directory
 $ nsecure cwd
 
-# Run an analysis for a given 'npm' package (must be in the npm registry).
+# Run a scan on a remote 'npm' package
 $ nsecure from mocha
 ```
 
@@ -96,12 +87,15 @@ Then a `nsecure-result.json` will be writted at the current CLI location. To ope
 
 ```bash
 $ nsecure open
-
-# If you want to define a specific port use the --port option.
-$ nsecure open --port 8080
 ```
 
 ### Command Documentation
+
+The CLI includes built-in documentation accessible with the --help option:
+```bash
+$ nsecure --help
+$ nsecure <command> --help
+```
 
 For complete details on each command, refer to the following documents:
 
@@ -117,8 +111,7 @@ For complete details on each command, refer to the following documents:
 - [`config create`](./docs/cli/config.md)
 - [`config`](./docs/cli/config.md)
 
-
-Each link redirects you to the complete documentation of the command, with additional details, options, and usage examples.
+Each link provides access to the full documentation for the command, including additional details, options, and usage examples.
 
 ## Private registry / Verdaccio
 

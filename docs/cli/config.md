@@ -5,7 +5,9 @@ The `config` command allows you to manage the `.nodesecurerc` configuration file
 ## 📜 Syntax
 
 ```bash
-nsecure config [sub-command] [options]
+$ nsecure config create [options]
+# OR
+$ nsecure config edit
 ```
 
 ## ⚙️ Available Options
@@ -19,4 +21,3 @@ nsecure config [sub-command] [options]
 ### `edit` Sub-command
 
 This sub-command does not have any specific options.
-
