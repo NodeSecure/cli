@@ -150,6 +150,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "foucsi",
+      "name": "Foucart Julien",
+      "avatar_url": "https://avatars.githubusercontent.com/u/113919130?v=4",
+      "profile": "http://julienfoucart.fr",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
