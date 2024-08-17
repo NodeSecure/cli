@@ -65,3 +65,7 @@ vuln.json
 tmp/
 dist/
 reports
+
+# macOS system files
+.DS_Store
+

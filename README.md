@@ -100,37 +100,25 @@ $ nsecure open
 # If you want to define a specific port use the --port option.
 $ nsecure open --port 8080
 ```
----
 
-##### Available options
+### Command Documentation
 
-| name | shortcut | default value | description |
-| --- | --- | --- | --- |
-| --port | -p | 0 | Define the running port, can also be define through the environment variable `PORT` |
+For complete details on each command, refer to the following documents:
 
-The `auto` command can be used to chain `cwd/from` and `open` commands automatically.
+- [`cwd`](./docs/cli/cwd.md)
+- [`from`](./docs/cli/from.md)
+- [`auto`](./docs/cli/auto.md)
+- [`open`](./docs/cli/open.md)
+- [`verify`](./docs/cli/verify.md)
+- [`summary`](./docs/cli/summary.md)
+- [`scorecard`](./docs/cli/scorecard.md)
+- [`report`](./docs/cli/report.md)
+- [`lang`](./docs/cli/lang.md)
+- [`config create`](./docs/cli/config.md)
+- [`config`](./docs/cli/config.md)
 
-```bash
-$ nsecure auto jest
 
-# if no package is given to the auto command then it will run the cwd command instead of from.
-$ nsecure auto
-```
-
-> [!IMPORTANT]
-> By default with the auto command the .json file is deleted when the http server is closed. It's possible to disable this behavior by using the CLI option `--keep`, `-k`.
-
----
-Some options are available on both `cwd`, `from` and `auto` commands. The output option is not available for the `auto` command.
-
-| name | shortcut | default value | description |
-| --- | --- | --- | --- |
-| --depth | -d | **4** | the maximum depth we must walk (when we fetch the whole tree). |
-| --output | -o | **nsecure-result** | the name that the outputted .json file will have |
-
-```bash
-$ nsecure from express -d 10 -o express-security-report
-```
+Each link redirects you to the complete documentation of the command, with additional details, options, and usage examples.
 
 ## Private registry / Verdaccio
 
