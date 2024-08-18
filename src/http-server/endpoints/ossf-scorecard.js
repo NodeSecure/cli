@@ -21,6 +21,7 @@ export async function get(req, res) {
   }
   catch (error) {
     console.error("Error fetching scorecard result:", error);
+
     return send(
       res,
       error.statusCode ?? 404,
