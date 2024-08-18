@@ -46,22 +46,25 @@ defaultScannerCommand("cwd", { strategy: vulnera.strategies.GITHUB_ADVISORY })
   .describe(i18n.getTokenSync("cli.commands.cwd.desc"))
   .option("-n, --nolock", i18n.getTokenSync("cli.commands.cwd.option_nolock"), false)
   .option("-f, --full", i18n.getTokenSync("cli.commands.cwd.option_full"), false)
-  .action(async(...options) => {
+  .action(async(options) => {
     checkNodeSecureToken();
-    await commands.scanner.cwd(...options);
+    await commands.scanner.cwd(options);
   });
 
-defaultScannerCommand("from <package>")
+defaultScannerCommand("from <spec>")
   .describe(i18n.getTokenSync("cli.commands.from.desc"))
-  .action(async(...options) => {
+  .action(async(spec, options) => {
     checkNodeSecureToken();
-    await commands.scanner.from(...options);
+    await commands.scanner.from(spec, options);
   });
 
-defaultScannerCommand("auto [package]", { includeOutput: false, strategy: vulnera.strategies.GITHUB_ADVISORY })
+defaultScannerCommand("auto [spec]", { includeOutput: false, strategy: vulnera.strategies.GITHUB_ADVISORY })
   .describe(i18n.getTokenSync("cli.commands.auto.desc"))
   .option("-k, --keep", i18n.getTokenSync("cli.commands.auto.option_keep"), false)
-  .action(commands.scanner.auto);
+  .action(async(spec, options) => {
+    checkNodeSecureToken();
+    await commands.scanner.auto(spec, options);
+  });
 
 prog
   .command("open [json]")
@@ -70,12 +73,12 @@ prog
   .action(commands.http.start);
 
 prog
-  .command("verify [package]")
+  .command("verify [spec]")
   .describe(i18n.getTokenSync("cli.commands.verify.desc"))
   .option("-j, --json", i18n.getTokenSync("cli.commands.verify.option_json"), false)
-  .action(async(...options) => {
+  .action(async(spec, options) => {
     checkNodeSecureToken();
-    await commands.verify.main(...options);
+    await commands.verify.main(spec, options);
   });
 
 prog
@@ -120,7 +123,7 @@ function defaultScannerCommand(name, options = {}) {
   const { includeOutput = true, strategy = null } = options;
 
   const cmd = prog.command(name)
-    .option("-d, --depth", i18n.getTokenSync("cli.commands.option_depth"), 4)
+    .option("-d, --depth", i18n.getTokenSync("cli.commands.option_depth"), Infinity)
     .option("--silent", i18n.getTokenSync("cli.commands.option_silent"), false);
 
   if (includeOutput) {

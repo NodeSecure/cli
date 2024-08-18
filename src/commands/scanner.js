@@ -1,5 +1,5 @@
 // Import Node.js Dependencies
-import fs from "node:fs/promises";
+import fs from "node:fs";
 import path from "node:path";
 import events from "node:events";
 
@@ -14,12 +14,14 @@ import * as Scanner from "@nodesecure/scanner";
 // Import Internal Dependencies
 import * as http from "./http.js";
 
-export async function auto(packageName, opts) {
-  const keep = Boolean(opts.keep);
-  delete opts.keep;
-  delete opts.k;
+export async function auto(spec, options) {
+  const { keep, ...commandOptions } = options;
 
-  const payloadFile = await (typeof packageName === "string" ? from(packageName, opts) : cwd(opts));
+  const payloadFile = await (
+    typeof spec === "string" ?
+      from(spec, commandOptions) :
+      cwd(commandOptions)
+  );
   try {
     if (payloadFile !== null) {
       await http.start();
@@ -29,7 +31,7 @@ export async function auto(packageName, opts) {
   finally {
     if (!keep && payloadFile !== null) {
       try {
-        await fs.unlink(payloadFile);
+        fs.unlinkSync(payloadFile);
       }
       catch (error) {
         if (error.code !== "ENOENT") {
@@ -41,10 +43,15 @@ export async function auto(packageName, opts) {
   }
 }
 
-export async function cwd(opts) {
+export async function cwd(options) {
   const {
-    depth: maxDepth = 4, output, nolock, full, vulnerabilityStrategy, silent
-  } = opts;
+    depth: maxDepth = Infinity,
+    output,
+    nolock,
+    full,
+    vulnerabilityStrategy,
+    silent
+  } = options;
 
   const payload = await Scanner.cwd(
     process.cwd(),
@@ -52,18 +59,22 @@ export async function cwd(opts) {
     initLogger(void 0, !silent)
   );
 
-  return await logAndWrite(payload, output);
+  return logAndWrite(payload, output);
 }
 
-export async function from(packageName, opts) {
-  const { depth: maxDepth = 4, output, silent } = opts;
+export async function from(spec, options) {
+  const { depth: maxDepth = Infinity, output, silent } = options;
 
-  const payload = await Scanner.from(packageName, { maxDepth }, initLogger(packageName, !silent));
+  const payload = await Scanner.from(
+    spec,
+    { maxDepth },
+    initLogger(spec, !silent)
+  );
 
-  return await logAndWrite(payload, output);
+  return logAndWrite(payload, output);
 }
 
-function initLogger(packageName, verbose = true) {
+function initLogger(spec, verbose = true) {
   const spinner = {
     walkTree: new Spinner({ verbose }),
     tarball: new Spinner({ verbose }),
@@ -97,7 +108,7 @@ function initLogger(packageName, verbose = true) {
 
     if (eventName === "fetchManifest") {
       spinner[eventName]
-        .start(kleur.white().bold(i18n.getTokenSync(spinner.i18n.start[eventName], kleur.green().bold(packageName))));
+        .start(kleur.white().bold(i18n.getTokenSync(spinner.i18n.start[eventName], kleur.green().bold(spec))));
     }
     else {
       spinner[eventName]
@@ -134,7 +145,7 @@ function initLogger(packageName, verbose = true) {
       spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName, kleur.green().bold(logger.count("walkTree")), execTime)));
     }
     else if (eventName === "fetchManifest") {
-      spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName, kleur.green().bold(packageName), execTime)));
+      spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName, kleur.green().bold(spec), execTime)));
       console.log("");
     }
   });
@@ -142,7 +153,7 @@ function initLogger(packageName, verbose = true) {
   return logger;
 }
 
-async function logAndWrite(payload, output = "nsecure-result") {
+function logAndWrite(payload, output = "nsecure-result") {
   if (payload === null) {
     console.log(i18n.getTokenSync("cli.no_dep_to_proceed"));
 
@@ -158,9 +169,11 @@ async function logAndWrite(payload, output = "nsecure-result") {
 
   const ret = JSON.stringify(payload, null, 2);
 
-  const fileName = path.extname(output) === ".json" ? filenamify(output) : `${filenamify(output)}.json`;
+  const fileName = path.extname(output) === ".json" ?
+    filenamify(output) :
+    `${filenamify(output)}.json`;
   const filePath = path.join(process.cwd(), fileName);
-  await fs.writeFile(filePath, ret);
+  fs.writeFileSync(filePath, ret);
 
   console.log("");
   console.log(kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath))));

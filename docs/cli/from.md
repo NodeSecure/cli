@@ -5,14 +5,22 @@ The `from` command allows you to run a security analysis on a specific npm packa
 ## 📜 Syntax
 
 ```bash
-nsecure from <package> [options]
+$ nsecure from <spec> [options]
+```
+
+## 👀 Example
+
+Scanning version 3.0.0 of express and saving the result into `./express-report.json`
+
+```bash
+$ nsecure from express@3.0.0 -o express-report
 ```
 
 ## ⚙️ Available Options
 
 | Name | Shortcut | Default Value | Description |
 |---|---|---|---|
-| `--depth` | `-d` | `4` | Specify the depth of dependency analysis. |
+| `--depth` | `-d` | `Infinity` | Maximum tree depth to scan. |
+| `--silent` |   | `false` | Suppress console output, making execution silent. |
 | `--output` | `-o` | `nsecure-result` | Specify the output file for the results. |
-| `--silent` |   |   | Suppress console output, making execution silent. |
-
+| `--vulnerabilityStrategy` | `-s` | github-advisory | Strategy used to fetch package vulnerabilities (see Vulnera [available strategy](https://github.com/NodeSecure/vulnera?tab=readme-ov-file#available-strategy)). |
