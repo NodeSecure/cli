@@ -61,12 +61,12 @@ export async function post(req, res) {
   });
 
   try {
-    console.log('Generating report with the following payload:', reportPayload);
+    console.log("Generating report with the following payload:", reportPayload);
     const data = await report(
       includesAllDeps ? scannerPayload.dependencies : { [rootDependencyName]: scannerPayload.dependencies[rootDependencyName] },
       reportPayload
     );
-    console.log('Report generated successfully.');
+    console.log("Report generated successfully.");
 
     return send(res, 200, {
       data
@@ -75,7 +75,7 @@ export async function post(req, res) {
     });
   }
   catch (err) {
-    console.error('Error during report generation:', err);
+    console.error("Error during report generation:", err);
     // console.error(err);
 
     return send(

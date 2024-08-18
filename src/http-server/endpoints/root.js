@@ -35,7 +35,7 @@ export async function get(req, res) {
     res.end(templateStr);
   }
   catch (err) {
-    console.error('Error while processing GET request:', err);
+    console.error("Error while processing GET request:", err);
     send(res, 500, { error: err.message });
   }
 }
