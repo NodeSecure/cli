@@ -20,6 +20,7 @@ export async function get(req, res) {
     });
   }
   catch (error) {
+    console.error(`Error occurred while fetching bundle size for package "${pkgTemplate}":`, error);
     return send(res, error.statusCode, { error: error.statusMessage });
   }
 }
