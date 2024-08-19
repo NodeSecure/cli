@@ -76,7 +76,6 @@ export async function post(req, res) {
   }
   catch (err) {
     console.error("Error during report generation:", err);
-    // console.error(err);
 
     return send(
       res,
