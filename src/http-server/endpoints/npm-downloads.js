@@ -12,6 +12,7 @@ export async function get(req, res) {
   }
   catch (error) {
     console.error(`Error occurred in npm-downloads endpoint for package "${pkgName}":`, error);
+
     return send(res, error.statusCode, { error: error.statusMessage });
   }
 }
