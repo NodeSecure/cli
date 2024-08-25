@@ -1,14 +1,8 @@
 #searchbar {
-  background: #263c46;
+  background: var(--primary);
   display: flex;
-  height: 40px;
-  position: absolute;
-  z-index: 40;
-  right: 40px;
-  top: 0;
+  height: 30px;
   box-sizing: border-box;
-  border-radius: 0 0 4px 4px;
-  box-shadow: -6px 4px 0px #3a00ffbd;
 }
 
 #searchbar>div.search-items {
@@ -53,9 +47,10 @@
   background: none;
   border: none;
   outline: none;
-  padding: 0 10px;
   color: #FFF;
   font-family: "mononoki";
+  margin-bottom: 2px;
+  border-bottom: 1px solid #FFF;
 }
 
 #searchbar>input::placeholder {
@@ -72,12 +67,10 @@
 }
 
 div.search-result-background {
-  width: 100%;
   position: absolute;
-  top: 35px;
-  right: 0;
   display: none;
-  margin-top: 25px;
+  margin-top: 30px;
+  min-width: 360px;
   padding: 10px !important;
   background: #263238;
   box-shadow: 1px 1px 10px rgba(20, 20, 20, 0.4);
@@ -196,4 +189,82 @@ div.search-result-pannel .package.hide {
 
 div.search-result-pannel .package+.package {
   margin-top: 5px;
+}
+
+#search-nav {
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  height: 30px;
+  left: 70px;
+  max-width: calc(100vw - 70px);
+  box-sizing: border-box;
+}
+
+#search-nav .packages {
+  display: flex;
+  overflow-x: auto;
+  max-width: calc(100vw - 70px - 264px);
+}
+
+#search-nav .package {
+  height: 30px;
+  color: rgb(229, 229, 229);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  background: rgb(88, 78, 158);
+}
+
+#search-nav .package:hover {
+  background: var(--primary);
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#search-nav .active {
+  background: var(--primary);
+  font-weight: bold;
+}
+
+#search-nav .active:hover {
+  font-size: 16px;
+  cursor: default;
+}
+
+#search-nav .add {
+  height: 30px;
+  background: var(--primary);
+  color: white;
+  font-size: 20px;
+  border: none;
+  background: var(--primary);
+  cursor: pointer;
+  padding-right: 9px;
+}
+
+#search-nav button.remove {
+  border-radius: 50%;
+  border: none;
+  background:transparent;
+  position: relative;
+  bottom: 3px;
+  left: 3px;
+  cursor: pointer;
+  color: white;
+}
+
+.search-nav-footer {
+  height: 30px;
+  width: 0;
+  position: relative;
+  border-style: solid;
+  border-right: 0px solid transparent;
+  border-left: 31px solid transparent;
+  border-bottom: 60px solid var(--primary);
+  border-top: 0;
+  transform: rotate(180deg);
 }

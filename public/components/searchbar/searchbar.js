@@ -378,7 +378,7 @@ export class SearchBar {
     const titleText = window.i18n[currentLang()].search[
       Reflect.has(kHelpersTitleName, filterName) ? kHelpersTitleName[filterName] : "default"
     ];
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     this.helper.innerHTML = `<div class="title"><p>${titleText}</p><a href="https://github.com/NodeSecure/cli#searchbar-filters" rel="noopener" target="_blank"><i class="icon-attention-circled"></i></a></div>`;
     this.helper.appendChild(clone);
   }

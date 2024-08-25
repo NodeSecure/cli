@@ -41,7 +41,7 @@ export async function main(repo, opts) {
   try {
     const [repo, vcs] = result.unwrap();
     repository = repo;
-    platform = vcs.slice(-4) === ".com" ? vsc : `${vcs}.com`;
+    platform = vcs.slice(-4) === ".com" ? vcs : `${vcs}.com`;
   }
   catch (error) {
     console.log(white().bold(result.err));

@@ -16,6 +16,7 @@
 @import url("./components/searchbar/searchbar.css");
 @import url("./components/views/home/home.css");
 @import url("./components/views/network/network.css");
+@import url("./components/views/search/search.css");
 @import url("./components/views/settings/settings.css");
 @import url("./components/wiki/wiki.css");
 @import url("./components/gauge/gauge.css");

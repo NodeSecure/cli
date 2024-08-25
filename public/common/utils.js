@@ -250,3 +250,15 @@ export function currentLang() {
 
   return detectedLang in window.i18n ? detectedLang : "english";
 }
+
+export function debounce(callback, delay) {
+  let timer;
+
+  // eslint-disable-next-line func-names
+  return function() {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      callback();
+    }, delay);
+  };
+}

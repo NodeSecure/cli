@@ -50,6 +50,10 @@ export class ViewNavigation {
           this.onNavigationSelected(this.menus.get("settings--view"));
           break;
         }
+        case hotkeys.search: {
+          this.onNavigationSelected(this.menus.get("search--view"));
+          break;
+        }
       }
     });
   }
