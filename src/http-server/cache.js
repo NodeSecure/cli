@@ -13,6 +13,7 @@ import { logger } from "./logger.js";
 const kConfigCache = "___config";
 const kPayloadsCache = "___payloads";
 const kPayloadsPath = path.join(os.homedir(), ".nsecure", "payloads");
+const kMaxPayloads = 3;
 export const CACHE_PATH = path.join(os.tmpdir(), "nsecure-cli");
 export const DEFAULT_PAYLOAD_PATH = path.join(process.cwd(), "nsecure-result.json");
 
@@ -41,7 +42,6 @@ class _AppCache {
     }
     catch (err) {
       logger.error(`[CACHE | GET_PAYLOAD](pkg: ${pkg}|cache: not found)`);
-      logger.debug(err);
 
       throw err;
     }
@@ -68,7 +68,6 @@ class _AppCache {
     }
     catch (err) {
       logger.error(`[CACHE | PAYLOADS_LIST](cache: not found)`);
-      logger.debug(err);
 
       throw err;
     }
@@ -81,8 +80,12 @@ class _AppCache {
       const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
       const formatted = `${payload.rootDependencyName}@${version}`;
       const payloadsList = {
-        list: [formatted],
-        current: formatted
+        lru: [formatted],
+        current: formatted,
+        older: [],
+        lastUsed: {
+          [formatted]: Date.now()
+        }
       };
       // eslint-disable-next-line @stylistic/max-len
       logger.info(`[CACHE | INIT_PAYLOADS_LIST](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
@@ -99,6 +102,22 @@ class _AppCache {
 
   removePayload(pkg) {
     fs.rmSync(path.join(kPayloadsPath, pkg));
+  }
+
+  async removeLastLRU() {
+    const { lru, lastUsed, older } = await this.payloadsList();
+    if (lru.length < kMaxPayloads) {
+      return { lru, older, lastUsed };
+    }
+    const OldestLRU = Object.keys(lastUsed).filter((key) => lru.includes(key)).sort((a, b) => lastUsed[a] - lastUsed[b])[0];
+    const olderUpdated = [...older, OldestLRU];
+    const lruUpdated = lru.filter((pckg) => pckg !== OldestLRU);
+
+    return {
+      lru: lruUpdated,
+      older: olderUpdated,
+      lastUsed
+    }
   }
 }
 

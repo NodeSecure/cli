@@ -7,38 +7,76 @@ export async function remove(ws, pkg) {
   logger.info(`[WEBSOCKET | REMOVE](pkg: ${pkg}|formatted: ${formattedPkg})`);
 
   try {
-    const { list, current } = await appCache.payloadsList();
-    logger.debug(`[WEBSOCKET | REMOVE](list: ${list}|current: ${current})`);
+    const { lru, older, current, lastUsed } = await appCache.payloadsList();
+    logger.debug(`[WEBSOCKET | REMOVE](lru: ${lru}|current: ${current})`);
 
-    if (list.length === 1) {
+    if (lru.length === 1 && older.length === 0) {
       throw new Error("Cannot remove the last package.");
     }
 
-    const index = list.findIndex((pkgName) => pkgName === pkg);
-    if (index === -1) {
+    const lruIndex = lru.findIndex((pkgName) => pkgName === pkg);
+    const olderIndex = older.findIndex((pkgName) => pkgName === pkg);
+
+    if (lruIndex === -1 && olderIndex === -1) {
       throw new Error("Package not found in cache.");
     }
 
-    const updatedList = list.filter((pkgName) => pkgName !== pkg);
-    const previousCurrent = updatedList.at(0);
-    await appCache.updatePayloadsList({
-      list: updatedList,
-      current: current === pkg ? previousCurrent : current
-    });
+    if (lruIndex > -1) {
+      logger.info(`[WEBSOCKET | REMOVE](remove from lru)`);
+      const updatedLru = lru.filter((pkgName) => pkgName !== pkg);
+      if (older.length > 0) {
+        // We need to move the first older package to the lru list
+        const olderPkg = older.sort((a, b) => {
+          const aDate = lastUsed[a];
+          const bDate = lastUsed[b];
+
+          return aDate - bDate;
+        });
+        updatedLru.push(olderPkg[0]);
+        older.splice(older.indexOf(olderPkg[0]), 1);
+      }
+
+      const updatedList = {
+        lru: updatedLru,
+        older,
+        lastUsed: {
+          ...lastUsed,
+          [pkg]: void 0
+        },
+        current: current === pkg ? updatedLru[0] : current
+      }
+      await appCache.updatePayloadsList(updatedList);
+
+      ws.send(JSON.stringify({
+        status: "RELOAD",
+        ...updatedList
+      }));
+    } else {
+      logger.info(`[WEBSOCKET | REMOVE](remove from older)`);
+      const updatedOlder = older.filter((pkgName) => pkgName !== pkg);
+      const updatedList = {
+        lru,
+        older: updatedOlder,
+        lastUsed: {
+          ...lastUsed,
+          [pkg]: void 0
+        },
+        current
+      }
+      await appCache.updatePayloadsList(updatedList);
+
+      ws.send(JSON.stringify({
+        status: "RELOAD",
+        ...updatedList
+      }));
+    }
+
     appCache.removePayload(formattedPkg.replaceAll("/", "-"));
-
-    logger.info(`[WEBSOCKET | REMOVE](cache: updated|updatedList: ${updatedList}|current: ${previousCurrent})`);
-
-    ws.send(JSON.stringify({
-      status: "RELOAD",
-      list: updatedList,
-      current: current === pkg ? previousCurrent : current
-    }));
   }
-  catch (e) {
-    logger.error(`[WEBSOCKET | REMOVE](error: ${e.message})`);
-    logger.debug(e);
+  catch (error) {
+    logger.error(`[WEBSOCKET | REMOVE](error: ${error.message})`);
+    logger.debug(error);
 
-    throw e;
+    throw error;
   }
 }

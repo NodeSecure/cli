@@ -12,27 +12,22 @@ export async function search(ws, pkg) {
   if (cache) {
     logger.info(`[WEBSOCKET | SEARCH](payload: ${pkg} found in cache)`);
     logger.debug(`[WEBSOCKET | SEARCH](cache: ${cache}`);
+    const cacheList = await appCache.payloadsList();
+    if (cacheList.lru.includes(pkg)) {
+      logger.info(`[WEBSOCKET | SEARCH](payload: ${pkg} is already in the LRU)`);
+      ws.send(JSON.stringify(cache));
 
-    const { list, current } = await appCache.payloadsList();
-    logger.debug(`[WEBSOCKET | SEARCH](list: ${list}|current:${current})`);
-    {
-      const payload = list.find((pckg) => pckg === pkg);
-      if (payload === void 0) {
-        logger.info(`[WEBSOCKET | SEARCH](add ${pkg})`);
-        list.push(pkg);
-
-        await appCache.updatePayloadsList({ list, current: pkg });
-        ws.send(JSON.stringify(cache));
-
-        logger.info(`[WEBSOCKET | SEARCH](payload sent to client)`);
-
-        return;
-      }
+      return;
     }
-    logger.info(`[WEBSOCKET | SEARCH](payload already exists)`);
+    const { lru, older, lastUsed } = await appCache.removeLastLRU();
+    const updatedList = { lru: [...new Set([...lru, pkg])], current: pkg, older: older.filter((pckg) => pckg !== pkg), lastUsed: { ...lastUsed, [pkg]: Date.now() } }
+    await appCache.updatePayloadsList(updatedList);
 
-    await appCache.updatePayloadsList({ list, current: pkg });
     ws.send(JSON.stringify(cache));
+    ws.send(JSON.stringify({
+      status: "RELOAD",
+      ...updatedList
+    }));
 
     return;
   }
@@ -51,16 +46,16 @@ export async function search(ws, pkg) {
     logger.info(`[WEBSOCKET | SEARCH](scan <${pkg}> done|cache: updated|pkg: ${pkg})`);
 
     // update the payloads list
-    const { list } = await appCache.payloadsList();
-    list.push(pkg);
+    const { lru, older, lastUsed } = await appCache.removeLastLRU();
+    lru.push(pkg);
     appCache.updatePayload(pkg.replaceAll("/", "-"), payload);
-    await appCache.updatePayloadsList({ list, current: pkg });
+    const updatedList = { lru: [...new Set(lru)], older, lastUsed: { ...lastUsed, [pkg]: Date.now() }, current: pkg };
+    await appCache.updatePayloadsList(updatedList);
 
     ws.send(JSON.stringify(payload));
     ws.send(JSON.stringify({
       status: "RELOAD",
-      list,
-      current: pkg
+      ...updatedList
     }));
 
     logger.info(`[WEBSOCKET | SEARCH](payloadsList updated|payload sent to client)`);

@@ -27,6 +27,7 @@ let nsn;
 let searchview;
 
 document.addEventListener("DOMContentLoaded", async() => {
+  window.scannedPackageCache = [];
   window.locker = null;
   window.popup = new Popup();
   window.settings = await new Settings().fetchUserConfig();
@@ -44,6 +45,11 @@ document.addEventListener("DOMContentLoaded", async() => {
       await init({ navigateToNetworkView: true });
     }
     else if (data.status === "INIT" || data.status === "RELOAD") {
+      window.scannedPackageCache = data.older;
+      console.log(
+        "[INFO] Older packages are loaded!",
+        window.scannedPackageCache
+      );
       initSearchNav(data, nsn, secureDataSet);
       searchview.reset();
     }
@@ -74,7 +80,7 @@ async function init(options = { navigateToNetworkView: false }) {
   window.locker = new Locker(nsn);
   const legend = new Legend({ show: window.settings.config.showFriendlyDependencies });
   new HomeView(secureDataSet, nsn);
-  searchview = new SearchView(secureDataSet, nsn);
+  searchview ??= new SearchView(secureDataSet, nsn);
 
   window.addEventListener("package-info-closed", () => {
     networkNavigation.currentNodeParams = null;

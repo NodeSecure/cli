@@ -12,7 +12,7 @@ export async function get(req, res) {
   const { objects, total } = await npm.search({
     text: decodeURIComponent(packageName)
   });
-  logger.debug(`[SEARCH: GET](npmSearchResult: ${JSON.stringify(objects)})`);
+  logger.debug(`[SEARCH: GET](npmSearchResult: ${JSON.stringify(objects.map((pkg) => pkg.package.name))})`);
 
   send(res, 200, {
     count: total,

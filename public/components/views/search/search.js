@@ -2,7 +2,7 @@
 import { getJSON } from "@nodesecure/vis-network";
 
 // Import Internal Dependencies
-import { debounce } from "../../../common/utils.js";
+import { currentLang, debounce } from "../../../common/utils.js";
 
 export class SearchView {
   /**
@@ -19,6 +19,7 @@ export class SearchView {
   }
 
   initialize() {
+    this.searchContainer = document.querySelector("#search--view .container");
     this.searchForm = document.querySelector("#search--view form");
     const input = this.searchForm.querySelector("input");
 
@@ -33,6 +34,16 @@ export class SearchView {
 
       const divResultContainer = document.createElement("div");
       divResultContainer.classList.add("result-container");
+
+      if (count === 0) {
+        const divResultElement = document.createElement("div");
+        divResultElement.classList.add("result-not-found");
+        divResultElement.textContent = window.i18n[lang].search.noPackageFound;
+        divResultContainer.appendChild(divResultElement);
+        this.searchForm.appendChild(divResultContainer);
+
+        return;
+      }
 
       for (const { name, version, description } of result) {
         const divResultElement = document.createElement("div");
@@ -73,12 +84,39 @@ export class SearchView {
         divResultElement.appendChild(selectElement);
         divResultContainer.appendChild(divResultElement);
       }
-      this.searchForm.appendChild(divResultContainer);
+      this.searchForm.parentNode.insertBefore(divResultContainer, this.searchForm.nextSibling);
     }, 500));
 
     this.searchForm.addEventListener("submit", (event) => {
       event.preventDefault();
     });
+
+    const cachePackagesElement = this.searchContainer.querySelector(".cache-packages");
+    if (cachePackagesElement === null) {
+      return;
+    }
+    if (window.scannedPackageCache.length > 0) {
+      cachePackagesElement.classList.remove("hidden");
+      const h1Element = document.createElement("h1");
+      const lang = currentLang();
+      h1Element.textContent = window.i18n[lang].search.packagesCache;
+      cachePackagesElement.appendChild(h1Element);
+
+      for (const pkg of window.scannedPackageCache) {
+        const pkgElement = document.createElement("div");
+        pkgElement.classList.add("package-result");
+        const pkgSpanElement = document.createElement("span");
+        pkgSpanElement.textContent = pkg;
+        pkgSpanElement.addEventListener("click", () => {
+          window.socket.send(JSON.stringify({ action: "SEARCH", pkg }));
+        }, { once: true });
+        pkgElement.appendChild(pkgSpanElement);
+        cachePackagesElement.appendChild(pkgElement);
+      }
+    }
+    else {
+      cachePackagesElement.classList.add("hidden");
+    }
   }
 
   async fetchPackage(packageName, version) {
@@ -111,12 +149,18 @@ export class SearchView {
     form.appendChild(formGroup);
     searchViewContainer.appendChild(form);
 
+    const cachePackagesElement = document.createElement("div");
+    cachePackagesElement.classList.add("cache-packages", "hidden");
+    searchViewContainer.appendChild(cachePackagesElement);
+
     this.initialize();
   }
 
   onScan(pkg) {
     const searchViewForm = document.querySelector("#search--view form");
     searchViewForm.remove();
+    const containerResult = document.querySelector("#search--view .result-container");
+    containerResult?.remove();
 
     const searchViewContainer = document.querySelector("#search--view .container");
     const scanInfo = document.createElement("div");

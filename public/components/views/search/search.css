@@ -3,7 +3,6 @@
   flex-direction: column;
   align-items: center;
   margin: auto;
-  background: linear-gradient(90deg, var(--primary) 0%, rgba(76,34,175,1) 30%, rgba(90,68,218,1) 100%);
 }
 
 #search--view,
@@ -17,27 +16,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: auto;
   width: 100%;
   max-width: 600px;
   min-height: 150px;
   margin: 135px auto;
 }
 
-#search--view h1 {
-  height: 40px;
-  border-bottom: 2px solid var(--primary);
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  color: var(--primary);
-  font-size: 24px;
-  font-family: 'mononoki';
-}
-
 #search--view form {
   width: 100%;
-  overflow: auto;
 }
 
 #search--view form input {
@@ -49,8 +35,13 @@
   outline: none;
 }
 
+.result-not-found {
+  color: rgb(78, 76, 76);
+  text-align: center;
+}
+
 #search--view form input::placeholder {
-  color: rgb(195, 194, 194);
+  color: rgb(125, 125, 125);
   font-style: italic;
 }
 
@@ -59,6 +50,7 @@
   overflow-y: auto;
   margin-top: 10px;
   border-radius: 0 0 10px 10px;
+  width: 100%;
 }
 
 .result-container::-webkit-scrollbar {
@@ -85,6 +77,7 @@
 .result:hover span {
   opacity: 0.8;
   cursor: pointer;
+  text-decoration: underline;
 }
 
 .result:not(:last-child) {
@@ -116,16 +109,18 @@
   padding: 10px;
   border-radius: 4px;
   background: white;
+  border: 2px solid var(--primary);
 }
 
 #search--view .icon-search {
-  filter: invert(50%) sepia(3%) saturate(1%) hue-rotate(209deg) brightness(109%) contrast(101%);
+  filter: invert(64%) sepia(100%) saturate(2094%) hue-rotate(241deg) brightness(67%) contrast(114%);
   max-width: 16px;
   margin-right: 10px;
 }
 
 .scan-info {
   height: 30px;
+  color: rgb(78, 76, 76);
 }
 
 .spinner {
@@ -139,7 +134,7 @@
 
 @keyframes spinner-d3wgkg {
   to {
-     transform: rotate(1turn);
+    transform: rotate(1turn);
   }
 }
 
@@ -160,4 +155,25 @@ input:-webkit-autofill {
   color: rgb(78, 76, 76);
   margin-top: 5px;
   margin-bottom: 8px;
+}
+
+.cache-packages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
+  color: var(--primary);
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.cache-packages .package-result {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.cache-packages .package-result:hover {
+  opacity: 0.8;
 }

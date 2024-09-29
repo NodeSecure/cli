@@ -8,7 +8,7 @@ export function initSearchNav(data, nsn, secureDataSet) {
   const searchNavElement = document.getElementById("search-nav");
   // reset
   searchNavElement.innerHTML = "";
-  const pkgs = data.list;
+  const pkgs = data.lru;
   const hasAtLeast2Packages = pkgs.length > 1;
   const hasExactly2Packages = pkgs.length === 2;
   const packagesContainer = document.createElement("div");
