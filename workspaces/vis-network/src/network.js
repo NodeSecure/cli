@@ -342,7 +342,6 @@ export default class NodeSecureNetwork {
       Object.assign(node, this.colors.DEFAULT);
     }
 
-
     this.network.startSimulation();
     this.nodes.update(Object.values(allNodes));
     this.network.focus(selectedNode, {

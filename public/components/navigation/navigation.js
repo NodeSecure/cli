@@ -5,6 +5,7 @@ import { PackageInfo } from "../package/package.js";
 const kAvailableView = new Set([
   "network--view",
   "home--view",
+  "search--view",
   "settings--view"
 ]);
 
@@ -48,6 +49,10 @@ export class ViewNavigation {
         }
         case hotkeys.settings: {
           this.onNavigationSelected(this.menus.get("settings--view"));
+          break;
+        }
+        case hotkeys.search: {
+          this.onNavigationSelected(this.menus.get("search--view"));
           break;
         }
       }

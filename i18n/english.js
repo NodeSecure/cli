@@ -188,7 +188,9 @@ const ui = {
     "Node.js core modules": "Node.js core modules",
     "Available licenses": "Available licenses",
     "Available flags": "Available flags",
-    default: "Search options"
+    default: "Search options",
+    packagesCache: "Packages available in the cache",
+    noPackageFound: "No package found"
   },
   legend: {
     default: "The package is fine.",

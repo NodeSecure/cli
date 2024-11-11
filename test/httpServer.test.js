@@ -1,10 +1,9 @@
 // Import Node.js Dependencies
-import { readFileSync } from "node:fs";
+import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { after, before, describe, test } from "node:test";
 import { once } from "node:events";
 import path from "node:path";
-import os from "node:os";
 import assert from "node:assert";
 
 // Import Third-party Dependencies
@@ -18,6 +17,7 @@ import cacache from "cacache";
 
 // Require Internal Dependencies
 import { buildServer } from "../src/http-server/index.js";
+import { CACHE_PATH } from "../src/http-server/cache.js";
 
 // CONSTANTS
 const HTTP_PORT = 17049;
@@ -25,33 +25,40 @@ const HTTP_URL = new URL(`http://localhost:${HTTP_PORT}`);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const JSON_PATH = path.join(__dirname, "fixtures", "httpServer.json");
-const INDEX_HTML = readFileSync(path.join(__dirname, "..", "views", "index.html"), "utf-8");
+const INDEX_HTML = fs.readFileSync(path.join(__dirname, "..", "views", "index.html"), "utf-8");
 
-const kCachePath = path.join(os.tmpdir(), "nsecure-cli");
-const kConfigKey = "cli-config";
+const kConfigKey = "___config";
 const kGlobalDispatcher = getGlobalDispatcher();
 const kMockAgent = new MockAgent();
 const kBundlephobiaPool = kMockAgent.get("https://bundlephobia.com");
+const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
 
-describe("httpServer", () => {
+describe("httpServer", { concurrency: 1 }, () => {
   let httpServer;
 
   before(async() => {
     setGlobalDispatcher(kMockAgent);
-
-    httpServer = buildServer(JSON_PATH, {
-      port: HTTP_PORT,
-      openLink: false
-    });
-    await once(httpServer.server, "listening");
     await i18n.extendFromSystemPath(
       path.join(__dirname, "..", "i18n")
     );
 
+    httpServer = buildServer(JSON_PATH, {
+      port: HTTP_PORT,
+      openLink: false,
+      enableWS: false
+    });
+    await once(httpServer.server, "listening");
+
     enableDestroy(httpServer.server);
+
+    if (fs.existsSync(kDefaultPayloadPath) === false) {
+      // When running tests on CI, we need to create the nsecure-result.json file
+      const payload = fs.readFileSync(JSON_PATH, "utf-8");
+      fs.writeFileSync(kDefaultPayloadPath, payload);
+    }
   }, { timeout: 5000 });
 
-  after(() => {
+  after(async() => {
     httpServer.server.destroy();
     kBundlephobiaPool.close();
     setGlobalDispatcher(kGlobalDispatcher);
@@ -123,7 +130,6 @@ describe("httpServer", () => {
         createReadStream: () => "foo"
       }
     });
-    const consoleError = console.error;
     const logs = [];
     console.error = (data) => logs.push(data);
 
@@ -135,31 +141,7 @@ describe("httpServer", () => {
     const result = await get(new URL("/data", HTTP_URL));
 
     assert.equal(result.statusCode, 200);
-    assert.equal(result.headers["content-type"], "application/json");
-  });
-
-  test("'/data' should fail", async() => {
-    const module = await esmock("../src/http-server/endpoints/data.js", {
-      "../src/http-server/context.js": {
-        context: {
-          getStore: () => {
-            return { dataFilePath: "foo" };
-          }
-        }
-      },
-      stream: {
-        pipeline: (stream, res, err) => err("fake error")
-      },
-      fs: {
-        createReadStream: () => "foo"
-      }
-    });
-    const consoleError = console.error;
-    const logs = [];
-    console.error = (data) => logs.push(data);
-
-    await module.get({}, ({ writeHead: () => true }));
-    assert.deepEqual(logs, ["fake error"]);
+    assert.equal(result.headers["content-type"], "application/json;charset=utf-8");
   });
 
   test("'/bundle/:name/:version' should return the bundle size", async() => {
@@ -230,7 +212,7 @@ describe("httpServer", () => {
   test("GET '/config' should return the config", async() => {
     const { data: actualConfig } = await get(new URL("/config", HTTP_URL));
 
-    await cacache.put(kCachePath, kConfigKey, JSON.stringify({ foo: "bar" }));
+    await cacache.put(CACHE_PATH, kConfigKey, JSON.stringify({ foo: "bar" }));
     const result = await get(new URL("/config", HTTP_URL));
 
     assert.deepEqual(result.data, { foo: "bar" });
@@ -254,7 +236,7 @@ describe("httpServer", () => {
 
     assert.equal(status, 204);
 
-    const inCache = await cacache.get(kCachePath, kConfigKey);
+    const inCache = await cacache.get(CACHE_PATH, kConfigKey);
     assert.deepEqual(JSON.parse(inCache.data.toString()), { fooz: "baz" });
 
     await fetch(new URL("/config", HTTP_URL), {
@@ -327,11 +309,22 @@ describe("httpServer", () => {
     const json = JSON.parse(result.data);
     assert.strictEqual(json.data.type, "Buffer");
   });
+
+  test("'/search' should return the package list", async() => {
+    const result = await get(new URL("/search/nodesecure", HTTP_URL));
+
+    assert.equal(result.statusCode, 200);
+    assert.ok(result.data);
+    assert.ok(Array.isArray(result.data.result));
+    assert.ok(result.data.count);
+  });
 });
 
 describe("httpServer without options", () => {
   let httpServer;
   let opened = false;
+  // We want to disable WS
+  process.env.NODE_ENV = "test";
 
   before(async() => {
     const module = await esmock("../src/http-server/index.js", {
@@ -343,7 +336,7 @@ describe("httpServer without options", () => {
     enableDestroy(httpServer.server);
   });
 
-  after(() => {
+  after(async() => {
     httpServer.server.destroy();
   });
 

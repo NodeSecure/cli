@@ -9,18 +9,19 @@
 <link rel="stylesheet" href="public/main.css" />
 <link rel="stylesheet" href="workspaces/documentation-ui/src/css/main.css" />
 <link rel="stylesheet" href="node_modules/highlight.js/styles/github.css" />
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="public/main.js" defer></script>
 <title>NodeSecure</title>
 
 <div id="lang" data-lang="[[=z.i18nLangName]]" style="display: none;"></div>
 
 <main>
-  <nav>
+  <nav id="aside">
     <a class="nsecure-logo" href="https://github.com/NodeSecure" target="_blank" rel="noopener">
       <svg width="60" height="60" viewBox="0 0 1324 776" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M662 0L998.042 194V582L662 776L325.958 582V194L662 0Z" fill="white" />
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M325.958 388V582L662 776L998.042 582V388H325.958Z" fill="#3319D1"
-          fill-opacity="0.74" />
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M325.958 388V582L662 776L998.042 582V388H325.958Z"
+          fill="#3319D1" fill-opacity="0.74" />
         <rect x="200" y="346.475" width="924" height="97.3244" fill="#00D1FF" />
         <g filter="url(#filter0_f_401_16)">
           <rect x="200" y="346.475" width="924" height="97.3244" fill="#00D1FF" />
@@ -53,11 +54,17 @@
         <i class="icon-globe-alt-outline"></i>
         <span></span>
       </li>
+      <li data-menu="search--view">
+        <i class="icon-search"></i>
+        <span></span>
+      </li>
       <li data-menu="settings--view" class="bottom-nav">
         <i class="icon-cog"></i>
         <span></span>
       </li>
     </ul>
+  </nav>
+  <nav id="search-nav">
   </nav>
   <section class="content">
     <div id="home--view" class="view hidden">
@@ -160,6 +167,19 @@
       <div id="legend">
       </div>
     </div>
+    <div id="search--view" class="view hidden">
+      <div class="container">
+        <form>
+          <div class="form-group">
+            <i class="icon-search"></i>
+            <input type="text" id="package" name="package" placeholder="fastify, express..." required>
+          </div>
+        </form>
+        <div class="cache-packages">
+          <h2>[[=z.token('search.packagesCache')]]</h2>
+        </div>
+      </div>
+    </div>
     <div id="settings--view" class="view hidden">
       <h1><i class="icon-cog"></i>[[=z.token('settings.general.title')]]</h1>
       <form>
@@ -175,7 +195,7 @@
           </select>
           <p class="settings-line-title">[[=z.token('settings.general.network')]]:</p>
           <div>
-            <input type="checkbox" id="show-friendly" name="show-friendly"/>
+            <input type="checkbox" id="show-friendly" name="show-friendly" />
             <label for="show-friendly">[[=z.token('settings.general.showFriendly')]]</label>
           </div>
         </div>
@@ -276,6 +296,10 @@
             <label for="network">[[=z.token('settings.shortcuts.goto')]] Network view</label>
           </div>
           <div>
+            <input readonly id="search" class="hotkey">
+            <label for="settings">[[=z.token('settings.shortcuts.goto')]] Search view</label>
+          </div>
+          <div>
             <input readonly id="settings" class="hotkey">
             <label for="settings">[[=z.token('settings.shortcuts.goto')]] Settings view</label>
           </div>
@@ -305,19 +329,6 @@
   </div>
   <div class="documentation-render-container"></div>
 </section>
-
-<div id="searchbar">
-  <div class="search-items"></div>
-  <input type="text" placeholder="[[=z.token('searchbar_placeholder')]]" id="search-bar-input" autocomplete="off"
-    autocorrect="off" autocapitalize="off" spellcheck="false"></input>
-  <i class="icon-search"></i>
-
-  <div class="search-result-background">
-    <div class="search-result-pannel" id="package-list">
-      <div class="helpers"></div>
-    </div>
-  </div>
-</div>
 
 <template id="report-popup-template">
   <div class="report--popup">
@@ -388,7 +399,8 @@
     <div data-menu="files" data-title="[[=z.token('package_info.navigation.files')]]">
       <i class="icon-docs"></i>
     </div>
-    <div data-menu="dependencies" id="dependencies-nav-menu" data-title="[[=z.token('package_info.navigation.dependencies')]]">
+    <div data-menu="dependencies" id="dependencies-nav-menu"
+      data-title="[[=z.token('package_info.navigation.dependencies')]]">
       <i class="icon-sitemap"></i>
       <div class="signal"></div>
     </div>
@@ -396,7 +408,8 @@
       <i class="icon-warning-empty"></i>
       <div class="signal"></div>
     </div>
-    <div data-menu="vulnerabilities" id="vulnerabilities-nav-menu" data-title="[[=z.token('package_info.navigation.vulnerabilities')]]">
+    <div data-menu="vulnerabilities" id="vulnerabilities-nav-menu"
+      data-title="[[=z.token('package_info.navigation.vulnerabilities')]]">
       <i class="icon-bell-1"></i>
       <div class="signal"></div>
     </div>
@@ -662,5 +675,20 @@
   </div>
   <div class="line" data-value="hasDuplicate">
     <p>🎭 hasDuplicate</p>
+  </div>
+</template>
+
+<template id="searchbar-tpl">
+  <div id="searchbar">
+    <div class="search-items"></div>
+    <input type="text" placeholder="[[=z.token('searchbar_placeholder')]]" id="search-bar-input" autocomplete="off"
+      autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+    <i class="icon-search"></i>
+
+    <div class="search-result-background">
+      <div class="search-result-pannel" id="package-list">
+        <div class="helpers"></div>
+      </div>
+    </div>
   </div>
 </template>
