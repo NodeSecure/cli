@@ -1,4 +1,5 @@
 // Import Internal Dependencies
+import { createDOMElement } from "../common/utils";
 import { SearchBar } from "../components/searchbar/searchbar";
 
 // CONSTANTS
@@ -22,7 +23,7 @@ export function initSearchNav(data, nsn, secureDataSet) {
       window.activePackage = pkg;
       pkgElement.classList.add("active");
     }
-    pkgElement.textContent = pkg;
+    pkgElement.appendChild(createDOMElement("p", { text: pkg }));
     pkgElement.addEventListener("click", () => {
       if (window.activePackage !== pkg) {
         window.socket.send(JSON.stringify({ pkg, action: "SEARCH" }));
@@ -40,7 +41,7 @@ export function initSearchNav(data, nsn, secureDataSet) {
 
   const plusButtonElement = document.createElement("button");
   plusButtonElement.classList.add("add");
-  plusButtonElement.textContent = "+";
+  plusButtonElement.appendChild(createDOMElement("p", { text: "+" }));
   plusButtonElement.addEventListener("click", () => {
     window.navigation.setNavByName("search--view");
   });
@@ -60,11 +61,6 @@ export function initSearchNav(data, nsn, secureDataSet) {
     }
   }
   window.searchbar = new SearchBar(nsn, secureDataSet.linker);
-
-  const footerElement = document.createElement("div");
-  footerElement.classList.add("search-nav-footer");
-
-  searchNavElement.appendChild(footerElement);
 }
 
 function addRemoveButton(pkgElement, options) {
