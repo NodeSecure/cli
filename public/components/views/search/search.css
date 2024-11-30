@@ -40,6 +40,12 @@
   text-align: center;
 }
 
+.hint {
+  color: rgb(78, 76, 76);
+  text-align: center;
+  margin-top: 7px;
+}
+
 #search--view form input::placeholder {
   color: rgb(125, 125, 125);
   font-style: italic;

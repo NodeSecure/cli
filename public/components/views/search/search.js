@@ -4,6 +4,10 @@ import { getJSON, NodeSecureDataSet, NodeSecureNetwork } from "@nodesecure/vis-n
 // Import Internal Dependencies
 import { currentLang, debounce } from "../../../common/utils.js";
 
+// CONSTANTS
+const kMinPackageNameLength = 2;
+const kMaxPackageNameLength = 64;
+
 export class SearchView {
   /**
    * @type {NodeSecureDataSet}
@@ -32,11 +36,22 @@ export class SearchView {
     this.searchContainer = document.querySelector("#search--view .container");
     this.searchForm = document.querySelector("#search--view form");
     const input = this.searchForm.querySelector("input");
+    const lang = currentLang();
 
     input.addEventListener("input", debounce(async() => {
       document.querySelector(".result-container")?.remove();
+      this.searchForm.querySelector(".hint")?.remove();
+
       const packageName = input.value;
       if (packageName.length === 0) {
+        return;
+      }
+      else if (packageName.length < kMinPackageNameLength || packageName.length > kMaxPackageNameLength) {
+        const hintElement = document.createElement("div");
+        hintElement.classList.add("hint");
+        hintElement.textContent = window.i18n[lang].search.packageLengthErr;
+        this.searchForm.appendChild(hintElement);
+
         return;
       }
 
@@ -108,7 +123,6 @@ export class SearchView {
     if (window.scannedPackageCache.length > 0) {
       cachePackagesElement.classList.remove("hidden");
       const h1Element = document.createElement("h1");
-      const lang = currentLang();
       h1Element.textContent = window.i18n[lang].search.packagesCache;
       cachePackagesElement.appendChild(h1Element);
 

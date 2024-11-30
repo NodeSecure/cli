@@ -1,4 +1,5 @@
-/* eslint-disable max-len */
+/* eslint-disable @stylistic/max-len */
+
 // Import Third-party Dependencies
 import { taggedString as tS } from "@nodesecure/i18n";
 
@@ -191,6 +192,7 @@ const ui = {
     default: "Options de recherche",
     packagesCache: "Packages disponibles dans le cache",
     noPackageFound: "Aucun package trouvé",
+    packageLengthErr: "Le nom du package doit être compris entre 2 et 64 caractères."
   },
   legend: {
     default: "Rien à signaler.",
