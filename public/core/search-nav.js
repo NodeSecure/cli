@@ -48,7 +48,9 @@ export function initSearchNav(data, nsn, secureDataSet) {
 
   const plusButtonElement = document.createElement("button");
   plusButtonElement.classList.add("add");
-  plusButtonElement.appendChild(createDOMElement("p", { text: "+" }));
+  plusButtonElement.appendChild(createDOMElement("p", {
+    text: "+"
+  }));
   plusButtonElement.addEventListener("click", () => {
     window.navigation.setNavByName("search--view");
   });

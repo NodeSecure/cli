@@ -73,6 +73,11 @@ export class ViewNavigation {
     selectedNav.classList.add("active");
     this.setAnchor(menuName);
 
+    const searchbar = document.getElementById("searchbar");
+    if (searchbar) {
+      searchbar.style.display =  menuName === "network--view" ? "flex" : "none";
+    }
+
     this.activeMenu = selectedNav;
   }
 
