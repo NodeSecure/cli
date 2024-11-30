@@ -82,7 +82,6 @@ function addRemoveButton(pkgElement, options) {
   removeButton.textContent = "x";
   removeButton.addEventListener("click", (event) => {
     event.stopPropagation();
-    // we remove the x button from textContent
     const pkgToRemove = pkgElement.dataset.name;
     window.socket.send(JSON.stringify({ action: "REMOVE", pkg: pkgToRemove }));
 

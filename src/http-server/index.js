@@ -67,7 +67,7 @@ export function buildServer(dataFilePath, options = {}) {
     websocket.on("connection", async(socket) => {
       socket.on("message", async(rawMessage) => {
         const message = JSON.parse(rawMessage);
-        logger.info(`[WEBSOCKET](message: ${JSON.stringify(message)})`);
+        logger.info(`[ws](message: ${JSON.stringify(message)})`);
 
         if (message.action === "SEARCH") {
           wsHandlers.search(socket, message.pkg);

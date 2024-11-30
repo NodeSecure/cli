@@ -149,7 +149,7 @@ async function init(options = { navigateToNetworkView: false }) {
   const searchNavElement = document.getElementById("search-nav");
   const pkgs = searchNavElement.querySelectorAll(".package");
   for (const pkg of pkgs) {
-    if (pkg.textContent.startsWith(window.activePackage)) {
+    if (pkg.dataset.name.startsWith(window.activePackage)) {
       pkg.classList.add("active");
     }
     else {

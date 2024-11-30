@@ -4,11 +4,11 @@ import { logger } from "../logger.js";
 
 export async function remove(ws, pkg) {
   const formattedPkg = pkg.replace("/", "-");
-  logger.info(`[WEBSOCKET | REMOVE](pkg: ${pkg}|formatted: ${formattedPkg})`);
+  logger.info(`[ws|remove](pkg: ${pkg}|formatted: ${formattedPkg})`);
 
   try {
     const { lru, older, current, lastUsed, root } = await appCache.payloadsList();
-    logger.debug(`[WEBSOCKET | REMOVE](lru: ${lru}|current: ${current})`);
+    logger.debug(`[ws|remove](lru: ${lru}|current: ${current})`);
 
     if (lru.length === 1 && older.length === 0) {
       throw new Error("Cannot remove the last package.");
@@ -22,7 +22,7 @@ export async function remove(ws, pkg) {
     }
 
     if (lruIndex > -1) {
-      logger.info(`[WEBSOCKET | REMOVE](remove from lru)`);
+      logger.info(`[ws|remove](remove from lru)`);
       const updatedLru = lru.filter((pkgName) => pkgName !== pkg);
       if (older.length > 0) {
         // We need to move the first older package to the lru list
@@ -54,7 +54,7 @@ export async function remove(ws, pkg) {
       }));
     }
     else {
-      logger.info(`[WEBSOCKET | REMOVE](remove from older)`);
+      logger.info(`[ws|remove](remove from older)`);
       const updatedOlder = older.filter((pkgName) => pkgName !== pkg);
       const updatedList = {
         lru,
@@ -77,7 +77,7 @@ export async function remove(ws, pkg) {
     appCache.removePayload(formattedPkg.replaceAll("/", "-"));
   }
   catch (error) {
-    logger.error(`[WEBSOCKET | REMOVE](error: ${error.message})`);
+    logger.error(`[ws|remove](error: ${error.message})`);
     logger.debug(error);
 
     throw error;

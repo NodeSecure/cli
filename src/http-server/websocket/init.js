@@ -5,7 +5,7 @@ import { logger } from "../logger.js";
 export async function init(socket, lock = false) {
   try {
     const { current, lru, older, root } = await appCache.payloadsList();
-    logger.info(`[WEBSOCKET | INIT](lru: ${lru}|older: ${older}|current: ${current}|root: ${root})`);
+    logger.info(`[ws|init](lru: ${lru}|older: ${older}|current: ${current}|root: ${root})`);
 
     if (lru === void 0 || current === void 0) {
       throw new Error("Payloads list not found in cache.");
@@ -20,7 +20,7 @@ export async function init(socket, lock = false) {
     }));
   }
   catch {
-    logger.error(`[WEBSOCKET | INIT](No cache yet. Creating one...)`);
+    logger.error(`[ws|init](No cache yet. Creating one...)`);
 
     if (lock) {
       return;

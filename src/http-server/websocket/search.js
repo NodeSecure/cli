@@ -6,14 +6,14 @@ import { logger } from "../logger.js";
 import { appCache } from "../cache.js";
 
 export async function search(ws, pkg) {
-  logger.info(`[WEBSOCKET | SEARCH](pkg: ${pkg})`);
+  logger.info(`[ws|search](pkg: ${pkg})`);
 
   const cache = await appCache.getPayloadOrNull(pkg);
   if (cache) {
-    logger.info(`[WEBSOCKET | SEARCH](payload: ${pkg} found in cache)`);
+    logger.info(`[ws|search](payload: ${pkg} found in cache)`);
     const cacheList = await appCache.payloadsList();
     if (cacheList.lru.includes(pkg)) {
-      logger.info(`[WEBSOCKET | SEARCH](payload: ${pkg} is already in the LRU)`);
+      logger.info(`[ws|search](payload: ${pkg} is already in the LRU)`);
       const updatedList = {
         ...cacheList,
         current: pkg,
@@ -44,7 +44,7 @@ export async function search(ws, pkg) {
   }
 
   // at this point we don't have the payload in cache so we have to scan it.
-  logger.info(`[WEBSOCKET | SEARCH](scan ${pkg})`);
+  logger.info(`[ws|search](scan ${pkg} in progress)`);
   ws.send(JSON.stringify({ status: "SCAN", pkg }));
 
   const payload = await Scanner.from(pkg, { maxDepth: 4 });
@@ -54,7 +54,7 @@ export async function search(ws, pkg) {
   {
     // save the payload in cache
     const pkg = `${name}@${version}`;
-    logger.info(`[WEBSOCKET | SEARCH](scan <${pkg}> done|cache: updated|pkg: ${pkg})`);
+    logger.info(`[ws|search](scan ${pkg} done|cache: updated)`);
 
     // update the payloads list
     const { lru, older, lastUsed, root } = await appCache.removeLastLRU();
@@ -75,6 +75,6 @@ export async function search(ws, pkg) {
       ...updatedList
     }));
 
-    logger.info(`[WEBSOCKET | SEARCH](payloadsList updated|payload sent to client)`);
+    logger.info(`[ws|search](data sent to client|cache: updated)`);
   }
 }

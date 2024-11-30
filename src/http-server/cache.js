@@ -42,7 +42,7 @@ class _AppCache {
       return JSON.parse(fs.readFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", "-")), "utf-8"));
     }
     catch (err) {
-      logger.error(`[CACHE | GET_PAYLOAD](pkg: ${pkg}|cache: not found)`);
+      logger.error(`[cache|get](pkg: ${pkg}|cache: not found)`);
 
       throw err;
     }
@@ -68,7 +68,7 @@ class _AppCache {
       return JSON.parse(data.toString());
     }
     catch (err) {
-      logger.error(`[CACHE | PAYLOADS_LIST](cache: not found)`);
+      logger.error(`[cache|get](cache: not found)`);
 
       throw err;
     }
@@ -87,8 +87,8 @@ class _AppCache {
       },
       root: formatted
     };
-    // eslint-disable-next-line @stylistic/max-len
-    logger.info(`[CACHE | INIT_PAYLOADS_LIST](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
+
+    logger.info(`[cache|init](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
     await cacache.put(CACHE_PATH, kPayloadsCache, JSON.stringify(payloadsList));
     this.updatePayload(formatted.replaceAll("/", "-"), payload);
   }
@@ -102,7 +102,7 @@ class _AppCache {
     }
 
     const list = packagesInFolder.map(({ name }) => name);
-    logger.info(`[CACHE | INIT_PAYLOADS_LIST](list: ${list})`);
+    logger.info(`[cache|init](list: ${list})`);
 
     await cacache.put(CACHE_PATH, kPayloadsCache, JSON.stringify({ list, current: list[0] }));
   }

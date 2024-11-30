@@ -15,14 +15,14 @@ const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
 export async function get(req, res) {
   try {
     const { current, lru } = await appCache.payloadsList();
-    logger.info(`[DATA | GET](current: ${current})`);
-    logger.debug(`[DATA | GET](lru: ${lru})`);
+    logger.info(`[data|get](current: ${current})`);
+    logger.debug(`[data|get](lru: ${lru})`);
 
     const formatted = current.replaceAll("/", "-");
     send(res, 200, await appCache.getPayload(formatted));
   }
   catch {
-    logger.error(`[DATA | GET](No cache yet. Creating one...)`);
+    logger.error(`[data|get](No cache yet. Creating one...)`);
 
     const payload = JSON.parse(fs.readFileSync(kDefaultPayloadPath, "utf-8"));
     const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
@@ -36,11 +36,11 @@ export async function get(req, res) {
       },
       root: formatted
     };
-    logger.info(`[DATA | GET](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
+    logger.info(`[data|get](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
 
     await appCache.updatePayloadsList(payloadsList);
     appCache.updatePayload(formatted.replaceAll("/", "-"), payload);
-    logger.info(`[DATA | GET](cache: created|payloadsList: ${payloadsList.lru})`);
+    logger.info(`[data|get](cache: created|payloadsList: ${payloadsList.lru})`);
 
     send(res, 200, payload);
   }
