@@ -1,5 +1,5 @@
 // Import Internal Dependencies
-import { createDOMElement } from "../common/utils";
+import { createDOMElement, parseNpmSpec } from "../common/utils";
 import { SearchBar } from "../components/searchbar/searchbar";
 
 // CONSTANTS
@@ -17,13 +17,19 @@ export function initSearchNav(data, nsn, secureDataSet) {
 
   for (const pkg of pkgs) {
     // Initialize Search nav
-    const pkgElement = document.createElement("div");
-    pkgElement.classList.add("package");
+    const { name, version } = parseNpmSpec(pkg);
+
+    const pkgElement = createDOMElement("div", {
+      classList: ["package"],
+      childs: [
+        createDOMElement("p", { text: name }),
+        createDOMElement("b", { text: `v${version}` })
+      ]
+    });
     if (pkg === data.current) {
       window.activePackage = pkg;
       pkgElement.classList.add("active");
     }
-    pkgElement.appendChild(createDOMElement("p", { text: pkg }));
     pkgElement.addEventListener("click", () => {
       if (window.activePackage !== pkg) {
         window.socket.send(JSON.stringify({ pkg, action: "SEARCH" }));

@@ -217,7 +217,7 @@ div.search-result-pannel .package+.package {
   display: flex;
   align-items: center;
   padding: 0 10px;
-  background: rgb(88, 78, 158);
+  font-family: "Roboto";
 }
 
 #search-nav .packages {
@@ -234,9 +234,11 @@ div.search-result-pannel .package+.package {
   font-family: "mononoki";
   display: flex;
   align-items: center;
-  background: linear-gradient(to right, rgba(55, 34, 175, 1) 1%, rgba(90, 68, 218, 1) 100%);
+  background: linear-gradient(to right,  rgba(55,34,175,1) 0%,rgba(87,74,173,1) 50%,rgb(59, 110, 205) 100%);
   padding: 0 10px;
   border-right: 2px solid #0f041a;
+  text-shadow: 1px 1px 10px #000;
+  color: #def7ff;
 }
 
 #search-nav .packages>.package>* {
@@ -249,15 +251,27 @@ div.search-result-pannel .package+.package {
 
 #search-nav .packages>.package:not(.active):hover {
   background: linear-gradient(to right, rgba(55, 34, 175, 1) 1%, rgb(68, 121, 218) 100%);
+  color: #defff9;
   cursor: pointer;
 }
 
 #search-nav .packages>.package.active {
-  background: linear-gradient(to right, rgba(55, 34, 175, 1) 1%, rgb(218, 68, 111) 100%);
+  background: linear-gradient(to right,  rgba(55,34,175,1) 0%,rgba(87,74,173,1) 50%,rgb(59, 110, 205) 100%);
 }
 
 #search-nav .packages>.package.active>.remove {
   display: block;
+}
+
+#search-nav .packages>.package>b{
+  font-weight: bold;
+  font-size: 12px;
+  margin-left: 5px;
+  background: var(--secondary-darker);
+  padding: 3px 5px;
+  border-radius: 2px;
+  font-family: "Roboto";
+  letter-spacing: 1px;
 }
 
 #search-nav .add {
@@ -269,10 +283,12 @@ div.search-result-pannel .package+.package {
   cursor: pointer;
   padding: 0 7px;
   border-right: 2px solid #0f041a;
+  transition: 0.5s all ease;
+  color: #def7ff;
 }
 
 #search-nav .add:hover {
-  background: #3e93e7;
+  background: #1566b6;
   cursor: pointer;
 }
 
@@ -286,9 +302,16 @@ div.search-result-pannel .package+.package {
   background: transparent;
   position: relative;
   cursor: pointer;
-  color: white;
-  background: rgba(162, 26, 13, 0.774);
+  color: #fff5dc;
+  background: #ff3434e2;
   font-family: "mononoki";
   margin-left: 10px;
-  border-radius: 50%;
+  border-radius: 2px;
+  text-shadow: 1px 1px 10px #000;
+  font-weight: bold;
+}
+
+#search-nav button.remove:hover {
+  cursor: pointer;
+  background: #ff5353e2;
 }
