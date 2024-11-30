@@ -41,9 +41,10 @@
 }
 
 .hint {
-  color: rgb(78, 76, 76);
+  color: rgb(239 126 126);
   text-align: center;
-  margin-top: 7px;
+  margin-top: 10px;
+  font-style: italic;
 }
 
 #search--view form input::placeholder {
@@ -57,7 +58,6 @@
   margin-top: 10px;
   border-radius: 4px;
   width: 100%;
-  overflow: hidden;
 }
 
 .result-container::-webkit-scrollbar {
@@ -71,6 +71,10 @@
   background: white;
   color: var(--primary);
   padding-left: 5px;
+}
+
+.result:nth-child(even) {
+  box-shadow: 1px 1px 10px #33333314 inset;
 }
 
 .result:nth-child(odd) {
@@ -103,6 +107,8 @@
 .result select {
   max-width: 70px;
   margin-right: 5px;
+  margin-top: 5px;
+  background: #edf1fb;
 }
 
 .form-group {
@@ -115,8 +121,10 @@
   margin: auto;
   padding: 10px;
   border-radius: 4px;
-  background: radial-gradient(ellipse at center, rgba(242, 245, 246, 1) 0%, rgba(227, 234, 237, 1) 37%, rgba(200, 215, 220, 1) 100%);
+  background: linear-gradient(135deg,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(234,238,239,1) 100%);
   box-shadow: 2px 2px 20px #3722af1f;
+  border: 1px solid #FFF;
+  box-sizing: border-box;
 }
 
 .form-group>input,
@@ -136,7 +144,9 @@
 
 .scan-info {
   height: 30px;
-  color: rgb(78, 76, 76);
+  color: #546884;
+  font-family: "mononoki";
+  margin-top: 10px;
 }
 
 .spinner {
@@ -181,17 +191,30 @@ input:-webkit-autofill {
   align-items: center;
   justify-content: center;
   margin-top: 20px;
+  margin-bottom: 20px;
   width: 100%;
   color: var(--primary);
   font-weight: bold;
   font-size: 17px;
+  border: 1px solid #54688424;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.cache-packages h1 {
+  font-family: "mononoki";
+  color: #546884;
 }
 
 .cache-packages .package-result {
   margin-top: 10px;
   cursor: pointer;
+  background: #54688419;
+  padding: 5px 10px;
 }
 
 .cache-packages .package-result:hover {
-  opacity: 0.8;
+  color: var(--secondary-darker);
+  background: #5468842a;
+  cursor: pointer;
 }
