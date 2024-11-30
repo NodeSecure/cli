@@ -26,6 +26,7 @@ export function initSearchNav(data, nsn, secureDataSet) {
         createDOMElement("b", { text: `v${version}` })
       ]
     });
+    pkgElement.dataset.name = pkg;
     if (pkg === data.current) {
       window.activePackage = pkg;
       pkgElement.classList.add("active");
@@ -80,7 +81,7 @@ function addRemoveButton(pkgElement, options) {
   removeButton.addEventListener("click", (event) => {
     event.stopPropagation();
     // we remove the x button from textContent
-    const pkgToRemove = pkgElement.textContent.slice(0, -1);
+    const pkgToRemove = pkgElement.dataset.name;
     window.socket.send(JSON.stringify({ action: "REMOVE", pkg: pkgToRemove }));
 
     if (hasExactly2Packages) {
