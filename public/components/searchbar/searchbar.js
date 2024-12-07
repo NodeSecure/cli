@@ -310,6 +310,10 @@ export class SearchBar {
         self.focusNodeById(this.getAttribute("data-value"));
       });
     }
+
+    if (window.navigation.getAnchor() !== "network--view") {
+      this.container.style.display = "none";
+    }
   }
 
   addNewSearchText(filterName, searchedValue) {
