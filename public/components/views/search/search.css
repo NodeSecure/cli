@@ -236,3 +236,8 @@ input:-webkit-autofill {
   background: #5468842a;
   cursor: pointer;
 }
+
+.spinner-option {
+  font-size: smaller;
+  text-align: center;
+}

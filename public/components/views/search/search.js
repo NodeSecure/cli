@@ -102,15 +102,39 @@ export class SearchView {
         optionElement.textContent = version;
         selectElement.appendChild(optionElement);
         selectElement.addEventListener("click", async() => {
-          const versions = await this.fetchPackageVersions(name);
-          for (const pkgVersion of versions) {
-            if (pkgVersion === version) {
-              continue;
+          const spinnerOption = "<option value=\"\" disabled class=\"spinner-option\">.</option>";
+          selectElement.insertAdjacentHTML("beforeend", spinnerOption);
+
+          function spinnerOptionSpin() {
+            const spinnerOptionElement = selectElement.querySelector(".spinner-option");
+            spinnerOptionElement.textContent += ".";
+            if (spinnerOptionElement.textContent.length > 3) {
+              spinnerOptionElement.textContent = ".";
             }
-            const optionElement = document.createElement("option");
-            optionElement.value = pkgVersion;
-            optionElement.textContent = pkgVersion;
-            selectElement.appendChild(optionElement);
+          }
+
+          const spinIntervalId = setInterval(spinnerOptionSpin, 180);
+
+          try {
+            const versions = await this.fetchPackageVersions(name);
+
+            clearInterval(spinIntervalId);
+
+            selectElement.querySelector(".spinner-option").remove();
+
+            for (const pkgVersion of versions) {
+              if (pkgVersion === version) {
+                continue;
+              }
+              const optionElement = document.createElement("option");
+              optionElement.value = pkgVersion;
+              optionElement.textContent = pkgVersion;
+              selectElement.appendChild(optionElement);
+            }
+          }
+          catch {
+            clearInterval(spinIntervalId);
+            selectElement.querySelector(".spinner-option").remove();
           }
         }, { once: true });
         divResultElement.appendChild(selectElement);
