@@ -40,9 +40,17 @@ document.addEventListener("DOMContentLoaded", async() => {
   window.socket = new WebSocket(`ws://${window.location.hostname}:1338`);
   window.socket.addEventListener("message", async(event) => {
     const data = JSON.parse(event.data);
+    console.log(`[WEBSOCKET] data status = '${data.status || "NONE"}'`);
+
     if (data.rootDependencyName) {
       window.activePackage = data.rootDependencyName;
       await init({ navigateToNetworkView: true });
+      initSearchNav(data, {
+        initFromZero: false,
+        searchOptions: {
+          nsn, secureDataSet
+        }
+      });
     }
     else if (data.status === "INIT" || data.status === "RELOAD") {
       window.scannedPackageCache = data.older;
@@ -50,7 +58,11 @@ document.addEventListener("DOMContentLoaded", async() => {
         "[INFO] Older packages are loaded!",
         window.scannedPackageCache
       );
-      initSearchNav(data, nsn, secureDataSet);
+      initSearchNav(data, {
+        searchOptions: {
+          nsn, secureDataSet
+        }
+      });
       searchview.reset();
     }
     else if (data.status === "SCAN") {
@@ -64,7 +76,9 @@ document.addEventListener("DOMContentLoaded", async() => {
   };
 });
 
-async function init(options = { navigateToNetworkView: false }) {
+async function init(options = {}) {
+  const { navigateToNetworkView = false } = options;
+
   let packageInfoOpened = false;
   secureDataSet = new NodeSecureDataSet({
     flagsToIgnore: window.settings.config.ignore.flags,
@@ -141,13 +155,12 @@ async function init(options = { navigateToNetworkView: false }) {
     }
   });
 
-  if (options.navigateToNetworkView) {
+  if (navigateToNetworkView) {
     window.navigation.setNavByName("network--view");
   }
 
   // update search nav
-  const searchNavElement = document.getElementById("search-nav");
-  const pkgs = searchNavElement.querySelectorAll(".package");
+  const pkgs = document.querySelectorAll("#search-nav .packages > .package");
   for (const pkg of pkgs) {
     if (pkg.dataset.name.startsWith(window.activePackage)) {
       pkg.classList.add("active");

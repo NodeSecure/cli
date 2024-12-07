@@ -2,21 +2,57 @@
 import { createDOMElement, parseNpmSpec } from "../common/utils";
 import { SearchBar } from "../components/searchbar/searchbar";
 
-// CONSTANTS
-const kSearchbarId = "searchbar-tpl";
+export function initSearchNav(data, options) {
+  const { initFromZero = true, searchOptions = null } = options;
 
-export function initSearchNav(data, nsn, secureDataSet) {
   const searchNavElement = document.getElementById("search-nav");
-  // reset
-  searchNavElement.innerHTML = "";
-  const pkgs = data.lru;
-  const hasAtLeast2Packages = pkgs.length > 1;
-  const hasExactly2Packages = pkgs.length === 2;
-  const packagesContainer = document.createElement("div");
-  packagesContainer.classList.add("packages");
+  if (!searchNavElement) {
+    throw new Error("Unable to found search navigation");
+  }
 
-  for (const pkg of pkgs) {
-    // Initialize Search nav
+  if (initFromZero) {
+    searchNavElement.innerHTML = "";
+    searchNavElement.appendChild(
+      initPackagesNavigation(data)
+    );
+  }
+
+  if (searchOptions !== null) {
+    const { nsn, secureDataSet } = searchOptions;
+
+    if (window.searchbar) {
+      console.log("[SEARCH-NAV] cleanup searchbar");
+      document.getElementById("searchbar")?.remove();
+    }
+
+    const searchElement = document.getElementById("searchbar-content");
+    searchNavElement.appendChild(
+      searchElement.content.cloneNode(true)
+    );
+
+    const searchBarPackagesContainer = document.getElementById("package-list");
+    for (const info of secureDataSet.packages) {
+      const content = `<p>${info.flags} ${info.name}</p><b>${info.version}</b>`;
+      searchBarPackagesContainer.insertAdjacentHTML(
+        "beforeend",
+        `<div class="package hide" data-value="${info.id}">${content}</div>`
+      );
+    }
+    window.searchbar = new SearchBar(nsn, secureDataSet.linker);
+  }
+}
+
+function initPackagesNavigation(data) {
+  const fragment = document.createDocumentFragment();
+  const packages = data.lru;
+
+  const hasAtLeast2Packages = packages.length > 1;
+  const hasExactly2Packages = packages.length === 2;
+  const container = createDOMElement("div", {
+    classList: ["packages"]
+  });
+
+  for (const pkg of packages) {
     const { name, version } = parseNpmSpec(pkg);
 
     const pkgElement = createDOMElement("div", {
@@ -38,62 +74,51 @@ export function initSearchNav(data, nsn, secureDataSet) {
     });
 
     if (hasAtLeast2Packages && pkg !== data.root) {
-      addRemoveButton(pkgElement, { hasExactly2Packages });
+      pkgElement.appendChild(
+        renderPackageRemoveButton(pkgElement.dataset.name, { hasExactly2Packages })
+      );
     }
 
-    packagesContainer.appendChild(pkgElement);
+    container.appendChild(pkgElement);
   }
 
-  searchNavElement.appendChild(packagesContainer);
-
-  const plusButtonElement = document.createElement("button");
-  plusButtonElement.classList.add("add");
-  plusButtonElement.appendChild(createDOMElement("p", {
-    text: "+"
-  }));
+  const plusButtonElement = createDOMElement("button", {
+    classList: ["add"],
+    childs: [
+      createDOMElement("p", { text: "+" })
+    ]
+  });
   plusButtonElement.addEventListener("click", () => {
     window.navigation.setNavByName("search--view");
   });
 
-  searchNavElement.appendChild(plusButtonElement);
+  fragment.append(container, plusButtonElement);
 
-  const searchElement = document.getElementById(kSearchbarId);
-  const searchElementClone = searchElement.content.cloneNode(true);
-  searchNavElement.appendChild(searchElementClone);
-
-  // Initialize searchbar
-  {
-    const dataListElement = document.getElementById("package-list");
-    for (const info of secureDataSet.packages) {
-      const content = `<p>${info.flags} ${info.name}</p><b>${info.version}</b>`;
-      dataListElement.insertAdjacentHTML("beforeend", `<div class="package hide" data-value="${info.id}">${content}</div>`);
-    }
-  }
-  window.searchbar = new SearchBar(nsn, secureDataSet.linker);
+  return fragment;
 }
 
-function addRemoveButton(pkgElement, options) {
+function renderPackageRemoveButton(packageName, options) {
   const {
     hasExactly2Packages
   } = options;
+
   // we allow to remove a package when at least 2 packages are present
-  const removeButton = document.createElement("button");
-  removeButton.classList.add("remove");
-  removeButton.textContent = "x";
+  const removeButton = createDOMElement("button", {
+    classList: ["remove"],
+    text: "x"
+  });
+
   removeButton.addEventListener("click", (event) => {
     event.stopPropagation();
-    const pkgToRemove = pkgElement.dataset.name;
-    window.socket.send(JSON.stringify({ action: "REMOVE", pkg: pkgToRemove }));
+    window.socket.send(JSON.stringify({ action: "REMOVE", pkg: packageName }));
 
     if (hasExactly2Packages) {
-      const allPackages = [...document.getElementById("search-nav").querySelectorAll(".package")];
-      for (const pkg of allPackages) {
-        const removeBtn = pkg.querySelector(".remove");
-        if (removeBtn) {
-          removeBtn.remove();
-        }
-      }
+      document
+        .getElementById("search-nav")
+        .querySelectorAll(".package")
+        .forEach((element) => element.querySelector(".remove")?.remove());
     }
   }, { once: true });
-  pkgElement.appendChild(removeButton);
+
+  return removeButton;
 }
