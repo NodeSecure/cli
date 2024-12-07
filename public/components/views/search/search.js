@@ -81,6 +81,9 @@ export class SearchView {
       for (const { name, version, description } of result) {
         const divResultElement = document.createElement("div");
         divResultElement.classList.add("result");
+        if (packageName === name) {
+          divResultElement.classList.add("exact");
+        }
 
         const pkgElement = document.createElement("div");
         pkgElement.classList.add("package-result");
