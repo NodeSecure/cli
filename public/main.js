@@ -64,7 +64,12 @@ document.addEventListener("DOMContentLoaded", async() => {
         }
       });
       searchview.reset();
-      await init();
+      const nsnActivePackage = secureDataSet.linker.get(0);
+      const nsnRootPackage = `${nsnActivePackage.name}@${nsnActivePackage.version}`;
+      if (data.status === "RELOAD" && nsnRootPackage !== window.activePackage) {
+        // it means we removed the previous active package, which is still active in network, so we need to re-init
+        await init();
+      }
     }
     else if (data.status === "SCAN") {
       searchview.onScan(data.pkg);
