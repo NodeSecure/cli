@@ -308,11 +308,12 @@ div.search-result-pannel .package+.package {
   cursor: pointer;
   color: #fff5dc;
   background: #ff3434e2;
-  font-family: "mononoki";
   margin-left: 10px;
-  border-radius: 2px;
+  border-radius: 50%;
+  line-height: 16px;
   text-shadow: 1px 1px 10px #000;
   font-weight: bold;
+  width: 20px;
 }
 
 #search-nav button.remove:hover {
