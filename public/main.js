@@ -136,6 +136,8 @@ async function init(options = {}) {
     }
   }
 
+  PackageInfo.close();
+
   console.log("[INFO] Node-Secure is ready!");
 }
 
