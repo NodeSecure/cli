@@ -121,7 +121,7 @@
   margin: auto;
   padding: 10px;
   border-radius: 4px;
-  background: linear-gradient(135deg,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(234,238,239,1) 100%);
+  background: linear-gradient(135deg, rgba(242, 245, 246, 1) 0%, rgba(227, 234, 237, 1) 37%, rgba(234, 238, 239, 1) 100%);
   box-shadow: 2px 2px 20px #3722af1f;
   border: 1px solid #FFF;
   box-sizing: border-box;
@@ -166,6 +166,10 @@
 
 input:-webkit-autofill {
   -webkit-background-clip: text;
+}
+
+.search-spinner {
+  margin: 25px auto 0;
 }
 
 .package-result {

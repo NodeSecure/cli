@@ -55,7 +55,14 @@ export class SearchView {
         return;
       }
 
+      const loaderElement = createDOMElement("div", {
+        classList: ["spinner", "search-spinner"]
+      });
+      this.searchForm.appendChild(loaderElement);
+
       const { result, count } = await getJSON(`/search/${encodeURIComponent(packageName)}`);
+
+      this.searchForm.querySelector(".spinner").remove();
 
       const divResultContainer = document.createElement("div");
       divResultContainer.classList.add("result-container");
