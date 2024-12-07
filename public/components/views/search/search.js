@@ -156,6 +156,8 @@ export class SearchView {
   }
 
   reset() {
+    const lang = currentLang();
+
     const searchViewContainer = document.querySelector("#search--view .container");
     searchViewContainer.innerHTML = "";
     const form = document.createElement("form");
@@ -165,7 +167,7 @@ export class SearchView {
     iconSearch.classList.add("icon-search");
     const input = document.createElement("input");
     input.type = "text";
-    input.placeholder = "fastify, express...";
+    input.placeholder = window.i18n[lang].search.registryPlaceholder;
     input.name = "package";
     input.id = "package";
     formGroup.appendChild(iconSearch);

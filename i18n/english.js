@@ -192,7 +192,8 @@ const ui = {
     default: "Search options",
     packagesCache: "Packages available in the cache",
     noPackageFound: "No package found",
-    packageLengthErr: "Package name must be between 2 and 64 characters."
+    packageLengthErr: "Package name must be between 2 and 64 characters.",
+    registryPlaceholder: "Search packages"
   },
   legend: {
     default: "The package is fine.",
