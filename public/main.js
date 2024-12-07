@@ -25,6 +25,7 @@ import * as utils from "./common/utils.js";
 let secureDataSet;
 let nsn;
 let searchview;
+let packageInfoOpened = false;
 
 document.addEventListener("DOMContentLoaded", async() => {
   window.scannedPackageCache = [];
@@ -36,6 +37,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   window.wiki = new Wiki();
 
   await init();
+  onSettingsSaved();
 
   window.socket = new WebSocket(`ws://${window.location.hostname}:1338`);
   window.socket.addEventListener("message", async(event) => {
@@ -58,6 +60,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         "[INFO] Older packages are loaded!",
         window.scannedPackageCache
       );
+
       initSearchNav(data, {
         searchOptions: {
           nsn, secureDataSet
@@ -65,10 +68,17 @@ document.addEventListener("DOMContentLoaded", async() => {
       });
       searchview.reset();
       const nsnActivePackage = secureDataSet.linker.get(0);
-      const nsnRootPackage = `${nsnActivePackage.name}@${nsnActivePackage.version}`;
-      if (data.status === "RELOAD" && nsnRootPackage !== window.activePackage) {
+      const nsnRootPackage = nsnActivePackage ? `${nsnActivePackage.name}@${nsnActivePackage.version}` : null;
+      if (data.status === "RELOAD" && nsnRootPackage !== null && nsnRootPackage !== window.activePackage) {
         // it means we removed the previous active package, which is still active in network, so we need to re-init
         await init();
+
+        // FIXME: initSearchNav is called twice, we need to fix this
+        initSearchNav(data, {
+          searchOptions: {
+            nsn, secureDataSet
+          }
+        });
       }
     }
     else if (data.status === "SCAN") {
@@ -85,7 +95,6 @@ document.addEventListener("DOMContentLoaded", async() => {
 async function init(options = {}) {
   const { navigateToNetworkView = false } = options;
 
-  let packageInfoOpened = false;
   secureDataSet = new NodeSecureDataSet({
     flagsToIgnore: window.settings.config.ignore.flags,
     warningsToIgnore: window.settings.config.ignore.warnings
@@ -98,68 +107,19 @@ async function init(options = {}) {
   NodeSecureNetwork.networkElementId = "dependency-graph";
   nsn = new NodeSecureNetwork(secureDataSet, { i18n: window.i18n[utils.currentLang()] });
   window.locker = new Locker(nsn);
-  const legend = new Legend({ show: window.settings.config.showFriendlyDependencies });
+  window.legend = new Legend({ show: window.settings.config.showFriendlyDependencies });
   new HomeView(secureDataSet, nsn);
   searchview ??= new SearchView(secureDataSet, nsn);
 
   window.addEventListener("package-info-closed", () => {
-    networkNavigation.currentNodeParams = null;
+    window.networkNav.currentNodeParams = null;
     packageInfoOpened = false;
   });
 
   nsn.network.on("click", updateShowInfoMenu);
 
-  function getNodeLevel(node) {
-    const rootNode = secureDataSet.linker.get(0);
-    if (node.id === rootNode.id) {
-      return 0;
-    }
-
-    let level = 1;
-    let currentNode = node;
-    while (currentNode.usedBy[rootNode.name] === undefined) {
-      currentNode = secureDataSet.linker.get(
-        [...secureDataSet.linker].find(([_, { name }]) => Object.keys(currentNode.usedBy)[0] === name)[0]
-      );
-      level++;
-    }
-
-    return level;
-  }
-
   const networkNavigation = new NetworkNavigation(secureDataSet, nsn);
   window.networkNav = networkNavigation;
-
-  window.addEventListener("settings-saved", async(event) => {
-    const warningsToIgnore = new Set(event.detail.ignore.warnings);
-    const flagsToIgnore = new Set(event.detail.ignore.flags);
-    secureDataSet.warningsToIgnore = warningsToIgnore;
-    secureDataSet.flagsToIgnore = flagsToIgnore;
-    window.settings.config.ignore.warnings = warningsToIgnore;
-    window.settings.config.ignore.flags = flagsToIgnore;
-
-    await secureDataSet.init(
-      secureDataSet.data,
-      secureDataSet.FLAGS
-    );
-    const { nodes } = secureDataSet.build();
-    nsn.nodes.update(nodes.get());
-    const rootNode = secureDataSet.linker.get(0);
-    window.activePackage = rootNode.name;
-
-    if (networkNavigation.currentNodeParams !== null) {
-      window.navigation.setNavByName("network--view");
-      nsn.neighbourHighlight(networkNavigation.currentNodeParams, window.i18n[utils.currentLang()]);
-      updateShowInfoMenu(networkNavigation.currentNodeParams);
-    }
-
-    if (event.detail.showFriendlyDependencies) {
-      legend.show();
-    }
-    else {
-      legend.hide();
-    }
-  });
 
   if (navigateToNetworkView) {
     window.navigation.setNavByName("network--view");
@@ -177,33 +137,84 @@ async function init(options = {}) {
   }
 
   console.log("[INFO] Node-Secure is ready!");
+}
 
-  async function updateShowInfoMenu(params) {
-    if (params.nodes.length === 0) {
-      networkNavigation.currentNodeParams = null;
+function getNodeLevel(node) {
+  const rootNode = secureDataSet.linker.get(0);
+  if (node.id === rootNode.id) {
+    return 0;
+  }
 
-      return PackageInfo.close();
-    }
-
-    if (networkNavigation.currentNodeParams?.nodes[0] === params.nodes[0] && packageInfoOpened === true) {
-      return void 0;
-    }
-
-    packageInfoOpened = true;
-    networkNavigation.currentNodeParams = params;
-    const currentNode = networkNavigation.currentNodeParams.nodes[0];
-    const selectedNode = secureDataSet.linker.get(
-      Number(currentNode)
+  let level = 1;
+  let currentNode = node;
+  while (currentNode.usedBy[rootNode.name] === undefined) {
+    currentNode = secureDataSet.linker.get(
+      [...secureDataSet.linker].find(([_, { name }]) => Object.keys(currentNode.usedBy)[0] === name)[0]
     );
-    const selectedNodeLevel = getNodeLevel(selectedNode);
+    level++;
+  }
 
-    networkNavigation.setLevel(selectedNodeLevel);
-    if (networkNavigation.dependenciesMapByLevel.get(selectedNodeLevel) === undefined) {
-      networkNavigation.dependenciesMapByLevel.set(selectedNodeLevel, params);
-    }
+  return level;
+}
 
-    new PackageInfo(selectedNode, currentNode, secureDataSet.data.dependencies[selectedNode.name], nsn);
+async function updateShowInfoMenu(params) {
+  if (params.nodes.length === 0) {
+    window.networkNav.currentNodeParams = null;
 
+    return PackageInfo.close();
+  }
+
+  if (window.networkNav.currentNodeParams?.nodes[0] === params.nodes[0] && packageInfoOpened === true) {
     return void 0;
   }
+
+  packageInfoOpened = true;
+  window.networkNav.currentNodeParams = params;
+  const currentNode = window.networkNav.currentNodeParams.nodes[0];
+  const selectedNode = secureDataSet.linker.get(
+    Number(currentNode)
+  );
+  const selectedNodeLevel = getNodeLevel(selectedNode);
+
+  window.networkNav.setLevel(selectedNodeLevel);
+  if (window.networkNav.dependenciesMapByLevel.get(selectedNodeLevel) === undefined) {
+    window.networkNav.dependenciesMapByLevel.set(selectedNodeLevel, params);
+  }
+
+  new PackageInfo(selectedNode, currentNode, secureDataSet.data.dependencies[selectedNode.name], nsn);
+
+  return void 0;
+}
+
+function onSettingsSaved() {
+  window.addEventListener("settings-saved", async(event) => {
+    const warningsToIgnore = new Set(event.detail.ignore.warnings);
+    const flagsToIgnore = new Set(event.detail.ignore.flags);
+    secureDataSet.warningsToIgnore = warningsToIgnore;
+    secureDataSet.flagsToIgnore = flagsToIgnore;
+    window.settings.config.ignore.warnings = warningsToIgnore;
+    window.settings.config.ignore.flags = flagsToIgnore;
+
+    await secureDataSet.init(
+      secureDataSet.data,
+      secureDataSet.FLAGS
+    );
+    const { nodes } = secureDataSet.build();
+    nsn.nodes.update(nodes.get());
+    const rootNode = secureDataSet.linker.get(0);
+    window.activePackage = rootNode.name;
+
+    if (window.networkNav.currentNodeParams !== null) {
+      window.navigation.setNavByName("network--view");
+      nsn.neighbourHighlight(window.networkNav.currentNodeParams, window.i18n[utils.currentLang()]);
+      updateShowInfoMenu(window.networkNav.currentNodeParams);
+    }
+
+    if (event.detail.showFriendlyDependencies) {
+      window.legend.show();
+    }
+    else {
+      window.legend.hide();
+    }
+  });
 }
