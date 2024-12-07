@@ -125,6 +125,7 @@
   box-shadow: 2px 2px 20px #3722af1f;
   border: 1px solid #FFF;
   box-sizing: border-box;
+  position: relative;
 }
 
 .form-group>input,
@@ -156,6 +157,18 @@
   border: 9px solid #dbdcef;
   border-right-color: #474bff;
   animation: spinner-d3wgkg 1s infinite linear;
+}
+
+.spinner-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 4px solid #dbdcef;
+  border-right-color: #474bff;
+  animation: spinner-d3wgkg 1s infinite linear;
+  position: absolute;
+  right: 10px;
+  margin: 0 !important;
 }
 
 @keyframes spinner-d3wgkg {
@@ -226,12 +239,11 @@ input:-webkit-autofill {
 
 .cache-packages .package-result {
   margin-top: 10px;
-  cursor: pointer;
   background: #54688419;
   padding: 5px 10px;
 }
 
-.cache-packages .package-result:hover {
+.cache-packages .package-result:has(span:hover) {
   color: var(--secondary-darker);
   background: #5468842a;
   cursor: pointer;

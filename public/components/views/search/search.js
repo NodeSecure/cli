@@ -35,6 +35,7 @@ export class SearchView {
   initialize() {
     this.searchContainer = document.querySelector("#search--view .container");
     this.searchForm = document.querySelector("#search--view form");
+    const formGroup = this.searchForm.querySelector(".form-group");
     const input = this.searchForm.querySelector("input");
     const lang = currentLang();
 
@@ -56,13 +57,13 @@ export class SearchView {
       }
 
       const loaderElement = createDOMElement("div", {
-        classList: ["spinner", "search-spinner"]
+        classList: ["spinner-small", "search-spinner"]
       });
-      this.searchForm.appendChild(loaderElement);
+      formGroup.appendChild(loaderElement);
 
       const { result, count } = await getJSON(`/search/${encodeURIComponent(packageName)}`);
 
-      this.searchForm.querySelector(".spinner").remove();
+      this.searchForm.querySelector(".spinner-small").remove();
 
       const divResultContainer = document.createElement("div");
       divResultContainer.classList.add("result-container");
