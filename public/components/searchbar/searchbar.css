@@ -303,7 +303,6 @@ div.search-result-pannel .package+.package {
 #search-nav button.remove {
   display: none;
   border: none;
-  background: transparent;
   position: relative;
   cursor: pointer;
   color: #fff5dc;

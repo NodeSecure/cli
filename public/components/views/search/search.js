@@ -2,7 +2,7 @@
 import { getJSON, NodeSecureDataSet, NodeSecureNetwork } from "@nodesecure/vis-network";
 
 // Import Internal Dependencies
-import { currentLang, debounce } from "../../../common/utils.js";
+import { currentLang, debounce, createDOMElement } from "../../../common/utils.js";
 
 // CONSTANTS
 const kMinPackageNameLength = 2;
@@ -134,7 +134,15 @@ export class SearchView {
         pkgSpanElement.addEventListener("click", () => {
           window.socket.send(JSON.stringify({ action: "SEARCH", pkg }));
         }, { once: true });
-        pkgElement.appendChild(pkgSpanElement);
+        const removeButton = createDOMElement("button", {
+          classList: ["remove"],
+          text: "x"
+        });
+        removeButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          window.socket.send(JSON.stringify({ action: "REMOVE", pkg }));
+        }, { once: true });
+        pkgElement.append(pkgSpanElement, removeButton);
         cachePackagesElement.appendChild(pkgElement);
       }
     }

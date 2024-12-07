@@ -170,7 +170,7 @@ input:-webkit-autofill {
 
 .package-result {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
   padding-left: 5px;
   width: 100%;
@@ -183,6 +183,20 @@ input:-webkit-autofill {
   margin-top: 5px;
   margin-bottom: 8px;
   line-height: 20px;
+}
+
+.package-result button.remove {
+  border: none;
+  position: relative;
+  cursor: pointer;
+  color: #fff5dc;
+  background: #ff3434e2;
+  margin-left: auto;
+  border-radius: 50%;
+  line-height: 16px;
+  text-shadow: 1px 1px 10px #000;
+  font-weight: bold;
+  width: 20px;
 }
 
 .cache-packages {
