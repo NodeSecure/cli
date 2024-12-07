@@ -64,6 +64,7 @@ document.addEventListener("DOMContentLoaded", async() => {
         }
       });
       searchview.reset();
+      await init();
     }
     else if (data.status === "SCAN") {
       searchview.onScan(data.pkg);
