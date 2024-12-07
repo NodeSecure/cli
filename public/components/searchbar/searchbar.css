@@ -225,7 +225,6 @@ div.search-result-pannel .package+.package {
 #search-nav .packages {
   height: inherit;
   display: flex;
-  overflow-x: auto;
   max-width: calc(100vw - 70px - 264px);
   background: var(--primary);
 }
