@@ -1,32 +1,49 @@
-// Import Node.js Dependencies
-import path from "node:path";
-import os from "node:os";
-
-// Import Third-party Depedencies
-import cacache from "cacache";
+// Import Internal Dependencies
+import { appCache } from "./cache.js";
+import { logger } from "./logger.js";
 
 // CONSTANTS
-const kCachePath = path.join(os.tmpdir(), "nsecure-cli");
-const kConfigKey = "cli-config";
+const kDefaultConfig = {
+  defaultPackageMenu: "info",
+  ignore: { flags: [], warnings: [] }
+};
 
 export async function get() {
   try {
-    const { data } = await cacache.get(kCachePath, kConfigKey);
+    const config = await appCache.getConfig();
 
-    return JSON.parse(data.toString());
+    const {
+      defaultPackageMenu,
+      ignore: {
+        flags,
+        warnings
+      } = {}
+    } = config;
+    logger.info(`[config|get](defaultPackageMenu: ${defaultPackageMenu}|ignore-flag: ${flags}|ignore-warnings: ${warnings})`);
+
+    return config;
   }
-  catch {
-    const defaultValue = {
-      defaultPackageMenu: "info",
-      ignore: { flags: [], warnings: [] }
-    };
+  catch (err) {
+    logger.error(`[config|get](error: ${err.message})`);
 
-    await cacache.put(kCachePath, kConfigKey, JSON.stringify(defaultValue));
+    await appCache.updateConfig(kDefaultConfig);
 
-    return defaultValue;
+    logger.info(`[config|get](fallback to default: ${JSON.stringify(kDefaultConfig)})`);
+
+    return kDefaultConfig;
   }
 }
 
 export async function set(newValue) {
-  await cacache.put(kCachePath, kConfigKey, JSON.stringify(newValue));
+  logger.info(`[config|set](config: ${newValue})`);
+  try {
+    await appCache.updateConfig(newValue);
+
+    logger.info(`[config|set](sucess)`);
+  }
+  catch (err) {
+    logger.error(`[config|set](error: ${err.message})`);
+
+    throw err;
+  }
 }

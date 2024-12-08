@@ -1,4 +1,5 @@
-/* eslint-disable max-len */
+/* eslint-disable @stylistic/max-len */
+
 // Import Third-party Dependencies
 import { taggedString as tS } from "@nodesecure/i18n";
 
@@ -188,7 +189,11 @@ const ui = {
     "Node.js core modules": "Modules de base de Node.js",
     "Available licenses": "Licences disponibles",
     "Available flags": "Drapeaux disponibles",
-    default: "Options de recherche"
+    default: "Options de recherche",
+    packagesCache: "Packages disponibles dans le cache",
+    noPackageFound: "Aucun package trouvé",
+    packageLengthErr: "Le nom du package doit être compris entre 2 et 64 caractères.",
+    registryPlaceholder: "Recherche de packages"
   },
   legend: {
     default: "Rien à signaler.",

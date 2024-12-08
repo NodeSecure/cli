@@ -1,6 +1,4 @@
 // Import Node.js Dependencies
-import path from "node:path";
-import os from "node:os";
 import { describe, it, before, after } from "node:test";
 import assert from "node:assert";
 
@@ -9,12 +7,12 @@ import cacache from "cacache";
 
 // Import Internal Dependencies
 import { get, set } from "../src/http-server/config.js";
+import { CACHE_PATH } from "../src/http-server/cache.js";
 
 // CONSTANTS
-const kCachePath = path.join(os.tmpdir(), "nsecure-cli");
-const kConfigKey = "cli-config";
+const kConfigKey = "___config";
 
-describe("config", () => {
+describe("config", { concurrency: 1 }, () => {
   let actualConfig;
 
   before(async() => {
@@ -26,7 +24,7 @@ describe("config", () => {
   });
 
   it("should get default config from empty cache", async() => {
-    await cacache.rm(kCachePath, kConfigKey);
+    await cacache.rm(CACHE_PATH, kConfigKey);
     const value = await get();
 
     assert.deepStrictEqual(value, {
@@ -36,7 +34,7 @@ describe("config", () => {
   });
 
   it("should get config from cache", async() => {
-    await cacache.put(kCachePath, kConfigKey, JSON.stringify({ foo: "bar" }));
+    await cacache.put(CACHE_PATH, kConfigKey, JSON.stringify({ foo: "bar" }));
     const value = await get();
 
     assert.deepStrictEqual(value, { foo: "bar" });

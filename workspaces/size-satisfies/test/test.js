@@ -1,7 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert";
 
-
 // Require Internal Dependencies
 import sizeSatisfies from "../index.js";
 
@@ -19,5 +18,4 @@ test("assert sizeSatisfies", () => {
   assert.strictEqual(sizeSatisfies("> 45KB", "45KB"), false);
   assert.strictEqual(sizeSatisfies("< 45KB", "44KB"), true);
 });
-
 

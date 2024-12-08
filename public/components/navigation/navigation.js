@@ -5,6 +5,7 @@ import { PackageInfo } from "../package/package.js";
 const kAvailableView = new Set([
   "network--view",
   "home--view",
+  "search--view",
   "settings--view"
 ]);
 
@@ -50,6 +51,10 @@ export class ViewNavigation {
           this.onNavigationSelected(this.menus.get("settings--view"));
           break;
         }
+        case hotkeys.search: {
+          this.onNavigationSelected(this.menus.get("search--view"));
+          break;
+        }
       }
     });
   }
@@ -67,6 +72,11 @@ export class ViewNavigation {
     document.getElementById(menuName).classList.remove("hidden");
     selectedNav.classList.add("active");
     this.setAnchor(menuName);
+
+    const searchbar = document.getElementById("searchbar");
+    if (searchbar) {
+      searchbar.style.display =  menuName === "network--view" ? "flex" : "none";
+    }
 
     this.activeMenu = selectedNav;
   }

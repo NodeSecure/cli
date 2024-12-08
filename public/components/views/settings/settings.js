@@ -12,7 +12,8 @@ const kDefaultHotKeys = {
   network: "N",
   settings: "S",
   wiki: "W",
-  lock: "L"
+  lock: "L",
+  search: "F"
 };
 const kShortcutInputTargetIds = new Set(Object.keys(kDefaultHotKeys));
 

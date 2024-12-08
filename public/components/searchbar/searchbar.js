@@ -20,12 +20,8 @@ const kHelpersTemplateName = {
     const fragment = document.createDocumentFragment();
     const items = new Set();
 
-    for (const { license } of linker.values()) {
-      if (typeof license === "string") {
-        items.add("Unknown");
-        continue;
-      }
-      license.uniqueLicenseIds.forEach((ext) => items.add(ext));
+    for (const { uniqueLicenseIds = [] } of linker.values()) {
+      uniqueLicenseIds.forEach((ext) => items.add(ext));
     }
     [...items].forEach((value) => fragment.appendChild(createLineElement(value)));
 
@@ -56,7 +52,10 @@ const kHelpersTemplateName = {
     const fragment = document.createDocumentFragment();
     const items = new Set();
     for (const { author } of linker.values()) {
-      items.add(typeof author === "string" ? author : author.name);
+      if (author === null) {
+        continue;
+      }
+      items.add(author.name);
     }
     [...items].forEach((value) => fragment.appendChild(createLineElement(value)));
 
@@ -310,6 +309,10 @@ export class SearchBar {
         self.focusNodeById(this.getAttribute("data-value"));
       });
     }
+
+    if (window.navigation.getAnchor() !== "network--view") {
+      this.container.style.display = "none";
+    }
   }
 
   addNewSearchText(filterName, searchedValue) {
@@ -378,7 +381,7 @@ export class SearchBar {
     const titleText = window.i18n[currentLang()].search[
       Reflect.has(kHelpersTitleName, filterName) ? kHelpersTitleName[filterName] : "default"
     ];
-    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @stylistic/max-len
     this.helper.innerHTML = `<div class="title"><p>${titleText}</p><a href="https://github.com/NodeSecure/cli#searchbar-filters" rel="noopener" target="_blank"><i class="icon-attention-circled"></i></a></div>`;
     this.helper.appendChild(clone);
   }
@@ -434,8 +437,9 @@ export class SearchBar {
           break;
         }
         case "license": {
-          const licences = typeof opt.license === "string" ? ["Unknown"] : [...new Set(opt.license.uniqueLicenseIds)];
-          const hasMatchingLicense = licences.some((value) => new RegExp(inputValue, "gi").test(value));
+          const hasMatchingLicense = opt.uniqueLicenseIds.some(
+            (value) => new RegExp(inputValue, "gi").test(value)
+          );
           if (hasMatchingLicense) {
             matchingIds.add(String(id));
           }
@@ -470,8 +474,10 @@ export class SearchBar {
         case "author": {
           const authorRegex = new RegExp(inputValue, "gi");
 
-          if ((typeof opt.author === "string" && authorRegex.test(opt.author)) ||
-            (opt.author.name && authorRegex.test(opt.author.name))) {
+          if (
+            (typeof opt.author === "string" && authorRegex.test(opt.author)) ||
+            (opt.author !== null && "name" in opt.author && authorRegex.test(opt.author.name))
+          ) {
             matchingIds.add(String(id));
           }
           break;

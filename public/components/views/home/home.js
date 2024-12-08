@@ -40,6 +40,10 @@ export class HomeView {
     this.nsn = nsn;
     this.lang = utils.currentLang();
 
+    const homeViewHTMLElement = document.getElementById("home--view");
+    homeViewHTMLElement.innerHTML = "";
+    homeViewHTMLElement.appendChild(this.render());
+
     this.generateScorecard();
     this.generateHeader();
     this.generateOverview();
@@ -49,6 +53,19 @@ export class HomeView {
     this.generateLicenses();
     this.generateMaintainers();
     this.handleReport();
+  }
+
+  render() {
+    console.log("[HOME] cloning new template");
+    const template = document.getElementById("home-view-content");
+    if (!template) {
+      throw new Error("Unable to find HTML template with ID 'home-view-content'");
+    }
+
+    /** @type {HTMLTemplateElement} */
+    const clone = document.importNode(template.content, true);
+
+    return clone;
   }
 
   generateScorecard() {
