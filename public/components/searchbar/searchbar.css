@@ -190,7 +190,7 @@ div.search-result-pannel .package>b {
 }
 
 div.search-result-pannel .package.hide {
-  display: none;
+  display: none !important;
 }
 
 div.search-result-pannel .package+.package {
