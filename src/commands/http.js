@@ -1,10 +1,10 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
 import path from "node:path";
+import { styleText } from "node:util";
 
 // Import Third-party Dependencies
 import * as SemVer from "semver";
-import kleur from "kleur";
 import * as i18n from "@nodesecure/i18n";
 
 // Import Internal Dependencies
@@ -47,13 +47,13 @@ function assertScannerVersion(
   if (!SemVer.satisfies(scannerVersion, kRequiredScannerRange)) {
     const error = i18n.getTokenSync(
       "cli.startHttp.invalidScannerVersion",
-      kleur.yellow(scannerVersion),
-      kleur.yellow(kRequiredScannerRange)
+      styleText("yellow", scannerVersion),
+      styleText("yellow", kRequiredScannerRange)
     );
     const regenerate = i18n.getTokenSync("cli.startHttp.regenerate");
 
     console.log(" > " + path.basename(dataFilePath));
-    console.log(" > " + kleur.red().bold(error));
+    console.log(" > " + styleText(["red", "bold"], error));
     console.log(` > ${regenerate}`);
     console.log();
 

@@ -1,6 +1,8 @@
+// Import Node.js Dependencies
+import { styleText } from "node:util";
+
 // Import Third-party Dependencies
 import * as i18n from "@nodesecure/i18n";
-import kleur from "kleur";
 
 export function taggedI18nString(strings, ...keys) {
   return function cur(...i18nParameters) {
@@ -15,6 +17,6 @@ export function taggedI18nString(strings, ...keys) {
       );
     });
 
-    return kleur.white().bold(finalString.join(""));
+    return styleText(["white", "bold"], finalString.join(""));
   };
 }

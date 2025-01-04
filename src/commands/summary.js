@@ -1,18 +1,15 @@
 // Import Node.js Dependencies
 import fs from "node:fs/promises";
 import path from "node:path";
+import { styleText } from "node:util";
 
 // Import Third-party Dependencies
 import cliui from "@topcli/cliui";
-import kleur from "kleur";
 import * as i18n from "@nodesecure/i18n";
 import { formatBytes } from "@nodesecure/utils";
 
-// VARS
-const { yellow, grey, white, green, cyan, red } = kleur;
-
 function separatorLine() {
-  return grey("-".repeat(80));
+  return styleText("grey", "-".repeat(80));
 }
 
 export async function main(json = "nsecure-result.json") {
@@ -22,7 +19,8 @@ export async function main(json = "nsecure-result.json") {
   const { rootDependencyName, dependencies } = JSON.parse(rawAnalysis);
 
   const ui = cliui({ width: 80 });
-  const title = `${white().bold(`${i18n.getTokenSync("ui.stats.title")}:`)} ${cyan().bold(rootDependencyName)}`;
+  const title = `${styleText(["white", "bold"],
+    `${i18n.getTokenSync("ui.stats.title")}:`)} ${styleText(["cyan", "bold"], rootDependencyName)}`;
   ui.div(
     { text: title, width: 50 }
   );
@@ -38,21 +36,21 @@ export async function main(json = "nsecure-result.json") {
     } = extractAnalysisData(dependencies);
 
     ui.div(
-      { text: white().bold(`${i18n.getTokenSync("ui.stats.total_packages")}:`), width: 60 },
-      { text: green().bold(`${packagesCount}`), width: 20, align: "right" }
+      { text: styleText(["white", "bold"], `${i18n.getTokenSync("ui.stats.total_packages")}:`), width: 60 },
+      { text: styleText(["green", "bold"], `${packagesCount}`), width: 20, align: "right" }
     );
     ui.div(
-      { text: white().bold(`${i18n.getTokenSync("ui.stats.total_size")}:`), width: 60 },
-      { text: green().bold(`${formatBytes(totalSize)}`), width: 20, align: "right" }
+      { text: styleText(["white", "bold"], `${i18n.getTokenSync("ui.stats.total_size")}:`), width: 60 },
+      { text: styleText(["green", "bold"], `${formatBytes(totalSize)}`), width: 20, align: "right" }
     );
     ui.div(
-      { text: white().bold(`${i18n.getTokenSync("ui.stats.indirect_deps")}:`), width: 60 },
-      { text: green().bold(`${packageWithIndirectDeps}`), width: 20, align: "right" }
+      { text: styleText(["white", "bold"], `${i18n.getTokenSync("ui.stats.indirect_deps")}:`), width: 60 },
+      { text: styleText(["green", "bold"], `${packageWithIndirectDeps}`), width: 20, align: "right" }
     );
 
     ui.div("");
     ui.div(
-      { text: white().bold(`${i18n.getTokenSync("ui.stats.extensions")}:`), width: 40 }
+      { text: styleText(["white", "bold"], `${i18n.getTokenSync("ui.stats.extensions")}:`), width: 40 }
     );
     const extensionEntries = Object.entries(extensionMap);
     ui.div(
@@ -63,19 +61,19 @@ export async function main(json = "nsecure-result.json") {
 
     ui.div("");
     ui.div(
-      { text: white().bold(`${i18n.getTokenSync("ui.stats.licenses")}:`), width: 40 }
+      { text: styleText(["white", "bold"], `${i18n.getTokenSync("ui.stats.licenses")}:`), width: 40 }
     );
     const licenceEntries = Object.entries(licenceMap);
     ui.div(
       {
-        text: yellow().bold(`${licenceEntries.reduce(buildStringFromEntries, "")}`)
+        text: styleText(["yellow", "bold"], `${licenceEntries.reduce(buildStringFromEntries, "")}`)
       }
     );
   }
   else {
     ui.div(
-      { text: red().bold("Error:"), width: 20 },
-      { text: yellow().bold("No dependencies"), width: 30 }
+      { text: styleText(["red", "bold"], "Error:"), width: 20 },
+      { text: styleText(["yellow", "bold"], "No dependencies"), width: 30 }
     );
   }
   ui.div({ text: separatorLine() });
@@ -87,10 +85,10 @@ export async function main(json = "nsecure-result.json") {
 // eslint-disable-next-line max-params
 function buildStringFromEntries(accumulator, [extension, count], index, sourceArray) {
   // eslint-disable-next-line no-param-reassign
-  accumulator += `(${yellow(count)}) ${white().bold(extension)} `;
+  accumulator += `(${styleText("yellow", count)}) ${styleText(["white", "bold"], extension)} `;
   if (index !== sourceArray.length - 1) {
     // eslint-disable-next-line no-param-reassign
-    accumulator += cyan("- ");
+    accumulator += styleText("cyan", "- ");
   }
 
   return accumulator;

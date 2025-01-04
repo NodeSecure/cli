@@ -3,10 +3,10 @@ import os from "node:os";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { styleText } from "node:util";
 
 // Import Third-party Dependencies
 import * as RC from "@nodesecure/rc";
-import kleur from "kleur";
 import { spawn } from "node:child_process";
 
 const K_HOME_PATH = path.join(os.homedir(), "nodesecure");
@@ -19,20 +19,12 @@ function spawnCodeAtNodeSecureRc(path, isCwd = false) {
   }
 
   console.log(
-    kleur
-      .white()
-      .bold(
-        `\n ${kleur.yellow().bold(`There is no .nodesecurerc here: ${path}`)}`
-      )
+    styleText(["white", "bold"], `\n ${styleText(["yellow", "bold"], `There is no .nodesecurerc here: ${path}`)}`)
   );
 
   if (isCwd) {
     console.log(
-      kleur
-        .white()
-        .bold(
-          `\n ${kleur.yellow().bold("You must try to run nsecure config create")}`
-        )
+      styleText(["white", "bold"], `\n ${styleText(["yellow", "bold"], "You must try to run nsecure config create")}`)
     );
   }
 
@@ -43,12 +35,9 @@ export function editConfigFile() {
   console.log("");
 
   console.log(
-    kleur
-      .white()
-      .bold(
-        `\n ${kleur.yellow().bold("Try to opened up your Nodesecure configuration in vscode")}`
-      )
-  );
+    styleText(
+      ["white", "bold"], `\n ${styleText(["yellow", "bold"], "Try to opened up your Nodesecure configuration in vscode")}`
+    ));
 
   const isNodeSecureRcAtHomeDir = spawnCodeAtNodeSecureRc(path.join(K_HOME_PATH, RC.CONSTANTS.CONFIGURATION_NAME));
 
@@ -63,12 +52,9 @@ export async function createConfigFile(configuration = "minimal", opts) {
   const pathConfigFile = cwd ? process.cwd() : K_HOME_PATH;
   console.log("");
   console.log(
-    kleur
-      .white()
-      .bold(
-        `\n ${kleur.yellow().bold(`We are going to create the Nodesecure configuration file at: ${pathConfigFile}`)}`
-      )
-  );
+    styleText(["white", "bold"],
+      `\n ${styleText(["yellow", "bold"], `We are going to create the Nodesecure configuration file at: ${pathConfigFile}`)}`
+    ));
   await fs.mkdir(pathConfigFile, { recursive: true });
 
   await RC.read(pathConfigFile, { createIfDoesNotExist: true, createMode: configuration });

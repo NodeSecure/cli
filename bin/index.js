@@ -6,9 +6,9 @@ dotenv.config();
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { styleText } from "node:util";
 
 // Import Third-party Dependencies
-import kleur from "kleur";
 import sade from "sade";
 import semver from "semver";
 import * as i18n from "@nodesecure/i18n";
@@ -30,11 +30,13 @@ await i18n.extendFromSystemPath(
   path.join(__dirname, "..", "i18n")
 );
 
-console.log(kleur.grey().bold(`\n > ${i18n.getTokenSync("cli.executing_at")}: ${kleur.yellow().bold(process.cwd())}\n`));
+console.log(
+  styleText(["gray", "bold"], `\n > ${i18n.getTokenSync("cli.executing_at")}: ${styleText(["yellow", "bold"], process.cwd())}\n`)
+);
 
 const minVersion = semver.minVersion(manifest.engines.node);
 if (semver.lt(process.versions.node, minVersion)) {
-  console.log(kleur.red().bold(` [!] ${i18n.getTokenSync("cli.min_nodejs_version", minVersion)}\n`));
+  console.log(styleText(["red", "bold"], ` [!] ${i18n.getTokenSync("cli.min_nodejs_version", minVersion)}\n`));
   process.exit(0);
 }
 
@@ -138,10 +140,10 @@ function defaultScannerCommand(name, options = {}) {
 
 function checkNodeSecureToken() {
   if (!process.env.NODE_SECURE_TOKEN) {
-    const varEnvName = kleur.yellow().bold("NODE_SECURE_TOKEN");
+    const varEnvName = styleText(["yellow", "bold"], "NODE_SECURE_TOKEN");
 
     console.log(
-      kleur.red().bold(`${i18n.getTokenSync("cli.missingEnv", varEnvName)}\n`)
+      styleText(["red", "bold"], `${i18n.getTokenSync("cli.missingEnv", varEnvName)}\n`)
     );
   }
 }
