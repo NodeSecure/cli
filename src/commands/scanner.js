@@ -2,9 +2,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import events from "node:events";
+import { styleText } from "node:util";
 
 // Import Third-party Dependencies
-import kleur from "kleur";
 import filenamify from "filenamify";
 import { Spinner } from "@topcli/spinner";
 import ms from "ms";
@@ -108,11 +108,13 @@ function initLogger(spec, verbose = true) {
 
     if (eventName === "fetchManifest") {
       spinner[eventName]
-        .start(kleur.white().bold(i18n.getTokenSync(spinner.i18n.start[eventName], kleur.green().bold(spec))));
+        .start(
+          styleText(["white", "bold"], i18n.getTokenSync(spinner.i18n.start[eventName], styleText(["green", "bold"], spec)))
+        );
     }
     else {
       spinner[eventName]
-        .start(kleur.white().bold(i18n.getTokenSync(spinner.i18n.start[eventName])));
+        .start(styleText(["white", "bold"], i18n.getTokenSync(spinner.i18n.start[eventName])));
     }
   });
 
@@ -121,8 +123,10 @@ function initLogger(spec, verbose = true) {
       return;
     }
 
-    const stats = kleur.gray().bold(`[${kleur.yellow().bold(logger.count(eventName))}/${logger.count("walkTree")}]`);
-    spinner[eventName].text = kleur.white().bold(`${i18n.getTokenSync(spinner.i18n.tick[eventName])} ${stats}`);
+    const stats = styleText(
+      ["white", "bold"], `[${styleText(["yellow", "bold"], logger.count(eventName))}/${logger.count("walkTree")}]`
+    );
+    spinner[eventName].text = styleText(["white", "bold"], `${i18n.getTokenSync(spinner.i18n.tick[eventName])} ${stats}`);
   });
 
   logger.on("end", (eventName) => {
@@ -132,20 +136,23 @@ function initLogger(spec, verbose = true) {
 
     const spin = spinner[eventName];
     const tokenName = spinner.i18n.end[eventName];
-    const execTime = kleur.cyan().bold(ms(Number(spin.elapsedTime.toFixed(2))));
+    const execTime = styleText(["cyan", "bold"], ms(Number(spin.elapsedTime.toFixed(2))));
 
     if (eventName === "walkTree") {
-      spin.succeed(kleur.white().bold(
-        i18n.getTokenSync(tokenName, kleur.yellow().bold(i18n.getTokenSync("depWalker.dep_tree")), execTime)));
+      spin.succeed(styleText(["white", "bold"],
+        i18n.getTokenSync(tokenName, styleText(["yellow", "bold"], i18n.getTokenSync("depWalker.dep_tree")), execTime)));
     }
     else if (eventName === "registry") {
-      spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName)));
+      spin.succeed(styleText(["white", "bold"], i18n.getTokenSync(tokenName)));
     }
     else if (eventName === "tarball") {
-      spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName, kleur.green().bold(logger.count("walkTree")), execTime)));
+      spin.succeed(
+        styleText(["white", "bold"],
+          i18n.getTokenSync(tokenName, styleText(["green", "bold"], logger.count("walkTree")), execTime)));
     }
     else if (eventName === "fetchManifest") {
-      spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName, kleur.green().bold(spec), execTime)));
+      spin.succeed(
+        styleText(["white", "bold"], i18n.getTokenSync(tokenName, styleText(["green", "bold"], spec), execTime)));
       console.log("");
     }
   });
@@ -161,9 +168,9 @@ function logAndWrite(payload, output = "nsecure-result") {
   }
 
   if (payload.warnings.length > 0) {
-    console.log(`\n ${kleur.yellow().underline().bold("Global Warning:")}\n`);
+    console.log(`\n ${styleText(["yellow", "underline", "bold"], "Global Warning:")}\n`);
     for (const warning of payload.warnings) {
-      console.log(kleur.red().bold(warning));
+      console.log(styleText(["red", "bold"], warning));
     }
   }
 
@@ -176,7 +183,8 @@ function logAndWrite(payload, output = "nsecure-result") {
   fs.writeFileSync(filePath, ret);
 
   console.log("");
-  console.log(kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath))));
+  console.log(
+    styleText(["white", "bold"], i18n.getTokenSync("cli.successfully_written_json", styleText(["green", "bold"], filePath))));
   console.log("");
 
   return filePath;

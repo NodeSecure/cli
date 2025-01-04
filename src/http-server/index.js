@@ -1,8 +1,8 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
+import { styleText } from "node:util";
 
 // Import Third-party Dependencies
-import kleur from "kleur";
 import polka from "polka";
 import open from "open";
 import * as i18n from "@nodesecure/i18n";
@@ -55,7 +55,8 @@ export function buildServer(dataFilePath, options = {}) {
   httpServer.listen(httpConfigPort, async() => {
     const port = httpServer.server.address().port;
     const link = `http://localhost:${port}`;
-    console.log(kleur.magenta().bold(await i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
+    console.log(
+      styleText(["magenta", "bold"], await i18n.getToken("cli.http_server_started")), styleText(["cyan", "bold"], link));
 
     if (openLink) {
       open(link);
@@ -85,6 +86,6 @@ export function buildServer(dataFilePath, options = {}) {
 }
 
 process.on("SIGINT", () => {
-  console.log(kleur.red().bold("SIGINT signal received."));
+  console.log(styleText(["red", "bold"], "SIGINT signal received."));
   process.exit(0);
 });

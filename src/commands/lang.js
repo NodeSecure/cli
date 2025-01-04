@@ -1,12 +1,14 @@
+// Import Node.js Dependencies
+import { styleText } from "node:util";
+
 // Import Third-party Dependencies
 import * as i18n from "@nodesecure/i18n";
 import { select } from "@topcli/prompts";
-import kleur from "kleur";
 
 export async function set() {
   const langs = await i18n.getLanguages();
   const selectedLang = await select(
-    kleur.green().bold(` ${i18n.getTokenSync("cli.commands.lang.question_text")}`),
+    styleText(["green", "bold"], ` ${i18n.getTokenSync("cli.commands.lang.question_text")}`),
     {
       choices: langs
     }
@@ -16,7 +18,8 @@ export async function set() {
   await i18n.getLocalLang();
 
   console.log(
-    kleur.white().bold(`\n ${i18n.getTokenSync("cli.commands.lang.new_selection", kleur.yellow().bold(selectedLang))}`)
-  );
+    styleText(
+      ["white", "bold"], `\n ${i18n.getTokenSync("cli.commands.lang.new_selection", styleText(["yellow", "bold"], selectedLang))}`
+    ));
   console.log();
 }

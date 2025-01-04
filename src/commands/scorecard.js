@@ -1,17 +1,15 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
+import { styleText } from "node:util";
 
 // Import Third-party Dependencies
 import cliui from "@topcli/cliui";
-import kleur from "kleur";
 import * as scorecard from "@nodesecure/ossf-scorecard-sdk";
 import ini from "ini";
 import { Ok, Err } from "@openally/result";
-// VARS
-const { yellow, grey, cyan, white } = kleur;
 
 function separatorLine() {
-  return grey("-".repeat(80));
+  return styleText("grey", "-".repeat(80));
 }
 
 export function getCurrentRepository(vcs = "github") {
@@ -44,7 +42,7 @@ export async function main(repo, opts) {
     platform = vcs.slice(-4) === ".com" ? vcs : `${vcs}.com`;
   }
   catch (error) {
-    console.log(white().bold(result.err));
+    console.log(styleText(["white", "bold"], result.err));
 
     process.exit();
   }
@@ -58,17 +56,14 @@ export async function main(repo, opts) {
   }
   catch (error) {
     console.log(
-      kleur
-        .white()
-        .bold(white().bold(`${repository} is not part of the OSSF Scorecard BigQuery public dataset.`))
-    );
+      styleText(["white", "bold"], `${repository} is not part of the OSSF Scorecard BigQuery public dataset.`));
 
     process.exit();
   }
 
   const ui = cliui({ width: 80 });
 
-  ui.div({ text: cyan("OSSF Scorecard"), align: "center", padding: [1, 1, 1, 1] });
+  ui.div({ text: styleText("cyan", "OSSF Scorecard"), align: "center", padding: [1, 1, 1, 1] });
 
   ui.div(
     { text: "Repository", width: 20 },
@@ -87,7 +82,7 @@ export async function main(repo, opts) {
   for (const check of data.checks) {
     const { score, name, reason } = check;
     ui.div(
-      { text: yellow(name), width: 77 },
+      { text: styleText("yellow", name), width: 77 },
       { text: !score || score < 0 ? 0 : score, width: 3, align: "right" }
     );
 
