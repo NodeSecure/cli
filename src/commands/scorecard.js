@@ -36,18 +36,14 @@ export async function main(repo, opts) {
   const vcs = opts.vcs.toLowerCase();
   const result = typeof repo === "string" ? Ok([repo, vcs]) : getCurrentRepository(vcs);
 
-  let repository;
-  let platform;
-  try {
-    const [repo, vcs] = result.unwrap();
-    repository = repo;
-    platform = vcs.slice(-4) === ".com" ? vcs : `${vcs}.com`;
-  }
-  catch (error) {
-    console.log(white().bold(result.err));
+  if (result.err) {
+    console.log(white().bold(result.val));
 
     process.exit();
   }
+
+  const [repository, repoVcs] = result.unwrap();
+  const platform = repoVcs.slice(-4) === ".com" ? vcs : `${vcs}.com`;
 
   let data;
   try {
@@ -56,7 +52,7 @@ export async function main(repo, opts) {
       platform
     });
   }
-  catch (error) {
+  catch {
     console.log(
       kleur
         .white()

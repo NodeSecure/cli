@@ -83,7 +83,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     const errors = [];
     const module = await esmock("../src/http-server/endpoints/root.js", {
       "@polka/send-type": {
-        default: (res, status, { error }) => errors.push(error)
+        default: (_res, _status, { error }) => errors.push(error)
       }
     });
 
@@ -124,7 +124,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   test("'/flags/description/:title' should fail", async() => {
     const module = await esmock("../src/http-server/endpoints/flags.js", {
       stream: {
-        pipeline: (stream, res, err) => err("fake error")
+        pipeline: (_stream, _res, err) => err("fake error")
       },
       fs: {
         createReadStream: () => "foo"

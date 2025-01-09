@@ -9,7 +9,7 @@ import sirv from "sirv";
 import { context } from "./context.js";
 
 export function buildContextMiddleware(dataFilePath) {
-  return function addContext(req, res, next) {
+  return function addContext(_req, _res, next) {
     const store = { dataFilePath };
     context.run(store, next);
   };

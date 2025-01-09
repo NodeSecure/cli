@@ -8,7 +8,7 @@ import { getManifest, lazyFetchFlagFile, getFlags } from "@nodesecure/flags";
 // CONSTANTS
 const kNodeSecureFlags = getFlags();
 
-export function getAll(req, res) {
+export function getAll(_req, res) {
   send(res, 200, getManifest());
 }
 
