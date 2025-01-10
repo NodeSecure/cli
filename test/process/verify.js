@@ -2,7 +2,7 @@
 import * as verify from "../../src/commands/verify.js";
 import { prepareProcess } from "../helpers/cliCommandRunner.js";
 
-function mockVerify(packageName) {
+function mockVerify() {
   return ({
     files: {
       list: ["index.js", "package.json"],

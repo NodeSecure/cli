@@ -12,7 +12,7 @@ import { logger } from "../logger.js";
 // CONSTANTS
 const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
 
-export async function get(req, res) {
+export async function get(_req, res) {
   try {
     const { current, lru } = await appCache.payloadsList();
     logger.info(`[data|get](current: ${current})`);

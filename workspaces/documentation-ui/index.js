@@ -29,14 +29,14 @@ const kWikiMenus = {
   flags: {
     name: "Flags",
     data: Object.entries(getManifest()).map(([name, { title, emoji }]) => ({ name, title, icon: emoji })),
-    callback(name, menuElement) {
+    callback(_name, menuElement) {
       fetchAndRenderByMenu(menuElement, "flags").catch(console.error);
     }
   },
   warnings: {
     name: "SAST Warnings",
     data: kSASTWarnings,
-    callback(name, menuElement) {
+    callback(_name, menuElement) {
       fetchAndRenderByMenu(menuElement, "warnings").catch(console.error);
     }
   }
