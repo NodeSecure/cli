@@ -109,8 +109,6 @@ test("should not display scorecard for unknown repository", async() => {
 
 //   assert.deepEqual(testingModule.getCurrentRepository(), Ok(["myawesome/repository", "github"]));
 // });
-
-//this test below converts the above 'commentted out' test using the new MockTracker class 
 test("should retrieve repository within git config", async () => {
   mock.module('fs', {
     readFileSync: () => [
@@ -135,8 +133,6 @@ test("should retrieve repository within git config", async () => {
 //   assert.equal(result.err, true);
 //   assert.equal(result.val, "Cannot find origin remote.");
 // });
-
-//this test below converts the above 'commentted out' test using the new MockTracker class 
 test("should not find origin remote", async () => {
   mock.module('fs', {
     readFileSync: () => "just one line" 

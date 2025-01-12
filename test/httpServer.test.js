@@ -86,7 +86,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   //       default: (res, status, { error }) => errors.push(error)
   //     }
   //   });
-   
+
 
   //   await module.get({}, ({
   //     writeHead: () => {
@@ -95,31 +95,20 @@ describe("httpServer", { concurrency: 1 }, () => {
   //   }));
   //   assert.deepEqual(errors, ["fake error"]);
   // });
-  
-  //this converts the above 'commentted out' test using the new MockTracker class 
   test("'/' should fail", async () => {
     const errors = [];
-  
-    // Mock the "@polka/send-type" module using mock.module
     mock.module('@polka/send-type', {
-      default: (res, status, { error }) => errors.push(error)  // Mock the default export function
+      default: (res, status, { error }) => errors.push(error)  
     });
   
-    // Import the module after setting up the mock
     const module = await import("../src/http-server/endpoints/root.js");
-  
-    // Run the test logic
     await module.get({}, {
       writeHead: () => {
         throw new Error("fake error");
       },
     });
-  
-    // Verify that the error was correctly pushed into the errors array
     assert.deepEqual(errors, ["fake error"]);
   });
-
-
 
   test("'/flags' should return the flags list as JSON", async() => {
     const result = await get(new URL("/flags", HTTP_URL));
@@ -162,8 +151,6 @@ describe("httpServer", { concurrency: 1 }, () => {
   //   await module.get({ params: { title: "hasWarnings" } }, ({ writeHead: () => true }));
   //   assert.deepEqual(logs, ["fake error"]);
   // });
-  
-  //this converts the above 'commentted out' test using the new MockTracker class 
   test("'/flags/description/:title' should fail", async () => {
     const logs = [];
 
@@ -180,8 +167,6 @@ describe("httpServer", { concurrency: 1 }, () => {
     await module.get({ params: { title: "hasWarnings" } }, { writeHead: () => true });
     assert.deepEqual(logs, ["fake error"]);
   });
-
-
 
   test("'/data' should return the fixture payload we expect", async() => {
     const result = await get(new URL("/data", HTTP_URL));
@@ -394,8 +379,6 @@ describe("httpServer", { concurrency: 1 }, () => {
 //     assert.equal(opened, true);
 //   });
 // });
-
-//this converts the above 'commentted out' test using the new MockTracker class 
 describe("httpServer without options", () => {
   let httpServer;
   let opened = false;
