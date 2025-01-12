@@ -1,10 +1,11 @@
 // Import Node.js Dependencies
-import fs from "node:fs";
+import fs, { createReadStream } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { after, before, describe, test, mock } from "node:test";
 import { once } from "node:events";
 import path from "node:path";
 import assert from "node:assert";
+import { pipeline as streamPipeline } from "node:stream";
 
 // Import Third-party Dependencies
 import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@myunisoft/httpie";
@@ -14,10 +15,15 @@ import * as flags from "@nodesecure/flags";
 import enableDestroy from "server-destroy";
 import esmock from "esmock";
 import cacache from "cacache";
+import sendType from "@polka/send-type";
 
 // Require Internal Dependencies
 import { buildServer } from "../src/http-server/index.js";
 import { CACHE_PATH } from "../src/http-server/cache.js";
+import * as rootModule from "../src/http-server/endpoints/root.js";
+import * as flagsModule from "../src/http-server/endpoints/flags.js";
+import * as indexModule from "../src/http-server/index.js";
+
 
 // CONSTANTS
 const HTTP_PORT = 17049;
@@ -95,21 +101,16 @@ describe("httpServer", { concurrency: 1 }, () => {
   //   }));
   //   assert.deepEqual(errors, ["fake error"]);
   // });
-  test("'/' should fail", async () => {
+  test("'/' should fail", () => {
     const errors = [];
-    const sendTypeMock = mock.method(
-      await import('@polka/send-type'), 
-      'default',
-      (res, status, { error }) => errors.push(error)
-    );
-
-    const module = await import("../src/http-server/endpoints/root.js");
+    const sendTypeMock = mock.method(sendType, "default", (res, status, { error }) => errors.push(error));
   
-    await module.get({}, {
+    rootModule.get({}, {
       writeHead: () => {
         throw new Error("fake error");
       },
     });
+  
     assert.deepEqual(errors, ["fake error"]);
     sendTypeMock.mock.restoreAll();
   });
@@ -155,26 +156,16 @@ describe("httpServer", { concurrency: 1 }, () => {
   //   await module.get({ params: { title: "hasWarnings" } }, ({ writeHead: () => true }));
   //   assert.deepEqual(logs, ["fake error"]);
   // });
-  test("'/flags/description/:title' should fail", async () => {
+  test("'/flags/description/:title' should fail", () => {
     const logs = [];
-  
-    const streamPipelineMock = mock.method(
-      await import('stream'),
-      'pipeline',
-      (stream, res, err) => err("fake error")
-    );
-  
-    const createReadStreamMock = mock.method(
-      await import('fs'),
-      'createReadStream',
-      () => "foo"
-    );
+    const streamPipelineMock = mock.method(streamPipeline, "pipeline", (stream, res, err) => err("fake error"));
+    const createReadStreamMock = mock.method(createReadStream, "default", () => "foo");
     console.error = (data) => logs.push(data);
   
-    const module = await import("../src/http-server/endpoints/flags.js");
-    await module.get({ params: { title: "hasWarnings" } }, { writeHead: () => true });
+    flagsModule.get({ params: { title: "hasWarnings" } }, { writeHead: () => true });
   
     assert.deepEqual(logs, ["fake error"]);
+
     streamPipelineMock.mock.restoreAll();
     createReadStreamMock.mock.restoreAll();
   });
@@ -396,15 +387,13 @@ describe("httpServer without options", () => {
   process.env.NODE_ENV = "test";
 
   before(async () => {
-    const module = await import("../src/http-server/index.js");
-    const openMock = mock.method(module, 'open', () => {
+    const openMock = mock.method(indexModule, "open", () => {
       opened = true;
     });
 
-    httpServer = module.buildServer(JSON_PATH);
+    httpServer = indexModule.buildServer(JSON_PATH);
     await once(httpServer.server, "listening");
     enableDestroy(httpServer.server);
-
     openMock.mock.restoreAll();
   });
 

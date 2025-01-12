@@ -1,4 +1,5 @@
 // Import Node.js Dependencies
+import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { test, mock } from "node:test";
@@ -12,6 +13,7 @@ import { Ok } from "@openally/result";
 // Import Internal Dependencies
 import { runProcess } from "../helpers/cliCommandRunner.js";
 import { arrayFromAsync, getExpectedScorecardLines } from "../helpers/utils.js";
+import * as testingModule from "../../src/commands/scorecard.js";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -110,15 +112,13 @@ test("should not display scorecard for unknown repository", async() => {
 //   assert.deepEqual(testingModule.getCurrentRepository(), Ok(["myawesome/repository", "github"]));
 // });
 test("should retrieve repository within git config", async () => {
-  const fs = await import('fs');
   const readFileSyncMock = mock.method(fs, 'readFileSync', () =>
     [
       '[remote "origin"]',
       '\turl = git@github.com:myawesome/repository.git',
     ].join('\n')
   );
-  const testingModule = await import("../../src/commands/scorecard.js");
-
+  
   assert.deepEqual(
     testingModule.getCurrentRepository(),
     Ok(["myawesome/repository", "github"])
@@ -139,9 +139,7 @@ test("should retrieve repository within git config", async () => {
 //   assert.equal(result.val, "Cannot find origin remote.");
 // });
 test("should not find origin remote", async () => {
-  const fs = await import('fs');
   const readFileSyncMock = mock.method(fs, 'readFileSync', () => "just one line");
-  const testingModule = await import("../../src/commands/scorecard.js");
   const result = testingModule.getCurrentRepository();
 
   assert.equal(result.err, true);
