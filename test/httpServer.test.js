@@ -97,17 +97,21 @@ describe("httpServer", { concurrency: 1 }, () => {
   // });
   test("'/' should fail", async () => {
     const errors = [];
-    mock.module('@polka/send-type', {
-      default: (res, status, { error }) => errors.push(error)  
-    });
-  
+    const sendTypeMock = mock.method(
+      await import('@polka/send-type'), 
+      'default',
+      (res, status, { error }) => errors.push(error)
+    );
+
     const module = await import("../src/http-server/endpoints/root.js");
+  
     await module.get({}, {
       writeHead: () => {
         throw new Error("fake error");
       },
     });
     assert.deepEqual(errors, ["fake error"]);
+    sendTypeMock.mock.restoreAll();
   });
 
   test("'/flags' should return the flags list as JSON", async() => {
@@ -153,19 +157,26 @@ describe("httpServer", { concurrency: 1 }, () => {
   // });
   test("'/flags/description/:title' should fail", async () => {
     const logs = [];
-
-    mock.module('stream', {
-      pipeline: (stream, res, err) => err("fake error"), 
-    });
-    mock.module('fs', {
-      createReadStream: () => "foo", 
-    });
   
+    const streamPipelineMock = mock.method(
+      await import('stream'),
+      'pipeline',
+      (stream, res, err) => err("fake error")
+    );
+  
+    const createReadStreamMock = mock.method(
+      await import('fs'),
+      'createReadStream',
+      () => "foo"
+    );
     console.error = (data) => logs.push(data);
   
     const module = await import("../src/http-server/endpoints/flags.js");
     await module.get({ params: { title: "hasWarnings" } }, { writeHead: () => true });
+  
     assert.deepEqual(logs, ["fake error"]);
+    streamPipelineMock.mock.restoreAll();
+    createReadStreamMock.mock.restoreAll();
   });
 
   test("'/data' should return the fixture payload we expect", async() => {
@@ -385,14 +396,16 @@ describe("httpServer without options", () => {
   process.env.NODE_ENV = "test";
 
   before(async () => {
-    mock.module("../src/http-server/index.js", {
-      open: () => (opened = true) 
+    const module = await import("../src/http-server/index.js");
+    const openMock = mock.method(module, 'open', () => {
+      opened = true;
     });
 
-    const module = await import("../src/http-server/index.js");
-    httpServer = module.buildServer(JSON_PATH); 
+    httpServer = module.buildServer(JSON_PATH);
     await once(httpServer.server, "listening");
     enableDestroy(httpServer.server);
+
+    openMock.mock.restoreAll();
   });
 
   after(async () => {

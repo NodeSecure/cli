@@ -110,16 +110,21 @@ test("should not display scorecard for unknown repository", async() => {
 //   assert.deepEqual(testingModule.getCurrentRepository(), Ok(["myawesome/repository", "github"]));
 // });
 test("should retrieve repository within git config", async () => {
-  mock.module('fs', {
-    readFileSync: () => [
-      "[remote \"origin\"]",
-      "\turl = git@github.com:myawesome/repository.git"
-    ].join("\n") 
-  });
-
+  const fs = await import('fs');
+  const readFileSyncMock = mock.method(fs, 'readFileSync', () =>
+    [
+      '[remote "origin"]',
+      '\turl = git@github.com:myawesome/repository.git',
+    ].join('\n')
+  );
   const testingModule = await import("../../src/commands/scorecard.js");
 
-  assert.deepEqual(testingModule.getCurrentRepository(), Ok(["myawesome/repository", "github"]));
+  assert.deepEqual(
+    testingModule.getCurrentRepository(),
+    Ok(["myawesome/repository", "github"])
+  );
+
+  readFileSyncMock.mock.restoreAll();
 });
 
 // test("should not find origin remote", async() => {
@@ -134,14 +139,13 @@ test("should retrieve repository within git config", async () => {
 //   assert.equal(result.val, "Cannot find origin remote.");
 // });
 test("should not find origin remote", async () => {
-  mock.module('fs', {
-    readFileSync: () => "just one line" 
-  });
-
+  const fs = await import('fs');
+  const readFileSyncMock = mock.method(fs, 'readFileSync', () => "just one line");
   const testingModule = await import("../../src/commands/scorecard.js");
-
   const result = testingModule.getCurrentRepository();
 
   assert.equal(result.err, true);
   assert.equal(result.val, "Cannot find origin remote.");
+
+  readFileSyncMock.mock.restoreAll();
 });
