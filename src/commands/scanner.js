@@ -13,6 +13,7 @@ import * as Scanner from "@nodesecure/scanner";
 
 // Import Internal Dependencies
 import * as http from "./http.js";
+import { appCache } from "../http-server/cache.js";
 
 export async function auto(spec, options) {
   const { keep, ...commandOptions } = options;
@@ -59,7 +60,7 @@ export async function cwd(options) {
     initLogger(void 0, !silent)
   );
 
-  return logAndWrite(payload, output);
+  return await logAndWrite(payload, output);
 }
 
 export async function from(spec, options) {
@@ -71,7 +72,7 @@ export async function from(spec, options) {
     initLogger(spec, !silent)
   );
 
-  return logAndWrite(payload, output);
+  return await logAndWrite(payload, output);
 }
 
 function initLogger(spec, verbose = true) {
@@ -153,7 +154,7 @@ function initLogger(spec, verbose = true) {
   return logger;
 }
 
-function logAndWrite(payload, output = "nsecure-result") {
+async function logAndWrite(payload, output = "nsecure-result") {
   if (payload === null) {
     console.log(i18n.getTokenSync("cli.no_dep_to_proceed"));
 
@@ -178,6 +179,8 @@ function logAndWrite(payload, output = "nsecure-result") {
   console.log("");
   console.log(kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath))));
   console.log("");
+
+  await appCache.setRootPayload(payload, { logging: false });
 
   return filePath;
 }

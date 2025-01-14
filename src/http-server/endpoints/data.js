@@ -18,8 +18,7 @@ export async function get(_req, res) {
     logger.info(`[data|get](current: ${current})`);
     logger.debug(`[data|get](lru: ${lru})`);
 
-    const formatted = current.replaceAll("/", "-");
-    send(res, 200, await appCache.getPayload(formatted));
+    send(res, 200, await appCache.getPayload(current));
   }
   catch {
     logger.error(`[data|get](No cache yet. Creating one...)`);
@@ -39,7 +38,7 @@ export async function get(_req, res) {
     logger.info(`[data|get](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
 
     await appCache.updatePayloadsList(payloadsList);
-    appCache.updatePayload(formatted.replaceAll("/", "-"), payload);
+    appCache.updatePayload(formatted, payload);
     logger.info(`[data|get](cache: created|payloadsList: ${payloadsList.lru})`);
 
     send(res, 200, payload);

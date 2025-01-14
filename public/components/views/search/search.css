@@ -234,6 +234,8 @@ input:-webkit-autofill {
   border: 1px solid #54688424;
   padding: 10px;
   border-radius: 4px;
+  max-height: calc(100vh - 380px);
+  overflow: auto;
 }
 
 .cache-packages h1 {
