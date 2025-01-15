@@ -59,7 +59,7 @@ export async function search(ws, pkg) {
     // update the payloads list
     const { lru, older, lastUsed, root } = await appCache.removeLastLRU();
     lru.push(pkg);
-    appCache.updatePayload(pkg.replaceAll("/", "-"), payload);
+    appCache.updatePayload(pkg, payload);
     const updatedList = {
       lru: [...new Set(lru)],
       older,

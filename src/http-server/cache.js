@@ -34,7 +34,7 @@ class _AppCache {
   }
 
   updatePayload(pkg, payload) {
-    fs.writeFileSync(path.join(kPayloadsPath, pkg), JSON.stringify(payload));
+    fs.writeFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", "-")), JSON.stringify(payload));
   }
 
   async getPayload(pkg) {
@@ -90,25 +90,37 @@ class _AppCache {
 
     logger.info(`[cache|init](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
     await cacache.put(CACHE_PATH, kPayloadsCache, JSON.stringify(payloadsList));
-    this.updatePayload(formatted.replaceAll("/", "-"), payload);
+    this.updatePayload(formatted, payload);
   }
 
-  async initPayloadsList() {
+  async initPayloadsList(options = {}) {
+    const { logging = true } = options;
+
+    try {
+      // prevent re-initialization of the cache
+      await cacache.get(CACHE_PATH, kPayloadsCache);
+
+      return;
+    }
+    catch {
+      // Do nothing.
+    }
     const packagesInFolder = fs.readdirSync(kPayloadsPath);
     if (packagesInFolder.length === 0) {
-      this.#initDefaultPayloadsList();
+      await this.#initDefaultPayloadsList();
 
       return;
     }
 
-    const list = packagesInFolder.map(({ name }) => name);
-    logger.info(`[cache|init](list: ${list})`);
+    if (logging) {
+      logger.info(`[cache|init](packagesInFolder: ${packagesInFolder})`);
+    }
 
-    await cacache.put(CACHE_PATH, kPayloadsCache, JSON.stringify({ list, current: list[0] }));
+    await cacache.put(CACHE_PATH, kPayloadsCache, JSON.stringify({ older: packagesInFolder, current: null, lru: [] }));
   }
 
   removePayload(pkg) {
-    fs.rmSync(path.join(kPayloadsPath, pkg));
+    fs.rmSync(path.join(kPayloadsPath, pkg.replaceAll("/", "-")));
   }
 
   async removeLastLRU() {
@@ -126,6 +138,26 @@ class _AppCache {
       lastUsed,
       root
     };
+  }
+
+  async setRootPayload(payload, options) {
+    const { logging = true } = options;
+
+    const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
+    const pkg = `${payload.rootDependencyName}@${version}`;
+    this.updatePayload(pkg, payload);
+
+    await this.initPayloadsList({ logging });
+
+    const { lru, older, lastUsed } = await this.removeLastLRU();
+    const updatedPayloadsCache = {
+      lru: [...new Set([...lru, pkg])],
+      older,
+      lastUsed: { ...lastUsed, [pkg]: Date.now() },
+      current: pkg,
+      root: pkg
+    };
+    await this.updatePayloadsList(updatedPayloadsCache);
   }
 }
 
