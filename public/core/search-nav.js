@@ -53,14 +53,18 @@ function initPackagesNavigation(data) {
   });
 
   for (const pkg of packages) {
-    const { name, version } = parseNpmSpec(pkg);
+    const { name, version, local } = parseNpmSpec(pkg);
 
+    const childs = [
+      createDOMElement("p", { text: name }),
+      createDOMElement("b", { text: `v${version}` })
+    ];
+    if (local) {
+      childs.push(createDOMElement("b", { text: "local" }));
+    }
     const pkgElement = createDOMElement("div", {
       classList: ["package"],
-      childs: [
-        createDOMElement("p", { text: name }),
-        createDOMElement("b", { text: `v${version}` })
-      ]
+      childs
     });
     pkgElement.dataset.name = pkg;
     if (pkg === data.current) {

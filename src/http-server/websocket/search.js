@@ -24,13 +24,14 @@ export async function search(ws, pkg) {
 
       return;
     }
-    const { lru, older, lastUsed, root } = await appCache.removeLastLRU();
+
+    const { lru, older, lastUsed, ...updatedCache } = await appCache.removeLastLRU();
     const updatedList = {
+      ...updatedCache,
       lru: [...new Set([...lru, pkg])],
       current: pkg,
       older: older.filter((pckg) => pckg !== pkg),
-      lastUsed: { ...lastUsed, [pkg]: Date.now() },
-      root
+      lastUsed: { ...lastUsed, [pkg]: Date.now() }
     };
     await appCache.updatePayloadsList(updatedList);
 
@@ -57,15 +58,15 @@ export async function search(ws, pkg) {
     logger.info(`[ws|search](scan ${pkg} done|cache: updated)`);
 
     // update the payloads list
-    const { lru, older, lastUsed, root } = await appCache.removeLastLRU();
+    const { lru, older, lastUsed, ...cache } = await appCache.removeLastLRU();
     lru.push(pkg);
     appCache.updatePayload(pkg, payload);
     const updatedList = {
+      ...cache,
       lru: [...new Set(lru)],
       older,
       lastUsed: { ...lastUsed, [pkg]: Date.now() },
-      current: pkg,
-      root
+      current: pkg
     };
     await appCache.updatePayloadsList(updatedList);
 

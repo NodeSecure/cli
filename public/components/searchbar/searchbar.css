@@ -268,6 +268,10 @@ div.search-result-pannel .package+.package {
   display: block;
 }
 
+#search-nav .packages>.package>b:last-of-type:not(:first-of-type) {
+  background: #f57c00;
+}
+
 #search-nav .packages>.package>b{
   font-weight: bold;
   font-size: 12px;
