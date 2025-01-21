@@ -101,7 +101,6 @@ export class Overview {
       gitlab.pathname.includes(".git") ? -4 : gitlab.pathname.length
     );
 
-
     const {
       star_count,
       forks_count

@@ -24,7 +24,6 @@ export class PackageHeader {
       version: packageVersion,
       description: packageDescription = "",
       licenses,
-      repository,
       flags
     } = this.package.dependencyVersion;
 
@@ -68,7 +67,6 @@ export class PackageHeader {
     }
 
     // Links
-    const hasNoLicense = licenses.length === 0;
     const repositoryUrl = this.package.dependency.versions[packageVersion].links.repository;
     const repositoryUrlHostname = repositoryUrl ? new URL(repositoryUrl).hostname : null;
 
@@ -235,9 +233,9 @@ export class PackageHeader {
         htmlElement.addEventListener("click", () => {
           const { name } = flagsMap.get(icon);
 
-          wiki.header.setNewActiveView("flags");
-          wiki.navigation.flags.setNewActiveMenu(name);
-          wiki.open();
+          window.wiki.header.setNewActiveView("flags");
+          window.wiki.navigation.flags.setNewActiveMenu(name);
+          window.wiki.open();
         });
 
         fragment.appendChild(htmlElement);
