@@ -25,7 +25,7 @@ export async function get(_req, res) {
 
     const payload = JSON.parse(fs.readFileSync(kDefaultPayloadPath, "utf-8"));
     const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
-    const formatted = `${payload.rootDependencyName}@${version}`;
+    const formatted = `${payload.rootDependencyName}@${version}${payload.local ? "#local" : ""}`;
     const payloadsList = {
       lru: [formatted],
       current: formatted,

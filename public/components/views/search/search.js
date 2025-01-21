@@ -2,7 +2,7 @@
 import { getJSON, NodeSecureDataSet, NodeSecureNetwork } from "@nodesecure/vis-network";
 
 // Import Internal Dependencies
-import { currentLang, debounce, createDOMElement } from "../../../common/utils.js";
+import { currentLang, debounce, createDOMElement, parseNpmSpec } from "../../../common/utils.js";
 
 // CONSTANTS
 const kMinPackageNameLength = 2;
@@ -162,10 +162,11 @@ export class SearchView {
       cachePackagesElement.appendChild(h1Element);
 
       for (const pkg of window.scannedPackageCache) {
+        const { name, version, local } = parseNpmSpec(pkg);
         const pkgElement = document.createElement("div");
         pkgElement.classList.add("package-result");
         const pkgSpanElement = document.createElement("span");
-        pkgSpanElement.textContent = pkg;
+        pkgSpanElement.innerHTML = `${name}@${version}${local ? " <b>local</b>" : ""}`;
         pkgSpanElement.addEventListener("click", () => {
           window.socket.send(JSON.stringify({ action: "SEARCH", pkg }));
         }, { once: true });

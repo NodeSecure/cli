@@ -60,7 +60,7 @@ export async function cwd(options) {
     initLogger(void 0, !silent)
   );
 
-  return await logAndWrite(payload, output);
+  return await logAndWrite(payload, output, { local: true });
 }
 
 export async function from(spec, options) {
@@ -154,7 +154,9 @@ function initLogger(spec, verbose = true) {
   return logger;
 }
 
-async function logAndWrite(payload, output = "nsecure-result") {
+async function logAndWrite(payload, output = "nsecure-result", options = {}) {
+  const { local = false } = options;
+
   if (payload === null) {
     console.log(i18n.getTokenSync("cli.no_dep_to_proceed"));
 
@@ -170,6 +172,11 @@ async function logAndWrite(payload, output = "nsecure-result") {
 
   const ret = JSON.stringify(payload, null, 2);
 
+  if (local) {
+    // FIXME: would it make more sense to manage this directly within Scanner?
+    Object.assign(ret, { local });
+  }
+
   const fileName = path.extname(output) === ".json" ?
     filenamify(output) :
     `${filenamify(output)}.json`;
@@ -180,7 +187,7 @@ async function logAndWrite(payload, output = "nsecure-result") {
   console.log(kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath))));
   console.log("");
 
-  await appCache.setRootPayload(payload, { logging: false });
+  await appCache.setRootPayload(payload, { logging: false, local });
 
   return filePath;
 }
