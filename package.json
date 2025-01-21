@@ -12,7 +12,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "lint": "eslint bin src test workspaces",
+    "lint": "eslint bin src test workspaces public",
     "lint-fix": "npm run lint -- --fix",
     "prepublishOnly": "rimraf ./dist && npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
@@ -70,6 +70,7 @@
     "c8": "^10.1.2",
     "cross-env": "^7.0.3",
     "esbuild": "^0.24.0",
+    "eslint-plugin-jsdoc": "^50.6.2",
     "esmock": "^2.6.7",
     "glob": "^11.0.0",
     "http-server": "^14.1.1",

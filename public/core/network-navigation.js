@@ -82,7 +82,6 @@ export class NetworkNavigation {
     };
   }
 
-
   calculateAngle(position1, position2) {
     const dx = position2.x - position1.x;
     const dy = position2.y - position1.y;
