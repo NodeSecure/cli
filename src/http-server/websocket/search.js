@@ -22,6 +22,14 @@ export async function search(ws, pkg) {
       await appCache.updatePayloadsList(updatedList);
       ws.send(JSON.stringify(cache));
 
+      if (appCache.startFromZero) {
+        ws.send(JSON.stringify({
+          status: "RELOAD",
+          ...updatedList
+        }));
+        appCache.startFromZero = false;
+      }
+
       return;
     }
 
@@ -40,6 +48,8 @@ export async function search(ws, pkg) {
       status: "RELOAD",
       ...updatedList
     }));
+
+    appCache.startFromZero = false;
 
     return;
   }
@@ -75,6 +85,8 @@ export async function search(ws, pkg) {
       status: "RELOAD",
       ...updatedList
     }));
+
+    appCache.startFromZero = false;
 
     logger.info(`[ws|search](data sent to client|cache: updated)`);
   }

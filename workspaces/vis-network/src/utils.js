@@ -26,6 +26,10 @@ export async function getJSON(path, customHeaders = Object.create(null)) {
     };
   }
 
+  if (raw.status === 204) {
+    return null;
+  }
+
   return raw.json();
 }
 

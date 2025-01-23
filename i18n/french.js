@@ -31,7 +31,8 @@ const cli = {
     },
     open: {
       desc: "Démarre un serveur HTTP avec un fichier .json nsecure donné",
-      option_port: "Port à utiliser"
+      option_port: "Port à utiliser",
+      option_fresh_start: "Lance le serveur à partir de zéro, en ignorant tout fichier de payload existant"
     },
     verify: {
       desc: "Démarre une analyse AST avancée pour un package npm donné",

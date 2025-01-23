@@ -70,6 +70,7 @@ prog
   .command("open [json]")
   .describe(i18n.getTokenSync("cli.commands.open.desc"))
   .option("-p, --port", i18n.getTokenSync("cli.commands.open.option_port"), process.env.PORT)
+  .option("-f, --fresh-start", i18n.getTokenSync("cli.commands.open.option_fresh_start"), process.env.PORT)
   .action(commands.http.start);
 
 prog

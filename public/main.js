@@ -101,6 +101,19 @@ async function init(options = {}) {
   });
   await secureDataSet.init();
 
+  if (secureDataSet.data === null) {
+    window.navigation.hideMenu("network--view");
+    window.navigation.hideMenu("home--view");
+    window.navigation.setNavByName("search--view");
+
+    searchview ??= new SearchView(null, null);
+
+    return;
+  }
+
+  window.navigation.showMenu("network--view");
+  window.navigation.showMenu("home--view");
+
   window.vulnerabilityStrategy = secureDataSet.data.vulnerabilityStrategy;
 
   // Initialize vis Network

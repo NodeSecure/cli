@@ -62,8 +62,13 @@ export default class NodeSecureDataSet extends EventTarget {
     }
 
     this.FLAGS = FLAGS;
-    this.warnings = data.warnings;
     this.data = data;
+
+    if (data === null) {
+      return;
+    }
+
+    this.warnings = data.warnings;
 
     const dataEntries = Object.entries(data.dependencies);
     this.dependenciesCount = dataEntries.length;
