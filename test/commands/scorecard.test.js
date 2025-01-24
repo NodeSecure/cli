@@ -99,13 +99,12 @@ test("should not display scorecard for unknown repository", async() => {
 });
 
 test("should retrieve repository within git config", async() => {
-  const readFileSyncMock = mock.method(fs, 'readFileSync', () =>
-    [
-      '[remote "origin"]',
-      '\turl = git@github.com:myawesome/repository.git',
-    ].join('\n')
+  const readFileSyncMock = mock.method(fs, "readFileSync", () => [
+    "[remote \"origin\"]",
+    "\turl = git@github.com:myawesome/repository.git"
+  ].join("\n")
   );
-  
+
   assert.deepEqual(
     testingModule.getCurrentRepository(),
     Ok(["myawesome/repository", "github"])
@@ -115,7 +114,6 @@ test("should retrieve repository within git config", async() => {
 });
 
 test("should not find origin remote", async() => {
-  const readFileSyncMock = mock.method(fs, 'readFileSync', () => "just one line");
   const result = testingModule.getCurrentRepository();
 
   assert.equal(result.err, true);

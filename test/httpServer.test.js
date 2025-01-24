@@ -22,7 +22,6 @@ import { CACHE_PATH } from "../src/http-server/cache.js";
 import * as rootModule from "../src/http-server/endpoints/root.js";
 import * as flagsModule from "../src/http-server/endpoints/flags.js";
 
-
 // CONSTANTS
 const HTTP_PORT = 17049;
 const HTTP_URL = new URL(`http://localhost:${HTTP_PORT}`);
@@ -86,13 +85,13 @@ describe("httpServer", { concurrency: 1 }, () => {
   test("'/' should fail", () => {
     const errors = [];
     const sendTypeMock = mock.method(sendType, "default", (res, status, { error }) => errors.push(error));
-  
+
     rootModule.get({}, {
       writeHead: () => {
         throw new Error("fake error");
-      },
+      }
     });
-  
+
     assert.deepEqual(errors, ["fake error"]);
     sendTypeMock.mock.restoreAll();
   });
@@ -128,9 +127,9 @@ describe("httpServer", { concurrency: 1 }, () => {
     const streamPipelineMock = mock.method(streamPipeline, "pipeline", (stream, res, err) => err("fake error"));
     const createReadStreamMock = mock.method(createReadStream, "default", () => "foo");
     console.error = (data) => logs.push(data);
-  
+
     flagsModule.get({ params: { title: "hasWarnings" } }, { writeHead: () => true });
-  
+
     assert.deepEqual(logs, ["fake error"]);
 
     streamPipelineMock.mock.restoreAll();
@@ -348,8 +347,6 @@ describe("httpServer without options", () => {
     assert.equal(opened, true);
   });
 });
-
-
 
 /**
  * HELPERS
