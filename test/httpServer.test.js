@@ -93,7 +93,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     });
 
     assert.deepEqual(errors, ["fake error"]);
-    sendTypeMock.mock.restoreAll();
+    sendTypeMock.mock.restore();
   });
 
   test("'/flags' should return the flags list as JSON", async() => {
@@ -127,13 +127,24 @@ describe("httpServer", { concurrency: 1 }, () => {
     const streamPipelineMock = mock.method(streamPipeline, "pipeline", (stream, res, err) => err("fake error"));
     const createReadStreamMock = mock.method(createReadStream, "default", () => "foo");
     console.error = (data) => logs.push(data);
-
+  
     flagsModule.get({ params: { title: "hasWarnings" } }, { writeHead: () => true });
-
+  
     assert.deepEqual(logs, ["fake error"]);
-
-    streamPipelineMock.mock.restoreAll();
-    createReadStreamMock.mock.restoreAll();
+  
+    streamPipelineMock.restore(); 
+    createReadStreamMock.restore(); 
+  });
+  
+  before(async() => {
+    const openMock = mock.method(buildServer, "open", () => {
+      opened = true;
+    });
+  
+    httpServer = buildServer(JSON_PATH);
+    await once(httpServer.server, "listening");
+    enableDestroy(httpServer.server);
+    openMock.restore(); 
   });
 
   test("'/data' should return the fixture payload we expect", async() => {
