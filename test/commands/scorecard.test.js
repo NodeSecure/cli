@@ -6,7 +6,6 @@ import { test, mock } from "node:test";
 import assert from "node:assert";
 
 // Import Third-party Dependencies
-import esmock from "esmock";
 import { API_URL } from "@nodesecure/ossf-scorecard-sdk";
 import { Ok } from "@openally/result";
 
@@ -99,19 +98,7 @@ test("should not display scorecard for unknown repository", async() => {
   assert.deepEqual(givenLines, expectedLines, `lines should be ${expectedLines}`);
 });
 
-// test("should retrieve repository whithin git config", async() => {
-//   const testingModule = await esmock("../../src/commands/scorecard.js", {
-//     fs: {
-//       readFileSync: () => [
-//         "[remote \"origin\"]",
-//         "\turl = git@github.com:myawesome/repository.git"
-//       ].join("\n")
-//     }
-//   });
-
-//   assert.deepEqual(testingModule.getCurrentRepository(), Ok(["myawesome/repository", "github"]));
-// });
-test("should retrieve repository within git config", async () => {
+test("should retrieve repository within git config", async() => {
   const readFileSyncMock = mock.method(fs, 'readFileSync', () =>
     [
       '[remote "origin"]',
@@ -127,23 +114,10 @@ test("should retrieve repository within git config", async () => {
   readFileSyncMock.mock.restoreAll();
 });
 
-// test("should not find origin remote", async() => {
-//   const testingModule = await esmock("../../src/commands/scorecard.js", {
-//     fs: {
-//       readFileSync: () => "just one line"
-//     }
-//   });
-//   const result = testingModule.getCurrentRepository();
-
-//   assert.equal(result.err, true);
-//   assert.equal(result.val, "Cannot find origin remote.");
-// });
-test("should not find origin remote", async () => {
+test("should not find origin remote", async() => {
   const readFileSyncMock = mock.method(fs, 'readFileSync', () => "just one line");
   const result = testingModule.getCurrentRepository();
 
   assert.equal(result.err, true);
   assert.equal(result.val, "Cannot find origin remote.");
-
-  readFileSyncMock.mock.restoreAll();
 });
