@@ -74,7 +74,7 @@ export async function remove(ws, pkg) {
       }));
     }
 
-    appCache.removePayload(formattedPkg.replaceAll("/", "-"));
+    appCache.removePayload(formattedPkg);
   }
   catch (error) {
     logger.error(`[ws|remove](error: ${error.message})`);

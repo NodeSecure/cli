@@ -5,7 +5,7 @@ import send from "@polka/send-type";
 import * as config from "../config.js";
 import { bodyParser } from "../bodyParser.js";
 
-export async function get(req, res) {
+export async function get(_req, res) {
   const result = await config.get();
 
   send(res, 200, result);

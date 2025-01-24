@@ -198,6 +198,18 @@ input:-webkit-autofill {
   border-radius: 4px;
 }
 
+.package-result>span>b {
+  background: #f57c00;
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  margin-left: 5px;
+  padding: 0 5px;
+  border-radius: 2px;
+  font-family: "Roboto";
+  letter-spacing: 1px;
+}
+
 .package-result .description {
   font-size: 14px;
   color: rgb(78, 76, 76);
@@ -234,6 +246,8 @@ input:-webkit-autofill {
   border: 1px solid #54688424;
   padding: 10px;
   border-radius: 4px;
+  max-height: calc(100vh - 380px);
+  overflow: auto;
 }
 
 .cache-packages h1 {

@@ -116,7 +116,7 @@ export class CodeFetcher {
           if (value && line.includes(value)) {
             const indexStart = line.indexOf(value);
 
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             return `${line.slice(0, indexStart)}<span class="relevant-line">${line.slice(indexStart, indexStart + endColumn)}</span>${line.slice(indexStart + endColumn)}`;
           }
           else if (startFrom + index === startLine) {
