@@ -102,8 +102,7 @@ test("should retrieve repository within git config", async() => {
   const readFileSyncMock = mock.method(fs, "readFileSync", () => [
     "[remote \"origin\"]",
     "\turl = git@github.com:myawesome/repository.git"
-  ].join("\n")
-  );
+  ].join("\n"));
 
   assert.deepEqual(
     testingModule.getCurrentRepository(),
