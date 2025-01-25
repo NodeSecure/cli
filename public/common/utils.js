@@ -27,12 +27,20 @@ export function extractEmojis(strWithEmojis) {
  * @param {string[]} [options.classList]
  * @param {HTMLElement[]} [options.childs]
  * @param {Record<string, any>} [options.attributes]
+ * @param {Record<string, any>} [options.styles]
  * @param {string | null} [options.text]
  * @param {string | null} [options.className]
  * @returns {HTMLElement}
  */
 export function createDOMElement(kind = "div", options = {}) {
-  const { classList = [], childs = [], attributes = {}, text = null, className = null } = options;
+  const {
+    classList = [],
+    childs = [],
+    attributes = {},
+    styles = {},
+    text = null,
+    className = null
+  } = options;
 
   const el = document.createElement(kind);
   if (className !== null) {
@@ -49,6 +57,9 @@ export function createDOMElement(kind = "div", options = {}) {
 
   if (text !== null) {
     el.appendChild(document.createTextNode(String(text)));
+  }
+  if (Object.keys(styles).length > 0) {
+    Object.assign(el.style, styles);
   }
 
   return el;

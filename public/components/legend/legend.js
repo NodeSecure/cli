@@ -1,74 +1,58 @@
 // Import Internal Dependencies
 import { COLORS } from "../../../workspaces/vis-network/src/constants.js";
-import { currentLang } from "../../common/utils.js";
+import { createDOMElement, currentLang } from "../../common/utils.js";
 
 export class Legend {
-  constructor(options = {}) {
+  constructor(
+    options = {}
+  ) {
     const { show = false } = options;
-    const lang = currentLang();
-    const theme = "LIGHT";
-    const legend = document.getElementById("legend");
-    const colors = COLORS[theme];
 
-    const defaultBadgeElement = document.createElement("div");
-    defaultBadgeElement.classList.add("legend-badge");
-    defaultBadgeElement.style.backgroundColor = colors.DEFAULT.color;
-    defaultBadgeElement.style.color = colors.DEFAULT.font.color;
-    const defaultElement = document.createElement("div");
-    defaultElement.classList.add("legend");
-    defaultElement.textContent = window.i18n[lang].legend.default;
+    const colors = COLORS.LIGHT;
+    const { legend } = window.i18n[currentLang()];
 
-    const warnBadgeElement = document.createElement("div");
-    warnBadgeElement.classList.add("legend-badge");
-    warnBadgeElement.style.backgroundColor = colors.WARN.color;
-    warnBadgeElement.style.color = colors.WARN.font.color;
-    const warnElement = document.createElement("div");
-    warnElement.classList.add("legend");
-    warnElement.textContent = window.i18n[lang].legend.warn;
+    const fragment = document.createDocumentFragment();
+    fragment.append(
+      createLegendBoxElement(colors.WARN, legend.warn),
+      createLegendBoxElement(colors.FRIENDLY, legend.friendly),
+      createLegendBoxElement(colors.DEFAULT, legend.default)
+    );
 
-    const friendlyBadgeElement = document.createElement("div");
-    friendlyBadgeElement.classList.add("legend-badge");
-    friendlyBadgeElement.style.backgroundColor = colors.FRIENDLY.color;
-    friendlyBadgeElement.style.color = colors.FRIENDLY.font.color;
-    const friendlyElement = document.createElement("div");
-    friendlyElement.classList.add("legend");
-    friendlyElement.textContent = window.i18n[lang].legend.friendly;
-
-    const warnBox = document.createElement("div");
-    warnBox.classList.add("legend-box");
-    warnBox.appendChild(warnBadgeElement);
-    warnBox.appendChild(warnElement);
-    warnBox.style.backgroundColor = colors.WARN.color;
-    warnBox.style.color = colors.WARN.font.color;
-
-    const friendlyBox = document.createElement("div");
-    friendlyBox.classList.add("legend-box");
-    friendlyBox.appendChild(friendlyBadgeElement);
-    friendlyBox.appendChild(friendlyElement);
-    friendlyBox.style.backgroundColor = colors.FRIENDLY.color;
-    friendlyBox.style.color = colors.FRIENDLY.font.color;
-
-    const defaultBox = document.createElement("div");
-    defaultBox.classList.add("legend-box");
-    defaultBox.appendChild(defaultBadgeElement);
-    defaultBox.appendChild(defaultElement);
-    defaultBox.style.backgroundColor = colors.DEFAULT.color;
-    defaultBox.style.color = colors.DEFAULT.font.color;
-
-    legend.appendChild(warnBox);
-    legend.appendChild(friendlyBox);
-    legend.appendChild(defaultBox);
-
-    if (show) {
-      this.show();
-    }
+    this.DOMElement = document.getElementById("legend");
+    this.DOMElement.appendChild(fragment);
+    show && this.show();
   }
 
   show() {
-    document.getElementById("legend").style.display = "flex";
+    this.DOMElement.style.display = "flex";
   }
 
   hide() {
-    document.getElementById("legend").style.display = "none";
+    this.DOMElement.style.display = "none";
   }
+}
+
+function createLegendBoxElement(
+  theme,
+  text
+) {
+  const styles = {
+    backgroundColor: theme.color,
+    color: theme.font.color
+  };
+
+  return createDOMElement("div", {
+    className: "legend-box",
+    childs: [
+      createDOMElement("div", {
+        className: "legend-badge",
+        styles
+      }),
+      createDOMElement("div", {
+        className: "legend",
+        text
+      })
+    ],
+    styles
+  });
 }
