@@ -22,17 +22,24 @@ import * as report from "./endpoints/report.js";
 import * as middleware from "./middleware.js";
 import * as wsHandlers from "./websocket/index.js";
 import { logger } from "./logger.js";
+import { appCache } from "./cache.js";
 
 export function buildServer(dataFilePath, options = {}) {
   const httpConfigPort = typeof options.port === "number" ? options.port : 0;
   const openLink = typeof options.openLink === "boolean" ? options.openLink : true;
   const enableWS = options.enableWS ?? process.env.NODE_ENV !== "test";
-
-  fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
+  const runFromPayload = options.runFromPayload ?? true;
 
   const httpServer = polka();
 
-  httpServer.use(middleware.buildContextMiddleware(dataFilePath));
+  if (runFromPayload) {
+    fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
+    httpServer.use(middleware.buildContextMiddleware(dataFilePath));
+  }
+  else {
+    appCache.startFromZero = true;
+  }
+
   httpServer.use(middleware.addStaticFiles);
   httpServer.get("/", root.get);
 

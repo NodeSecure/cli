@@ -52,6 +52,10 @@ function initPackagesNavigation(data) {
     classList: ["packages"]
   });
 
+  if (packages.length === 0) {
+    return fragment;
+  }
+
   for (const pkg of packages) {
     const { name, version, local } = parseNpmSpec(pkg);
 

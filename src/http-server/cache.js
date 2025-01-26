@@ -19,6 +19,9 @@ export const CACHE_PATH = path.join(os.tmpdir(), "nsecure-cli");
 export const DEFAULT_PAYLOAD_PATH = path.join(process.cwd(), "nsecure-result.json");
 
 class _AppCache {
+  prefix = "";
+  startFromZero = false;
+
   constructor() {
     fs.mkdirSync(kPayloadsPath, { recursive: true });
   }
@@ -58,12 +61,12 @@ class _AppCache {
   }
 
   async updatePayloadsList(payloadsList) {
-    await cacache.put(CACHE_PATH, kPayloadsCache, JSON.stringify(payloadsList));
+    await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
   }
 
   async payloadsList() {
     try {
-      const { data } = await cacache.get(CACHE_PATH, kPayloadsCache);
+      const { data } = await cacache.get(CACHE_PATH, `${this.prefix}${kPayloadsCache}`);
 
       return JSON.parse(data.toString());
     }
@@ -75,6 +78,21 @@ class _AppCache {
   }
 
   async #initDefaultPayloadsList() {
+    if (this.startFromZero) {
+      const payloadsList = {
+        lru: [],
+        current: null,
+        older: [],
+        lastUsed: {},
+        root: null
+      };
+
+      logger.info(`[cache|init](startFromZero)`);
+      await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
+
+      return;
+    }
+
     const payload = JSON.parse(fs.readFileSync(DEFAULT_PAYLOAD_PATH, "utf-8"));
     const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
     const formatted = `${payload.rootDependencyName}@${version}`;
@@ -89,7 +107,7 @@ class _AppCache {
     };
 
     logger.info(`[cache|init](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
-    await cacache.put(CACHE_PATH, kPayloadsCache, JSON.stringify(payloadsList));
+    await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
     this.updatePayload(formatted, payload);
   }
 
@@ -98,7 +116,7 @@ class _AppCache {
 
     try {
       // prevent re-initialization of the cache
-      await cacache.get(CACHE_PATH, kPayloadsCache);
+      await cacache.get(CACHE_PATH, `${this.prefix}${kPayloadsCache}`);
 
       return;
     }
@@ -116,7 +134,7 @@ class _AppCache {
       logger.info(`[cache|init](packagesInFolder: ${packagesInFolder})`);
     }
 
-    await cacache.put(CACHE_PATH, kPayloadsCache, JSON.stringify({
+    await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify({
       older: packagesInFolder,
       current: null,
       lru: []
