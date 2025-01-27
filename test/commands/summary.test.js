@@ -5,7 +5,6 @@ dotenv.config();
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { describe, it } from "node:test";
-import assert from "node:assert";
 
 // Import Third-party Dependencies
 import stripAnsi from "strip-ansi";
@@ -20,22 +19,25 @@ const kProcessDir = path.join(__dirname, "..", "process");
 const kProcessPath = path.join(kProcessDir, "summary.js");
 
 describe("CLI Commands: summary", () => {
-  it("should execute command on fixture 'result-test1.json'", async() => {
+  it("should execute command on fixture 'result-test1.json'", async(t) => {
     await i18n.setLocalLang("english");
     const lines = [
       /Global Stats: express.*$/,
       /.*/,
-      /Total of packages:.*65.*$/,
-      /Total size:.*1.62 MB.*$/,
-      /Packages with indirect dependencies:.*6.*$/,
+      /Total of packages:.*17.*$/,
+      /Total size:.*990.95 KB.*$/,
+      /Packages with indirect dependencies:.*3.*$/,
       /.*/,
       /Extensions:.*$/,
-      /\(48\) {2}- \(50\) \.md - \(50\) \.json - \(50\) \.js - \(5\) \.ts - \(2\) \.yml.*$/,
+      /\(16\) {2}- \(18\) \.js - \(18\) \.json - \(16\) \.md - \(7\) \.yml - \(1\) \.opts.*$/,
+      /\(1\) .rej - \(1\) .markdown - \(1\) .types - \(2\) .html - \(2\) .css - \(1\) .txt - \(1\)$/,
+      /.ico - \(1\) .png - \(1\) .dat$/,
       /.*/,
       /Licenses:.*$/,
-      /\(47\) MIT - \(2\) ISC.*$/,
+      /\(5\) MIT*$/,
       /.*/
     ];
+    t.plan(lines.length * 2);
 
     const processOptions = {
       path: kProcessPath,
@@ -44,18 +46,19 @@ describe("CLI Commands: summary", () => {
 
     for await (const line of runProcess(processOptions)) {
       const regexp = lines.shift();
-      assert.ok(regexp, "we are expecting this line");
-      assert.ok(regexp.test(stripAnsi(line)), `line (${line}) matches ${regexp}`);
+      t.assert.ok(regexp, "we are expecting this line");
+      t.assert.ok(regexp.test(stripAnsi(line)), `line (${line}) matches ${regexp}`);
     }
   });
 
-  it("should not have dependencies", async() => {
+  it("should not have dependencies", async(t) => {
     const expectedLines = [
       /Global Stats: express.*$/,
       /.*/,
       /Error:.*No dependencies.*$/,
       /.*/
     ];
+    t.plan(expectedLines.length * 2);
     const processOptions = {
       path: kProcessPath.replace("summary.js", "summary-zero-dependencies.js"),
       cwd: path.join(__dirname, "..", "fixtures")
@@ -64,8 +67,8 @@ describe("CLI Commands: summary", () => {
     for await (const line of runProcess(processOptions)) {
       const expectedLineRegex = expectedLines.shift();
       const formattedLine = stripAnsi(line);
-      assert.ok(expectedLineRegex, "we are expecting this line");
-      assert.ok(expectedLineRegex.test(formattedLine), `line (${formattedLine}) should match ${expectedLineRegex}`);
+      t.assert.ok(expectedLineRegex, "we are expecting this line");
+      t.assert.ok(expectedLineRegex.test(formattedLine), `line (${formattedLine}) should match ${expectedLineRegex}`);
     }
   });
 });
