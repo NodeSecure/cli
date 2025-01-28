@@ -25,7 +25,11 @@ export async function auto(spec, options) {
   );
   try {
     if (payloadFile !== null) {
-      await http.start();
+      const developer = Boolean(commandOptions.developer);
+
+      await http.start(void 0, {
+        developer
+      });
       await events.once(process, "SIGINT");
     }
   }
