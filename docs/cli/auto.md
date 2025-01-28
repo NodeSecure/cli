@@ -27,3 +27,4 @@ $ nsecure auto --keep
 | `--output` | `-o` | `nsecure-result` | Specify the output file for the results. |
 | `--vulnerabilityStrategy` | `-s` | github-advisory | Strategy used to fetch package vulnerabilities (see Vulnera [available strategy](https://github.com/NodeSecure/vulnera?tab=readme-ov-file#available-strategy)). |
 | `--keep` | `-k` | `false` | Preserve JSON payload after execution. |
+| `--developer` | `-d` | `false` | Launch the server in developer mode, enabling automatic HTML component refresh. |

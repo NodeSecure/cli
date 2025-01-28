@@ -1,0 +1,81 @@
+<template id="home-view-content">
+  <div class="home--header">
+    <div class="home--header--title">
+      <div class="top">
+        <p id="project-name">-</p>
+        <p id="project-version">v0.0.0</p>
+      </div>
+      <div class="bottom">
+        <p id="project-description"></p>
+        <ul id="project-links"></ul>
+      </div>
+    </div>
+    <div class="home--header--aside">
+      <div class="home--header--scorecard">
+        <div class="description">
+          <img src="scorecard.png">
+          <p>Scorecard</p>
+        </div>
+        <div class="score">
+          <p id="home-scorecard-score">8.5</p>
+        </div>
+      </div>
+      <button class="home--header--report">
+        [[=z.token('home.overview.generateReport')]]
+      </button>
+    </div>
+  </div>
+  <div class="home--body">
+    <div class="pannel">
+      <div class="module">
+        <div class="title">
+          <i class="icon-eye"></i>
+          <p>[[=z.token('home.overview.title')]]</p>
+        </div>
+        <div class="content">
+          <div class="home--overview"></div>
+        </div>
+        <div class="content" id="homewatch">
+          <p>[[=z.token('home.watch')]]</p>
+          <div class="home--packages--overview"></div>
+        </div>
+      </div>
+      <div class="module" id="warnings-module">
+        <div class="title warning">
+          <i class="icon-warning"></i>
+          <p>[[=z.token('home.criticalWarnings')]]</p>
+          <span class="count">1</span>
+        </div>
+        <div class="content">
+          <div class="home--warnings"></div>
+        </div>
+      </div>
+      <div class="module">
+        <div class="title">
+          <i class="icon-doc"></i>
+          <p>Extensions</p>
+        </div>
+        <div class="content" id="home-extensions"></div>
+      </div>
+    </div>
+    <div class="pannel">
+      <div class="module">
+        <div class="title">
+          <i class="icon-users"></i>
+          <p>[[=z.token('home.maintainers')]]</p>
+          <span class="count" id="authors-count">0</span>
+        </div>
+        <div class="content">
+          <div class="home--maintainers"></div>
+        </div>
+      </div>
+      <div class="module">
+        <div class="title">
+          <i class="icon-vcard"></i>
+          <p>Licenses</p>
+        </div>
+        <div class="content" id="home-licenses"></div>
+      </div>
+    </div>
+  </div>
+</template>

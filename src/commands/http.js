@@ -21,6 +21,8 @@ export async function start(
 ) {
   const port = Number(options.port);
   const freshStart = Boolean(options.f);
+  const enableDeveloperMode = Boolean(options.developer);
+
   const fileExtension = path.extname(payloadFileBasename);
   if (fileExtension !== ".json" && fileExtension !== "") {
     throw new Error("You must provide a JSON file (scanner payload) to open");
@@ -41,6 +43,7 @@ export async function start(
 
   const httpServer = buildServer(dataFilePath, {
     port: Number.isNaN(port) ? 0 : port,
+    hotReload: enableDeveloperMode,
     runFromPayload
   });
 

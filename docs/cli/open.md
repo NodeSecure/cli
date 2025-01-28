@@ -18,3 +18,4 @@ $ nsecure open [json]
 |---|---|---|---|
 | `--port` | `-p` | `process.env.PORT` | Specify the port on which the HTTP server should run. |
 | `--fresh-start` | `-f` | `false` | Open the UI with no initial package. Also, the app will use a dedicated cache. |
+| `--developer` | `-d` | `false` | Launch the server in developer mode, enabling automatic HTML component refresh. |
