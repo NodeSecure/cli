@@ -90,7 +90,9 @@ const ui = {
       dependencies: "scripts & dependencies",
       warnings: "threats in source code",
       vulnerabilities: "vulnerabilities (CVE)",
-      licenses: "licenses conformance (SPDX)"
+      licenses: "licenses conformance (SPDX)",
+      dark: "dark",
+      light: "light"
     },
     title: {
       maintainers: "maintainers",
@@ -170,6 +172,7 @@ const ui = {
       title: "General",
       save: "save",
       defaultPannel: "Default Package Menu",
+      themePannel: "Theme Panel",
       warnings: "SAST Warnings to ignore",
       flags: "Flags (emojis) to ignore",
       network: "Network",

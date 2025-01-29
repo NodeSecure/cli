@@ -11,13 +11,19 @@ export default class NodeSecureDataSet extends EventTarget {
    * @param {object} [options]
    * @param {string[]} [options.flagsToIgnore=[]]
    * @param {string[]} [options.warningsToIgnore=[]]
+   * @param {"light"|"dark"} [options.theme]
    */
   constructor(options = {}) {
     super();
-    const { flagsToIgnore = [], warningsToIgnore = [] } = options;
+    const {
+      flagsToIgnore = [],
+      warningsToIgnore = [],
+      theme = "light"
+    } = options;
 
     this.flagsToIgnore = new Set(flagsToIgnore);
     this.warningsToIgnore = new Set(warningsToIgnore);
+    this.theme = theme;
     this.reset();
   }
 
@@ -138,7 +144,8 @@ export default class NodeSecureDataSet extends EventTarget {
         const color = utils.getNodeColor({
           id,
           hasWarnings,
-          isFriendly
+          isFriendly,
+          theme: this.theme.toUpperCase()
         });
         color.font.multi = "html";
 

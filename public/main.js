@@ -97,7 +97,8 @@ async function init(options = {}) {
 
   secureDataSet = new NodeSecureDataSet({
     flagsToIgnore: window.settings.config.ignore.flags,
-    warningsToIgnore: window.settings.config.ignore.warnings
+    warningsToIgnore: window.settings.config.ignore.warnings,
+    theme: window.settings.config.theme
   });
   await secureDataSet.init();
 
@@ -118,7 +119,10 @@ async function init(options = {}) {
 
   // Initialize vis Network
   NodeSecureNetwork.networkElementId = "dependency-graph";
-  nsn = new NodeSecureNetwork(secureDataSet, { i18n: window.i18n[utils.currentLang()] });
+  nsn = new NodeSecureNetwork(secureDataSet, {
+    i18n: window.i18n[utils.currentLang()],
+    theme: window.settings.config.theme
+  });
   window.locker = new Locker(nsn);
   window.legend = new Legend({ show: window.settings.config.showFriendlyDependencies });
   new HomeView(secureDataSet, nsn);
@@ -205,14 +209,18 @@ function onSettingsSaved() {
   window.addEventListener("settings-saved", async(event) => {
     const warningsToIgnore = new Set(event.detail.ignore.warnings);
     const flagsToIgnore = new Set(event.detail.ignore.flags);
+    const theme = event.detail.theme;
     secureDataSet.warningsToIgnore = warningsToIgnore;
     secureDataSet.flagsToIgnore = flagsToIgnore;
+    secureDataSet.theme = theme;
     window.settings.config.ignore.warnings = warningsToIgnore;
     window.settings.config.ignore.flags = flagsToIgnore;
+    window.settings.config.theme = theme;
 
     await secureDataSet.init(
       secureDataSet.data,
-      secureDataSet.FLAGS
+      secureDataSet.FLAGS,
+      secureDataSet.theme
     );
     const { nodes } = secureDataSet.build();
     nsn.nodes.update(nodes.get());
