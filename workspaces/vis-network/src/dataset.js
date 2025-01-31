@@ -110,7 +110,7 @@ export default class NodeSecureDataSet extends EventTarget {
         );
         const isFriendly = window.settings.config.showFriendlyDependencies & rootContributors.some(
           (rootContributor) => contributors.some((contributor) => {
-            if (contributor === null) {
+            if (contributor === null || rootContributor === null) {
               return false;
             }
             else if (contributor.email && contributor.email === rootContributor.email) {
