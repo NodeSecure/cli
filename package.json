@@ -98,6 +98,7 @@
     "@topcli/prompts": "^2.0.0",
     "@topcli/spinner": "^2.1.2",
     "cacache": "^19.0.1",
+    "chokidar": "^4.0.3",
     "dotenv": "^16.4.5",
     "filenamify": "^6.0.0",
     "highlightjs-line-numbers.js": "^2.8.0",
