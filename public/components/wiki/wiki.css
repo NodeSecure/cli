@@ -1,5 +1,5 @@
 #documentation-root-element {
-  max-width: 1000px;
+  width: 1000px;
   height: 80%;
   position: absolute;
   display: flex;
@@ -12,7 +12,7 @@
 
 @media screen and (max-width: 1200px) {
   #documentation-root-element {
-    max-width: 600px;
+    width: 600px;
   }
 }
 
@@ -41,4 +41,5 @@
     border-bottom: 2px solid var(--primary);
     overflow: hidden;
     box-shadow: 2px 2px 30px rgba(20, 20, 20, 0.8);
+    width: 100%;
   }
