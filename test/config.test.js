@@ -7,7 +7,7 @@ import cacache from "cacache";
 
 // Import Internal Dependencies
 import { get, set } from "../src/http-server/config.js";
-import { CACHE_PATH } from "../src/http-server/cache.js";
+import { CACHE_PATH } from "../src/cache.js";
 
 // CONSTANTS
 const kConfigKey = "___config";

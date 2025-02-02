@@ -7,6 +7,7 @@ import kleur from "kleur";
 import * as scorecard from "@nodesecure/ossf-scorecard-sdk";
 import ini from "ini";
 import { Ok, Err } from "@openally/result";
+
 // VARS
 const { yellow, grey, cyan, white } = kleur;
 

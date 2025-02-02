@@ -1,6 +1,6 @@
 // Import Internal Dependencies
-import { appCache } from "../cache.js";
-import { logger } from "../logger.js";
+import { appCache } from "../../cache.js";
+import { logger } from "../../logger.js";
 
 export async function init(socket, lock = false) {
   try {

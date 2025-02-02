@@ -2,8 +2,8 @@
 import * as Scanner from "@nodesecure/scanner";
 
 // Import Internal Dependencies
-import { logger } from "../logger.js";
-import { appCache } from "../cache.js";
+import { logger } from "../../logger.js";
+import { appCache } from "../../cache.js";
 
 export async function search(ws, pkg) {
   logger.info(`[ws|search](pkg: ${pkg})`);

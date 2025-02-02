@@ -1,6 +1,6 @@
 // Import Internal Dependencies
-import { appCache } from "./cache.js";
-import { logger } from "./logger.js";
+import { appCache } from "../cache.js";
+import { logger } from "../logger.js";
 
 // CONSTANTS
 const kDefaultConfig = {
