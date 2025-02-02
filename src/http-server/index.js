@@ -31,15 +31,17 @@ export function buildServer(dataFilePath, options = {}) {
 
   const httpServer = polka();
 
+  const asyncStoreProperties = {};
   if (runFromPayload) {
     fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
-    httpServer.use(
-      middlewares.buildContextMiddleware(dataFilePath, hotReload)
-    );
+    asyncStoreProperties.dataFilePath = dataFilePath;
   }
   else {
     appCache.startFromZero = true;
   }
+  httpServer.use(
+    middlewares.buildContextMiddleware(hotReload, asyncStoreProperties)
+  );
 
   httpServer.use(middlewares.addStaticFiles);
   httpServer.get("/", root.get);
