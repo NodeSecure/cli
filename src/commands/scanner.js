@@ -13,7 +13,7 @@ import * as Scanner from "@nodesecure/scanner";
 
 // Import Internal Dependencies
 import * as http from "./http.js";
-import { appCache } from "../http-server/cache.js";
+import { appCache } from "../cache.js";
 
 export async function auto(spec, options) {
   const { keep, ...commandOptions } = options;

@@ -17,7 +17,7 @@ import cacache from "cacache";
 // Require Internal Dependencies
 import { buildServer } from "../src/http-server/index.js";
 import { ViewBuilder } from "../src/http-server/ViewBuilder.class.js";
-import { CACHE_PATH } from "../src/http-server/cache.js";
+import { CACHE_PATH } from "../src/cache.js";
 
 // CONSTANTS
 const HTTP_PORT = 17049;

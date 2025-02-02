@@ -2,7 +2,7 @@
 import send from "@polka/send-type";
 
 // Import Internal Dependencies
-import { context } from "../context.js";
+import { context } from "../../ALS.js";
 
 export async function get(_req, res) {
   try {

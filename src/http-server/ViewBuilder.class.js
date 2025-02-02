@@ -10,7 +10,7 @@ import chokidar from "chokidar";
 import { globStream } from "glob";
 
 // Import Internal Dependencies
-import { logger } from "./logger.js";
+import { logger } from "../logger.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const kProjectRootDir = path.join(__dirname, "..", "..");

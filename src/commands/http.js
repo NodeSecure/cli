@@ -10,7 +10,7 @@ import * as i18n from "@nodesecure/i18n";
 
 // Import Internal Dependencies
 import { buildServer } from "../http-server/index.js";
-import { appCache } from "../http-server/cache.js";
+import { appCache } from "../cache.js";
 
 // CONSTANTS
 const kRequiredScannerRange = ">=5.1.0";

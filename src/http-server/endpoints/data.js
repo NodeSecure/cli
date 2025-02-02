@@ -6,8 +6,8 @@ import path from "node:path";
 import send from "@polka/send-type";
 
 // Import Internal Dependencies
-import { appCache } from "../cache.js";
-import { logger } from "../logger.js";
+import { appCache } from "../../cache.js";
+import { logger } from "../../logger.js";
 
 // CONSTANTS
 const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
