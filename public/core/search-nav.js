@@ -44,7 +44,7 @@ export function initSearchNav(data, options) {
 
 function initPackagesNavigation(data) {
   const fragment = document.createDocumentFragment();
-  const packages = data.lru;
+  const packages = data.mru;
 
   const hasAtLeast2Packages = packages.length > 1;
   const hasExactly2Packages = packages.length === 2;

@@ -48,18 +48,19 @@ export class WebSocketServerInstanciator {
     stopInitializationOnError = false
   ) {
     try {
-      const { current, lru, older, root } = await appCache.payloadsList();
-      logger.info(`[ws|init](lru: ${lru}|older: ${older}|current: ${current}|root: ${root})`);
+      const { current, mru, lru, availables, root } = await appCache.payloadsList();
+      logger.info(`[ws|init](mru: ${mru}|lru: ${lru}|availables: ${availables}|current: ${current}|root: ${root})`);
 
-      if (lru === void 0 || current === void 0) {
+      if (mru === void 0 || current === void 0) {
         throw new Error("Payloads list not found in cache.");
       }
 
       return {
         status: "INIT",
         current,
+        mru,
         lru,
-        older,
+        availables,
         root
       };
     }

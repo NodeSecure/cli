@@ -115,9 +115,10 @@ describe("appCache", () => {
     const payloadsList = await appCache.payloadsList();
 
     assert.deepEqual(payloadsList, {
+      mru: [],
       lru: [],
       current: null,
-      older: [],
+      availables: [],
       lastUsed: {},
       root: null
     });
@@ -149,9 +150,10 @@ describe("appCache", () => {
     const payloadsList = await appCache.payloadsList();
 
     assert.deepEqual(payloadsList, {
-      lru: ["test_runner@1.0.0"],
+      mru: ["test_runner@1.0.0"],
+      lru: [],
       current: "test_runner@1.0.0",
-      older: [],
+      availables: [],
       lastUsed: { "test_runner@1.0.0": 1234567890 },
       root: "test_runner@1.0.0"
     });
@@ -170,8 +172,9 @@ describe("appCache", () => {
     const payloadsList = await appCache.payloadsList();
 
     assert.deepEqual(payloadsList, {
-      older: ["test_runner@1.0.0", "test_runner@2.0.0"],
+      availables: ["test_runner@1.0.0", "test_runner@2.0.0"],
       current: null,
+      mru: [],
       lru: []
     });
   });
@@ -187,13 +190,14 @@ describe("appCache", () => {
     assert.equal(removedPath, path.join(kPayloadsPath, "foo-bar"));
   });
 
-  it("should not remove the last LRU when LRU is not full", async(t) => {
+  it("should not remove the last MRU when MRU is not full", async(t) => {
     t.mock.method(cacache, "get", () => {
       return {
         data: {
           toString: () => JSON.stringify({
-            lru: ["foo"],
-            older: ["bar"],
+            mru: ["foo"],
+            lru: ["bar"],
+            availables: [],
             lastUsed: { foo: 1234567890 },
             foo: "bar"
           })
@@ -201,23 +205,25 @@ describe("appCache", () => {
       };
     });
 
-    const result = await appCache.removeLastLRU();
+    const result = await appCache.removeLastMRU();
 
     assert.deepEqual(result, {
-      lru: ["foo"],
-      older: ["bar"],
+      mru: ["foo"],
+      lru: ["bar"],
+      availables: [],
       lastUsed: { foo: 1234567890 },
       foo: "bar"
     });
   });
 
-  it("should remove the last LRU when LRU is full", async(t) => {
+  it("should remove the last MRU when MRU is full", async(t) => {
     t.mock.method(cacache, "get", () => {
       return {
         data: {
           toString: () => JSON.stringify({
-            lru: ["foo", "foz", "bar"],
-            older: ["boz"],
+            mru: ["foo", "foz", "bar"],
+            lru: ["boz"],
+            availables: [],
             lastUsed: {
               foo: 123,
               foz: 1234,
@@ -229,11 +235,12 @@ describe("appCache", () => {
       };
     });
 
-    const result = await appCache.removeLastLRU();
+    const result = await appCache.removeLastMRU();
 
     assert.deepEqual(result, {
-      lru: ["foz", "bar"],
-      older: ["boz", "foo"],
+      mru: ["foz", "bar"],
+      lru: ["boz", "foo"],
+      availables: [],
       lastUsed: {
         foo: 123,
         foz: 1234,
@@ -247,9 +254,10 @@ describe("appCache", () => {
     t.mock.method(fs, "writeFileSync", () => void 0);
     t.mock.method(Date, "now", () => 1234567890);
     await appCache.updatePayloadsList({
+      mru: [],
       lru: [],
       current: null,
-      older: [],
+      availables: [],
       lastUsed: {},
       root: null
     });
@@ -268,9 +276,10 @@ describe("appCache", () => {
     const result = await appCache.payloadsList();
 
     assert.deepEqual(result, {
-      lru: ["test_runner-local@1.0.0#local"],
+      mru: ["test_runner-local@1.0.0#local"],
+      lru: [],
       current: "test_runner-local@1.0.0#local",
-      older: [],
+      availables: [],
       lastUsed: {
         "test_runner-local@1.0.0#local": 1234567890
       },
@@ -282,9 +291,10 @@ describe("appCache", () => {
     t.mock.method(fs, "writeFileSync", () => void 0);
     t.mock.method(Date, "now", () => 1234567890);
     await appCache.updatePayloadsList({
+      mru: [],
       lru: [],
       current: null,
-      older: [],
+      availables: [],
       lastUsed: {},
       root: null
     });
@@ -303,9 +313,10 @@ describe("appCache", () => {
     const result = await appCache.payloadsList();
 
     assert.deepEqual(result, {
-      lru: ["test_runner-local@1.0.0"],
+      mru: ["test_runner-local@1.0.0"],
+      lru: [],
       current: "test_runner-local@1.0.0",
-      older: [],
+      availables: [],
       lastUsed: {
         "test_runner-local@1.0.0": 1234567890
       },
