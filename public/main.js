@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async() => {
       });
     }
     else if (data.status === "INIT" || data.status === "RELOAD") {
-      window.scannedPackageCache = data.older;
+      window.scannedPackageCache = data.availables;
       console.log(
         "[INFO] Older packages are loaded!",
         window.scannedPackageCache

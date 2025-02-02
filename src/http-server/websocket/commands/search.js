@@ -12,8 +12,8 @@ export async function* search(
   if (cachedPayload) {
     logger.info(`[ws|search](payload: ${pkg} found in cache)`);
     const cacheList = await cache.payloadsList();
-    if (cacheList.lru.includes(pkg)) {
-      logger.info(`[ws|search](payload: ${pkg} is already in the LRU)`);
+    if (cacheList.mru.includes(pkg)) {
+      logger.info(`[ws|search](payload: ${pkg} is already in the MRU)`);
       const updatedList = {
         ...cacheList,
         current: pkg,
@@ -33,12 +33,13 @@ export async function* search(
       return;
     }
 
-    const { lru, older, lastUsed, ...updatedCache } = await cache.removeLastLRU();
+    const { mru, lru, availables, lastUsed, ...updatedCache } = await cache.removeLastMRU();
     const updatedList = {
       ...updatedCache,
-      lru: [...new Set([...lru, pkg])],
+      mru: [...new Set([...mru, pkg])],
       current: pkg,
-      older: older.filter((pckg) => pckg !== pkg),
+      lru: lru.filter((pckg) => pckg !== pkg),
+      availables: availables.filter((pckg) => pckg !== pkg),
       lastUsed: { ...lastUsed, [pkg]: Date.now() }
     };
     await cache.updatePayloadsList(updatedList);
@@ -68,13 +69,14 @@ export async function* search(
     logger.info(`[ws|search](scan ${pkg} done|cache: updated)`);
 
     // update the payloads list
-    const { lru, older, lastUsed, ...LRUCache } = await cache.removeLastLRU();
-    lru.push(pkg);
+    const { mru, lru, availables, lastUsed, ...appCache } = await cache.removeLastMRU();
+    mru.push(pkg);
     cache.updatePayload(pkg, payload);
     const updatedList = {
-      ...LRUCache,
-      lru: [...new Set(lru)],
-      older,
+      ...appCache,
+      mru: [...new Set(mru)],
+      lru,
+      availables,
       lastUsed: { ...lastUsed, [pkg]: Date.now() },
       current: pkg
     };

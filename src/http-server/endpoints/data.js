@@ -21,9 +21,9 @@ export async function get(_req, res) {
   }
 
   try {
-    const { current, lru } = await appCache.payloadsList();
+    const { current, mru } = await appCache.payloadsList();
     logger.info(`[data|get](current: ${current})`);
-    logger.debug(`[data|get](lru: ${lru})`);
+    logger.debug(`[data|get](lru: ${mru})`);
 
     send(res, 200, await appCache.getPayload(current));
   }
@@ -34,9 +34,10 @@ export async function get(_req, res) {
     const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
     const formatted = `${payload.rootDependencyName}@${version}${payload.local ? "#local" : ""}`;
     const payloadsList = {
-      lru: [formatted],
+      mru: [formatted],
       current: formatted,
-      older: [],
+      lru: [],
+      availables: [],
       lastUsed: {
         [formatted]: Date.now()
       },

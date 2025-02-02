@@ -80,9 +80,10 @@ class _AppCache {
   async #initDefaultPayloadsList() {
     if (this.startFromZero) {
       const payloadsList = {
+        mru: [],
         lru: [],
         current: null,
-        older: [],
+        availables: [],
         lastUsed: {},
         root: null
       };
@@ -97,9 +98,10 @@ class _AppCache {
     const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
     const formatted = `${payload.rootDependencyName}@${version}`;
     const payloadsList = {
-      lru: [formatted],
+      mru: [formatted],
+      lru: [],
       current: formatted,
-      older: [],
+      availables: [],
       lastUsed: {
         [formatted]: Date.now()
       },
@@ -135,8 +137,9 @@ class _AppCache {
     }
 
     await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify({
-      older: packagesInFolder,
+      availables: packagesInFolder,
       current: null,
+      mru: [],
       lru: []
     }));
   }
@@ -145,24 +148,24 @@ class _AppCache {
     fs.rmSync(path.join(kPayloadsPath, pkg.replaceAll("/", "-")), { force: true });
   }
 
-  async removeLastLRU() {
-    const { lru, lastUsed, older, ...cache } = await this.payloadsList();
-    if (lru.length < kMaxPayloads) {
+  async removeLastMRU() {
+    const { mru, lastUsed, lru, ...cache } = await this.payloadsList();
+    if (mru.length < kMaxPayloads) {
       return {
         ...cache,
+        mru,
         lru,
-        older,
         lastUsed
       };
     }
     const packageToBeRemoved = Object.keys(lastUsed)
-      .filter((key) => lru.includes(key))
+      .filter((key) => mru.includes(key))
       .sort((a, b) => lastUsed[a] - lastUsed[b])[0];
 
     return {
       ...cache,
-      lru: lru.filter((pkg) => pkg !== packageToBeRemoved),
-      older: [...older, packageToBeRemoved],
+      mru: mru.filter((pkg) => pkg !== packageToBeRemoved),
+      lru: [...lru, packageToBeRemoved],
       lastUsed
     };
   }
@@ -176,11 +179,12 @@ class _AppCache {
 
     await this.initPayloadsList({ logging });
 
-    const { lru, older, lastUsed } = await this.removeLastLRU();
+    const { mru, lru, availables, lastUsed } = await this.removeLastMRU();
 
     const updatedPayloadsCache = {
-      lru: [...new Set([...lru, pkg])],
-      older,
+      mru: [...new Set([...mru, pkg])],
+      lru,
+      availables,
       lastUsed: { ...lastUsed, [pkg]: Date.now() },
       current: pkg,
       root: pkg

@@ -8,44 +8,45 @@ export async function* remove(
   logger.info(`[ws|remove](pkg: ${pkg}|formatted: ${formattedPkg})`);
 
   try {
-    const { lru, older, current, lastUsed, root } = await cache.payloadsList();
+    const { mru, lru, current, lastUsed, root, availables } = await cache.payloadsList();
     logger.debug(`[ws|remove](lru: ${lru}|current: ${current})`);
 
-    if (lru.length === 1 && older.length === 0) {
+    if (mru.length === 1 && lru.length === 0) {
       throw new Error("Cannot remove the last package.");
     }
 
+    const mruIndex = mru.findIndex((pkgName) => pkgName === pkg);
     const lruIndex = lru.findIndex((pkgName) => pkgName === pkg);
-    const olderIndex = older.findIndex((pkgName) => pkgName === pkg);
 
-    if (lruIndex === -1 && olderIndex === -1) {
+    if (mruIndex === -1 && lruIndex === -1) {
       throw new Error("Package not found in cache.");
     }
 
-    if (lruIndex > -1) {
+    if (mruIndex > -1) {
       logger.info(`[ws|remove](remove from lru)`);
-      const updatedLru = lru.filter((pkgName) => pkgName !== pkg);
-      if (older.length > 0) {
-        // We need to move the first older package to the lru list
-        const olderPkg = older.sort((a, b) => {
+      const updatedMru = mru.filter((pkgName) => pkgName !== pkg);
+      if (lru.length > 0) {
+        // We need to move the first lru package to the mru list
+        const olderLruPkg = lru.sort((a, b) => {
           const aDate = lastUsed[a];
           const bDate = lastUsed[b];
 
           return aDate - bDate;
         });
-        updatedLru.push(olderPkg[0]);
-        older.splice(older.indexOf(olderPkg[0]), 1);
+        updatedMru.push(olderLruPkg[0]);
+        lru.splice(lru.indexOf(olderLruPkg[0]), 1);
       }
 
       const updatedList = {
-        lru: updatedLru,
-        older,
+        mru: updatedMru,
+        lru,
         lastUsed: {
           ...lastUsed,
           [pkg]: void 0
         },
-        current: current === pkg ? updatedLru[0] : current,
-        root
+        current: current === pkg ? updatedMru[0] : current,
+        root,
+        availables
       };
       await cache.updatePayloadsList(updatedList);
 
@@ -55,11 +56,12 @@ export async function* remove(
       };
     }
     else {
-      logger.info(`[ws|remove](remove from older)`);
-      const updatedOlder = older.filter((pkgName) => pkgName !== pkg);
+      logger.info(`[ws|remove](remove from lru)`);
+      const updatedLru = lru.filter((pkgName) => pkgName !== pkg);
       const updatedList = {
-        lru,
-        older: updatedOlder,
+        mru,
+        lru: updatedLru,
+        availables,
         lastUsed: {
           ...lastUsed,
           [pkg]: void 0
