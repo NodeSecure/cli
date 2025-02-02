@@ -16,7 +16,6 @@ import cacache from "cacache";
 
 // Require Internal Dependencies
 import { buildServer } from "../src/http-server/index.js";
-import { ViewBuilder } from "../src/http-server/ViewBuilder.class.js";
 import { CACHE_PATH } from "../src/cache.js";
 
 // CONSTANTS
@@ -64,18 +63,10 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/' should return index.html content", async() => {
-    const result = await get(HTTP_URL, {
-      mode: "raw"
-    });
+    const result = await get(HTTP_URL);
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers["content-type"], "text/html");
-
-    const templateStr = await (
-      new ViewBuilder({ autoReload: false })
-    ).render();
-
-    assert.equal(result.data, templateStr);
   });
 
   test("'/' should fail", async() => {

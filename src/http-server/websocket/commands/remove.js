@@ -1,13 +1,14 @@
-// Import Internal Dependencies
-import { appCache } from "../../cache.js";
-import { logger } from "../../logger.js";
+export async function* remove(
+  pkg,
+  context
+) {
+  const { cache, logger } = context;
 
-export async function remove(ws, pkg) {
   const formattedPkg = pkg.replace("/", "-");
   logger.info(`[ws|remove](pkg: ${pkg}|formatted: ${formattedPkg})`);
 
   try {
-    const { lru, older, current, lastUsed, root } = await appCache.payloadsList();
+    const { lru, older, current, lastUsed, root } = await cache.payloadsList();
     logger.debug(`[ws|remove](lru: ${lru}|current: ${current})`);
 
     if (lru.length === 1 && older.length === 0) {
@@ -46,12 +47,12 @@ export async function remove(ws, pkg) {
         current: current === pkg ? updatedLru[0] : current,
         root
       };
-      await appCache.updatePayloadsList(updatedList);
+      await cache.updatePayloadsList(updatedList);
 
-      ws.send(JSON.stringify({
+      yield {
         status: "RELOAD",
         ...updatedList
-      }));
+      };
     }
     else {
       logger.info(`[ws|remove](remove from older)`);
@@ -66,15 +67,15 @@ export async function remove(ws, pkg) {
         current,
         root
       };
-      await appCache.updatePayloadsList(updatedList);
+      await cache.updatePayloadsList(updatedList);
 
-      ws.send(JSON.stringify({
+      yield {
         status: "RELOAD",
         ...updatedList
-      }));
+      };
     }
 
-    appCache.removePayload(formattedPkg);
+    cache.removePayload(formattedPkg);
   }
   catch (error) {
     logger.error(`[ws|remove](error: ${error.message})`);
