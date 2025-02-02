@@ -27,6 +27,7 @@ import { appCache } from "./cache.js";
 export function buildServer(dataFilePath, options = {}) {
   const httpConfigPort = typeof options.port === "number" ? options.port : 0;
   const openLink = typeof options.openLink === "boolean" ? options.openLink : true;
+  const hotReload = typeof options.hotReload === "boolean" ? options.hotReload : true;
   const enableWS = options.enableWS ?? process.env.NODE_ENV !== "test";
   const runFromPayload = options.runFromPayload ?? true;
 
@@ -34,7 +35,9 @@ export function buildServer(dataFilePath, options = {}) {
 
   if (runFromPayload) {
     fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
-    httpServer.use(middleware.buildContextMiddleware(dataFilePath));
+    httpServer.use(
+      middleware.buildContextMiddleware(dataFilePath, hotReload)
+    );
   }
   else {
     appCache.startFromZero = true;

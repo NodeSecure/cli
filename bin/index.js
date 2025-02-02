@@ -61,6 +61,7 @@ defaultScannerCommand("from <spec>")
 defaultScannerCommand("auto [spec]", { includeOutput: false, strategy: vulnera.strategies.GITHUB_ADVISORY })
   .describe(i18n.getTokenSync("cli.commands.auto.desc"))
   .option("-k, --keep", i18n.getTokenSync("cli.commands.auto.option_keep"), false)
+  .option("-d, --developer", i18n.getTokenSync("cli.commands.open.option_developer"), false)
   .action(async(spec, options) => {
     checkNodeSecureToken();
     await commands.scanner.auto(spec, options);
@@ -71,6 +72,7 @@ prog
   .describe(i18n.getTokenSync("cli.commands.open.desc"))
   .option("-p, --port", i18n.getTokenSync("cli.commands.open.option_port"), process.env.PORT)
   .option("-f, --fresh-start", i18n.getTokenSync("cli.commands.open.option_fresh_start"), process.env.PORT)
+  .option("-d, --developer", i18n.getTokenSync("cli.commands.open.option_developer"), false)
   .action(commands.http.start);
 
 prog
