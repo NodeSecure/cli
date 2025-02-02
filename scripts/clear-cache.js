@@ -2,7 +2,7 @@
 import cacache from "cacache";
 
 // Import Internal Dependencies
-import { CACHE_PATH } from "../src/http-server/cache.js";
+import { CACHE_PATH } from "../src/cache.js";
 
 await cacache.rm.all(CACHE_PATH);
 

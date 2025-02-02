@@ -1,6 +1,6 @@
 // Import Node.js Dependencies
 import assert from "node:assert/strict";
-import { before, describe, it } from "node:test";
+import { after, before, describe, it } from "node:test";
 import fs from "node:fs";
 import path from "node:path";
 import os from "node:os";
@@ -10,13 +10,21 @@ import cacache from "cacache";
 
 // Import Internal Dependencies
 import { appCache } from "../src/cache.js";
+import * as config from "../src/http-server/config.js";
 
 // CONSTANTS
 const kPayloadsPath = path.join(os.homedir(), ".nsecure", "payloads");
 
 describe("appCache", () => {
-  before(() => {
+  let actualConfig;
+
+  before(async() => {
     appCache.prefix = "test_runner";
+    actualConfig = await config.get();
+  });
+
+  after(async() => {
+    await config.set(actualConfig);
   });
 
   it("should update and get config", async() => {
