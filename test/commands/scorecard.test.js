@@ -109,7 +109,7 @@ test("should retrieve repository within git config", async() => {
     Ok(["myawesome/repository", "github"])
   );
 
-  readFileSyncMock.restore(); 
+  readFileSyncMock.mockRestore(); 
 });
 
 test("should not find origin remote", async() => {
