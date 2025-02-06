@@ -40,7 +40,7 @@ class _AppCache {
     fs.writeFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", "-")), JSON.stringify(payload));
   }
 
-  async getPayload(pkg) {
+  getPayload(pkg) {
     try {
       return JSON.parse(fs.readFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", "-")), "utf-8"));
     }
@@ -51,9 +51,13 @@ class _AppCache {
     }
   }
 
-  async getPayloadOrNull(pkg) {
+  availablePayloads() {
+    return fs.readdirSync(kPayloadsPath);
+  }
+
+  getPayloadOrNull(pkg) {
     try {
-      return await this.getPayload(pkg);
+      return this.getPayload(pkg);
     }
     catch {
       return null;
@@ -125,7 +129,7 @@ class _AppCache {
     catch {
       // Do nothing.
     }
-    const packagesInFolder = fs.readdirSync(kPayloadsPath);
+    const packagesInFolder = this.availablePayloads();
     if (packagesInFolder.length === 0) {
       await this.#initDefaultPayloadsList();
 

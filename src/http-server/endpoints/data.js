@@ -25,7 +25,7 @@ export async function get(_req, res) {
     logger.info(`[data|get](current: ${current})`);
     logger.debug(`[data|get](lru: ${mru})`);
 
-    send(res, 200, await appCache.getPayload(current));
+    send(res, 200, appCache.getPayload(current));
   }
   catch {
     logger.error(`[data|get](No cache yet. Creating one...)`);
@@ -37,7 +37,7 @@ export async function get(_req, res) {
       mru: [formatted],
       current: formatted,
       lru: [],
-      availables: [],
+      availables: appCache.availablePayloads(),
       lastUsed: {
         [formatted]: Date.now()
       },

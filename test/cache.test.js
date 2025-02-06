@@ -48,40 +48,48 @@ describe("appCache", () => {
     assert.equal(writeValue, JSON.stringify({ foo: "bar" }));
   });
 
-  it("getPayload should return the payload", async(t) => {
+  it("getPayload should return the payload", (t) => {
     t.mock.method(fs, "readFileSync", () => JSON.stringify({ foo: "bar" }));
 
-    const payload = await appCache.getPayload("foo/bar");
+    const payload = appCache.getPayload("foo/bar");
 
     assert.deepEqual(payload, { foo: "bar" });
   });
 
-  it("getPayload should throw", async(t) => {
+  it("getPayload should throw", (t) => {
     t.mock.method(fs, "readFileSync", () => {
       throw new Error("boo");
     });
 
-    await assert.rejects(async() => appCache.getPayload("foo/bar"), {
+    assert.throws(() => appCache.getPayload("foo/bar"), {
       message: "boo"
     });
   });
 
-  it("getPayloadOrNull should return payload", async(t) => {
+  it("getPayloadOrNull should return payload", (t) => {
     t.mock.method(fs, "readFileSync", () => JSON.stringify({ foo: "bar" }));
 
-    const payload = await appCache.getPayloadOrNull("foo/bar");
+    const payload = appCache.getPayloadOrNull("foo/bar");
 
     assert.deepEqual(payload, { foo: "bar" });
   });
 
-  it("getPayloadOrNull should return null", async(t) => {
+  it("getPayloadOrNull should return null", (t) => {
     t.mock.method(fs, "readFileSync", () => {
       throw new Error("boo");
     });
 
-    const payload = await appCache.getPayloadOrNull("foo/bar");
+    const payload = appCache.getPayloadOrNull("foo/bar");
 
     assert.equal(payload, null);
+  });
+
+  it("availablePayloads should return the list of payloads", (t) => {
+    t.mock.method(fs, "readdirSync", () => ["foo-bar", "bar-foo"]);
+
+    const payloads = appCache.availablePayloads();
+
+    assert.deepEqual(payloads, ["foo-bar", "bar-foo"]);
   });
 
   it("should update and get payloadsList", async() => {
