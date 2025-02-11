@@ -8,7 +8,7 @@ export async function* search(
   const { logger, cache } = context;
   logger.info(`[ws|search](pkg: ${pkg})`);
 
-  const cachedPayload = await cache.getPayloadOrNull(pkg);
+  const cachedPayload = cache.getPayloadOrNull(pkg);
   if (cachedPayload) {
     logger.info(`[ws|search](payload: ${pkg} found in cache)`);
     const cacheList = await cache.payloadsList();
