@@ -14,6 +14,7 @@ const kConfigCache = "___config";
 const kPayloadsCache = "___payloads";
 const kPayloadsPath = path.join(os.homedir(), ".nsecure", "payloads");
 const kMaxPayloads = 3;
+const kSlashReplaceToken = "______";
 
 export const CACHE_PATH = path.join(os.tmpdir(), "nsecure-cli");
 export const DEFAULT_PAYLOAD_PATH = path.join(process.cwd(), "nsecure-result.json");
@@ -37,12 +38,16 @@ class _AppCache {
   }
 
   updatePayload(pkg, payload) {
-    fs.writeFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", "-")), JSON.stringify(payload));
+    if (pkg.includes(kSlashReplaceToken)) {
+      throw new Error(`Invalid package name: ${pkg}`);
+    }
+
+    fs.writeFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", kSlashReplaceToken)), JSON.stringify(payload));
   }
 
   getPayload(pkg) {
     try {
-      return JSON.parse(fs.readFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", "-")), "utf-8"));
+      return JSON.parse(fs.readFileSync(path.join(kPayloadsPath, pkg.replaceAll(kSlashReplaceToken, "/")), "utf-8"));
     }
     catch (err) {
       logger.error(`[cache|get](pkg: ${pkg}|cache: not found)`);
@@ -52,7 +57,9 @@ class _AppCache {
   }
 
   availablePayloads() {
-    return fs.readdirSync(kPayloadsPath);
+    return fs
+      .readdirSync(kPayloadsPath)
+      .map((filename) => filename.replaceAll(kSlashReplaceToken, "/"));
   }
 
   getPayloadOrNull(pkg) {
