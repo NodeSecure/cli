@@ -44,8 +44,14 @@ describe("appCache", () => {
 
     appCache.updatePayload("foo/bar", { foo: "bar" });
 
-    assert.equal(writePath, path.join(kPayloadsPath, "foo-bar"));
+    assert.equal(writePath, path.join(kPayloadsPath, "foo______bar"));
     assert.equal(writeValue, JSON.stringify({ foo: "bar" }));
+  });
+
+  it("should throw given a package name that contains the slash replace token", () => {
+    assert.throws(() => appCache.updatePayload("foo______bar", { foo: "bar" }), {
+      message: "Invalid package name: foo______bar"
+    });
   });
 
   it("getPayload should return the payload", (t) => {
