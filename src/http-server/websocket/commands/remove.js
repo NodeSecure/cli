@@ -4,11 +4,33 @@ export async function* remove(
 ) {
   const { cache, logger } = context;
 
-  const formattedPkg = pkg.replace("/", "-");
-  logger.info(`[ws|remove](pkg: ${pkg}|formatted: ${formattedPkg})`);
+  logger.info(`[ws|remove](pkg: ${pkg})`);
 
   try {
     const { mru, lru, current, lastUsed, root, availables } = await cache.payloadsList();
+    if (availables.includes(pkg)) {
+      logger.info(`[ws|remove] remove from availables`);
+      cache.removePayload(pkg);
+      const updatedList = {
+        mru,
+        lru,
+        lastUsed: {
+          ...lastUsed,
+          [pkg]: void 0
+        },
+        root,
+        availables: availables.filter((pkgName) => pkgName !== pkg)
+      };
+      await cache.updatePayloadsList(updatedList);
+
+      yield {
+        status: "RELOAD",
+        ...updatedList
+      };
+
+      return;
+    }
+
     logger.debug(`[ws|remove](lru: ${lru}|current: ${current})`);
 
     if (mru.length === 1 && lru.length === 0) {
@@ -77,7 +99,7 @@ export async function* remove(
       };
     }
 
-    cache.removePayload(formattedPkg);
+    cache.removePayload(pkg);
   }
   catch (error) {
     logger.error(`[ws|remove](error: ${error.message})`);
