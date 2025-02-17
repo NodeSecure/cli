@@ -37,7 +37,7 @@ export async function get(_req, res) {
       mru: [formatted],
       current: formatted,
       lru: [],
-      availables: appCache.availablePayloads(),
+      availables: appCache.availablePayloads().filter((pkg) => pkg !== formatted),
       lastUsed: {
         [formatted]: Date.now()
       },

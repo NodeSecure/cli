@@ -192,6 +192,7 @@ const ui = {
     "Available licenses": "Available licenses",
     "Available flags": "Available flags",
     default: "Search options",
+    recentPackages: "Recent packages",
     packagesCache: "Packages available in the cache",
     noPackageFound: "No package found",
     packageLengthErr: "Package name must be between 2 and 64 characters.",
