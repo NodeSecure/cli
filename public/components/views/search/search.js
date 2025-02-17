@@ -162,29 +162,49 @@ export class SearchView {
       cachePackagesElement.appendChild(h1Element);
 
       for (const pkg of window.scannedPackageCache) {
-        const { name, version, local } = parseNpmSpec(pkg);
-        const pkgElement = document.createElement("div");
-        pkgElement.classList.add("package-result");
-        const pkgSpanElement = document.createElement("span");
-        pkgSpanElement.innerHTML = `${name}@${version}${local ? " <b>local</b>" : ""}`;
-        pkgSpanElement.addEventListener("click", () => {
-          window.socket.send(JSON.stringify({ action: "SEARCH", pkg }));
-        }, { once: true });
-        const removeButton = createDOMElement("button", {
-          classList: ["remove"],
-          text: "x"
-        });
-        removeButton.addEventListener("click", (event) => {
-          event.stopPropagation();
-          window.socket.send(JSON.stringify({ action: "REMOVE", pkg }));
-        }, { once: true });
-        pkgElement.append(pkgSpanElement, removeButton);
-        cachePackagesElement.appendChild(pkgElement);
+        cachePackagesElement.appendChild(this.#cachePackageElement(pkg));
       }
     }
     else {
       cachePackagesElement.classList.add("hidden");
     }
+
+    const recentPackagesElement = this.searchContainer.querySelector(".recent-packages");
+    if (window.recentPackageCache.length > 0) {
+      recentPackagesElement.classList.remove("hidden");
+      const h1Element = document.createElement("h1");
+      h1Element.textContent = window.i18n[lang].search.recentPackages;
+      recentPackagesElement.appendChild(h1Element);
+
+      for (const pkg of window.recentPackageCache) {
+        recentPackagesElement.appendChild(this.#cachePackageElement(pkg));
+      }
+    }
+    else {
+      recentPackagesElement.classList.add("hidden");
+    }
+  }
+
+  #cachePackageElement(pkg) {
+    const { name, version, local } = parseNpmSpec(pkg);
+    const pkgElement = document.createElement("div");
+    pkgElement.classList.add("package-result");
+    const pkgSpanElement = document.createElement("span");
+    pkgSpanElement.innerHTML = `${name}@${version}${local ? " <b>local</b>" : ""}`;
+    pkgSpanElement.addEventListener("click", () => {
+      window.socket.send(JSON.stringify({ action: "SEARCH", pkg }));
+    }, { once: true });
+    const removeButton = createDOMElement("button", {
+      classList: ["remove"],
+      text: "x"
+    });
+    removeButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      window.socket.send(JSON.stringify({ action: "REMOVE", pkg }));
+    }, { once: true });
+    pkgElement.append(pkgSpanElement, removeButton);
+
+    return pkgElement;
   }
 
   async fetchPackage(packageName, version) {
@@ -222,6 +242,9 @@ export class SearchView {
     const cachePackagesElement = document.createElement("div");
     cachePackagesElement.classList.add("cache-packages", "hidden");
     searchViewContainer.appendChild(cachePackagesElement);
+    const recentPackagesElement = document.createElement("div");
+    recentPackagesElement.classList.add("recent-packages", "hidden");
+    searchViewContainer.appendChild(recentPackagesElement);
 
     this.initialize();
   }

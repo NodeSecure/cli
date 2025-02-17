@@ -29,6 +29,7 @@ let packageInfoOpened = false;
 
 document.addEventListener("DOMContentLoaded", async() => {
   window.scannedPackageCache = [];
+  window.recentPackageCache = [];
   window.locker = null;
   window.popup = new Popup();
   window.settings = await new Settings().fetchUserConfig();
@@ -56,9 +57,14 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
     else if (data.status === "INIT" || data.status === "RELOAD") {
       window.scannedPackageCache = data.availables;
+      window.recentPackageCache = data.lru;
       console.log(
         "[INFO] Older packages are loaded!",
         window.scannedPackageCache
+      );
+      console.log(
+        "[INFO] Recent packages are loaded!",
+        window.recentPackageCache
       );
 
       initSearchNav(data, {

@@ -47,7 +47,7 @@ class _AppCache {
 
   getPayload(pkg) {
     try {
-      return JSON.parse(fs.readFileSync(path.join(kPayloadsPath, pkg.replaceAll(kSlashReplaceToken, "/")), "utf-8"));
+      return JSON.parse(fs.readFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", kSlashReplaceToken)), "utf-8"));
     }
     catch (err) {
       logger.error(`[cache|get](pkg: ${pkg}|cache: not found)`);

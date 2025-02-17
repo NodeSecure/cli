@@ -232,11 +232,10 @@ input:-webkit-autofill {
   width: 20px;
 }
 
-.cache-packages {
+.cache-packages, .recent-packages {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   margin-top: 20px;
   margin-bottom: 20px;
   width: 100%;
@@ -250,18 +249,18 @@ input:-webkit-autofill {
   overflow: auto;
 }
 
-.cache-packages h1 {
+.cache-packages h1, .recent-packages h1 {
   font-family: "mononoki";
   color: #546884;
 }
 
-.cache-packages .package-result {
+.cache-packages .package-result, .recent-packages .package-result {
   margin-top: 10px;
   background: #54688419;
   padding: 5px 10px;
 }
 
-.cache-packages .package-result:has(span:hover) {
+.cache-packages .package-result:has(span:hover), .recent-packages .package-result:has(span:hover) {
   color: var(--secondary-darker);
   background: #5468842a;
   cursor: pointer;
