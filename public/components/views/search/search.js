@@ -188,7 +188,7 @@ export class SearchView {
   #cachePackageElement(pkg) {
     const { name, version, local } = parseNpmSpec(pkg);
     const pkgElement = document.createElement("div");
-    pkgElement.classList.add("package-result");
+    pkgElement.classList.add("package-cache-result");
     const pkgSpanElement = document.createElement("span");
     pkgSpanElement.innerHTML = `${name}@${version}${local ? " <b>local</b>" : ""}`;
     pkgSpanElement.addEventListener("click", () => {
