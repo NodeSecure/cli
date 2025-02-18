@@ -201,7 +201,7 @@ describe("appCache", () => {
 
     appCache.removePayload("foo/bar");
 
-    assert.equal(removedPath, path.join(kPayloadsPath, "foo-bar"));
+    assert.equal(removedPath, path.join(kPayloadsPath, "foo______bar"));
   });
 
   it("should not remove the last MRU when MRU is not full", async(t) => {

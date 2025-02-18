@@ -156,7 +156,7 @@ class _AppCache {
   }
 
   removePayload(pkg) {
-    fs.rmSync(path.join(kPayloadsPath, pkg.replaceAll("/", "-")), { force: true });
+    fs.rmSync(path.join(kPayloadsPath, pkg.replaceAll("/", kSlashReplaceToken)), { force: true });
   }
 
   async removeLastMRU() {
