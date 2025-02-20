@@ -25,6 +25,7 @@
     "bin",
     "dist",
     "src",
+    "public",
     "views",
     "i18n"
   ],
