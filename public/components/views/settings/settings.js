@@ -202,5 +202,7 @@ export class Settings {
     for (const checkbox of this.dom.flagsCheckbox) {
       checkbox.checked = flags.has(checkbox.getAttribute("value"));
     }
+
+    this.dom.showFriendlyDependenciesCheckbox.checked = this.config.showFriendlyDependencies;
   }
 }
