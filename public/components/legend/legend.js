@@ -19,7 +19,7 @@ export class Legend {
     );
 
     this.DOMElement = document.getElementById("legend");
-    this.DOMElement.appendChild(fragment);
+    this.DOMElement.replaceChildren(fragment);
     show && this.show();
   }
 
