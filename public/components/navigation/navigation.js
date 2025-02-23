@@ -114,4 +114,22 @@ export class ViewNavigation {
       this.setNewActiveMenu(selectedNav);
     }
   }
+
+  hideMenu(menuName) {
+    const menu = this.menus.get(menuName);
+    if (!menu) {
+      return;
+    }
+
+    menu.classList.add("hidden");
+  }
+
+  showMenu(menuName) {
+    const menu = this.menus.get(menuName);
+    if (!menu) {
+      return;
+    }
+
+    menu.classList.remove("hidden");
+  }
 }

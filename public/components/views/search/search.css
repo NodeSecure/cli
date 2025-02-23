@@ -19,7 +19,7 @@
   width: 100%;
   max-width: 600px;
   min-height: 150px;
-  margin: 135px auto;
+  margin: 85px auto;
 }
 
 #search--view form {
@@ -58,6 +58,7 @@
   margin-top: 10px;
   border-radius: 4px;
   width: 100%;
+  max-height: 330px;
 }
 
 .result-container::-webkit-scrollbar {
@@ -109,7 +110,7 @@
 }
 
 .result select {
-  max-width: 70px;
+  width: 70px;
   margin-right: 5px;
   margin-top: 5px;
   background: #edf1fb;
@@ -120,9 +121,9 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
   width: 100%;
   margin: auto;
+  margin-bottom: 10px;
   padding: 10px;
   border-radius: 4px;
   background: linear-gradient(135deg, rgba(242, 245, 246, 1) 0%, rgba(227, 234, 237, 1) 37%, rgba(234, 238, 239, 1) 100%);
@@ -191,7 +192,7 @@ input:-webkit-autofill {
 
 .package-result {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-start;
   padding-left: 5px;
   width: 100%;
@@ -216,9 +217,23 @@ input:-webkit-autofill {
   margin-top: 5px;
   margin-bottom: 8px;
   line-height: 20px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
-.package-result button.remove {
+.package-cache-result {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 5px 0;
+  margin-top: 10px;
+  background: #54688419;
+  padding: 5px 10px;
+}
+
+.package-cache-result button.remove {
   border: none;
   position: relative;
   cursor: pointer;
@@ -230,15 +245,14 @@ input:-webkit-autofill {
   text-shadow: 1px 1px 10px #000;
   font-weight: bold;
   width: 20px;
+  height: 20px;
 }
 
-.cache-packages {
+.cache-packages, .recent-packages {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin: 10px 0;
   width: 100%;
   color: var(--primary);
   font-weight: bold;
@@ -246,22 +260,17 @@ input:-webkit-autofill {
   border: 1px solid #54688424;
   padding: 10px;
   border-radius: 4px;
+  min-height: 75px;
   max-height: calc(100vh - 380px);
   overflow: auto;
 }
 
-.cache-packages h1 {
+.cache-packages h1, .recent-packages h1 {
   font-family: "mononoki";
   color: #546884;
 }
 
-.cache-packages .package-result {
-  margin-top: 10px;
-  background: #54688419;
-  padding: 5px 10px;
-}
-
-.cache-packages .package-result:has(span:hover) {
+.cache-packages .package-cache-result:has(span:hover), .recent-packages .package-cache-result:has(span:hover) {
   color: var(--secondary-darker);
   background: #5468842a;
   cursor: pointer;

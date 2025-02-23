@@ -31,7 +31,9 @@ const cli = {
     },
     open: {
       desc: "Démarre un serveur HTTP avec un fichier .json nsecure donné",
-      option_port: "Port à utiliser"
+      option_port: "Port à utiliser",
+      option_fresh_start: "Lance le serveur à partir de zéro, en ignorant tout fichier de payload existant",
+      option_developer: "Lance le serveur en mode développeur, permettant le rafraîchissement automatique des composants HTML"
     },
     verify: {
       desc: "Démarre une analyse AST avancée pour un package npm donné",
@@ -190,6 +192,7 @@ const ui = {
     "Available licenses": "Licences disponibles",
     "Available flags": "Drapeaux disponibles",
     default: "Options de recherche",
+    recentPackages: "Packages récents",
     packagesCache: "Packages disponibles dans le cache",
     noPackageFound: "Aucun package trouvé",
     packageLengthErr: "Le nom du package doit être compris entre 2 et 64 caractères.",

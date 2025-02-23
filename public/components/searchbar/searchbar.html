@@ -1,0 +1,98 @@
+<template id="search_helpers_default">
+  <div class="line" data-value="version:"><b>version:</b>
+    <p>semver</p>
+  </div>
+  <div class="line" data-value="package:"><b>package:</b>
+    <p>name</p>
+  </div>
+  <div class="line" data-value="license:"><b>license:</b>
+    <p>name</p>
+  </div>
+  <div class="line" data-value="ext:"><b>ext:</b>
+    <p>file extension</p>
+  </div>
+  <div class="line" data-value="builtin:"><b>builtin:</b>
+    <p>node.js module</p>
+  </div>
+  <div class="line" data-value="author:"><b>author:</b>
+    <p>name/email</p>
+  </div>
+  <div class="line" data-value="flag:"><b>flag:</b>
+    <p>name</p>
+  </div>
+  <div class="line" data-value="size:"><b>size:</b>
+    <p>size</p>
+  </div>
+</template>
+
+<template id="search_helpers_flags">
+  <div class="line" data-value="hasExternalCapacity">
+    <p>🌍 hasExternalCapacity</p>
+  </div>
+  <div class="line" data-value="hasIndirectDependencies">
+    <p>🌲 hasIndirectDependencies</p>
+  </div>
+  <div class="line" data-value="hasWarnings">
+    <p>⚠️ hasWarnings</p>
+  </div>
+  <div class="line" data-value="hasNoLicense">
+    <p>📜 hasNoLicense</p>
+  </div>
+  <div class="line" data-value="hasMultipleLicenses">
+    <p>📚 hasMultipleLicenses</p>
+  </div>
+  <div class="line" data-value="hasMinifiedCode">
+    <p>🔬 hasMinifiedCode</p>
+  </div>
+  <div class="line" data-value="hasCustomResolver">
+    <p>💎 hasCustomResolver</p>
+  </div>
+  <div class="line" data-value="hasMissingOrUnusedDependency">
+    <p>👀 hasMissingOrUnusedDependency</p>
+  </div>
+  <div class="line" data-value="hasScript">
+    <p>📦 hasScript</p>
+  </div>
+  <div class="line" data-value="hasNativeCode">
+    <p>🐲 hasNativeCode</p>
+  </div>
+  <div class="line" data-value="hasBannedFile">
+    <p>⚔️ hasBannedFile</p>
+  </div>
+  <div class="line" data-value="isGit">
+    <p>☁️ isGit</p>
+  </div>
+  <div class="line" data-value="isDeprecated">
+    <p>⛔️ isDeprecated</p>
+  </div>
+  <div class="line" data-value="isOutdated">
+    <p>⌚️ isOutdated</p>
+  </div>
+  <div class="line" data-value="hasManyPublishers">
+    <p>👥 hasManyPublishers</p>
+  </div>
+  <div class="line" data-value="isDead">
+    <p>💀 isDead</p>
+  </div>
+  <div class="line" data-value="hasVulnerabilities">
+    <p>🚨 hasVulnerabilities</p>
+  </div>
+  <div class="line" data-value="hasDuplicate">
+    <p>🎭 hasDuplicate</p>
+  </div>
+</template>
+
+<template id="searchbar-content">
+  <div id="searchbar">
+    <i class="icon-globe-alt-outline"></i>
+    <div class="search-items"></div>
+    <input type="text" placeholder="[[=z.token('searchbar_placeholder')]]" id="search-bar-input" autocomplete="off"
+      autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+
+    <div class="search-result-background">
+      <div class="search-result-pannel" id="package-list">
+        <div class="helpers"></div>
+      </div>
+    </div>
+  </div>
+</template>

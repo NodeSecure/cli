@@ -3,7 +3,7 @@ import send from "@polka/send-type";
 import * as npm from "@nodesecure/npm-registry-sdk";
 
 // Import Internal Dependencies
-import { logger } from "../logger.js";
+import { logger } from "../../logger.js";
 
 export async function get(req, res) {
   const { packageName } = req.params;

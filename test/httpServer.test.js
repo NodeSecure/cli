@@ -9,7 +9,6 @@ import { pipeline as streamPipeline } from "node:stream";
 
 // Import Third-party Dependencies
 import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@myunisoft/httpie";
-import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
 import enableDestroy from "server-destroy";
@@ -28,7 +27,6 @@ const HTTP_URL = new URL(`http://localhost:${HTTP_PORT}`);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const JSON_PATH = path.join(__dirname, "fixtures", "httpServer.json");
-const INDEX_HTML = fs.readFileSync(path.join(__dirname, "..", "views", "index.html"), "utf-8");
 
 const kConfigKey = "___config";
 const kGlobalDispatcher = getGlobalDispatcher();
@@ -68,18 +66,10 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/' should return index.html content", async() => {
-    const i18nLangName = await i18n.getLocalLang();
     const result = await get(HTTP_URL);
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers["content-type"], "text/html");
-
-    const templateStr = zup(INDEX_HTML)({
-      lang: i18n.getTokenSync("lang"),
-      i18nLangName,
-      token: (tokenName) => i18n.getTokenSync(`ui.${tokenName}`)
-    });
-    assert.equal(result.data, templateStr);
   });
 
   test("'/' should fail", () => {

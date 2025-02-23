@@ -6,19 +6,26 @@ import path from "node:path";
 import send from "@polka/send-type";
 
 // Import Internal Dependencies
-import { appCache } from "../cache.js";
-import { logger } from "../logger.js";
+import { appCache } from "../../cache.js";
+import { logger } from "../../logger.js";
 
 // CONSTANTS
 const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
 
 export async function get(_req, res) {
-  try {
-    const { current, lru } = await appCache.payloadsList();
-    logger.info(`[data|get](current: ${current})`);
-    logger.debug(`[data|get](lru: ${lru})`);
+  if (appCache.startFromZero) {
+    logger.info("[data|get](no content)");
+    send(res, 204);
 
-    send(res, 200, await appCache.getPayload(current));
+    return;
+  }
+
+  try {
+    const { current, mru } = await appCache.payloadsList();
+    logger.info(`[data|get](current: ${current})`);
+    logger.debug(`[data|get](lru: ${mru})`);
+
+    send(res, 200, appCache.getPayload(current));
   }
   catch {
     logger.error(`[data|get](No cache yet. Creating one...)`);
@@ -27,9 +34,10 @@ export async function get(_req, res) {
     const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
     const formatted = `${payload.rootDependencyName}@${version}${payload.local ? "#local" : ""}`;
     const payloadsList = {
-      lru: [formatted],
+      mru: [formatted],
       current: formatted,
-      older: [],
+      lru: [],
+      availables: appCache.availablePayloads().filter((pkg) => pkg !== formatted),
       lastUsed: {
         [formatted]: Date.now()
       },

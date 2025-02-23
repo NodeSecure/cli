@@ -6,7 +6,6 @@ import kleur from "kleur";
 import polka from "polka";
 import open from "open";
 import * as i18n from "@nodesecure/i18n";
-import { WebSocketServer } from "ws";
 
 // Import Internal Dependencies
 import * as root from "./endpoints/root.js";
@@ -19,21 +18,32 @@ import * as npmDownloads from "./endpoints/npm-downloads.js";
 import * as scorecard from "./endpoints/ossf-scorecard.js";
 import * as locali18n from "./endpoints/i18n.js";
 import * as report from "./endpoints/report.js";
-import * as middleware from "./middleware.js";
-import * as wsHandlers from "./websocket/index.js";
-import { logger } from "./logger.js";
+import * as middlewares from "./middlewares/index.js";
+import { appCache } from "../cache.js";
+import { WebSocketServerInstanciator } from "./websocket/index.js";
 
 export function buildServer(dataFilePath, options = {}) {
   const httpConfigPort = typeof options.port === "number" ? options.port : 0;
   const openLink = typeof options.openLink === "boolean" ? options.openLink : true;
+  const hotReload = typeof options.hotReload === "boolean" ? options.hotReload : true;
   const enableWS = options.enableWS ?? process.env.NODE_ENV !== "test";
-
-  fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
+  const runFromPayload = options.runFromPayload ?? true;
 
   const httpServer = polka();
 
-  httpServer.use(middleware.buildContextMiddleware(dataFilePath));
-  httpServer.use(middleware.addStaticFiles);
+  const asyncStoreProperties = {};
+  if (runFromPayload) {
+    fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
+    asyncStoreProperties.dataFilePath = dataFilePath;
+  }
+  else {
+    appCache.startFromZero = true;
+  }
+  httpServer.use(
+    middlewares.buildContextMiddleware(hotReload, asyncStoreProperties)
+  );
+
+  httpServer.use(middlewares.addStaticFiles);
   httpServer.get("/", root.get);
 
   httpServer.get("/data", data.get);
@@ -62,24 +72,7 @@ export function buildServer(dataFilePath, options = {}) {
     }
   });
 
-  if (enableWS) {
-    const websocket = new WebSocketServer({ port: 1338 });
-    websocket.on("connection", async(socket) => {
-      socket.on("message", async(rawMessage) => {
-        const message = JSON.parse(rawMessage);
-        logger.info(`[ws](message: ${JSON.stringify(message)})`);
-
-        if (message.action === "SEARCH") {
-          wsHandlers.search(socket, message.pkg);
-        }
-        else if (message.action === "REMOVE") {
-          wsHandlers.remove(socket, message.pkg);
-        }
-      });
-
-      wsHandlers.init(socket);
-    });
-  }
+  enableWS && new WebSocketServerInstanciator();
 
   return httpServer;
 }

@@ -213,6 +213,10 @@ div.search-result-pannel .package+.package {
   box-shadow: 2px 1px 10px #26107f7a;
 }
 
+#search-nav:has(#searchbar[style*="display: none;"]) {
+  display: none;
+}
+
 #search-nav .search-result-pannel .package {
   height: 30px;
   color: rgb(229, 229, 229);

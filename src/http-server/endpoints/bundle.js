@@ -1,5 +1,5 @@
 // Import Third-party Dependencikes
-import { get as getRequest } from "@myunisoft/httpie";
+import * as httpie from "@myunisoft/httpie";
 import send from "@polka/send-type";
 
 // CONSTANTS
@@ -10,7 +10,7 @@ export async function get(req, res) {
 
   const pkgTemplate = version ? `${pkgName.replaceAll("%2F", "/")}@${version}` : pkgName;
   try {
-    const { data } = await getRequest(`${kBaseBundlePhobiaUrl}/size?package=${pkgTemplate}`);
+    const { data } = await httpie.get(`${kBaseBundlePhobiaUrl}/size?package=${pkgTemplate}`);
     const { gzip, size, dependencySizes } = data;
 
     return send(res, 200, {

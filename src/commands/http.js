@@ -1,6 +1,7 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 
 // Import Third-party Dependencies
 import * as SemVer from "semver";
@@ -9,6 +10,7 @@ import * as i18n from "@nodesecure/i18n";
 
 // Import Internal Dependencies
 import { buildServer } from "../http-server/index.js";
+import { appCache } from "../cache.js";
 
 // CONSTANTS
 const kRequiredScannerRange = ">=5.1.0";
@@ -18,6 +20,9 @@ export async function start(
   options = {}
 ) {
   const port = Number(options.port);
+  const freshStart = Boolean(options.f);
+  const enableDeveloperMode = Boolean(options.developer);
+
   const fileExtension = path.extname(payloadFileBasename);
   if (fileExtension !== ".json" && fileExtension !== "") {
     throw new Error("You must provide a JSON file (scanner payload) to open");
@@ -27,10 +32,19 @@ export async function start(
     process.cwd(),
     fileExtension === "" ? `${payloadFileBasename}.json` : payloadFileBasename
   );
-  assertScannerVersion(dataFilePath);
+  const dataFilePathExists = fs.existsSync(dataFilePath);
+  const runFromPayload = dataFilePathExists && freshStart === false;
+  if (runFromPayload) {
+    assertScannerVersion(dataFilePath);
+  }
+  else {
+    appCache.prefix = crypto.randomBytes(4).toString("hex");
+  }
 
   const httpServer = buildServer(dataFilePath, {
-    port: Number.isNaN(port) ? 0 : port
+    port: Number.isNaN(port) ? 0 : port,
+    hotReload: enableDeveloperMode,
+    runFromPayload
   });
 
   for (const eventName of ["SIGINT", "SIGTERM"]) {

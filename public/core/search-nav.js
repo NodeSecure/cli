@@ -44,13 +44,17 @@ export function initSearchNav(data, options) {
 
 function initPackagesNavigation(data) {
   const fragment = document.createDocumentFragment();
-  const packages = data.lru;
+  const packages = data.mru;
 
   const hasAtLeast2Packages = packages.length > 1;
   const hasExactly2Packages = packages.length === 2;
   const container = createDOMElement("div", {
     classList: ["packages"]
   });
+
+  if (packages.length === 0) {
+    return fragment;
+  }
 
   for (const pkg of packages) {
     const { name, version, local } = parseNpmSpec(pkg);

@@ -3,11 +3,11 @@ import os from "node:os";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { spawn } from "node:child_process";
 
 // Import Third-party Dependencies
 import * as RC from "@nodesecure/rc";
 import kleur from "kleur";
-import { spawn } from "node:child_process";
 
 const K_HOME_PATH = path.join(os.homedir(), "nodesecure");
 

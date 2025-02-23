@@ -62,8 +62,13 @@ export default class NodeSecureDataSet extends EventTarget {
     }
 
     this.FLAGS = FLAGS;
-    this.warnings = data.warnings;
     this.data = data;
+
+    if (data === null) {
+      return;
+    }
+
+    this.warnings = data.warnings;
 
     const dataEntries = Object.entries(data.dependencies);
     this.dependenciesCount = dataEntries.length;
@@ -105,7 +110,7 @@ export default class NodeSecureDataSet extends EventTarget {
         );
         const isFriendly = window.settings.config.showFriendlyDependencies & rootContributors.some(
           (rootContributor) => contributors.some((contributor) => {
-            if (contributor === null) {
+            if (contributor === null || rootContributor === null) {
               return false;
             }
             else if (contributor.email && contributor.email === rootContributor.email) {

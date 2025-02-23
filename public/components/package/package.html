@@ -1,0 +1,216 @@
+<template id="package-info-template">
+  <div class="package-code"></div>
+  <div class="package-header">
+    <div class="package-name">
+      <p class="name"></p>
+      <p class="version"></p>
+      <button class="info"></button>
+    </div>
+    <p class="description"></p>
+    <ul class="flags"></ul>
+    <div class="links"></div>
+  </div>
+
+  <div class="package-navigation">
+    <span class="container-title">[[=z.token('package_info.navigation.overview')]]</span>
+
+    <div class="active" data-menu="info" data-title="[[=z.token('package_info.navigation.overview')]]">
+      <i class="icon-cube"></i>
+    </div>
+    <div data-menu="files" data-title="[[=z.token('package_info.navigation.files')]]">
+      <i class="icon-docs"></i>
+    </div>
+    <div data-menu="dependencies" id="dependencies-nav-menu"
+      data-title="[[=z.token('package_info.navigation.dependencies')]]">
+      <i class="icon-sitemap"></i>
+      <div class="signal"></div>
+    </div>
+    <div data-menu="warnings" id="warnings-nav-menu" data-title="[[=z.token('package_info.navigation.warnings')]]">
+      <i class="icon-warning-empty"></i>
+      <div class="signal"></div>
+    </div>
+    <div data-menu="vulnerabilities" id="vulnerabilities-nav-menu"
+      data-title="[[=z.token('package_info.navigation.vulnerabilities')]]">
+      <i class="icon-bell-1"></i>
+      <div class="signal"></div>
+    </div>
+    <div data-menu="licenses" data-title="[[=z.token('package_info.navigation.licenses')]]">
+      <i class="icon-vcard"></i>
+    </div>
+    <div data-menu="scorecard" id="scorecard-menu" data-title="[[=z.token('package_info.title.openSsfScorecard')]]">
+      <i id="ossf-score"></i>
+    </div>
+  </div>
+
+  <div class="package-container" id="pan-info">
+    <!-- package metadata -->
+    <ul class="fields" style="margin-top: 0px !important;"></ul>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.releases')]]</p>
+    </div>
+    <ul class="fields releases"></ul>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.used_by')]]</p>
+    </div>
+    <div class="list-item line" id="usedby" style="margin-top: 0px;"></div>
+
+    <div class="github-overview">
+      <div class="head-title">
+        <p>github</p>
+      </div>
+      <div class="bundlephobia" style="margin-bottom: 10px;">
+        <div>
+          <b class="github-stars">N/A</b>
+          <span>STARS</span>
+        </div>
+        <div>
+          <b class="github-issues">N/A</b>
+          <span>ISSUES</span>
+        </div>
+        <div>
+          <b class="github-forks">N/A</b>
+          <span>FORKS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gitlab-overview">
+      <div class="head-title">
+        <p>gitlab</p>
+      </div>
+      <div class="bundlephobia" style="margin-bottom: 10px;">
+        <div>
+          <b class="gitlab-stars">N/A</b>
+          <span>STARS</span>
+        </div>
+        <div>
+          <b class="gitlab-forks">N/A</b>
+          <span>FORKS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.maintainers')]]</p>
+    </div>
+    <div class="package-maintainers"></div>
+  </div>
+
+  <div class="package-container hidden" id="pan-files">
+    <div class="head-title no-margin">
+      <p>[[=z.token('package_info.title.files_extensions')]]</p>
+    </div>
+    <div class="list-item" id="extensions"></div>
+
+    <div class="head-title no-margin">
+      <p>[[=z.token('package_info.title.files')]]</p>
+    </div>
+    <div class="list-item line" id="tarballfiles"></div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.required_files')]]</p>
+    </div>
+    <div class="list-item line" id="internaldep"></div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.minified_files')]]</p>
+    </div>
+    <div class="list-item line" id="minifiedfiles"></div>
+
+    <!-- bundlephobia (package size) -->
+    <div class="head-title">
+      <p>bundlephobia</p>
+    </div>
+    <div class="bundlephobia">
+      <div>
+        <b class="size-min">N/A</b>
+        <span>MIN</span>
+      </div>
+      <div>
+        <b class="size-gzip">N/A</b>
+        <span>GZIP</span>
+      </div>
+      <div>
+        <b class="size-full">N/A</b>
+        <span>FULL</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="package-container hidden" id="pan-dependencies">
+    <div class="head-title no-margin" id="script-title">
+      <p>npm scripts</p>
+    </div>
+    <div class="package-scripts"></div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.unused_deps')]]</p>
+    </div>
+    <div class="list-item line" id="unuseddep"></div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.missing_deps')]]</p>
+    </div>
+    <div class="list-item line" id="missingdep"></div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.node_deps')]]</p>
+    </div>
+    <div class="list-item" id="nodedep"></div>
+
+    <div class="head-title">
+      <p>[[=z.token('package_info.title.third_party_deps')]]</p>
+      <span id="show-hide-dependency">hide</span>
+    </div>
+    <div class="list-item line" id="requireddep"></div>
+  </div>
+
+  <div class="package-container hidden" id="pan-warnings">
+    <div class="help-dialog">
+      <i class="icon-info-circled-alt"></i>
+      <p>[[=z.token('package_info.helpers.warnings')]] <b class="open-wiki">wiki</b></p>
+    </div>
+  </div>
+
+  <div class="package-container hidden" id="pan-vulnerabilities">
+    <div class="vuln-strategy">
+      <div>
+        <p class="strategy"><i class="icon-info-circled"></i>strategy</p>
+      </div>
+      <div>
+        <img src="sonatype.png" class="logo">
+        <p class="name">SONATYPE</p>
+      </div>
+    </div>
+    <div class="packages-vuln"></div>
+  </div>
+
+  <div class="package-container hidden" id="pan-licenses">
+    <div class="help-dialog">
+      <i class="icon-info-circled-alt"></i>
+      <p>[[=z.token('package_info.helpers.spdx')]] <a href="https://spdx.dev/about/" target="_blank"
+          rel="noopener noreferrer">[[=z.token('package_info.helpers.here')]]</a></p>
+    </div>
+  </div>
+
+  <div class="package-container hidden" id="pan-scorecard">
+    <div class="package-scorecard">
+      <div class="help-dialog">
+        <i class="icon-info-circled-alt"></i>
+        <p>[[=z.token('package_info.helpers.openSsf')]] <a href="https://github.com/ossf/scorecard" target="_blank"
+            rel="noopener noreferrer">[[=z.token('package_info.helpers.here')]]</a></p>
+      </div>
+      <div class="score-header">
+        <span class="score-text">SCORE</span>
+        <span class="score-value">
+          <span id="head-score"></span>/10
+        </span>
+        <span class="visualizer">
+          <a target="_blank"><img src="ext-link.svg" class="logo"> OpenSSF Scorecard Monitor Visualizer</a>
+        </span>
+      </div>
+    </div>
+  </div>
+</template>

@@ -29,6 +29,7 @@ let packageInfoOpened = false;
 
 document.addEventListener("DOMContentLoaded", async() => {
   window.scannedPackageCache = [];
+  window.recentPackageCache = [];
   window.locker = null;
   window.popup = new Popup();
   window.settings = await new Settings().fetchUserConfig();
@@ -55,10 +56,15 @@ document.addEventListener("DOMContentLoaded", async() => {
       });
     }
     else if (data.status === "INIT" || data.status === "RELOAD") {
-      window.scannedPackageCache = data.older;
+      window.scannedPackageCache = data.availables;
+      window.recentPackageCache = data.lru;
       console.log(
         "[INFO] Older packages are loaded!",
         window.scannedPackageCache
+      );
+      console.log(
+        "[INFO] Recent packages are loaded!",
+        window.recentPackageCache
       );
 
       initSearchNav(data, {
@@ -100,6 +106,19 @@ async function init(options = {}) {
     warningsToIgnore: window.settings.config.ignore.warnings
   });
   await secureDataSet.init();
+
+  if (secureDataSet.data === null) {
+    window.navigation.hideMenu("network--view");
+    window.navigation.hideMenu("home--view");
+    window.navigation.setNavByName("search--view");
+
+    searchview ??= new SearchView(null, null);
+
+    return;
+  }
+
+  window.navigation.showMenu("network--view");
+  window.navigation.showMenu("home--view");
 
   window.vulnerabilityStrategy = secureDataSet.data.vulnerabilityStrategy;
 
