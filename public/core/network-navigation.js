@@ -175,11 +175,11 @@ export class NetworkNavigation {
 
   #navigateTreeLevel(node) {
     const activeNode = node[0];
+    this.#nsn.focusNodeById(activeNode);
     this.#currentNodeParams = {
       nodes: [activeNode],
       edges: this.#nsn.network.getConnectedEdges(activeNode)
     };
-    this.#nsn.focusNodeById(activeNode);
 
     this.#dependenciesMapByLevel.set(this.#currentLevel, this.#currentNodeParams);
   }
