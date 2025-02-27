@@ -139,6 +139,10 @@
   letter-spacing: 0.5px;
 }
 
+body.dark .home--header--title .bottom>ul li {
+  color: white;
+}
+
 .home--header--title .bottom>ul li:hover {
   text-decoration: underline;
   cursor: pointer;
@@ -291,6 +295,10 @@
   justify-content: center;
   align-items: center;
   color: #546884;
+}
+
+body.dark .home--overview>div {
+  color: white;
 }
 
 .home--overview>div>.title {
