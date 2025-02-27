@@ -10,10 +10,17 @@
   padding: 0 10px;
   border-radius: 4px;
 }
+body.dark .gauge>.line {
+  color: white;
+}
 
 .gauge>.line.clickable:hover {
   background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
   cursor: pointer;
+}
+
+body.dark .gauge>.line.clickable:hover {
+  background: var(--dark-theme-primary-color);
 }
 
 .gauge>.line+.line {

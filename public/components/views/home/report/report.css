@@ -15,6 +15,10 @@
   flex-shrink: 0;
 }
 
+body.dark .report--popup>.title {
+  background: var(--dark-theme-secondary-color);
+}
+
 .report--popup>.title>p {
   background: #f5f4f4;
   padding: 0 10px;
@@ -23,6 +27,11 @@
   letter-spacing: 1.2px;
   color: #255471;
   font-size: 20px;
+}
+
+body.dark .report--popup>.title>p {
+  background: #303263;
+  color: #3cbde5;
 }
 
 .report--popup>form {
@@ -37,6 +46,10 @@
   margin-bottom: 8px;
   font-weight: 500;
   font-size: 18px;
+}
+
+body.dark .report--popup>form label {
+  color: white;
 }
 
 .report--popup>form input {

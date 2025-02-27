@@ -74,8 +74,17 @@
   padding-left: 5px;
 }
 
+body.dark .result {
+  background: var(--dark-theme-primary-lighter);
+  color: var(--dark-theme-secondary-color);
+}
+
 .result.exact {
   background: #f4fff2 !important;
+}
+
+body.dark .result.exact {
+  background: var(--dark-theme-secondary-darker) !important;
 }
 
 .result:nth-child(even) {
@@ -98,6 +107,10 @@
 
 .result:not(:last-child) {
   border-bottom: 2px solid #f7f7f7;
+}
+
+body.dark .result:not(:last-child) {
+  border-bottom: 2px solid var(--dark-theme-primary-color);
 }
 
 .result span,
@@ -132,6 +145,13 @@
   box-sizing: border-box;
   position: relative;
 }
+body.dark .form-group {
+  background: var(--dark-theme-gray);
+  border: 1px solid var(--primary-lighter);
+  /* box-shadow: 2px 2px 20px var(--primary-darker); */
+  box-shadow: 2px 2px 20px #5b44da6e;
+
+}
 
 .form-group>input,
 .form-group>input::placeholder,
@@ -155,6 +175,10 @@
   margin-top: 10px;
 }
 
+body.dark .scan-info {
+  color: white;
+}
+
 .spinner {
   width: 56px;
   height: 56px;
@@ -174,6 +198,16 @@
   position: absolute;
   right: 10px;
   margin: 0 !important;
+}
+
+body.dark .spinner {
+  border: 9px solid var(--dark-theme-accent-lighter);
+  border-right-color: var(--dark-theme-accent-darker);
+}
+
+body.dark .spinner-small {
+  border: 4px solid var(--dark-theme-accent-lighter);
+  border-right-color: var(--dark-theme-accent-darker);
 }
 
 @keyframes spinner-d3wgkg {
@@ -229,8 +263,12 @@ input:-webkit-autofill {
   width: 100%;
   padding: 5px 0;
   margin-top: 10px;
-  background: #54688419;
+  background: #0b031f71;
   padding: 5px 10px;
+}
+
+body.dark .description {
+  color: var(--dark-theme-secondary-lighter);
 }
 
 .package-cache-result button.remove {
@@ -265,9 +303,17 @@ input:-webkit-autofill {
   overflow: auto;
 }
 
+body.dark .cache-packages, body.dark .recent-packages {
+  color: var(--secondary-darker);
+}
+
 .cache-packages h1, .recent-packages h1 {
   font-family: "mononoki";
   color: #546884;
+}
+
+body.dark .cache-packages h1, body.dark .recent-packages h1 {
+  color: white;
 }
 
 .cache-packages .package-cache-result:has(span:hover), .recent-packages .package-cache-result:has(span:hover) {

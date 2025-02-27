@@ -172,7 +172,7 @@ const ui = {
       title: "General",
       save: "save",
       defaultPannel: "Default Package Menu",
-      themePannel: "Theme Panel",
+      themePannel: "Interface theme",
       warnings: "SAST Warnings to ignore",
       flags: "Flags (emojis) to ignore",
       network: "Network",

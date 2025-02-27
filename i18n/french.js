@@ -172,7 +172,7 @@ const ui = {
       title: "Général",
       save: "sauvegarder",
       defaultPannel: "Panneau par défaut",
-      themePannel: "Theme Panel",
+      themePannel: "Thème de l'interface",
       warnings: "Avertissements à ignorer",
       flags: "Drapeau (emojis) à ignorer",
       network: "Réseau",
