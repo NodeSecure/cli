@@ -93,5 +93,8 @@ export async function fetchAndRenderByMenu(menuElement, kind = "flags") {
 
   const documentContentElement = document.querySelector(`.documentation--${kind} .${CONSTANTS.DIV_CONTENT}`);
   documentContentElement.innerHTML = kind === "flags" ? htmlResponse : `<div>${htmlResponse}</div>`;
+  documentContentElement.querySelectorAll("a").forEach((anchor) => {
+    anchor.setAttribute("target", "_blank");
+  });
   hljs.highlightAll();
 }
