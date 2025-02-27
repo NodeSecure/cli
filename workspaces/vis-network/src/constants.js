@@ -84,31 +84,37 @@ export const COLORS = Object.freeze({
       }
     },
     DEFAULT: {
-      color: "rgba(150, 200, 200, 0.15)",
+      color: "rgb(94, 112, 146)",
       font: {
         color: "#FFF"
       }
     },
     WARN: {
-      color: "rgba(210, 115, 115, 0.30)",
+      color: "rgb(177, 78, 78)",
+      font: {
+        color: "#FFF"
+      }
+    },
+    FRIENDLY: {
+      color: "rgb(57, 122, 57)",
       font: {
         color: "#FFF"
       }
     },
     CONNECTED_IN: {
-      color: "rgba(170, 100, 200, 0.50)",
+      color: "rgb(89, 44, 109)",
       font: {
         color: "#FFF"
       }
     },
     CONNECTED_OUT: {
-      color: "rgba(140, 100, 200, 0.50)",
+      color: "rgb(111, 75, 165)",
       font: {
         color: "#FFF"
       }
     },
     HARDTOREAD: {
-      color: "rgba(150, 150, 150, 0.02)",
+      color: "rgba(117, 117, 117, 0)",
       font: {
         color: "#FFF"
       }
