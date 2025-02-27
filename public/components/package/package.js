@@ -16,6 +16,40 @@ export class PackageInfo {
   }
 
   /**
+   * @param {"previous"|"next"} direction
+   */
+  static switch(direction) {
+    const packageHTMLElement = document.getElementById(PackageInfo.DOMElementName);
+    const packageNavigation = packageHTMLElement.querySelector(".package-navigation");
+    const activeElement = packageNavigation.querySelector(".active");
+
+    const enabledChilren = [...packageNavigation.children].filter((child) => child.classList.contains("disabled") === false);
+    const activeElementIndex = [...enabledChilren].indexOf(activeElement);
+
+    const nextElement = direction === "next"
+      ? enabledChilren[enabledChilren.length === activeElementIndex + 1 ? 1 : activeElementIndex + 1]
+      : enabledChilren[activeElementIndex === 1 ? enabledChilren.length - 1 : activeElementIndex - 1];
+
+    nextElement.click();
+  }
+
+  /**
+   *
+   * @param {"up"|"down"} direction
+   */
+  static scroll(direction) {
+    const packageHTMLElement = document.getElementById(PackageInfo.DOMElementName);
+    const scrollableContainer = [...packageHTMLElement.querySelectorAll(".package-container")]
+      .find((child) => child.classList.contains("hidden") === false);
+
+    if (scrollableContainer.scrollHeight <= scrollableContainer.clientHeight) {
+      return;
+    }
+
+    scrollableContainer.scrollTop += direction === "up" ? -50 : 50;
+  }
+
+  /**
    * @param {*} dependencyVersionData
    * @param {*} dependency
    * @param {*} nsn

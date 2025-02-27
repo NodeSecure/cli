@@ -1,3 +1,6 @@
+// Import Internal Dependencies
+import { PackageInfo } from "../components/package/package.js";
+
 export class NetworkNavigation {
   /**
    * @type {import("@nodesecure/vis-network").NodeSecureDataSet}
@@ -62,6 +65,11 @@ export class NetworkNavigation {
    * Represents the active locked node index.
    */
   #lockedNodesActiveIndex = 0;
+  /**
+   * -`true` package info navigation\
+   * -`false` network navigation
+   */
+  #packageInfoFocus = false;
 
   set currentNodeParams(params) {
     this.#currentNodeParams = params;
@@ -116,6 +124,24 @@ export class NetworkNavigation {
       const isTargetPopup = event.target.id === "popup--background";
       const isTargetInput = event.target.tagName === "INPUT";
       if (isNetworkViewHidden || isWikiOpen || isTargetPopup || isTargetInput) {
+        return;
+      }
+
+      if (event.code === "Enter") {
+        this.#packageInfoFocus = !this.#packageInfoFocus;
+        console.log(`[INFO] keyboard navigation switched (focus:${this.#packageInfoFocus ? "package-info" : "network"})`);
+      }
+
+      if (this.#packageInfoFocus) {
+        if (["ArrowLeft", "ArrowRight"].includes(event.code)) {
+          const direction = event.code === "ArrowLeft" ? "previous" : "next";
+          PackageInfo.switch(direction);
+        }
+        else if (["ArrowUp", "ArrowDown"].includes(event.code)) {
+          const direction = event.code === "ArrowUp" ? "up" : "down";
+          PackageInfo.scroll(direction);
+        }
+
         return;
       }
 
