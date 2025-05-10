@@ -24,7 +24,7 @@
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "pretty-bytes": "^6.1.1",
+    "pretty-bytes": "^7.0.0",
     "vis-data": "^7.1.9",
     "vis-network": "^9.1.9"
   },
