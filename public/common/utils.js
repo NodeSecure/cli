@@ -1,8 +1,6 @@
-// Import static
-import avatarURL from "../img/avatar-default.png";
-
 // Import Internal Dependencies
-import { createExpandableSpan } from "../components/expandable/expandable";
+import avatarURL from "../img/avatar-default.png";
+import { createExpandableSpan } from "../components/expandable/expandable.js";
 
 window.activeLegendElement = null;
 
@@ -233,7 +231,7 @@ export function hideOnClickOutside(
     callback = () => void 0
   } = options;
 
-  const outsideClickListener = (event) => {
+  function outsideClickListener(event) {
     if (!element.contains(event.target) && !blacklist.includes(event.target)) {
       if (hiddenTarget) {
         if (reverse) {
@@ -246,11 +244,11 @@ export function hideOnClickOutside(
       callback();
       removeClickListener();
     }
-  };
+  }
 
-  const removeClickListener = () => {
+  function removeClickListener() {
     document.removeEventListener("click", outsideClickListener);
-  };
+  }
 
   document.addEventListener("click", outsideClickListener);
 

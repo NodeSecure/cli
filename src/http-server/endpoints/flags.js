@@ -1,4 +1,4 @@
-// Import Node.Js Dependencies
+// Import Node.js Dependencies
 import { pipeline } from "node:stream";
 
 // Import Third-party Dependencies

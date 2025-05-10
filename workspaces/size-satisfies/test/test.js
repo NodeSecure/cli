@@ -1,7 +1,8 @@
+// Import Node.js Dependencies
 import { test } from "node:test";
 import assert from "node:assert";
 
-// Require Internal Dependencies
+// Import Internal Dependencies
 import sizeSatisfies from "../index.js";
 
 test("invalid operator always return false", () => {

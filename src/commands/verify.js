@@ -13,7 +13,7 @@ function separatorLine() {
 
 export async function main(
   packageName = undefined,
-  options,
+  options = {},
   verifyFn = verify
 ) {
   const payload = await verifyFn(packageName);

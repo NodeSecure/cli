@@ -1,3 +1,4 @@
+// Import Internal Dependencies
 import * as documentationUI from "../index.js";
 
 document.addEventListener("DOMContentLoaded", async() => {

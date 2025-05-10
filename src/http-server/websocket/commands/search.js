@@ -90,6 +90,6 @@ export async function* search(
 
     cache.startFromZero = false;
 
-    logger.info(`[ws|search](data sent to client|cache: updated)`);
+    logger.info("[ws|search](data sent to client|cache: updated)");
   }
 }

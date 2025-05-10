@@ -28,7 +28,7 @@ export async function get(_req, res) {
     send(res, 200, appCache.getPayload(current));
   }
   catch {
-    logger.error(`[data|get](No cache yet. Creating one...)`);
+    logger.error("[data|get](No cache yet. Creating one...)");
 
     const payload = JSON.parse(fs.readFileSync(kDefaultPayloadPath, "utf-8"));
     const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];

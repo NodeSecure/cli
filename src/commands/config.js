@@ -57,7 +57,10 @@ export function editConfigFile() {
   }
 }
 
-export async function createConfigFile(configuration = "minimal", opts) {
+export async function createConfigFile(
+  configuration = "minimal",
+  opts = {}
+) {
   const { cwd } = opts;
 
   const pathConfigFile = cwd ? process.cwd() : K_HOME_PATH;

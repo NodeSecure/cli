@@ -12,7 +12,7 @@ export class Files {
   generate(clone) {
     const { name, version, composition } = this.package.dependencyVersion;
 
-    const onclick = (_, fileName) => {
+    function onclick(_, fileName) {
       if (fileName === "../" || fileName === "./") {
         return;
       }
@@ -21,7 +21,7 @@ export class Files {
       window
         .open(`https://unpkg.com/${name}@${version}/${cleanedFile}`, "_blank")
         .focus();
-    };
+    }
 
     utils.createItemsList(
       clone.getElementById("extensions"),
