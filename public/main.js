@@ -1,25 +1,19 @@
 // Import Third-party Dependencies
 import { NodeSecureDataSet, NodeSecureNetwork } from "@nodesecure/vis-network";
 
-// Import UI Components
+// Import Internal Dependencies
 import { PackageInfo } from "./components/package/package.js";
 import { ViewNavigation } from "./components/navigation/navigation.js";
 import { Wiki } from "./components/wiki/wiki.js";
 import { Popup } from "./components/popup/popup.js";
 import { Locker } from "./components/locker/locker.js";
 import { Legend } from "./components/legend/legend.js";
-
-// Import Views Components
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import { SearchView } from "./components/views/search/search.js";
-
-// Import Core Components
 import { NetworkNavigation } from "./core/network-navigation.js";
 import { i18n } from "./core/i18n.js";
 import { initSearchNav } from "./core/search-nav.js";
-
-// Import Utils
 import * as utils from "./common/utils.js";
 
 let secureDataSet;

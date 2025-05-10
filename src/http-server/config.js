@@ -39,7 +39,7 @@ export async function set(newValue) {
   try {
     await appCache.updateConfig(newValue);
 
-    logger.info(`[config|set](sucess)`);
+    logger.info("[config|set](sucess)");
   }
   catch (err) {
     logger.error(`[config|set](error: ${err.message})`);

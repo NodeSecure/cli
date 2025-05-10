@@ -14,13 +14,13 @@ import enableDestroy from "server-destroy";
 import esmock from "esmock";
 import cacache from "cacache";
 
-// Require Internal Dependencies
+// Import Internal Dependencies
 import { buildServer } from "../src/http-server/index.js";
 import { CACHE_PATH } from "../src/cache.js";
 
 // CONSTANTS
-const HTTP_PORT = 17049;
-const HTTP_URL = new URL(`http://localhost:${HTTP_PORT}`);
+const kHttpPort = 17049;
+const kHttpURL = new URL(`http://localhost:${kHttpPort}`);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const JSON_PATH = path.join(__dirname, "fixtures", "httpServer.json");
@@ -41,7 +41,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     );
 
     httpServer = buildServer(JSON_PATH, {
-      port: HTTP_PORT,
+      port: kHttpPort,
       openLink: false,
       enableWS: false
     });
@@ -63,7 +63,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/' should return index.html content", async() => {
-    const result = await get(HTTP_URL);
+    const result = await get(kHttpURL);
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers["content-type"], "text/html");
@@ -86,14 +86,14 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/flags' should return the flags list as JSON", async() => {
-    const result = await get(new URL("/flags", HTTP_URL));
+    const result = await get(new URL("/flags", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers["content-type"], "application/json;charset=utf-8");
   });
 
   test("'/flags/description/isGit' should return the isGit HTML description", async() => {
-    const result = await get(new URL("/flags/description/isGit", HTTP_URL));
+    const result = await get(new URL("/flags/description/isGit", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers["content-type"], "text/html");
@@ -103,7 +103,7 @@ describe("httpServer", { concurrency: 1 }, () => {
 
   test("'/flags/description/foobar' should return a 404 error", async() => {
     await assert.rejects(async() => {
-      await get(new URL("/flags/description/foobar", HTTP_URL));
+      await get(new URL("/flags/description/foobar", kHttpURL));
     }, {
       name: "HttpieOnHttpError",
       statusCode: 404,
@@ -128,7 +128,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/data' should return the fixture payload we expect", async() => {
-    const result = await get(new URL("/data", HTTP_URL));
+    const result = await get(new URL("/data", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers["content-type"], "application/json;charset=utf-8");
@@ -144,7 +144,7 @@ describe("httpServer", { concurrency: 1 }, () => {
         foo: 1
       }
     }, { headers: { "content-type": "application/json" } });
-    const result = await get(new URL("/bundle/flatstr/1.0.12", HTTP_URL));
+    const result = await get(new URL("/bundle/flatstr/1.0.12", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers["content-type"], "application/json;charset=utf-8");
@@ -158,7 +158,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     const wrongVersion = undefined;
 
     await assert.rejects(async() => {
-      await get(new URL(`/bundle/flatstr/${wrongVersion}`, HTTP_URL));
+      await get(new URL(`/bundle/flatstr/${wrongVersion}`, kHttpURL));
     },
     {
       name: "HttpieOnHttpError",
@@ -177,7 +177,7 @@ describe("httpServer", { concurrency: 1 }, () => {
         foo: 1
       }
     }, { headers: { "content-type": "application/json" } });
-    const result = await get(new URL("/bundle/flatstr", HTTP_URL));
+    const result = await get(new URL("/bundle/flatstr", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers["content-type"], "application/json;charset=utf-8");
@@ -191,7 +191,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     const wrongPackageName = "br-br-br-brah";
 
     await assert.rejects(async() => {
-      await get(new URL(`/bundle/${wrongPackageName}`, HTTP_URL));
+      await get(new URL(`/bundle/${wrongPackageName}`, kHttpURL));
     }, {
       name: "HttpieOnHttpError",
       statusCode: 404,
@@ -200,14 +200,14 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("GET '/config' should return the config", async() => {
-    const { data: actualConfig } = await get(new URL("/config", HTTP_URL));
+    const { data: actualConfig } = await get(new URL("/config", kHttpURL));
 
     await cacache.put(CACHE_PATH, kConfigKey, JSON.stringify({ foo: "bar" }));
-    const result = await get(new URL("/config", HTTP_URL));
+    const result = await get(new URL("/config", kHttpURL));
 
     assert.deepEqual(result.data, { foo: "bar" });
 
-    await fetch(new URL("/config", HTTP_URL), {
+    await fetch(new URL("/config", kHttpURL), {
       method: "PUT",
       body: JSON.stringify(actualConfig),
       headers: { "Content-Type": "application/json" }
@@ -215,10 +215,10 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("PUT '/config' should update the config", async() => {
-    const { data: actualConfig } = await get(new URL("/config", HTTP_URL));
+    const { data: actualConfig } = await get(new URL("/config", kHttpURL));
     // FIXME: use @mynusift/httpie instead of fetch. Atm it throws with put().
     // https://github.com/nodejs/undici/issues/583
-    const { status } = await fetch(new URL("/config", HTTP_URL), {
+    const { status } = await fetch(new URL("/config", kHttpURL), {
       method: "PUT",
       body: JSON.stringify({ fooz: "baz" }),
       headers: { "Content-Type": "application/json" }
@@ -229,7 +229,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     const inCache = await cacache.get(CACHE_PATH, kConfigKey);
     assert.deepEqual(JSON.parse(inCache.data.toString()), { fooz: "baz" });
 
-    await fetch(new URL("/config", HTTP_URL), {
+    await fetch(new URL("/config", kHttpURL), {
       method: "PUT",
       body: JSON.stringify(actualConfig),
       headers: { "Content-Type": "application/json" }
@@ -237,7 +237,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("GET '/i18n' should return i18n", async() => {
-    const result = await get(new URL("/i18n", HTTP_URL));
+    const result = await get(new URL("/i18n", kHttpURL));
     assert.equal(result.statusCode, 200);
 
     const keys = Object.keys(result.data);
@@ -245,7 +245,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/download/:pkgName' should return package downloads", async() => {
-    const result = await get(new URL("/downloads/fastify", HTTP_URL));
+    const result = await get(new URL("/downloads/fastify", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.data.package, "fastify");
@@ -258,7 +258,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     const wrongPackageName = "br-br-br-brah";
 
     await assert.rejects(async() => {
-      await get(new URL(`/downloads/${wrongPackageName}`, HTTP_URL));
+      await get(new URL(`/downloads/${wrongPackageName}`, kHttpURL));
     }, {
       name: "HttpieOnHttpError",
       statusCode: 404,
@@ -267,14 +267,14 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/scorecard/:org/:pkgName' should return scorecard data", async() => {
-    const result = await get(new URL("/scorecard/NodeSecure/cli", HTTP_URL));
+    const result = await get(new URL("/scorecard/NodeSecure/cli", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.data.data.repo.name, "github.com/NodeSecure/cli");
   });
 
   test("'/scorecard/:org/:pkgName' should return scorecard data for GitLab repo", async() => {
-    const result = await get(new URL("/scorecard/gitlab-org/gitlab-ui?platform=gitlab.com", HTTP_URL));
+    const result = await get(new URL("/scorecard/gitlab-org/gitlab-ui?platform=gitlab.com", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.data.data.repo.name, "gitlab.com/gitlab-org/gitlab-ui");
@@ -284,7 +284,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     const wrongPackageName = "br-br-br-brah";
 
     await assert.rejects(async() => {
-      await get(new URL(`/scorecard/NodeSecure/${wrongPackageName}`, HTTP_URL));
+      await get(new URL(`/scorecard/NodeSecure/${wrongPackageName}`, kHttpURL));
     }, {
       name: "HttpieOnHttpError",
       statusCode: 404,
@@ -293,7 +293,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/report' should return a Buffer", async() => {
-    const result = await post(new URL("/report", HTTP_URL), { body: { title: "foo" } });
+    const result = await post(new URL("/report", kHttpURL), { body: { title: "foo" } });
 
     assert.equal(result.statusCode, 200);
     const json = JSON.parse(result.data);
@@ -301,7 +301,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/search' should return the package list", async() => {
-    const result = await get(new URL("/search/nodesecure", HTTP_URL));
+    const result = await get(new URL("/search/nodesecure", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.ok(result.data);

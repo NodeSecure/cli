@@ -53,7 +53,9 @@ export class Scripts {
 
   renderScripts() {
     const fragment = document.createDocumentFragment();
-    const createPElement = (className, text) => utils.createDOMElement("p", { className, text });
+    function createPElement(className, text) {
+      return utils.createDOMElement("p", { className, text });
+    }
 
     const scripts = Object.entries(this.package.dependencyVersion.scripts);
     if (scripts.length === 0) {

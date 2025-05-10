@@ -82,7 +82,7 @@ class _AppCache {
       return JSON.parse(data.toString());
     }
     catch (err) {
-      logger.error(`[cache|get](cache: not found)`);
+      logger.error("[cache|get](cache: not found)");
 
       throw err;
     }
@@ -99,7 +99,7 @@ class _AppCache {
         root: null
       };
 
-      logger.info(`[cache|init](startFromZero)`);
+      logger.info("[cache|init](startFromZero)");
       await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
 
       return;

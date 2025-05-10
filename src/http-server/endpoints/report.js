@@ -1,7 +1,7 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
 
-// Import Third-party Dependencikes
+// Import Third-party Dependencies
 import { report } from "@nodesecure/report";
 import send from "@polka/send-type";
 

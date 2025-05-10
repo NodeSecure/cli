@@ -1,4 +1,4 @@
-// Import Third-party Dependencikes
+// Import Third-party Dependencies
 import { downloads } from "@nodesecure/npm-registry-sdk";
 import send from "@polka/send-type";
 

@@ -1,4 +1,4 @@
-// Import Third-party Dependencikes
+// Import Third-party Dependencies
 import { report } from "@nodesecure/report";
 import * as Scanner from "@nodesecure/scanner";
 

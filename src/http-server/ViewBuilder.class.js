@@ -28,7 +28,7 @@ export class ViewBuilder {
   }
 
   async #enableWatcher() {
-    logger.info(`[ViewBuilder] autoReload is enabled`);
+    logger.info("[ViewBuilder] autoReload is enabled");
 
     const watcher = chokidar.watch(kComponentsDir, {
       persistent: false,
@@ -41,7 +41,7 @@ export class ViewBuilder {
   async #freeCache(
     filePath
   ) {
-    logger.info(`[ViewBuilder] the cache has been released`);
+    logger.info("[ViewBuilder] the cache has been released");
     logger.info(`[ViewBuilder](filePath: ${filePath})`);
 
     this.#cached = null;
@@ -74,7 +74,7 @@ export class ViewBuilder {
     HTMLStr += components.reduce((prev, curr) => prev + curr, "");
 
     this.#cached = HTMLStr;
-    logger.info(`[ViewBuilder] the cache has been hydrated`);
+    logger.info("[ViewBuilder] the cache has been hydrated");
 
     return HTMLStr;
   }

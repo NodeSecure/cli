@@ -1,4 +1,4 @@
-// Require Third-party Dependencies
+// Import Third-party Dependencies
 import bytes from "bytes";
 
 // CONSTANTS

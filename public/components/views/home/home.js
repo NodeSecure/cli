@@ -136,7 +136,7 @@ export class HomeView {
   async generateOverview() {
     const fragment = document.createDocumentFragment();
 
-    const createOverviewDiv = (icon, title, value) => {
+    function createOverviewDiv(icon, title, value) {
       const titleDiv = utils.createDOMElement("div", {
         className: "title",
         childs: [
@@ -151,7 +151,7 @@ export class HomeView {
           utils.createDOMElement("span", { text: value })
         ]
       });
-    };
+    }
 
     const { name } = this.secureDataSet.linker.get(0);
     let directDependencies = 0;

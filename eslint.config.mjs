@@ -5,12 +5,7 @@ export default [
   ...ESLintConfig,
   {
     rules: {
-      "func-style": "off",
-      "no-invalid-this": "off",
-      "no-inner-declarations": "off",
-      "no-case-declarations": "off",
-      // TODO: enable this rule when migrating to @topcli/cmder
-      "default-param-last": "off"
+      "no-invalid-this": "off"
     },
     languageOptions: {
       sourceType: "module",
