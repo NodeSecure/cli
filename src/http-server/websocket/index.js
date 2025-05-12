@@ -69,7 +69,7 @@ export class WebSocketServerInstanciator {
         return null;
       }
 
-      logger.error(`[ws|init](No cache yet. Creating one...)`);
+      logger.error("[ws|init](No cache yet. Creating one...)");
       await appCache.initPayloadsList();
 
       return this.initializeServer(true);

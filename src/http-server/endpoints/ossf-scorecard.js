@@ -1,4 +1,4 @@
-// Import Third-party Dependencikes
+// Import Third-party Dependencies
 import * as scorecard from "@nodesecure/ossf-scorecard-sdk";
 import send from "@polka/send-type";
 

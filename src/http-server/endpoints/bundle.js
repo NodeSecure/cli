@@ -1,4 +1,4 @@
-// Import Third-party Dependencikes
+// Import Third-party Dependencies
 import * as httpie from "@myunisoft/httpie";
 import send from "@polka/send-type";
 

@@ -9,7 +9,7 @@ export async function* remove(
   try {
     const { mru, lru, current, lastUsed, root, availables } = await cache.payloadsList();
     if (availables.includes(pkg)) {
-      logger.info(`[ws|remove] remove from availables`);
+      logger.info("[ws|remove] remove from availables");
       cache.removePayload(pkg);
       const updatedList = {
         mru,
@@ -45,7 +45,7 @@ export async function* remove(
     }
 
     if (mruIndex > -1) {
-      logger.info(`[ws|remove](remove from lru)`);
+      logger.info("[ws|remove](remove from lru)");
       const updatedMru = mru.filter((pkgName) => pkgName !== pkg);
       if (lru.length > 0) {
         // We need to move the first lru package to the mru list
@@ -78,7 +78,7 @@ export async function* remove(
       };
     }
     else {
-      logger.info(`[ws|remove](remove from lru)`);
+      logger.info("[ws|remove](remove from lru)");
       const updatedLru = lru.filter((pkgName) => pkgName !== pkg);
       const updatedList = {
         mru,
