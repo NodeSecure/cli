@@ -3,15 +3,16 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { test } from "node:test";
 import assert from "node:assert";
+import fs from "node:fs";
 
 // Import Third-party Dependencies
-import esmock from "esmock";
 import { API_URL } from "@nodesecure/ossf-scorecard-sdk";
 import { Ok } from "@openally/result";
 
 // Import Internal Dependencies
 import { runProcess } from "../helpers/cliCommandRunner.js";
 import { arrayFromAsync, getExpectedScorecardLines } from "../helpers/utils.js";
+import { getCurrentRepository } from "../../src/commands/scorecard.js";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -97,26 +98,19 @@ test("should not display scorecard for unknown repository", async() => {
   assert.deepEqual(givenLines, expectedLines, `lines should be ${expectedLines}`);
 });
 
-test("should retrieve repository whithin git config", async() => {
-  const testingModule = await esmock("../../src/commands/scorecard.js", {
-    fs: {
-      readFileSync: () => [
-        "[remote \"origin\"]",
-        "\turl = git@github.com:myawesome/repository.git"
-      ].join("\n")
-    }
-  });
+test("should retrieve repository within git config", async(ctx) => {
+  const readFileResult = [
+    "[remote \"origin\"]",
+    "\turl = git@github.com:myawesome/repository.git"
+  ].join("\n");
+  ctx.mock.method(fs, "readFileSync", () => readFileResult);
 
-  assert.deepEqual(testingModule.getCurrentRepository(), Ok(["myawesome/repository", "github"]));
+  assert.deepEqual(getCurrentRepository(), Ok(["myawesome/repository", "github"]));
 });
 
-test("should not find origin remote", async() => {
-  const testingModule = await esmock("../../src/commands/scorecard.js", {
-    fs: {
-      readFileSync: () => "just one line"
-    }
-  });
-  const result = testingModule.getCurrentRepository();
+test("should not find origin remote", async(ctx) => {
+  ctx.mock.method(fs, "readFileSync", () => "just one line");
+  const result = getCurrentRepository();
 
   assert.equal(result.err, true);
   assert.equal(result.val, "Cannot find origin remote.");
