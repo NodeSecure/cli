@@ -1,22 +1,24 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import { after, before, describe, test } from "node:test";
+import { after, before, describe, test, mock } from "node:test";
 import { once } from "node:events";
 import path from "node:path";
 import assert from "node:assert";
+import stream from "node:stream";
 
 // Import Third-party Dependencies
 import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@myunisoft/httpie";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
 import enableDestroy from "server-destroy";
-import esmock from "esmock";
 import cacache from "cacache";
 
 // Import Internal Dependencies
-import { buildServer } from "../src/http-server/index.js";
+import { buildServer, BROWSER } from "../src/http-server/index.js";
 import { CACHE_PATH } from "../src/cache.js";
+import * as rootEndpoint from "../src/http-server/endpoints/root.js";
+import * as flagsEndpoint from "../src/http-server/endpoints/flags.js";
 
 // CONSTANTS
 const kHttpPort = 17049;
@@ -69,20 +71,35 @@ describe("httpServer", { concurrency: 1 }, () => {
     assert.equal(result.headers["content-type"], "text/html");
   });
 
-  test("'/' should fail", async() => {
-    const errors = [];
-    const module = await esmock("../src/http-server/endpoints/root.js", {
-      "@polka/send-type": {
-        default: (_res, _status, { error }) => errors.push(error)
+  test("'/' should fail", async(ctx) => {
+    class Response {
+      constructor() {
+        this.body = "";
+        this.headers = {};
+        this.statusCode = 200;
       }
-    });
+      end(str) {
+        this.body = str;
+      }
+      writeHead(int) {
+        this.statusCode = int;
+      }
+      getHeader(key) {
+        return this.headers[key];
+      }
+    }
 
-    await module.get({}, ({
-      writeHead: () => {
-        throw new Error("fake error");
-      }
-    }));
-    assert.deepEqual(errors, ["fake error"]);
+    const fakeError = "fake error";
+    function toThrow() {
+      throw new Error(fakeError);
+    }
+    ctx.mock.method(Response.prototype, "writeHead", toThrow, { times: 1 });
+
+    const response = new Response();
+    await rootEndpoint.get({}, response);
+
+    assert.strictEqual(response.body, JSON.stringify({ error: fakeError }));
+    assert.strictEqual(response.statusCode, 500);
   });
 
   test("'/flags' should return the flags list as JSON", async() => {
@@ -111,19 +128,12 @@ describe("httpServer", { concurrency: 1 }, () => {
     });
   });
 
-  test("'/flags/description/:title' should fail", async() => {
-    const module = await esmock("../src/http-server/endpoints/flags.js", {
-      stream: {
-        pipeline: (_stream, _res, err) => err("fake error")
-      },
-      fs: {
-        createReadStream: () => "foo"
-      }
-    });
+  test("'/flags/description/:title' should fail", async(ctx) => {
+    ctx.mock.method(stream, "pipeline", (_stream, _res, err) => err("fake error"));
     const logs = [];
     console.error = (data) => logs.push(data);
 
-    await module.get({ params: { title: "hasWarnings" } }, ({ writeHead: () => true }));
+    await flagsEndpoint.get({ params: { title: "hasWarnings" } }, ({ writeHead: () => true }));
     assert.deepEqual(logs, ["fake error"]);
   });
 
@@ -312,30 +322,25 @@ describe("httpServer", { concurrency: 1 }, () => {
 
 describe("httpServer without options", () => {
   let httpServer;
-  let opened = false;
+  let spawnOpen;
   // We want to disable WS
   process.env.NODE_ENV = "test";
 
   before(async() => {
-    const module = await esmock("../src/http-server/index.js", {
-      open: () => (opened = true)
-    });
-
-    httpServer = module.buildServer(JSON_PATH);
+    spawnOpen = mock.method(BROWSER, "open", () => void 0);
+    httpServer = buildServer(JSON_PATH);
     await once(httpServer.server, "listening");
     enableDestroy(httpServer.server);
   });
 
   after(async() => {
     httpServer.server.destroy();
+    spawnOpen.mock.restore();
   });
 
-  test("should listen on random port", () => {
+  test("should listen on random port and call childProcess.spawn method ('open' pkg) to open link", async() => {
     assert.ok(httpServer.server.address().port > 0);
-  });
-
-  test("should have openLink to true", () => {
-    assert.equal(opened, true);
+    assert.strictEqual(spawnOpen.mock.callCount(), 1);
   });
 });
 

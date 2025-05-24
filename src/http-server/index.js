@@ -22,6 +22,11 @@ import * as middlewares from "./middlewares/index.js";
 import { appCache } from "../cache.js";
 import { WebSocketServerInstanciator } from "./websocket/index.js";
 
+// CONSTANTS
+export const BROWSER = {
+  open
+};
+
 export function buildServer(dataFilePath, options = {}) {
   const httpConfigPort = typeof options.port === "number" ? options.port : 0;
   const openLink = typeof options.openLink === "boolean" ? options.openLink : true;
@@ -68,7 +73,7 @@ export function buildServer(dataFilePath, options = {}) {
     console.log(kleur.magenta().bold(await i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
     if (openLink) {
-      open(link);
+      BROWSER.open(link);
     }
   });
 
