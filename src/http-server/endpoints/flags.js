@@ -1,5 +1,5 @@
 // Import Node.js Dependencies
-import { pipeline } from "node:stream";
+import stream from "node:stream";
 
 // Import Third-party Dependencies
 import send from "@polka/send-type";
@@ -19,7 +19,7 @@ export function get(req, res) {
 
   res.writeHead(200, { "Content-Type": "text/html" });
 
-  return pipeline(lazyFetchFlagFile(req.params.title), res, (err) => {
+  return stream.pipeline(lazyFetchFlagFile(req.params.title), res, (err) => {
     if (err) {
       console.error(err);
     }
