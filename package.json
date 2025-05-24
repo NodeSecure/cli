@@ -1,5 +1,5 @@
 {
-  "name": "@nodesecure/cli",strip-ansi
+  "name": "@nodesecure/cli",
   "version": "3.1.0",
   "description": "Node.js security CLI",
   "main": "./bin/index.js",
