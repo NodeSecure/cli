@@ -1,10 +1,10 @@
 // Import Node.js Dependencies
 import { fork } from "node:child_process";
 import { createInterface } from "node:readline";
+import { stripVTControlCharacters } from "node:util";
 
 // Import Third-party Dependencies
 import { MockAgent, setGlobalDispatcher } from "undici";
-import stripAnsi from "strip-ansi";
 
 export async function* runProcess(options) {
   const { path, args = [], cwd = process.cwd(), undiciMockAgentOptions = null } = options;
@@ -20,7 +20,7 @@ export async function* runProcess(options) {
     const rStream = createInterface(childProcess.stdout);
 
     for await (const line of rStream) {
-      yield stripAnsi(line);
+      yield stripVTControlCharacters(line);
     }
   }
   finally {

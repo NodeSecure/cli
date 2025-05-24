@@ -5,9 +5,9 @@ dotenv.config();
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { describe, it } from "node:test";
+import { stripVTControlCharacters } from "node:util";
 
 // Import Third-party Dependencies
-import stripAnsi from "strip-ansi";
 import * as i18n from "@nodesecure/i18n";
 
 // Import Internal Dependencies
@@ -47,7 +47,7 @@ describe("CLI Commands: summary", () => {
     for await (const line of runProcess(processOptions)) {
       const regexp = lines.shift();
       t.assert.ok(regexp, "we are expecting this line");
-      t.assert.ok(regexp.test(stripAnsi(line)), `line (${line}) matches ${regexp}`);
+      t.assert.ok(regexp.test(stripVTControlCharacters(line)), `line (${line}) matches ${regexp}`);
     }
   });
 
@@ -66,7 +66,7 @@ describe("CLI Commands: summary", () => {
 
     for await (const line of runProcess(processOptions)) {
       const expectedLineRegex = expectedLines.shift();
-      const formattedLine = stripAnsi(line);
+      const formattedLine = stripVTControlCharacters(line);
       t.assert.ok(expectedLineRegex, "we are expecting this line");
       t.assert.ok(expectedLineRegex.test(formattedLine), `line (${formattedLine}) should match ${expectedLineRegex}`);
     }
