@@ -62,11 +62,22 @@ export function getNodeColor(options) {
   return CONSTANTS.COLORS[theme].DEFAULT;
 }
 
-export function getFlagsEmojisInlined(flags, flagsToIgnore) {
+export function getFlagsEmojisInlined(
+  flags,
+  flagsToIgnore = new Set()
+) {
   return [...flags]
-    .filter((title) => !flagsToIgnore.has(title))
-    .map((title) => kFlagsEmojis[title] ?? null)
-    .filter((value) => value !== null && !flagsToIgnore.has(value))
+    .flatMap((title) => {
+      if (flagsToIgnore.has(title)) {
+        return [];
+      }
+
+      // FIX: when scanner resolve to flags ^3.x
+      const emoji = kFlagsEmojis[title === "hasDuplicate" ? "isDuplicated" : title];
+
+      return emoji ? [emoji] : [];
+    })
+    .filter((emoji) => !flagsToIgnore.has(emoji))
     .reduce((acc, cur) => `${acc} ${cur}`, "");
 }
 

@@ -13,7 +13,7 @@ export function getAll(_req, res) {
 }
 
 export function get(req, res) {
-  if (req.params.title !== "isDuplicate" && !kNodeSecureFlags.has(req.params.title)) {
+  if (req.params.title !== "hasDuplicate" && !kNodeSecureFlags.has(req.params.title)) {
     return send(res, 404, { error: "Not Found" });
   }
 
