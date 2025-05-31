@@ -6,7 +6,7 @@ import { appCache } from "../cache.js";
 import { logger } from "../logger.js";
 
 const experimentalWarnings = Object.entries(warnings)
-  .flatMap(([warning, { experimental }]) => experimental ? [warning] : [])
+  .flatMap(([warning, { experimental }]) => (experimental ? [warning] : []));
 
 // CONSTANTS
 const kDefaultConfig = {
