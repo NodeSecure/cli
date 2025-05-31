@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   window.wiki = new Wiki();
 
   await init();
-  onSettingsSaved();
+  onSettingsSaved(window.settings.config);
 
   window.socket = new WebSocket(`ws://${window.location.hostname}:1338`);
   window.socket.addEventListener("message", async(event) => {
@@ -97,7 +97,8 @@ async function init(options = {}) {
 
   secureDataSet = new NodeSecureDataSet({
     flagsToIgnore: window.settings.config.ignore.flags,
-    warningsToIgnore: window.settings.config.ignore.warnings
+    warningsToIgnore: window.settings.config.ignore.warnings,
+    theme: window.settings.config.theme
   });
   await secureDataSet.init();
 
@@ -118,7 +119,10 @@ async function init(options = {}) {
 
   // Initialize vis Network
   NodeSecureNetwork.networkElementId = "dependency-graph";
-  nsn = new NodeSecureNetwork(secureDataSet, { i18n: window.i18n[utils.currentLang()] });
+  nsn = new NodeSecureNetwork(secureDataSet, {
+    i18n: window.i18n[utils.currentLang()],
+    theme: window.settings.config.theme
+  });
   window.locker = new Locker(nsn);
   window.legend = new Legend({ show: window.settings.config.showFriendlyDependencies });
   new HomeView(secureDataSet, nsn);
@@ -201,18 +205,30 @@ async function updateShowInfoMenu(params) {
   return void 0;
 }
 
-function onSettingsSaved() {
-  window.addEventListener("settings-saved", async(event) => {
-    const warningsToIgnore = new Set(event.detail.ignore.warnings);
-    const flagsToIgnore = new Set(event.detail.ignore.flags);
+function onSettingsSaved(defaultConfig = null) {
+  async function updateSettings(config) {
+    console.log("[INFO] Settings saved:", config);
+    const warningsToIgnore = new Set(config.ignore.warnings);
+    const flagsToIgnore = new Set(config.ignore.flags);
+    const theme = config.theme;
     secureDataSet.warningsToIgnore = warningsToIgnore;
     secureDataSet.flagsToIgnore = flagsToIgnore;
+    secureDataSet.theme = theme;
     window.settings.config.ignore.warnings = warningsToIgnore;
     window.settings.config.ignore.flags = flagsToIgnore;
+    window.settings.config.theme = theme;
+
+    if (theme === "dark") {
+      document.body.classList.add("dark");
+    }
+    else {
+      document.body.classList.remove("dark");
+    }
 
     await secureDataSet.init(
       secureDataSet.data,
-      secureDataSet.FLAGS
+      secureDataSet.FLAGS,
+      secureDataSet.theme
     );
     const { nodes } = secureDataSet.build();
     nsn.nodes.update(nodes.get());
@@ -225,11 +241,19 @@ function onSettingsSaved() {
       updateShowInfoMenu(window.networkNav.currentNodeParams);
     }
 
-    if (event.detail.showFriendlyDependencies) {
+    if (config.showFriendlyDependencies) {
       window.legend.show();
     }
     else {
       window.legend.hide();
     }
+  }
+
+  if (defaultConfig) {
+    updateSettings(defaultConfig);
+  }
+
+  window.addEventListener("settings-saved", async(event) => {
+    updateSettings(event.detail);
   });
 }

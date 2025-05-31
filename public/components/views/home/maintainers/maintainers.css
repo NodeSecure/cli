@@ -21,6 +21,11 @@
   flex-grow: 1;
 }
 
+body.dark .home--maintainers>.person {
+  color: white;
+  background: var(--dark-theme-primary-color);
+}
+
 .home--maintainers>.person:hover {
   border-color: var(--secondary-darker);
   cursor: pointer;
@@ -117,6 +122,10 @@
 
 .maintainers--popup>.header>.informations>p.name {
   color: #546884;
+}
+
+body.dark .maintainers--popup>.header>.informations>p.name {
+  color: white;
 }
 
 .maintainers--popup>.header>.informations>p.email {
