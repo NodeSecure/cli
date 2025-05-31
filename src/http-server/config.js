@@ -1,11 +1,17 @@
+// Import Third-party Dependencies
+import { warnings } from "@nodesecure/js-x-ray";
+
 // Import Internal Dependencies
 import { appCache } from "../cache.js";
 import { logger } from "../logger.js";
 
+const experimentalWarnings = Object.entries(warnings)
+  .flatMap(([warning, { experimental }]) => (experimental ? [warning] : []));
+
 // CONSTANTS
 const kDefaultConfig = {
   defaultPackageMenu: "info",
-  ignore: { flags: [], warnings: [] }
+  ignore: { flags: [], warnings: experimentalWarnings }
 };
 
 export async function get() {
