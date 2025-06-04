@@ -1,5 +1,6 @@
 // Import Third-party Dependencies
 import { getJSON } from "@nodesecure/vis-network";
+import { warnings } from "@nodesecure/js-x-ray/warnings";
 
 // CONSTANTS
 const kAllowedHotKeys = new Set([
@@ -17,10 +18,24 @@ const kDefaultHotKeys = {
 };
 const kShortcutInputTargetIds = new Set(Object.keys(kDefaultHotKeys));
 
+const kWarningsIdToWarningsLabelExceptions = {
+  "zero-semver": "zero semver (0.x.x)"
+};
+
 export class Settings {
   static defaultMenuName = "info";
 
   constructor() {
+    const warningsCheckBoxes = Object.keys(warnings)
+      .map((id) => `<div>
+        <input type="checkbox" id="${id}" value="${id}" checked name="warnings">
+        <label for="${id}">${id in kWarningsIdToWarningsLabelExceptions ?
+          kWarningsIdToWarningsLabelExceptions[id] : id.replaceAll("-", " ")}</label>
+      </div>`).join("");
+
+    const warningsSettings = document.getElementById("warnings-settings");
+    warningsSettings.insertAdjacentHTML("beforeend", warningsCheckBoxes);
+
     this.saveEnabled = false;
     this.dom = {
       /** @type {HTMLSelectElement} */
