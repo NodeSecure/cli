@@ -12,14 +12,15 @@ export class PopupReport {
     const clone = templateElement.content.cloneNode(true);
     const form = clone.querySelector("form");
     const isLightPreference = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+    const defaultTitle = `${this.rootDependencyName}'s report`;
     form.querySelector("#lightTheme").checked = isLightPreference;
     form.querySelector("#darkTheme").checked = !isLightPreference;
-    clone.querySelector("#title").placeholder = `${this.rootDependencyName}'s report`;
+    clone.querySelector("#title").placeholder = defaultTitle;
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
       form.querySelector(".spinner").classList.remove("hidden");
-      const title = form.querySelector("#title").value;
+      const title = form.querySelector("#title").value || defaultTitle;
       const theme = form.querySelector("#lightTheme").checked ? "light" : "dark";
       const includesAllDeps = form.querySelector("#includesAllDeps").checked;
 
