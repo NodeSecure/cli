@@ -170,6 +170,8 @@ section#package-info .head-title>p {
   text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
   font-size: 18px;
   font-variant: small-caps;
+  /* lowercase is needed with small-caps font variant */
+  text-transform: lowercase;
   font-family: "mononoki";
   font-weight: bold;
   letter-spacing: 1px;
