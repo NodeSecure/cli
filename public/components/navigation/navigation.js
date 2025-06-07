@@ -32,8 +32,9 @@ export class ViewNavigation {
     document.addEventListener("keydown", (event) => {
       const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
       const isTargetPopup = event.target.id === "popup--background";
+      const isPopupOpened = document.querySelector("#popup--background.show");
       const isTargetInput = event.target.tagName === "INPUT";
-      if (isTargetPopup || isWikiOpen || isTargetInput) {
+      if (isTargetPopup || isWikiOpen || isTargetInput || isPopupOpened) {
         return;
       }
 
