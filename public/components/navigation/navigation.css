@@ -9,6 +9,10 @@ nav#aside {
   z-index: 40;
 }
 
+body.dark nav#aside {
+  background: var(--dark-theme-primary-color);
+}
+
 nav#aside>.nsecure-logo {
   margin-top: 20px;
 }

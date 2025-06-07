@@ -23,11 +23,14 @@ export async function get() {
       ignore: {
         flags,
         warnings
-      } = {}
+      } = {},
+      theme
     } = config;
-    logger.info(`[config|get](defaultPackageMenu: ${defaultPackageMenu}|ignore-flag: ${flags}|ignore-warnings: ${warnings})`);
+    logger.info(
+      `[config|get](defaultPackageMenu: ${defaultPackageMenu}|ignore-flag: ${flags}|ignore-warnings: ${warnings}|theme: ${theme})`
+    );
 
-    return config;
+    return { defaultPackageMenu, ignore: { flags, warnings }, theme };
   }
   catch (err) {
     logger.error(`[config|get](error: ${err.message})`);
@@ -41,7 +44,7 @@ export async function get() {
 }
 
 export async function set(newValue) {
-  logger.info(`[config|set](config: ${newValue})`);
+  logger.info(`[config|set](config: ${JSON.stringify(newValue)})`);
   try {
     await appCache.updateConfig(newValue);
 

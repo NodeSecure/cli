@@ -130,6 +130,7 @@ class _AppCache {
     try {
       // prevent re-initialization of the cache
       await cacache.get(CACHE_PATH, `${this.prefix}${kPayloadsCache}`);
+      console.log("toto");
 
       return;
     }
@@ -139,6 +140,7 @@ class _AppCache {
     const packagesInFolder = this.availablePayloads();
     if (packagesInFolder.length === 0) {
       await this.#initDefaultPayloadsList();
+      console.log("tutu");
 
       return;
     }

@@ -39,6 +39,10 @@
   font-size: 18px;
 }
 
+body.dark .report--popup>form label {
+  color: white;
+}
+
 .report--popup>form input {
   padding: 11px 6px;
   border: none;
