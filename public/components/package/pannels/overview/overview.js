@@ -32,6 +32,7 @@ export class Overview {
 
     clone.querySelector(".fields")
       .appendChild(this.renderTopFields());
+    this.renderNPMStats();
     clone.querySelector(".fields.releases")
       .appendChild(this.renderReleases());
 
@@ -154,6 +155,17 @@ export class Overview {
     }
 
     return fragment;
+  }
+
+  async renderNPMStats() {
+    const { size, name } = this.package.dependencyVersion;
+    const {
+      downloads
+    } = await fetch(`/downloads/${name.replaceAll("/", "%2F")}`)
+      .then((value) => value.json());
+
+    document.querySelector("#npm-stats .weekly-downloads").textContent = downloads ?? "N/A";
+    document.querySelector("#npm-stats .weekly-traffic").textContent = downloads ? prettyBytes(downloads * size) : "N/A";
   }
 
   renderReleases() {

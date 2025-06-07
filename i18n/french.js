@@ -118,7 +118,10 @@ const ui = {
       lastReleaseVersion: "Dernière version publiée",
       lastReleaseDate: "Date de la dernière version",
       publishedReleases: "Nombre de versions publiées",
-      numberPublishers: "Nombre de contributeur(s)"
+      numberPublishers: "Nombre de contributeur(s)",
+      weeklyDownloads: "Téléchargements hebdomadaires",
+      weeklyTraffic: "Trafic hebdomadaire",
+      downloadsAndTraffic: "Téléchargements et trafic"
     },
     helpers: {
       warnings: "En savoir plus sur les alertes avec le",

@@ -36,4 +36,5 @@ section#package-info div.bundlephobia>div>b i {
 section#package-info div.bundlephobia>div>span {
   font-size: 12px;
   font-family: 'mononoki';
+  text-transform: uppercase;
 }
