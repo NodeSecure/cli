@@ -14,6 +14,7 @@ const cli = {
     option_depth: "Niveau de profondeur de dépendances maximum à aller chercher",
     option_output: "Nom de sortie du fichier json",
     option_silent: "Activer le mode silencieux qui désactive les spinners du CLI",
+    option_contacts: "Liste des contacts à mettre en évidence",
     strategy: "Source de vulnérabilités à utiliser",
     cwd: {
       desc: "Démarre une analyse de sécurité sur le dossier courant",
@@ -80,6 +81,13 @@ const cli = {
   startHttp: {
     invalidScannerVersion: tS`le fichier d'analyse correspond à la version '${0}' du scanner et ne satisfait pas la range '${1}' attendu par la CLI`,
     regenerate: "veuillez re-générer un nouveau fichier d'analyse JSON en utilisant votre CLI"
+  },
+  errors: {
+    contacts: {
+      should_be_valid_json: tS`Contacts: ${0}`,
+      should_be_array: "Contacts doit etre un array",
+      should_be_defined: tS`Contact à index ${0} ne doit pas etre null`
+    } 
   }
 };
 

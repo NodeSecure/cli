@@ -26,12 +26,22 @@ export class Maintainers {
   }
 
   render() {
-    const authors = [...this.secureDataSet.authors.entries()]
-      .sort((left, right) => right[1].packages.size - left[1].packages.size);
+    const authors = this.#highlightContacts([...this.secureDataSet.authors.entries()]
+      .sort((left, right) => right[1].packages.size - left[1].packages.size));
 
     document.getElementById("authors-count").innerHTML = authors.length;
     document.querySelector(".home--maintainers")
       .appendChild(this.generate(authors));
+  }
+
+  #highlightContacts(authors) {
+    const highlightedContacts = new Set(this.secureDataSet.data.highlighted.contacts
+      .map(({ name }) => name));
+
+    const highlightedAuthors = authors.filter(([name]) => highlightedContacts.has(name));
+    const authorsRest = authors.filter(([name]) => !highlightedContacts.has(name));
+
+    return [...highlightedAuthors, ...authorsRest];
   }
 
   generate(authors) {

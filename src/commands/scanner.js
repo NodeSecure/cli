@@ -14,14 +14,28 @@ import * as Scanner from "@nodesecure/scanner";
 // Import Internal Dependencies
 import * as http from "./http.js";
 import { appCache } from "../cache.js";
+import { createContactsParser } from "./parsers/contacts.js";
+
+const parseContacts = createContactsParser({
+  logError: (tokenName, param) => console.log(kleur.red().bold(param ? i18n.getTokenSync(tokenName, param)
+    : i18n.getTokenSync(tokenName))),
+  exit: () => process.exit()
+});
 
 export async function auto(spec, options) {
   const { keep, ...commandOptions } = options;
 
+  const optionsWithContacts = {
+    ...commandOptions,
+    highlight: {
+      contacts: parseContacts(options.contacts)
+    }
+  };
+
   const payloadFile = await (
     typeof spec === "string" ?
-      from(spec, commandOptions) :
-      cwd(commandOptions)
+      from(spec, optionsWithContacts) :
+      cwd(optionsWithContacts)
   );
   try {
     if (payloadFile !== null) {
@@ -55,12 +69,14 @@ export async function cwd(options) {
     nolock,
     full,
     vulnerabilityStrategy,
-    silent
+    silent,
+    contacts
   } = options;
 
   const payload = await Scanner.cwd(
     process.cwd(),
-    { maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy },
+    { maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy, highlight:
+      { contacts: parseContacts(contacts) } },
     initLogger(void 0, !silent)
   );
 
@@ -68,11 +84,13 @@ export async function cwd(options) {
 }
 
 export async function from(spec, options) {
-  const { depth: maxDepth = Infinity, output, silent } = options;
+  const { depth: maxDepth = Infinity, output, silent, contacts } = options;
 
   const payload = await Scanner.from(
     spec,
-    { maxDepth },
+    { maxDepth, highlight: {
+      contacts: parseContacts(contacts)
+    } },
     initLogger(spec, !silent)
   );
 
