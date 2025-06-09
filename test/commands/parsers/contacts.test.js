@@ -1,78 +1,38 @@
 // Import Node.js Dependencies
-import { it, describe, beforeEach } from "node:test";
+import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
 // Import Internal Dependencies
-import { createContactsParser } from "../../../src/commands/parsers/contacts.js";
-
-let errors = [];
-
-function exit() {
-  throw new Error("process exited");
-}
-
-beforeEach(() => {
-  errors = [];
-});
-
-function logError(token, param) {
-  if (param) {
-    errors.push(`${token} ${param}`);
-  }
-  else {
-    errors.push(token);
-  }
-}
+import { parseContacts } from "../../../src/commands/parsers/contacts.js";
 
 describe("contacts parser", () => {
-  it("should successfully parse the contacts to highlight", () => {
-    const parseContacts = createContactsParser({
-      logError,
-      exit
-    });
-
-    const contactsJson = "[{\"name\": \"contact1\"},{\"name\":\"contact2\",\"url\":\"url2\",\"email\":\"email2@gmail.com\"}]";
-    const result = [{ name: "contact1" }, { name: "contact2", url: "url2", email: "email2@gmail.com" }];
-    assert.deepEqual(parseContacts(contactsJson), result);
-    assert.deepEqual(errors, []);
+  it("should have no contacts", () => {
+    assert.deepEqual(parseContacts(""), []);
   });
 
-  describe("errors", () => {
-    it("should display an error and exit the process when the contacts is not valid json", () => {
-      const parseContacts = createContactsParser({
-        logError,
-        exit
-      });
+  it("should have a contact with a name", () => {
+    assert.deepEqual(parseContacts("sindre"), [{ name: "sindre" }]);
+  });
 
-      const unvalidJson = "][";
+  it("should trim names", () => {
+    assert.deepEqual(parseContacts("  matteo "), [{ name: "matteo" }]);
+  });
 
-      assert.throws(() => parseContacts(unvalidJson), { message: "process exited" });
-      assert.deepEqual(errors, ["cli.errors.contacts.should_be_valid_json Unexpected token ']', \"][\" is not valid JSON"]);
-    });
+  it("should have a contact with an email", () => {
+    assert.deepEqual(parseContacts("matteo@gmail.com"), [{ email: "matteo@gmail.com" }]);
+  });
 
-    it("should display an error and exit the process when the contacts is not an array", () => {
-      const parseContacts = createContactsParser({
-        logError,
-        exit
-      });
+  it("should trim emails", () => {
+    assert.deepEqual(parseContacts("  sindre@gmail.com "), [{ email: "sindre@gmail.com" }]);
+  });
 
-      const contactsJson = "{\"name\":\"contact1\"}";
+  it("should parse names and emails", () => {
+    assert.deepEqual(parseContacts("sindre sindre@gmail.com"), [{ name: "sindre", email: "sindre@gmail.com" }]);
+  });
 
-      assert.throws(() => parseContacts(contactsJson), { message: "process exited" });
-      assert.deepEqual(errors, ["cli.errors.contacts.should_be_array"]);
-    });
-
-    it("should display an error when a contact is null", () => {
-      const parseContacts = createContactsParser({
-        logError,
-        exit
-      });
-
-      const contactsJson = "[{\"name\": \"contact1\"},null,{\"name\":\"contact2\"," +
-        "\"url\":\"url2\",\"email\":\"email2@gmail.com\"},null]";
-      assert.throws(() => parseContacts(contactsJson), { message: "process exited" });
-      assert.deepEqual(errors, ["cli.errors.contacts.should_be_defined 1", "cli.errors.contacts.should_be_defined 3"]);
-    });
+  it("should parse multiples contacts", () => {
+    assert.deepEqual(parseContacts("sindre sindre@gmail.com, matteo"),
+      [{ name: "sindre", email: "sindre@gmail.com" }, { name: "matteo" }]);
   });
 });
 

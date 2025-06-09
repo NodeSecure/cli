@@ -82,13 +82,6 @@ const cli = {
     invalidScannerVersion: tS`the payload has been scanned with version '${0}' and do not satisfies the required CLI range '${1}'`,
     regenerate: "please re-generate a new JSON payload using the CLI"
   },
-  errors: {
-    contacts: {
-      should_be_valid_json: tS`Contacts: ${0}`,
-      should_be_array: "Contacts should be an array",
-      should_be_defined: tS`Contact at index ${0} should not be null`
-    } 
-  }
 };
 
 const ui = {

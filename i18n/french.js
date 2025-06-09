@@ -82,13 +82,6 @@ const cli = {
     invalidScannerVersion: tS`le fichier d'analyse correspond à la version '${0}' du scanner et ne satisfait pas la range '${1}' attendu par la CLI`,
     regenerate: "veuillez re-générer un nouveau fichier d'analyse JSON en utilisant votre CLI"
   },
-  errors: {
-    contacts: {
-      should_be_valid_json: tS`Contacts: ${0}`,
-      should_be_array: "Contacts doit etre un array",
-      should_be_defined: tS`Contact à index ${0} ne doit pas etre null`
-    } 
-  }
 };
 
 const ui = {

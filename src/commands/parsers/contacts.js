@@ -1,33 +1,23 @@
-export function createContactsParser({ logError, exit }) {
-  return (json) => {
-    const contacts = parseContacts({ json, logError, exit });
-    if (!Array.isArray(contacts)) {
-      logError("cli.errors.contacts.should_be_array");
-      exit();
-    }
-    let hasError = false;
-    contacts.forEach((contact, i) => {
-      if (!contact) {
-        hasError = true;
-        logError("cli.errors.contacts.should_be_defined", i);
-      }
-    });
-    if (hasError) {
-      exit();
-    }
-
-    return contacts;
-  };
+export function parseContacts(str) {
+  return str ? str.split(",").map(parseContact) : [];
 }
 
-function parseContacts({ json, logError, exit }) {
-  try {
-    return JSON.parse(json);
+function parseContact(str) {
+  const emailMatch = str.match(emailRegex());
+  if (!emailMatch) {
+    return { name: str.trim() };
   }
-  catch (err) {
-    logError("cli.errors.contacts.should_be_valid_json", err.message);
-    exit();
+  const email = emailMatch[0];
+  const name = str.replace(email, "").trim();
+  if (name) {
+    return { name, email };
+  }
 
-    return null;
-  }
+  return { email };
+}
+
+const regex = "[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*";
+
+function emailRegex() {
+  return new RegExp(regex, "g");
 }

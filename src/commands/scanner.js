@@ -14,13 +14,7 @@ import * as Scanner from "@nodesecure/scanner";
 // Import Internal Dependencies
 import * as http from "./http.js";
 import { appCache } from "../cache.js";
-import { createContactsParser } from "./parsers/contacts.js";
-
-const parseContacts = createContactsParser({
-  logError: (tokenName, param) => console.log(kleur.red().bold(param ? i18n.getTokenSync(tokenName, param)
-    : i18n.getTokenSync(tokenName))),
-  exit: () => process.exit()
-});
+import { parseContacts } from "./parsers/contacts.js";
 
 export async function auto(spec, options) {
   const { keep, ...commandOptions } = options;
@@ -88,9 +82,10 @@ export async function from(spec, options) {
 
   const payload = await Scanner.from(
     spec,
-    { maxDepth, highlight: {
-      contacts: parseContacts(contacts)
-    } },
+    { maxDepth,
+      highlight: {
+        contacts: parseContacts(contacts)
+      } },
     initLogger(spec, !silent)
   );
 
