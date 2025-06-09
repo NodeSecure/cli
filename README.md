@@ -110,6 +110,7 @@ For complete details on each command, refer to the following documents:
 - [`lang`](./docs/cli/lang.md)
 - [`config create`](./docs/cli/config.md)
 - [`config`](./docs/cli/config.md)
+- [`cache`](./docs/cli/cache.md)
 
 Each link provides access to the full documentation for the command, including additional details, options, and usage examples.
 

@@ -35,7 +35,12 @@ export async function arrayFromAsync(stream) {
   const chunks = [];
 
   for await (const chunk of stream) {
-    chunks.push(chunk);
+    if (Buffer.isBuffer(chunk)) {
+      chunks.push(chunk.toString("utf8"));
+    }
+    else {
+      chunks.push(chunk);
+    }
   }
 
   return chunks;

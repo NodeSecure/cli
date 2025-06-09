@@ -65,6 +65,16 @@ const cli = {
     configCreate: {
       desc: "Init your Nodesecure config file",
       option_cwd: "Create config file at the cwd"
+    },
+    cache: {
+      desc: "Manage NodeSecure cache",
+      missingAction: "No valid action specified. Use --help to see options.",
+      option_list: "List cache files",
+      option_clear: "Clear the cache",
+      option_full: "Clear or list the full cache, including payloads",
+      cacheTitle: "NodeSecure Cache:",
+      scannedPayloadsTitle: "Scanned payloads available on disk:",
+      cleared: "Cache cleared successfully!"
     }
   },
   startHttp: {

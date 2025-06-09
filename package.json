@@ -18,8 +18,7 @@
     "build": "node ./esbuild.config.js",
     "test": "npm run test-only && npm run lint",
     "test-only": "glob -c \"node --no-warnings --test-concurrency 1 --test\" \"test/**/*.test.js\"",
-    "coverage": "c8 --reporter=lcov npm run test",
-    "clear:cache": "node ./scripts/clear-cache.js"
+    "coverage": "c8 --reporter=lcov npm run test"
   },
   "files": [
     "bin",
@@ -94,6 +93,7 @@
     "@openally/result": "^1.3.0",
     "@polka/send-type": "^0.5.2",
     "@topcli/cliui": "^1.1.0",
+    "@topcli/pretty-json": "^1.0.0",
     "@topcli/prompts": "^2.0.0",
     "@topcli/spinner": "^3.0.0",
     "cacache": "^19.0.1",
