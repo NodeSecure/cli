@@ -122,60 +122,8 @@
             <label for="show-friendly">[[=z.token('settings.general.showFriendly')]]</label>
           </div>
         </div>
-        <div class="line">
+        <div class="line" id="warnings-settings">
           <p>[[=z.token('settings.general.warnings')]]:</p>
-          <div>
-            <input type="checkbox" checked name="warnings" value="parsing-error" id="parsing-error">
-            <label for="parsing-error">parsing error</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="unsafe-import" id="unsafe-import">
-            <label for="unsafe-import">unsafe import</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="unsafe-regex" id="unsafe-regex">
-            <label for="unsafe-regex">unsafe regex</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="unsafe-stmt" id="unsafe-stmt">
-            <label for="unsafe-stmt">unsafe stmt</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="unsafe-assign" id="unsafe-assign">
-            <label for="unsafe-assign">unsafe assign</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="encoded-literal" id="encoded-literal">
-            <label for="encoded-literal">encoded literal</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="short-identifiers" id="short-identifiers">
-            <label for="short-identifiers">short identifiers</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="suspicious-literal" id="suspicious-literal">
-            <label for="suspicious-literal">suspicious literal</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="suspicious-file" id="suspicious-file">
-            <label for="suspicious-file">suspicious file</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="obfuscated-code" id="obfuscated-code">
-            <label for="obfuscated-code">obfuscated code</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="weak-crypto" id="weak-crypto">
-            <label for="weak-crypto">weak crypto</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="shady-link" id="shady-link">
-            <label for="shady-link">shady link</label>
-          </div>
-          <div>
-            <input type="checkbox" checked name="warnings" value="zero-semver" id="zero-semver">
-            <label for="zero-semver">zero semver (0.x.x)</label>
-          </div>
         </div>
         <div class="line">
           <p>[[=z.token('settings.general.flags')]]:</p>

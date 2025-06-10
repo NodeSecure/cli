@@ -1,5 +1,9 @@
 // Import Third-party Dependencies
 import { getJSON } from "@nodesecure/vis-network";
+import { warnings } from "@nodesecure/js-x-ray/warnings";
+
+// Import Internal Dependencies
+import * as utils from "../../../common/utils.js";
 
 // CONSTANTS
 const kAllowedHotKeys = new Set([
@@ -21,6 +25,7 @@ export class Settings {
   static defaultMenuName = "info";
 
   constructor() {
+    this.#generateWarningCheckboxes();
     this.saveEnabled = false;
     this.dom = {
       /** @type {HTMLSelectElement} */
@@ -93,6 +98,31 @@ export class Settings {
     const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
     this.updateNavigationHotKey(hotkeys);
     this.updateFormHotKeys(hotkeys);
+  }
+
+  #generateWarningCheckboxes() {
+    const warningsSettings = document.getElementById("warnings-settings");
+    const checkboxes = Object.keys(warnings).map((id) => utils.createDOMElement("div", {
+      childs: [
+        utils.createDOMElement("input", {
+          attributes: {
+            id,
+            value: id,
+            type: "checkbox",
+            checked: true,
+            name: "warnings"
+          }
+        }),
+        utils.createDOMElement("label", {
+          attributes: {
+            for: id
+          },
+          text: id.replaceAll("-", " ")
+        })
+      ]
+    })
+    );
+    warningsSettings.append(...checkboxes);
   }
 
   updateNavigationHotKey(hotkeys) {
