@@ -1,3 +1,6 @@
+// CONSTANTS
+const kEmailRegex = "[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*";
+
 export function parseContacts(str) {
   return str ? str.split(",").map(parseContact) : [];
 }
@@ -16,8 +19,6 @@ function parseContact(str) {
   return { email };
 }
 
-const regex = "[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*";
-
 function emailRegex() {
-  return new RegExp(regex, "g");
+  return new RegExp(kEmailRegex, "g");
 }

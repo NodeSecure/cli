@@ -26,25 +26,25 @@ export class Maintainers {
   }
 
   render() {
+    const highlightedContacts = new Set(this.secureDataSet.data.highlighted.contacts
+      .map(({ name }) => name));
     const authors = this.#highlightContacts([...this.secureDataSet.authors.entries()]
-      .sort((left, right) => right[1].packages.size - left[1].packages.size));
+      .sort((left, right) => right[1].packages.size - left[1].packages.size),
+    highlightedContacts);
 
     document.getElementById("authors-count").innerHTML = authors.length;
     document.querySelector(".home--maintainers")
-      .appendChild(this.generate(authors));
+      .appendChild(this.generate(authors, highlightedContacts));
   }
 
-  #highlightContacts(authors) {
-    const highlightedContacts = new Set(this.secureDataSet.data.highlighted.contacts
-      .map(({ name }) => name));
-
+  #highlightContacts(authors, highlightedContacts) {
     const highlightedAuthors = authors.filter(([name]) => highlightedContacts.has(name));
     const authorsRest = authors.filter(([name]) => !highlightedContacts.has(name));
 
     return [...highlightedAuthors, ...authorsRest];
   }
 
-  generate(authors) {
+  generate(authors, highlightedContacts) {
     const fragment = document.createDocumentFragment();
     const hideItems = authors.length > this.maximumMaintainers;
 
@@ -71,6 +71,9 @@ export class Maintainers {
           })
         ]
       });
+      if (highlightedContacts.has(name)) {
+        person.classList.add("highlighted");
+      }
       if (hideItems && id >= this.maximumMaintainers) {
         person.classList.add("hidden");
       }
