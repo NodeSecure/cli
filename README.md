@@ -223,7 +223,7 @@ $ yarn add @nodesecure/documentation-ui
 ## Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-18-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -255,6 +255,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zikos2"><img src="https://avatars.githubusercontent.com/u/16059617?v=4?s=100" width="100px;" alt="ZakariaEttani"/><br /><sub><b>ZakariaEttani</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=zikos2" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://julienfoucart.fr"><img src="https://avatars.githubusercontent.com/u/113919130?v=4?s=100" width="100px;" alt="Foucart Julien"/><br /><sub><b>Foucart Julien</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=foucsi" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Dafyh"><img src="https://avatars.githubusercontent.com/u/47780300?v=4?s=100" width="100px;" alt="Dafyh"/><br /><sub><b>Dafyh</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=Dafyh" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://clementgombauld.netlify.app/"><img src="https://avatars.githubusercontent.com/u/91478082?v=4?s=100" width="100px;" alt="Clement Gombauld"/><br /><sub><b>Clement Gombauld</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=clemgbld" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
