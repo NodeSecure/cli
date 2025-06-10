@@ -2,6 +2,9 @@
 import { getJSON } from "@nodesecure/vis-network";
 import { warnings } from "@nodesecure/js-x-ray/warnings";
 
+// Import Internal Dependencies
+import * as utils from "../../../common/utils.js";
+
 // CONSTANTS
 const kAllowedHotKeys = new Set([
   "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
@@ -18,24 +21,11 @@ const kDefaultHotKeys = {
 };
 const kShortcutInputTargetIds = new Set(Object.keys(kDefaultHotKeys));
 
-const kWarningsIdToWarningsLabelExceptions = {
-  "zero-semver": "zero semver (0.x.x)"
-};
-
 export class Settings {
   static defaultMenuName = "info";
 
   constructor() {
-    const warningsCheckBoxes = Object.keys(warnings)
-      .map((id) => `<div>
-        <input type="checkbox" id="${id}" value="${id}" checked name="warnings">
-        <label for="${id}">${id in kWarningsIdToWarningsLabelExceptions ?
-          kWarningsIdToWarningsLabelExceptions[id] : id.replaceAll("-", " ")}</label>
-      </div>`).join("");
-
-    const warningsSettings = document.getElementById("warnings-settings");
-    warningsSettings.insertAdjacentHTML("beforeend", warningsCheckBoxes);
-
+    this.#generateWarningCheckboxes();
     this.saveEnabled = false;
     this.dom = {
       /** @type {HTMLSelectElement} */
@@ -108,6 +98,31 @@ export class Settings {
     const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
     this.updateNavigationHotKey(hotkeys);
     this.updateFormHotKeys(hotkeys);
+  }
+
+  #generateWarningCheckboxes() {
+    const warningsSettings = document.getElementById("warnings-settings");
+    const checkboxes = Object.keys(warnings).map((id) => utils.createDOMElement("div", {
+      childs: [
+        utils.createDOMElement("input", {
+          attributes: {
+            id,
+            value: id,
+            type: "checkbox",
+            checked: true,
+            name: "warnings"
+          }
+        }),
+        utils.createDOMElement("label", {
+          attributes: {
+            for: id
+          },
+          text: id.replaceAll("-", " ")
+        })
+      ]
+    })
+    );
+    warningsSettings.append(...checkboxes);
   }
 
   updateNavigationHotKey(hotkeys) {
