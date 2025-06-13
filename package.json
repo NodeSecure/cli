@@ -87,7 +87,7 @@
     "@nodesecure/ossf-scorecard-sdk": "^3.2.1",
     "@nodesecure/rc": "^4.0.1",
     "@nodesecure/report": "^3.0.0",
-    "@nodesecure/scanner": "^6.4.0",
+    "@nodesecure/scanner": "^6.6.0",
     "@nodesecure/utils": "^2.2.0",
     "@nodesecure/vulnera": "^2.0.1",
     "@openally/result": "^1.3.0",
