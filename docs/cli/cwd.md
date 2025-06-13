@@ -18,4 +18,4 @@ $ nsecure cwd [options]
 | `--silent`                |          | `false`          | Suppress console output, making execution silent.                                                                                                               |
 | `--output`                | `-o`     | `nsecure-result` | Specify the output file for the results.                                                                                                                        |
 | `--vulnerabilityStrategy` | `-s`     | github-advisory  | Strategy used to fetch package vulnerabilities (see Vulnera [available strategy](https://github.com/NodeSecure/vulnera?tab=readme-ov-file#available-strategy)). |
-| `--contacts`              | `-c`     | `'[]'`           | List of contacts to highlight.                                                                                                                                  |
+| `--contacts`              | `-c`     | `[]`           | List of contacts to highlight.                                                                                                                                  |

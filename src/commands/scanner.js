@@ -82,10 +82,12 @@ export async function from(spec, options) {
 
   const payload = await Scanner.from(
     spec,
-    { maxDepth,
+    { 
+      maxDepth,
       highlight: {
         contacts: parseContacts(contacts)
-      } },
+      } 
+    },
     initLogger(spec, !silent)
   );
 
