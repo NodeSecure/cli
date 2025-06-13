@@ -88,7 +88,9 @@ class _AppCache {
     }
   }
 
-  async #initDefaultPayloadsList() {
+  async #initDefaultPayloadsList(options = {}) {
+    const { logging = true } = options;
+
     if (this.startFromZero) {
       const payloadsList = {
         mru: [],
@@ -99,7 +101,9 @@ class _AppCache {
         root: null
       };
 
-      logger.info("[cache|init](startFromZero)");
+      if (logging) {
+        logger.info("[cache|init](startFromZero)");
+      }
       await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
 
       return;
@@ -119,13 +123,22 @@ class _AppCache {
       root: formatted
     };
 
-    logger.info(`[cache|init](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
+    if (logging) {
+      logger.info(`[cache|init](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
+    }
     await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
     this.updatePayload(formatted, payload);
   }
 
   async initPayloadsList(options = {}) {
-    const { logging = true } = options;
+    const {
+      logging = true,
+      reset = false
+    } = options;
+
+    if (reset) {
+      await cacache.rm.all(CACHE_PATH);
+    }
 
     try {
       // prevent re-initialization of the cache
@@ -138,7 +151,7 @@ class _AppCache {
     }
     const packagesInFolder = this.availablePayloads();
     if (packagesInFolder.length === 0) {
-      await this.#initDefaultPayloadsList();
+      await this.#initDefaultPayloadsList({ logging });
 
       return;
     }

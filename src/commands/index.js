@@ -6,3 +6,4 @@ export * as scanner from "./scanner.js";
 export * as config from "./config.js";
 export * as scorecard from "./scorecard.js";
 export * as report from "./report.js";
+export * as cache from "./cache.js";

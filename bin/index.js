@@ -120,6 +120,14 @@ prog
   .describe(i18n.getTokenSync("cli.commands.config.desc"))
   .action(commands.config.editConfigFile);
 
+prog
+  .command("cache")
+  .option("-l, --list", i18n.getTokenSync("cli.commands.cache.option_list"), false)
+  .option("-c, --clear", i18n.getTokenSync("cli.commands.cache.option_clear"), false)
+  .option("-f, --full", i18n.getTokenSync("cli.commands.cache.option_full"), false)
+  .describe(i18n.getTokenSync("cli.commands.cache.desc"))
+  .action(commands.cache.main);
+
 prog.parse(process.argv);
 
 function defaultScannerCommand(name, options = {}) {
