@@ -5,6 +5,16 @@
   --primary-lighter: #5A44DA;
   --secondary: #00D1FF;
   --secondary-darker: #1976D2;
+  --dark-theme-primary-color: #0b031f;
+  --dark-theme-primary-lighter: #0d1035;
+  --dark-theme-primary-darker: #0c0d23;
+  --dark-theme-secondary-lighter: #a7ccdb;
+  --dark-theme-secondary-darker: #262981;
+  --dark-theme-secondary-color: #4f9ad1;
+  --dark-theme-accent-lighter: #7465c5;
+  --dark-theme-accent-darker: #261c66;
+  --dark-theme-accent-color: #8d7afc;
+  --dark-theme-gray: #191a38;
 }
 body {
   color: var(--primary-theme-color);
@@ -13,4 +23,9 @@ body {
   background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 15%,rgba(208,220,221,1) 100%);
   background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 15%,rgba(208,220,221,1) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d0dcdd',GradientType=1 );
+}
+
+body.dark {
+  color: white;
+  background: var(--dark-theme-gray);
 }

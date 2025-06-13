@@ -90,7 +90,9 @@ const ui = {
       dependencies: "scripts & dépendances",
       warnings: "menaces dans le code",
       vulnerabilities: "vulnérabilités",
-      licenses: "conformité des licences (SPDX)"
+      licenses: "conformité des licences (SPDX)",
+      dark: "sombre",
+      light: "clair"
     },
     title: {
       maintainers: "mainteneurs",
@@ -170,6 +172,7 @@ const ui = {
       title: "Général",
       save: "sauvegarder",
       defaultPannel: "Panneau par défaut",
+      themePannel: "Thème de l'interface",
       warnings: "Avertissements à ignorer",
       flags: "Drapeau (emojis) à ignorer",
       network: "Réseau",

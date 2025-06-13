@@ -32,3 +32,10 @@ section#popup--background>.popup {
   border-left: 2px solid #ffffff;
   border-top: 2px solid #FFF;
 }
+
+body.dark section#popup--background>.popup {
+  background: #303263;
+  box-shadow: 5px 5px 15px var(--dark-theme-primary-color);
+  border-left: 2px solid var(--dark-theme-secondary-darker);
+  border-top: 2px solid var(--dark-theme-secondary-darker);
+}

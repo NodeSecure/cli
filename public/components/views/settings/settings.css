@@ -18,6 +18,11 @@
   font-family: 'mononoki';
 }
 
+body.dark #settings--view>h1, #settings--view h2 {
+  color: var(--dark-theme-secondary-color);
+  border-bottom: 2px solid var(--dark-theme-secondary-color);
+}
+
 #settings--view h2 {
   margin-top: 30px;
 }
@@ -30,6 +35,10 @@
   height: 20px;
   margin-right: 2px;
   filter: invert(14%) sepia(80%) saturate(5663%) hue-rotate(252deg) brightness(69%) contrast(98%);
+}
+
+body.dark #settings--view .icon-keyboard {
+  filter: invert(75%) sepia(81%) saturate(3055%) hue-rotate(178deg) brightness(86%) contrast(88%);
 }
 
 #settings--view>h1 i {
@@ -57,6 +66,10 @@
   letter-spacing: 0.5px;
 }
 
+body.dark #settings--view>form .line p, body.dark #settings--view>form .line label {
+  color: var(--dark-theme-secondary-lighter);
+}
+
 #settings--view>form .line>p, #settings--view>form .line>label {
   margin-bottom: 6px;
   font-weight: bold;
@@ -77,10 +90,20 @@
   margin-bottom: 20px;
 }
 
+body.dark #settings--view .shortcuts .note {
+  background: var(--dark-theme-accent-darker);
+  color: white;
+
+}
+
 #settings--view .shortcuts label {
   color: #4a5e68;
   margin-left: 10px;
   font-weight: 500;
+}
+
+body.dark #settings--view .shortcuts label {
+  color: var(--dark-theme-secondary-lighter);
 }
 
 #settings--view .shortcuts input:read-only {
@@ -88,6 +111,11 @@
   border-color: rgb(168, 168, 168);
   color: rgb(141, 140, 140);
   border-style: solid;
+}
+
+body.dark #settings--view .shortcuts input:read-only {
+  border-color: var(--dark-theme-secondary-lighter);
+  color: var(--dark-theme-secondary-lighter);
 }
 
 #settings--view .shortcuts input {
@@ -107,6 +135,10 @@
   color: #334148;
   align-items: center;
   margin-left: 10px;
+}
+
+body.dark #settings--view>form .line>div {
+  color: var(--dark-theme-secondary-lighter);
 }
 
 #settings--view>form .line select {
@@ -167,10 +199,24 @@ select {
   color: #0c5a9b;
 }
 
+body.dark select {
+  color: var(--dark-theme-secondary-lighter);
+  border: var(--dark-theme-secondary-darker) 1px solid;
+  background: var(--dark-theme-primary-darker);
+}
+
 .settings-line-title {
   font-size: 15px;
   color: #4a5e68;
   letter-spacing: 0.5px;
   margin: 30px 0 6px;
   font-weight: bold;
+}
+
+body.dark .settings-line-title {
+  color: var(--dark-theme-secondary-color);
+}
+
+.mt-10 {
+  margin-top: 10px;
 }

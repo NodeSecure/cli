@@ -37,7 +37,8 @@ export class Settings {
       /** @type {HTMLInputElement} */
       shortcutsSection: document.querySelector(".shortcuts"),
       /** @type {HTMLInputElement} */
-      showFriendlyDependenciesCheckbox: document.querySelector("#show-friendly")
+      showFriendlyDependenciesCheckbox: document.querySelector("#show-friendly"),
+      themeSelector: document.querySelector("#theme_selector")
     };
 
     this.saveButton = document.querySelector(".save");
@@ -45,8 +46,14 @@ export class Settings {
     this.saveButton.classList.add("disabled");
 
     this.dom.defaultPackageMenu.addEventListener("change", () => this.enableSaveButton());
-    for (const checkbox of [...this.dom.warningsCheckbox, ...this.dom.flagsCheckbox, this.dom.showFriendlyDependenciesCheckbox]) {
-      checkbox.addEventListener("change", () => this.enableSaveButton());
+    const formFields = [
+      ...this.dom.warningsCheckbox,
+      ...this.dom.flagsCheckbox,
+      this.dom.showFriendlyDependenciesCheckbox,
+      this.dom.themeSelector
+    ];
+    for (const formField of formFields) {
+      formField.addEventListener("change", () => this.enableSaveButton());
     }
 
     const self = this;
@@ -170,6 +177,10 @@ export class Settings {
     this.flags = new Set(this.config.ignore.flags);
     this.config.ignore.warnings = this.warnings;
     this.config.ignore.flags = this.flags;
+    // this.config.theme = config.theme ?? window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (this.config.theme === void 0) {
+      this.config.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
   }
 
   async fetchUserConfig() {
@@ -188,7 +199,8 @@ export class Settings {
     const newConfig = {
       defaultPackageMenu: this.dom.defaultPackageMenu.value || Settings.defaultMenuName,
       ignore: { flags: new Set(), warnings: new Set() },
-      showFriendlyDependencies: this.dom.showFriendlyDependenciesCheckbox.checked
+      showFriendlyDependencies: this.dom.showFriendlyDependenciesCheckbox.checked,
+      theme: this.dom.themeSelector.value
     };
 
     for (const checkbox of this.dom.warningsCheckbox) {
@@ -221,6 +233,7 @@ export class Settings {
 
   updateSettings() {
     this.dom.defaultPackageMenu.value = this.config.defaultPackageMenu;
+    this.dom.themeSelector.value = this.config.theme;
 
     const warnings = new Set(this.config.ignore.warnings);
     const flags = new Set(this.config.ignore.flags);

@@ -19,6 +19,10 @@ section#package-info {
   -webkit-transform: translateX(-100%);
 }
 
+body.dark section#package-info {
+  background: var(--dark-theme-primary-lighter);
+}
+
 section#package-info .package-container {
   margin-bottom: 40px;
   padding: 10px;

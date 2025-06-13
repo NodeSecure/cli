@@ -37,17 +37,33 @@ describe("config", { concurrency: 1 }, () => {
   });
 
   it("should get config from cache", async() => {
-    await cacache.put(CACHE_PATH, kConfigKey, JSON.stringify({ foo: "bar" }));
+    const expectedConfig = {
+      defaultPackageMenu: "foo",
+      ignore: {
+        flags: ["foo"],
+        warnings: ["bar"]
+      },
+      theme: "galaxy"
+    };
+    await cacache.put(CACHE_PATH, kConfigKey, JSON.stringify(expectedConfig));
     const value = await get();
 
-    assert.deepStrictEqual(value, { foo: "bar" });
+    assert.deepStrictEqual(value, expectedConfig);
   });
 
   it("should set config in cache", async() => {
-    await set({ foo: "baz" });
+    const expectedConfig = {
+      defaultPackageMenu: "foz",
+      ignore: {
+        flags: ["foz"],
+        warnings: ["baz"]
+      },
+      theme: "galactic"
+    };
+    await set(expectedConfig);
     const value = await get();
 
-    assert.deepStrictEqual(value, { foo: "baz" });
+    assert.deepStrictEqual(value, expectedConfig);
   });
 });
 
