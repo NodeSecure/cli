@@ -1,8 +1,8 @@
 // CONSTANTS
 const kEmailRegex = "[^\\.\\s@:](?:[^\\s@:]*[^\\s@:\\.])?@[^\\.\\s@]+(?:\\.[^\\.\\s@]+)*";
 
-export function parseContacts(arr) {
-  return arr.map(parseContact);
+export function parseContacts(input) {
+  return Array.isArray(input) ? input.map(parseContact) : [parseContact(input)];
 }
 
 function parseContact(str) {
