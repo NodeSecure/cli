@@ -38,7 +38,8 @@ export class Settings {
       shortcutsSection: document.querySelector(".shortcuts"),
       /** @type {HTMLInputElement} */
       showFriendlyDependenciesCheckbox: document.querySelector("#show-friendly"),
-      themeSelector: document.querySelector("#theme_selector")
+      themeSelector: document.querySelector("#theme_selector"),
+      disableExternalRequestsCheckbox: document.querySelector("#disable-external")
     };
 
     this.saveButton = document.querySelector(".save");
@@ -50,7 +51,8 @@ export class Settings {
       ...this.dom.warningsCheckbox,
       ...this.dom.flagsCheckbox,
       this.dom.showFriendlyDependenciesCheckbox,
-      this.dom.themeSelector
+      this.dom.themeSelector,
+      this.dom.disableExternalRequestsCheckbox
     ];
     for (const formField of formFields) {
       formField.addEventListener("change", () => this.enableSaveButton());
@@ -200,7 +202,8 @@ export class Settings {
       defaultPackageMenu: this.dom.defaultPackageMenu.value || Settings.defaultMenuName,
       ignore: { flags: new Set(), warnings: new Set() },
       showFriendlyDependencies: this.dom.showFriendlyDependenciesCheckbox.checked,
-      theme: this.dom.themeSelector.value
+      theme: this.dom.themeSelector.value,
+      disableExternalRequests: this.dom.disableExternalRequestsCheckbox.checked
     };
 
     for (const checkbox of this.dom.warningsCheckbox) {
@@ -247,5 +250,6 @@ export class Settings {
     }
 
     this.dom.showFriendlyDependenciesCheckbox.checked = this.config.showFriendlyDependencies;
+    this.dom.disableExternalRequestsCheckbox.checked = this.config.disableExternalRequests;
   }
 }

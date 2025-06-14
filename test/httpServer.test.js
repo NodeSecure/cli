@@ -218,7 +218,8 @@ describe("httpServer", { concurrency: 1 }, () => {
         flags: ["foo"],
         warnings: ["bar"]
       },
-      theme: "galaxy"
+      theme: "galaxy",
+      disableExternalRequests: true
     };
 
     await cacache.put(CACHE_PATH, kConfigKey, JSON.stringify(expectedConfig));

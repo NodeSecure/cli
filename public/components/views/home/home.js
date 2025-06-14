@@ -44,7 +44,9 @@ export class HomeView {
     homeViewHTMLElement.innerHTML = "";
     homeViewHTMLElement.appendChild(this.render());
 
-    this.generateScorecard();
+    if (window.settings.config.disableExternalRequests === false) {
+      this.generateScorecard();
+    }
     this.generateHeader();
     this.generateOverview();
     this.generatePackagesToWatch();
@@ -133,25 +135,25 @@ export class HomeView {
     document.getElementById("project-links").appendChild(linksFragment);
   }
 
+  #createOverviewDiv(icon, title, value) {
+    const titleDiv = utils.createDOMElement("div", {
+      className: "title",
+      childs: [
+        utils.createDOMElement("i", { className: icon }),
+        utils.createDOMElement("p", { text: title })
+      ]
+    });
+
+    return utils.createDOMElement("div", {
+      childs: [
+        titleDiv,
+        utils.createDOMElement("span", { text: value })
+      ]
+    });
+  }
+
   async generateOverview() {
     const fragment = document.createDocumentFragment();
-
-    function createOverviewDiv(icon, title, value) {
-      const titleDiv = utils.createDOMElement("div", {
-        className: "title",
-        childs: [
-          utils.createDOMElement("i", { className: icon }),
-          utils.createDOMElement("p", { text: title })
-        ]
-      });
-
-      return utils.createDOMElement("div", {
-        childs: [
-          titleDiv,
-          utils.createDOMElement("span", { text: value })
-        ]
-      });
-    }
 
     const { name } = this.secureDataSet.linker.get(0);
     let directDependencies = 0;
@@ -160,35 +162,27 @@ export class HomeView {
         directDependencies++;
       }
     }
-    fragment.appendChild(createOverviewDiv(
+    fragment.appendChild(this.#createOverviewDiv(
       "icon-cubes", `# ${window.i18n[this.lang].home.overview.dependencies}`, this.secureDataSet.dependenciesCount
     ));
-    fragment.appendChild(createOverviewDiv(
+    fragment.appendChild(this.#createOverviewDiv(
       "icon-archive", window.i18n[this.lang].home.overview.totalSize, this.secureDataSet.prettySize
     ));
-    fragment.appendChild(createOverviewDiv(
+    fragment.appendChild(this.#createOverviewDiv(
       "icon-link", `# ${window.i18n[this.lang].home.overview.directDeps}`, directDependencies
     ));
-    fragment.appendChild(createOverviewDiv(
+    fragment.appendChild(this.#createOverviewDiv(
       "icon-sitemap", `# ${window.i18n[this.lang].home.overview.transitiveDeps}`, this.secureDataSet.indirectDependencies
     ));
 
     const homeOverviewElement = document.querySelector(".home--overview");
     homeOverviewElement.appendChild(fragment);
 
-    try {
-      const { downloads } = await getJSON(`/downloads/${name.replaceAll("/", "%2F")}`);
+    if (window.settings.config.disableExternalRequests) {
+      return;
+    }
 
-      if (downloads) {
-        const formattedNumber = new Intl.NumberFormat("de-DE").format(downloads);
-        homeOverviewElement.appendChild(createOverviewDiv(
-          "icon-chart-bar", window.i18n[this.lang].home.overview.downloadsLastWeek, formattedNumber
-        ));
-      }
-    }
-    catch {
-      // DO NOTHING
-    }
+    this.generateDownloads();
   }
 
   generatePackagesToWatch() {
@@ -320,6 +314,29 @@ export class HomeView {
   generateMaintainers() {
     new Maintainers(this.secureDataSet, this.nsn)
       .render();
+  }
+
+  async generateDownloads() {
+    const homeOverviewElement = document.querySelector(".home--overview");
+    const { name } = this.secureDataSet.linker.get(0);
+
+    try {
+      const { downloads } = await getJSON(`/downloads/${name.replaceAll("/", "%2F")}`);
+
+      if (downloads) {
+        const downloadsElement = document.querySelector(".home--overview div:has(i.icon-chart-bar)");
+        downloadsElement?.remove();
+        const formattedNumber = new Intl.NumberFormat("de-DE").format(downloads);
+        homeOverviewElement.appendChild(this.#createOverviewDiv(
+          "icon-chart-bar",
+          window.i18n[this.lang].home.overview.downloadsLastWeek,
+          formattedNumber
+        ));
+      }
+    }
+    catch {
+      // DO NOTHING
+    }
   }
 
   handleReport() {

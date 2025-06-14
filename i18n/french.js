@@ -186,7 +186,9 @@ const ui = {
       warnings: "Avertissements à ignorer",
       flags: "Drapeau (emojis) à ignorer",
       network: "Réseau",
-      showFriendly: "Afficher les dépendances amicales"
+      showFriendly: "Afficher les dépendances amicales",
+      security: "Sécurité",
+      disableExternalRequests: "Désactiver les requêtes externes"
     },
     shortcuts: {
       title: "Raccourcis",
