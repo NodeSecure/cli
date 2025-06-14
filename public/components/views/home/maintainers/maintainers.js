@@ -26,25 +26,24 @@ export class Maintainers {
   }
 
   render() {
-    const highlightedContacts = new Set(this.secureDataSet.data.highlighted.contacts
-      .map(({ name }) => name));
     const authors = this.#highlightContacts([...this.secureDataSet.authors.entries()]
-      .sort((left, right) => right[1].packages.size - left[1].packages.size),
-    highlightedContacts);
+      .sort((left, right) => right[1].packages.size - left[1].packages.size));
 
     document.getElementById("authors-count").innerHTML = authors.length;
     document.querySelector(".home--maintainers")
-      .appendChild(this.generate(authors, highlightedContacts));
+      .appendChild(this.generate(authors));
   }
 
-  #highlightContacts(authors, highlightedContacts) {
-    const highlightedAuthors = authors.filter(([name]) => highlightedContacts.has(name));
-    const authorsRest = authors.filter(([name]) => !highlightedContacts.has(name));
+  #highlightContacts(authors) {
+    const highlightedAuthors = authors
+      .filter(([_, contact]) => this.secureDataSet.isHighlighted(contact));
+
+    const authorsRest = authors.filter(([_, contact]) => !this.secureDataSet.isHighlighted(contact));
 
     return [...highlightedAuthors, ...authorsRest];
   }
 
-  generate(authors, highlightedContacts) {
+  generate(authors) {
     const fragment = document.createDocumentFragment();
     const hideItems = authors.length > this.maximumMaintainers;
 
@@ -71,7 +70,7 @@ export class Maintainers {
           })
         ]
       });
-      if (highlightedContacts.has(name)) {
+      if (this.secureDataSet.isHighlighted(data)) {
         person.classList.add("highlighted");
       }
       if (hideItems && id >= this.maximumMaintainers) {

@@ -11,7 +11,6 @@ const dataSetPayload = await getDataSetPayload();
 test("NodeSecureDataSet.init with given payload", async() => {
   const nsDataSet = new NodeSecureDataSet();
   await nsDataSet.init(dataSetPayload);
-
   assert.equal(nsDataSet.data, dataSetPayload, "should set data");
 });
 
@@ -39,6 +38,21 @@ test("NodeSecureDataSet.computeExtensions", () => {
 
   assert.equal(Object.keys(nsDataSet.extensions).length, 2, "should have 2 extension (js and json)");
   assert.equal(nsDataSet.extensions[".js"], 2, "should have 2 '.js' extensions'");
+});
+
+test("NodeSecureDataSet.isHighlighted", async() => {
+  const nsDataSet = new NodeSecureDataSet();
+  await nsDataSet.init(dataSetPayload);
+  assert.equal(nsDataSet.isHighlighted({ name: "Unknown" }), false, "should not be hightlighted");
+  assert.equal(nsDataSet.isHighlighted({ name: "Sindre Sorhus" }), true, "name: Sindre Sorhus should be hightlighted");
+  assert.equal(nsDataSet.isHighlighted({ name: "Rich Harris" }), true, "name: Rich Harris should be hightlighted");
+  assert.equal(nsDataSet.isHighlighted({ email: "rich.harris@gmail.com" }),
+    true,
+    "email: rich.harris@gmail.com should be hightlighted");
+
+  assert.equal(nsDataSet.isHighlighted({ email: "gentilhomme.thomas@gmail.com" }),
+    true,
+    "email: gentilhomme.thomas@gmail.com should be hightlighted");
 });
 
 test("NodeSecureDataSet.computeLicenses", () => {

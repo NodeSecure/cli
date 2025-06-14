@@ -13,6 +13,9 @@ export default class NodeSecureDataSet extends EventTarget {
    * @param {string[]} [options.warningsToIgnore=[]]
    * @param {"light"|"dark"} [options.theme]
    */
+
+  #highligthedContacts;
+
   constructor(options = {}) {
     super();
     const {
@@ -20,7 +23,6 @@ export default class NodeSecureDataSet extends EventTarget {
       warningsToIgnore = [],
       theme = "light"
     } = options;
-
     this.flagsToIgnore = new Set(flagsToIgnore);
     this.warningsToIgnore = new Set(warningsToIgnore);
     this.theme = theme;
@@ -75,6 +77,18 @@ export default class NodeSecureDataSet extends EventTarget {
     }
 
     this.warnings = data.warnings;
+
+    this.#highligthedContacts = data.highlighted.contacts
+      .reduce((acc, { name, email }) => {
+        if (name) {
+          acc.names.add(name);
+        }
+        if (email) {
+          acc.emails.add(email);
+        }
+
+        return acc;
+      }, { names: new Set(), emails: new Set() });
 
     const dataEntries = Object.entries(data.dependencies);
     this.dependenciesCount = dataEntries.length;
@@ -209,5 +223,9 @@ export default class NodeSecureDataSet extends EventTarget {
     const edges = new DataSet(this.rawEdgesData);
 
     return { nodes, edges };
+  }
+
+  isHighlighted(contact) {
+    return this.#highligthedContacts.names.has(contact.name) || this.#highligthedContacts.emails.has(contact.email);
   }
 }
