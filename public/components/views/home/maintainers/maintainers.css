@@ -26,6 +26,14 @@ body.dark .home--maintainers>.person {
   background: var(--dark-theme-primary-color);
 }
 
+.home--maintainers> .highlighted{
+  background: linear-gradient(to bottom, rgb(230, 240, 250) 0%, rgb(220, 235, 245) 100%);
+}
+
+body.dark .home--maintainers > .highlighted {
+  background: linear-gradient(to right, rgb(11, 3, 31) 0%, rgba(46, 10, 10, 0.8) 100%);
+}
+
 .home--maintainers>.person:hover {
   border-color: var(--secondary-darker);
   cursor: pointer;

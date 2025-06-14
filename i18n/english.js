@@ -14,6 +14,7 @@ const cli = {
     option_depth: "Maximum dependencies depth to fetch",
     option_output: "Json file output name",
     option_silent: "enable silent mode which disable CLI spinners",
+    option_contacts: "List of contacts to hightlight",
     strategy: "Vulnerabilities source to use",
     cwd: {
       desc: "Run security analysis on the current working dir",
@@ -80,7 +81,7 @@ const cli = {
   startHttp: {
     invalidScannerVersion: tS`the payload has been scanned with version '${0}' and do not satisfies the required CLI range '${1}'`,
     regenerate: "please re-generate a new JSON payload using the CLI"
-  }
+  },
 };
 
 const ui = {

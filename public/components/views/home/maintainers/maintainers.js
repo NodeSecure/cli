@@ -26,12 +26,21 @@ export class Maintainers {
   }
 
   render() {
-    const authors = [...this.secureDataSet.authors.entries()]
-      .sort((left, right) => right[1].packages.size - left[1].packages.size);
+    const authors = this.#highlightContacts([...this.secureDataSet.authors.entries()]
+      .sort((left, right) => right[1].packages.size - left[1].packages.size));
 
     document.getElementById("authors-count").innerHTML = authors.length;
     document.querySelector(".home--maintainers")
       .appendChild(this.generate(authors));
+  }
+
+  #highlightContacts(authors) {
+    const highlightedAuthors = authors
+      .filter(([_, contact]) => this.secureDataSet.isHighlighted(contact));
+
+    const authorsRest = authors.filter(([_, contact]) => !this.secureDataSet.isHighlighted(contact));
+
+    return [...highlightedAuthors, ...authorsRest];
   }
 
   generate(authors) {
@@ -61,6 +70,9 @@ export class Maintainers {
           })
         ]
       });
+      if (this.secureDataSet.isHighlighted(data)) {
+        person.classList.add("highlighted");
+      }
       if (hideItems && id >= this.maximumMaintainers) {
         person.classList.add("hidden");
       }

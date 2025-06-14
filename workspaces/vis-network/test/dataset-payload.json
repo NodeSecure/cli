@@ -1,6 +1,37 @@
 {
   "id": "abcde",
   "rootDepencyName": "pkg1",
+  "highlighted": {
+    "contacts": [
+      {
+        "email": "gentilhomme.thomas@gmail.com",
+        "dependencies": [
+          "frequency-set",
+          "sec-literal",
+          "js-x-ray"
+        ]
+      },
+    {
+        "name": "Rich Harris",
+        "email": "rich.harris@gmail.com",
+        "dependencies": [
+          "frequency-set",
+          "sec-literal",
+          "js-x-ray"
+        ]
+      },
+      {
+        "name": "Sindre Sorhus",
+        "dependencies": [
+          "is-svg",
+          "ansi-regex",
+          "strip-ansi",
+          "is-fullwidth-code-point",
+          "string-width"
+        ]
+      }
+    ]
+  },
   "dependencies": {
     "pkg2": {
       "versions": {
