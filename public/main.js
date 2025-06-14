@@ -18,6 +18,7 @@ import * as utils from "./common/utils.js";
 
 let secureDataSet;
 let nsn;
+let homeView;
 let searchview;
 let packageInfoOpened = false;
 
@@ -125,7 +126,7 @@ async function init(options = {}) {
   });
   window.locker = new Locker(nsn);
   window.legend = new Legend({ show: window.settings.config.showFriendlyDependencies });
-  new HomeView(secureDataSet, nsn);
+  homeView ??= new HomeView(secureDataSet, nsn);
   searchview ??= new SearchView(secureDataSet, nsn);
 
   window.addEventListener("package-info-closed", () => {
@@ -217,6 +218,7 @@ function onSettingsSaved(defaultConfig = null) {
     window.settings.config.ignore.warnings = warningsToIgnore;
     window.settings.config.ignore.flags = flagsToIgnore;
     window.settings.config.theme = theme;
+    window.settings.config.disableExternalRequests = config.disableExternalRequests;
 
     if (theme === "dark") {
       document.body.classList.add("dark");
@@ -246,6 +248,10 @@ function onSettingsSaved(defaultConfig = null) {
     }
     else {
       window.legend.hide();
+    }
+
+    if (config.disableExternalRequests === false) {
+      homeView.generateDownloads();
     }
   }
 

@@ -186,7 +186,9 @@ const ui = {
       warnings: "SAST Warnings to ignore",
       flags: "Flags (emojis) to ignore",
       network: "Network",
-      showFriendly: "Show friendly dependencies"
+      showFriendly: "Show friendly dependencies",
+      security: "Security",
+      disableExternalRequests: "Disable external requests"
     },
     shortcuts: {
       title: "Shortcuts",

@@ -11,7 +11,8 @@ const experimentalWarnings = Object.entries(warnings)
 // CONSTANTS
 const kDefaultConfig = {
   defaultPackageMenu: "info",
-  ignore: { flags: [], warnings: experimentalWarnings }
+  ignore: { flags: [], warnings: experimentalWarnings },
+  disableExternalRequests: false
 };
 
 export async function get() {
@@ -24,13 +25,23 @@ export async function get() {
         flags,
         warnings
       } = {},
-      theme
+      theme,
+      disableExternalRequests = false
     } = config;
     logger.info(
-      `[config|get](defaultPackageMenu: ${defaultPackageMenu}|ignore-flag: ${flags}|ignore-warnings: ${warnings}|theme: ${theme})`
+      // eslint-disable-next-line @stylistic/max-len
+      `[config|get](defaultPackageMenu: ${defaultPackageMenu}|ignore-flag: ${flags}|ignore-warnings: ${warnings}|theme: ${theme}|disableExternalRequests${disableExternalRequests})`
     );
 
-    return { defaultPackageMenu, ignore: { flags, warnings }, theme };
+    return {
+      defaultPackageMenu,
+      ignore: {
+        flags,
+        warnings
+      },
+      theme,
+      disableExternalRequests
+    };
   }
   catch (err) {
     logger.error(`[config|get](error: ${err.message})`);

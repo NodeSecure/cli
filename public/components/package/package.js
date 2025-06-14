@@ -82,6 +82,15 @@ export class PackageInfo {
     );
     packageHTMLElement.setAttribute("class", "slide-in");
 
+    if (window.settings.config.disableExternalRequests) {
+      const bundlephobiaElement = packageHTMLElement.querySelector("#bundlephobia-sizes");
+      const bundlephobiaTitleElement = bundlephobiaElement.previousElementSibling;
+      bundlephobiaElement.classList.add("hidden");
+      bundlephobiaTitleElement.classList.add("hidden");
+
+      return;
+    }
+
     new Bundlephobia(this.dependencyVersion.name, this.dependencyVersion.version)
       .fetchDataOnHttpServer()
       .catch(console.error);
@@ -149,7 +158,9 @@ export class PackageInfo {
     new Pannels.Warnings(this).generate(clone);
     new Pannels.Scripts(this).generate(clone);
     new Pannels.Vulnerabilities(this).generate(clone);
-    new Pannels.Scorecard(this).generate(clone);
+    if (window.settings.config.disableExternalRequests === false) {
+      new Pannels.Scorecard(this).generate(clone);
+    }
     new Pannels.Files(this).generate(clone);
 
     return clone;

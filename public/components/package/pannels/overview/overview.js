@@ -32,7 +32,15 @@ export class Overview {
 
     clone.querySelector(".fields")
       .appendChild(this.renderTopFields());
-    this.renderNPMStats();
+    if (window.settings.config.disableExternalRequests === false) {
+      this.renderNPMStats();
+    }
+    else {
+      const npmStatElement = clone.querySelector("#npm-stats");
+      const npmStatTitleElement = npmStatElement.previousElementSibling;
+      npmStatElement.classList.add("hidden");
+      npmStatTitleElement.classList.add("hidden");
+    }
     clone.querySelector(".fields.releases")
       .appendChild(this.renderReleases());
 
@@ -47,7 +55,13 @@ export class Overview {
 
     // Fetch Github/Gitlab stats
     const githubLink = this.package.links.github;
-    if (githubLink.showInHeader) {
+    if (window.settings.config.disableExternalRequests) {
+      setTimeout(() => {
+        document.querySelector(".gitlab-overview")?.classList.add("hidden");
+        document.querySelector(".github-overview")?.classList.add("hidden");
+      });
+    }
+    else if (githubLink.showInHeader) {
       setTimeout(() => {
         document.querySelector(".gitlab-overview")?.classList.add("hidden");
       });

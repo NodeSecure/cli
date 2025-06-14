@@ -32,7 +32,8 @@ describe("config", { concurrency: 1 }, () => {
       defaultPackageMenu: "info",
       ignore: { flags: [], warnings: Object.entries(warnings)
         .filter(([_, { experimental }]) => experimental)
-        .map(([warning]) => warning) }
+        .map(([warning]) => warning) },
+      disableExternalRequests: false
     });
   });
 
@@ -43,7 +44,8 @@ describe("config", { concurrency: 1 }, () => {
         flags: ["foo"],
         warnings: ["bar"]
       },
-      theme: "galaxy"
+      theme: "galaxy",
+      disableExternalRequests: true
     };
     await cacache.put(CACHE_PATH, kConfigKey, JSON.stringify(expectedConfig));
     const value = await get();
@@ -58,7 +60,8 @@ describe("config", { concurrency: 1 }, () => {
         flags: ["foz"],
         warnings: ["baz"]
       },
-      theme: "galactic"
+      theme: "galactic",
+      disableExternalRequests: true
     };
     await set(expectedConfig);
     const value = await get();
