@@ -4,10 +4,10 @@ span.expandable {
   justify-content: center !important;
   height: 35px;
   font-size: 13px;
-  font-family: "mononoki";
+  font-family: mononoki;
   background: none;
   color: #00B0FF;
-  text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
+  text-shadow: 1px 1px 1px rgb(20 20 20 / 50%);
   transition: all 0.2s linear;
   margin-top: 5px;
 }

@@ -1,12 +1,10 @@
 .navigation--item {
   position: relative;
   height: 40px;
-  background: -moz-linear-gradient(left, rgba(207, 216, 220, 1) 0%, rgba(255, 255, 255, 0) 100%);
-  background: -webkit-linear-gradient(left, rgba(207, 216, 220, 1) 0%, rgba(255, 255, 255, 0) 100%);
-  background: linear-gradient(to right, rgba(207, 216, 220, 1) 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(to right, rgb(207 216 220 / 100%) 0%, rgb(255 255 255 / 0%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cfd8dc', endColorstr='#00ffffff', GradientType=1);
   border-left: 2px solid #90A4AE;
-  border-radius: 6px 0px 0px 6px;
+  border-radius: 6px 0 0 6px;
   box-sizing: border-box;
   display: flex;
   justify-content: flex-start;
@@ -17,18 +15,14 @@
 }
 
 .navigation--item.active {
-  background: -moz-linear-gradient(left,  rgba(0,209,255,0.57) 0%, rgba(255,255,255,0) 100%);
-  background: -webkit-linear-gradient(left,  rgba(0,209,255,0.57) 0%,rgba(255,255,255,0) 100%);
-  background: linear-gradient(to right,  rgba(0,209,255,0.57) 0%,rgba(255,255,255,0) 100%);
+  background: linear-gradient(to right,  rgb(0 209 255 / 57%) 0%,rgb(255 255 255 / 0%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#9100d1ff', endColorstr='#00ffffff',GradientType=1 );
   border-left: 2px solid #00D1FF;
 }
 
 .navigation--item:not(.active):hover {
   cursor: pointer;
-  background: -moz-linear-gradient(left,  rgba(179,207,219,1) 0%, rgba(255,255,255,0) 100%);
-  background: -webkit-linear-gradient(left,  rgba(179,207,219,1) 0%,rgba(255,255,255,0) 100%);
-  background: linear-gradient(to right,  rgba(179,207,219,1) 0%,rgba(255,255,255,0) 100%);
+  background: linear-gradient(to right,  rgb(179 207 219 / 100%) 0%,rgb(255 255 255 / 0%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b3cfdb', endColorstr='#00ffffff',GradientType=1 );
   border-left: 2px solid #73838b;
 }
@@ -53,14 +47,15 @@
   color: #37474F;
 }
 
-@media screen and (max-width: 1600px) {
+@media screen and (width <= 1600px) {
   .documentation--warnings .documentation--navigation  {
     width: auto !important;
   }
 
   .documentation--flags .navigation--item>p.icon {
-    margin-right: 0px;
+    margin-right: 0;
   }
+
   .documentation--flags .navigation--item>p.description {
     display: none;
   }

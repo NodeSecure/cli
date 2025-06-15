@@ -4,7 +4,6 @@
 @import url("./font/fontello/fontello.css");
 @import url("./font/roboto/roboto.css");
 @import url("./font/mononoki/mononoki.css");
-
 @import url("./components/locker/locker.css");
 @import url("./components/legend/legend.css");
 @import url("./components/popup/popup.css");
@@ -24,7 +23,7 @@
 body,
 html {
   height: 100%;
-  font-family: "Roboto", sans-serif;
+  font-family: Roboto, sans-serif;
   font-size: 16px;
 }
 
@@ -57,10 +56,10 @@ body {
   /* Barre */
   border: solid 0 transparent;
   border-right-width: 4px;
-  -webkit-border-radius: 5px;
-  -webkit-border-top-right-radius: 9px 5px;
-  -webkit-border-bottom-right-radius: 9px 5px;
-  -webkit-box-shadow: inset 0 0 0 1px #3722AF,
+  border-radius: 5px;
+  border-top-right-radius: 9px 5px;
+  border-bottom-right-radius: 9px 5px;
+  box-shadow: inset 0 0 0 1px #3722AF,
     inset 0 0 0 6px #3f27c7;
 }
 
@@ -68,9 +67,9 @@ body {
   /* Barre du bas */
   border-right-width: 0;
   border-bottom-width: 4px;
-  -webkit-border-top-right-radius: 5px;
-  -webkit-border-bottom-right-radius: 5px 9px;
-  -webkit-border-bottom-left-radius: 5px 9px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px 9px;
+  border-bottom-left-radius: 5px 9px;
 }
 
 main {

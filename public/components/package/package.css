@@ -8,15 +8,14 @@
 section#package-info {
   height: 100vh;
   width: 400px;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   background: var(--primary-darker);
   padding: 15px;
   flex-direction: column;
   z-index: 20;
   position: absolute;
   transform: translateX(-100%);
-  -webkit-transform: translateX(-100%);
 }
 
 body.dark section#package-info {
@@ -26,18 +25,26 @@ body.dark section#package-info {
 section#package-info .package-container {
   margin-bottom: 40px;
   padding: 10px;
-  background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(76, 50, 223, 0.2) 100%);
-  background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(76, 50, 223, 0.2) 100%);
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(76, 50, 223, 0.2) 100%);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0%) 0%, rgb(76 50 223 / 20%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#334c32df', GradientType=0);
   border-radius: 0 0 8px 8px;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   height: calc(100vh - 315px);
 }
 
 section#package-info>.package-navigation>div {
-  font-family: 'mononoki';
+  font-family: mononoki;
+  width: 45px;
+  height: 45px;
+  position: relative;
+  border-radius: 55px;
+  box-sizing: border-box;
+  background: var(--primary);
+  border: 2px solid #4c32df6b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.5s ease;
 }
 
 /**
@@ -52,9 +59,7 @@ section#package-info>.package-navigation {
   padding-top: 40px;
   padding-bottom: 10px;
   border-radius: 8px 8px 0 0;
-  background: -moz-linear-gradient(top, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
-  background: -webkit-linear-gradient(top, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
-  background: linear-gradient(to bottom, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to bottom, rgb(76 50 223 / 20%) 0%, rgb(0 0 0 / 0%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#334c32df', endColorstr='#00000000', GradientType=0);
 }
 
@@ -64,7 +69,7 @@ section#package-info>.package-navigation {
   width: 100%;
   color: var(--secondary);
   margin-bottom: 10px;
-  font-family: 'mononoki';
+  font-family: mononoki;
   letter-spacing: 1px;
   text-shadow: 1px 1px 5px #2a6f99;
   position: absolute;
@@ -72,21 +77,7 @@ section#package-info>.package-navigation {
   top: 10px;
 }
 
-section#package-info>.package-navigation>div {
-  width: 45px;
-  height: 45px;
-  position: relative;
-  border-radius: 55px;
-  box-sizing: border-box;
-  background: var(--primary);
-  border: 2px solid #4c32df6b;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.5s ease;
-}
-
-section#package-info>.package-navigation>div:not(.active):not(.disabled):hover {
+section#package-info>.package-navigation>div:not(.active, .disabled):hover {
   cursor: pointer;
   background: #311B92;
 }
@@ -101,7 +92,7 @@ section#package-info>.package-navigation>div.disabled {
   opacity: 0.3;
 }
 
-section#package-info>.package-navigation>div.active:before {
+section#package-info>.package-navigation>div.active::before {
   content: "";
   position: absolute;
   bottom: -17px;
@@ -118,7 +109,7 @@ section#package-info>.package-navigation>div>.signal {
   bottom: -2px;
   right: -2px;
   font-size: 12px;
-  font-family: "mononoki";
+  font-family: mononoki;
   background: #FBC02D;
   color: #000 !important;
   border-radius: 100%;
@@ -137,18 +128,22 @@ section#package-info>.package-navigation>div#scorecard-menu.red {
   border: 2px solid #EF5350;
   color: #FF80AB;
 }
+
 section#package-info>.package-navigation>div#scorecard-menu.orange {
   border: 2px solid #FDD835;
   color: #FFD740;
 }
+
 section#package-info>.package-navigation>div#scorecard-menu.blue {
   border: 2px solid #2962FF;
   color: #BBDEFB;
 }
+
 section#package-info>.package-navigation>div#scorecard-menu.green {
   border: 2px solid #00E676;
   color: #B2FF59;
 }
+
 /**
  * NAVIGATION END
  */
@@ -167,16 +162,17 @@ section#package-info .head-title {
 }
 
 section#package-info .head-title.no-margin {
-  margin-top: 0px;
+  margin-top: 0;
 }
 
 section#package-info .head-title>p {
-  text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
+  text-shadow: 1px 1px 5px rgb(20 20 20 / 50%);
   font-size: 18px;
   font-variant: small-caps;
+
   /* lowercase is needed with small-caps font variant */
   text-transform: lowercase;
-  font-family: "mononoki";
+  font-family: mononoki;
   font-weight: bold;
   letter-spacing: 1px;
   padding: 0 10px;
@@ -189,7 +185,7 @@ section#package-info .head-title>span {
   padding: 2px 5px;
   border-radius: 4px;
   font-size: 12px;
-  font-family: 'mononoki';
+  font-family: mononoki;
   text-shadow: 2px 2px 5px #000000d4;
   transition: all 0.5s ease;
   cursor: pointer;
@@ -209,7 +205,7 @@ section#package-info .head-title>span.active:not(.disabled):hover {
   background: #0068ff;
 }
 
-section#package-info .head-title>span:not(.disabled):not(.active):hover {
+section#package-info .head-title>span:not(.disabled, .active):hover {
   background: #7900ff;
 }
 
@@ -248,6 +244,8 @@ section#package-info .list-item>span {
   justify-content: center;
   flex-grow: 1;
   color: #CFD8DC;
+  margin-left: 5px;
+  margin-top: 5px;
 }
 
 section#package-info .list-item>span:not(.expandable).clickable:hover {
@@ -259,11 +257,6 @@ section#package-info .list-item>span:not(.expandable).clickable:hover {
 section#package-info .list-item.line>span {
   flex-basis: 25px;
   justify-content: start;
-}
-
-section#package-info .list-item>span {
-  margin-left: 5px;
-  margin-top: 5px;
 }
 
 /**
@@ -348,6 +341,7 @@ section#package-info ul li.clickable:hover {
   text-decoration: underline;
   font-weight: bold;
 }
+
 /**
  * HELP DIALOG END
  */

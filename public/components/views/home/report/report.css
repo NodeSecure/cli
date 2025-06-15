@@ -22,7 +22,7 @@ body.dark .report--popup>.title {
 .report--popup>.title>p {
   background: #f5f4f4;
   padding: 0 10px;
-  font-family: "roboto";
+  font-family: roboto;
   font-weight: bold;
   letter-spacing: 1.2px;
   color: #255471;
@@ -58,7 +58,7 @@ body.dark .report--popup>form label {
   border-left: 4px solid #546884;
   margin-bottom: 10px;
   border-radius: 2px;
-  box-shadow: 0px 3px 7px 1px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 3px 7px 1px rgb(0 0 0 / 10%);
   font-size: 16px;
 }
 

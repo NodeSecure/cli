@@ -1,17 +1,17 @@
 @font-face {
-  font-family: "mononoki";
+  font-family: mononoki;
   src: url("../../font/mononoki/mononoki-Regular.woff");
   font-style: normal;
 }
 
 @font-face {
-  font-family: "mononoki";
+  font-family: mononoki;
   src: url("../../font/mononoki/mononoki-Bold.woff");
-  font-style: bold;
+  font-weight: bold;
 }
 
 @font-face {
-  font-family: "mononoki";
+  font-family: mononoki;
   src: url("../../font/mononoki/mononoki-Italic.woff");
   font-style: italic;
 }

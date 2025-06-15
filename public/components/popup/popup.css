@@ -10,9 +10,9 @@ section#popup--background {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* pointer-events: none; */
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0) 0%, rgb(30 35 65) 100%);
 
+  /* pointer-events: none; */
+  background: radial-gradient(ellipse at center, rgb(255 255 255 / 0%) 0%, rgb(30 35 65) 100%);
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.35s ease-in, visibility 0ms ease-in 0.35s;
@@ -29,7 +29,7 @@ section#popup--background>.popup {
   background: #f5f4f4;
   border-radius: 4px;
   box-shadow: 5px 5px 15px rgb(23 27 129 / 41%);
-  border-left: 2px solid #ffffff;
+  border-left: 2px solid #fff;
   border-top: 2px solid #FFF;
 }
 

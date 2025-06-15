@@ -40,10 +40,10 @@ nav#aside>ul li+li {
 
 nav#aside>ul li:not(.active):hover {
   cursor: pointer;
-  background: rgba(50, 200, 255, 0.085);
+  background: rgb(50 200 255 / 8.5%);
 }
 
-nav#aside>ul li.active:before {
+nav#aside>ul li.active::before {
   background: var(--secondary);
   position: absolute;
   left: 0;

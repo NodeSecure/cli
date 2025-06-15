@@ -16,12 +16,12 @@
   --dark-theme-accent-color: #8d7afc;
   --dark-theme-gray: #191a38;
 }
+
 body {
   color: var(--primary-theme-color);
-  background: rgb(255,255,255);
-  background: -moz-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 15%, rgba(208,220,221,1) 100%);
-  background: -webkit-radial-gradient(center, ellipse cover,  rgba(255,255,255,1) 15%,rgba(208,220,221,1) 100%);
-  background: radial-gradient(ellipse at center,  rgba(255,255,255,1) 15%,rgba(208,220,221,1) 100%);
+  background: rgb(255 255 255);
+  background: radial-gradient(ellipse at center,  rgb(255 255 255 / 100%) 15%,rgb(208 220 221 / 100%) 100%);
+  background: radial-gradient(ellipse at center,  rgb(255 255 255 / 100%) 15%,rgb(208 220 221 / 100%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d0dcdd',GradientType=1 );
 }
 

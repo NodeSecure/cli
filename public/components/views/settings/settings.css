@@ -15,7 +15,7 @@
   align-items: center;
   color: var(--primary);
   font-size: 24px;
-  font-family: 'mononoki';
+  font-family: mononoki;
 }
 
 body.dark #settings--view>h1, #settings--view h2 {
@@ -108,8 +108,8 @@ body.dark #settings--view .shortcuts label {
 
 #settings--view .shortcuts input:read-only {
   background: transparent;
-  border-color: rgb(168, 168, 168);
-  color: rgb(141, 140, 140);
+  border-color: rgb(168 168 168);
+  color: rgb(141 140 140);
   border-style: solid;
 }
 
@@ -176,15 +176,17 @@ button.save {
   margin-top: 30px;
   border: none;
   outline: none;
-  font-family: "mononoki";
+  font-family: mononoki;
   font-weight: bold;
   letter-spacing: 0.5px;
   text-shadow: 2px 2px 5px #00000061;
 }
+
 button.save.disabled {
   background: #334148;
   opacity: 0.35;
 }
+
 button.save:not(.disabled):hover {
   background-color: var(--secondary-darker);
   cursor: pointer;
@@ -195,7 +197,7 @@ select {
   border: 1px solid #B0BEC5;
   height: 30px;
   border-radius: 4px;
-  font-family: 'mononoki';
+  font-family: mononoki;
   color: #0c5a9b;
 }
 

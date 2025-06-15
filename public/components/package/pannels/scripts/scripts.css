@@ -17,7 +17,7 @@
 }
 
 .package-scripts .script:nth-child(even) {
-  background: rgba(150, 100, 150, 0.05);
+  background: rgb(150 100 150 / 5%);
 }
 
 .package-scripts .script+.script {
@@ -39,6 +39,6 @@
 .package-scripts .script p.value {
   font-size: 13px;
   color: #f3e4f8;
-  font-family: 'mononoki';
+  font-family: mononoki;
   margin-top: 5px;
 }
