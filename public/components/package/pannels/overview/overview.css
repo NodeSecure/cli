@@ -11,11 +11,11 @@ div.package-maintainers>div {
   box-sizing: border-box;
   border-radius: 4px;
   overflow: hidden;
-  background: linear-gradient(to right, rgb(43 68 137) 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(to right, rgb(43 68 137) 0%, rgb(255 255 255 / 0%) 100%);
 }
 
 div.package-maintainers>div.clickable:hover {
-  background: linear-gradient(to right, rgb(43, 87, 137) 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(to right, rgb(43 87 137) 0%, rgb(255 255 255 / 0%) 100%);
   cursor: pointer;
   color: yellow;
 }
@@ -29,14 +29,14 @@ div.package-maintainers>div>p {
   flex-grow: 1;
   display: flex;
   align-items: center;
-  font-family: "mononoki";
+  font-family: mononoki;
 }
 
 div.package-maintainers>div>span {
   margin-left: 6px;
   display: flex;
   align-items: center;
-  font-family: "mononoki";
+  font-family: mononoki;
   min-width: 76px;
   padding-right: 10px;
   justify-content: flex-end;

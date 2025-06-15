@@ -1,0 +1,13 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "selector-class-pattern": null,
+    "selector-id-pattern": null,
+    "font-family-no-missing-generic-family-keyword": null,
+    "no-descending-specificity": null
+  },
+  "ignoreFiles": [
+    "**/dist/**",
+    "**/coverage/**"
+  ]
+}

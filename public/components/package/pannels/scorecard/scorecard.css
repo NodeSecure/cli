@@ -1,9 +1,7 @@
 #pan-scorecard {
   padding: 10px;
   border-radius: 8px 8px 0 0;
-  background: -moz-linear-gradient(top, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 15%);
-  background: -webkit-linear-gradient(top, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 15%);
-  background: linear-gradient(to bottom, rgba(76, 50, 223, 0.2) 0%, rgba(0, 0, 0, 0) 15%);
+  background: linear-gradient(to bottom, rgb(76 50 223 / 20%) 0%, rgb(0 0 0 / 0%) 15%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#334c32df', endColorstr='#00000000', GradientType=0);
 }
 
@@ -13,7 +11,7 @@
   width: 100%;
   color: var(--secondary);
   margin-bottom: 10px;
-  font-family: 'mononoki';
+  font-family: mononoki;
   letter-spacing: 1px;
   text-shadow: 1px 1px 5px #2a6f99;
   position: static;
@@ -30,13 +28,13 @@
 }
 
 #pan-scorecard .score-header .score-text {
-  font-family: 'mononoki';
+  font-family: mononoki;
   font-size: 16px;
   margin-top: 5px;
 }
 
 #pan-scorecard .score-header .score-value {
-  font-weight: 800px;
+  font-weight: 800;
   color: var(--secondary);
   margin-top: 6px;
   font-size: 18px;
@@ -50,6 +48,7 @@
 #pan-scorecard .score-header .visualizer .logo {
   vertical-align: sub;
   width: 21px;
+
   /* https://codepen.io/sosuke/pen/Pjoqqp */
   filter: invert(99%) sepia(36%) saturate(748%) hue-rotate(170deg) brightness(93%) contrast(84%);
 }
@@ -68,7 +67,7 @@
   height: auto;
 }
 
-#pan-scorecard .check:before {
+#pan-scorecard .check::before {
   content: '▶';
   padding: 4px;
   width: 20px;
@@ -76,7 +75,7 @@
   font-size: 11px;
 }
 
-#pan-scorecard .check.visible:before {
+#pan-scorecard .check.visible::before {
   content: '▼';
 }
 
@@ -126,5 +125,5 @@
 
 #pan-scorecard .score {
   margin-left: auto;
-  font-family: 'mononoki';
+  font-family: mononoki;
 }

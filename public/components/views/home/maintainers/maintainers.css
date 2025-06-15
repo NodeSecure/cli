@@ -16,7 +16,7 @@
   overflow: hidden;
   margin-left: 10px;
   margin-top: 10px;
-  box-shadow: 1px 1px 4px 0px #271e792b;
+  box-shadow: 1px 1px 4px 0 #271e792b;
   color: #546884;
   flex-grow: 1;
 }
@@ -27,11 +27,11 @@ body.dark .home--maintainers>.person {
 }
 
 .home--maintainers> .highlighted{
-  background: linear-gradient(to bottom, rgb(230, 240, 250) 0%, rgb(220, 235, 245) 100%);
+  background: linear-gradient(to bottom, rgb(230 240 250) 0%, rgb(220 235 245) 100%);
 }
 
 body.dark .home--maintainers > .highlighted {
-  background: linear-gradient(to right, rgb(11, 3, 31) 0%, rgba(46, 10, 10, 0.8) 100%);
+  background: linear-gradient(to right, rgb(11 3 31) 0%, rgb(46 10 10 / 80%) 100%);
 }
 
 .home--maintainers>.person:hover {
@@ -58,7 +58,7 @@ body.dark .home--maintainers > .highlighted {
   justify-content: center;
   margin-left: 10px;
   font-size: 15px;
-  font-family: "mononoki";
+  font-family: mononoki;
   flex-grow: 1;
   margin-right: 10px;
 }
@@ -73,7 +73,7 @@ body.dark .home--maintainers > .highlighted {
 .home--maintainers>.person>div.packagescount {
   display: flex;
   align-items: center;
-  font-family: "mononoki";
+  font-family: mononoki;
   font-size: 18px;
   margin-right: 15px;
   flex-basis: 40px;
@@ -107,12 +107,10 @@ body.dark .home--maintainers > .highlighted {
 .maintainers--popup>.header>.avatar {
   width: 80px;
   overflow: hidden;
-  border-radius: 4px;
-  overflow: hidden;
   flex-shrink: 0;
   border-radius: 8px;
   box-sizing: border-box;
-  box-shadow: 2px 2px 6px 0px #00000012;
+  box-shadow: 2px 2px 6px 0 #00000012;
 }
 
 .maintainers--popup>.header>.avatar>img {
@@ -124,7 +122,7 @@ body.dark .home--maintainers > .highlighted {
   flex-direction: column;
   flex-grow: 1;
   justify-content: center;
-  font-family: "mononoki";
+  font-family: mononoki;
   margin: 0 10px;
 }
 
@@ -162,7 +160,7 @@ body.dark .maintainers--popup>.header>.informations>p.email {
   background-color: var(--secondary-darker);
   border-radius: 100%;
   color: #FFF;
-  box-shadow: 2px 2px 6px 0px #00000012;
+  box-shadow: 2px 2px 6px 0 #00000012;
 }
 
 .maintainers--popup>.header>.icons>i:hover {
@@ -191,7 +189,7 @@ body.dark .maintainers--popup>.separator {
 .maintainers--popup>.separator>p {
   background: #f5f4f4;
   padding: 0 10px;
-  font-family: "roboto";
+  font-family: roboto;
   font-weight: bold;
   letter-spacing: 1.2px;
   color: #255471;
@@ -206,8 +204,7 @@ body.dark .maintainers--popup>.separator>p {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   max-height: 240px;
   margin-top: 20px;
   margin-bottom: 10px;
@@ -218,17 +215,17 @@ body.dark .maintainers--popup>.separator>p {
   padding: 0 10px;
   display: flex;
   align-items: center;
-  background: linear-gradient(to right, rgb(221 229 251) 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(to right, rgb(221 229 251) 0%, rgb(255 255 255 / 0%) 100%);
   border-left: 2px solid #4480da;
   color: #234c99;
   border-radius: 4px;
-  font-family: "mononoki";
+  font-family: mononoki;
   flex-shrink: 0;
   font-size: 15px;
 }
 
 body.dark .maintainers--popup>ul li {
-  background: linear-gradient(to right, var(--dark-theme-primary-color) 0%, rgba(28, 29, 58, 0.185) 100%);
+  background: linear-gradient(to right, var(--dark-theme-primary-color) 0%, rgb(28 29 58 / 18.5%) 100%);
   border: none;
   color: white;
 }
@@ -261,8 +258,9 @@ body.dark .maintainers--popup>ul li>span{
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 2px 2px 6px 0px #00000012;
+  box-shadow: 2px 2px 6px 0 #00000012;
 }
+
 .maintainers--popup>ul li>i:hover {
   background: #4ab8b9;
   cursor: pointer;

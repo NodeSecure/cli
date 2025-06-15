@@ -12,7 +12,7 @@
   border-radius: 4px;
   text-align: left;
   font-size: 14px;
-  font-family: "mononoki";
+  font-family: mononoki;
   letter-spacing: 0.5px;
   word-wrap: break-word;
 }
@@ -21,7 +21,7 @@
   background: white;
   margin: 0;
   padding: 0;
-  box-shadow:  0px 5px 3px rgba(0, 0, 0, 0.2);
+  box-shadow:  0 5px 3px rgb(0 0 0 / 20%);
 }
 
 .package-code code {
@@ -35,7 +35,7 @@
 .package-code pre div.file {
   padding: 8px;
   text-align: right;
-  background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(232,232,232,1) 100%);
+  background: linear-gradient(to right, rgb(255 255 255 / 0%) 0%,rgb(232 232 232 / 100%) 100%);
   margin-bottom: 5px;
 }
 
@@ -46,17 +46,12 @@
 
 .relevant-line {
   background: rgb(255 221 124 / 27%);
-  padding: 2px 0px;
+  padding: 2px 0;
 }
 
 .hljs-ln-numbers {
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
-
   text-align: center;
   color: #ccc;
   border-right: 1px solid #CCC;

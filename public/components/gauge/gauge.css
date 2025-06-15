@@ -10,12 +10,13 @@
   padding: 0 10px;
   border-radius: 4px;
 }
+
 body.dark .gauge>.line {
   color: white;
 }
 
 .gauge>.line.clickable:hover {
-  background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+  background: linear-gradient(to bottom,  rgb(255 255 255 / 100%) 0%,rgb(255 255 255 / 0%) 100%);
   cursor: pointer;
 }
 
@@ -38,9 +39,10 @@ body.dark .gauge>.line.clickable:hover {
   width: 30px;
   flex-shrink: 0;
   text-align: right;
-  font-family: "mononoki";
+  font-family: mononoki;
   color: var(--secondary-darker);
 }
+
 .gauge>.line>.line--column.border-bottom {
   border-bottom: 1px solid #8080803d;
   padding-bottom: 5px;
@@ -65,21 +67,24 @@ body.dark .gauge>.line.clickable:hover {
   border-radius: 4px;
   overflow: hidden;
 }
+
 .gauge .gauge--bar >.usage {
   height: inherit;
   background-color: var(--secondary-darker);
 }
 
 .gauge .chip {
-  font-family: "mononoki";
+  font-family: mononoki;
   background: #8dabe536;
   border-radius: 8px;
   font-size: 14px;
   padding: 3px 5px;
 }
+
 .gauge .chip:last-child {
   margin-right: 30px;
 }
+
 .gauge .chip + .chip {
   margin-left: 10px;
 }

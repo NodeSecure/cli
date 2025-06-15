@@ -14,7 +14,7 @@ section#package-info div.bundlephobia>div {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  box-shadow: 1px 1px 10px rgba(41, 103, 122, 0.3) inset;
+  box-shadow: 1px 1px 10px rgb(41 103 122 / 30%) inset;
 }
 
 section#package-info div.bundlephobia>div+div {
@@ -22,19 +22,20 @@ section#package-info div.bundlephobia>div+div {
 }
 
 section#package-info div.bundlephobia>div>b {
-  font-weight: 800px;
+  font-weight: 800;
   color: var(--secondary);
   margin-bottom: 5px;
   font-size: 18px;
 }
+
 section#package-info div.bundlephobia>div>b i {
-  font-family: 'mononoki';
+  font-family: mononoki;
   font-size: 14px;
   color: #fce12b;
 }
 
 section#package-info div.bundlephobia>div>span {
   font-size: 12px;
-  font-family: 'mononoki';
+  font-family: mononoki;
   text-transform: uppercase;
 }

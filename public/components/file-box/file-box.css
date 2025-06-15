@@ -4,12 +4,10 @@
   padding: 10px;
   border-top: 2px solid #351ea7;
   border-left: 2px solid #351ea7;
-  background: -moz-linear-gradient(top, rgba(12, 15, 94, 0.27) 0%, rgba(0, 0, 0, 0) 100%);
-  background: -webkit-linear-gradient(top, rgba(12, 15, 94, 0.27) 0%, rgba(0, 0, 0, 0) 100%);
-  background: linear-gradient(to bottom, rgba(12, 15, 94, 0.27) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to bottom, rgb(12 15 94 / 27%) 0%, rgb(0 0 0 / 0%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#450c0f5e', endColorstr='#00000000', GradientType=0);
   border-radius: 4px;
-  box-shadow: 1px 1px 10px rgba(18, 101, 109, 0.1);
+  box-shadow: 1px 1px 10px rgb(18 101 109 / 10%);
 }
 
 .box-file-info+.box-file-info {
@@ -32,16 +30,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'mononoki';
+  font-family: mononoki;
   font-weight: bold;
   text-shadow: 2px 2px 10px #000;
 }
+
 .box-file-info>.box-header>span.Critical {
   background: #d32f2f;
 }
+
 .box-file-info>.box-header>span.Warning {
   background: #f08e26;
 }
+
 .box-file-info>.box-header>span.Information {
   background: #0288d1ab;
 }
@@ -49,7 +50,7 @@
 .box-file-info>.box-header>.box-title {
   font-size: 18px;
   font-variant: small-caps;
-  font-family: "mononoki";
+  font-family: mononoki;
   color: #FFF;
   font-weight: bold;
   letter-spacing: 1px;
@@ -122,7 +123,7 @@
   font-size: 12px;
   margin-top: 5px;
   color: var(--secondary);
-  font-family: "mononoki";
+  font-family: mononoki;
   word-break: break-all;
 }
 
@@ -153,7 +154,7 @@
   height: 18px;
   margin-top: 10px;
   font-size: 14px;
-  font-family: "system-ui";
+  font-family: system-ui;
   display: flex;
   align-items: center;
   justify-content: center;

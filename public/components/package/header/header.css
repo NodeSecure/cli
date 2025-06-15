@@ -6,8 +6,8 @@ div.package-header {
 
 div.package-header>.package-name {
   display: flex;
-  font-family: "mononoki";
-  text-shadow: 1px 1px 5px rgba(20, 20, 20, 0.5);
+  font-family: mononoki;
+  text-shadow: 1px 1px 5px rgb(20 20 20 / 50%);
 }
 
 div.package-header>.package-name>.name {
@@ -35,6 +35,7 @@ div.package-header>.package-name>.info {
   border: none;
   margin-left: auto;
   cursor: pointer;
+
   /* https://codepen.io/sosuke/pen/Pjoqqp */
   filter: invert(71%) sepia(22%) saturate(6942%) hue-rotate(149deg) brightness(101%) contrast(106%);
 }
@@ -54,7 +55,7 @@ div.package-header>.package-name>.info-menu>.info-menu-title {
   font-weight: bold;
   text-align: center;
   margin-bottom: 12px;
-  color: rgb(39, 38, 38);
+  color: rgb(39 38 38);
 }
 
 div.package-header>.package-name>.info-menu>a {
@@ -105,11 +106,11 @@ div.package-header>ul.flags {
   position: absolute;
   z-index: 21;
   font-size: 13px;
-  text-shadow: 1px 1px 1px rgba(20, 20, 20, 0.5);
+  text-shadow: 1px 1px 1px rgb(20 20 20 / 50%);
   top: 150%;
   left: 50%;
   margin-left: -140px;
-  font-family: "mononoki";
+  font-family: mononoki;
 }
 
 .flag-infobulle>span::after {
@@ -120,7 +121,7 @@ div.package-header>ul.flags {
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent #000 transparent;
+  border-color: transparent transparent #000;
 }
 
 .flag-infobulle:hover span {
@@ -164,6 +165,7 @@ div.package-header>.links div>a {
 div.package-header>.links div>a:hover {
   text-decoration: underline;
 }
+
 /**
  * LINKS END
  */

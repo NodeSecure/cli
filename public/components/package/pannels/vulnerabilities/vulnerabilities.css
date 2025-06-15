@@ -33,7 +33,7 @@
 }
 
 .vuln-strategy .name {
-  font-family: "mononoki";
+  font-family: mononoki;
   font-variant: small-caps;
   font-weight: bold;
   font-size: 20px;
@@ -56,6 +56,7 @@
   color: #FFF;
   display: flex;
   flex-direction: column;
+  padding: 10px;
 }
 
 .packages-vuln .vuln+.vuln {
@@ -64,42 +65,28 @@
 
 .packages-vuln .vuln.critical {
   border-color: #B71C1C;
-  background: -moz-linear-gradient(left, rgba(63, 0, 6, 0.53) 0%, rgba(0, 0, 0, 0) 100%);
-  background: -webkit-linear-gradient(left, rgba(63, 0, 6, 0.53) 0%, rgba(0, 0, 0, 0) 100%);
-  background: linear-gradient(to right, rgba(63, 0, 6, 0.53) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to right, rgb(63 0 6 / 53%) 0%, rgb(0 0 0 / 0%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#873f0006', endColorstr='#00000000', GradientType=1);
 }
 
 .packages-vuln .vuln.high {
-  border-color: rgb(249, 104, 37);
-  background: -moz-linear-gradient(left, rgba(53, 38, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
-  background: -webkit-linear-gradient(left, rgba(53, 38, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
-  background: linear-gradient(to right, rgba(53, 38, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  border-color: rgb(249 104 37);
+  background: linear-gradient(to right, rgb(53 38 0 / 65%) 0%, rgb(0 0 0 / 0%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a6352600', endColorstr='#00000000', GradientType=1);
 }
 
 .packages-vuln .vuln.medium,
 .packages-vuln .vuln.moderate {
   border-color: #F9A825;
-  background: -moz-linear-gradient(left, rgba(65, 66, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
-  background: -webkit-linear-gradient(left, rgba(65, 66, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
-  background: linear-gradient(to right, rgba(65, 66, 0, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to right, rgb(65 66 0 / 65%) 0%, rgb(0 0 0 / 0%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a6414200', endColorstr='#00000000', GradientType=1);
 }
 
 .packages-vuln .vuln.info,
 .packages-vuln .vuln.low {
   border-color: #2545f9;
-  background: -moz-linear-gradient(left, rgba(0, 46, 63, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
-  background: -webkit-linear-gradient(left, rgba(0, 46, 63, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
-  background: linear-gradient(to right, rgba(0, 46, 63, 0.65) 0%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(to right, rgb(0 46 63 / 65%) 0%, rgb(0 0 0 / 0%) 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a6002e3f', endColorstr='#00000000', GradientType=1);
-}
-
-.packages-vuln .vuln {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
 }
 
 .packages-vuln .vuln>div {
@@ -152,7 +139,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: 'mononoki';
+  font-family: mononoki;
   font-weight: bold;
   text-shadow: 2px 2px 10px #000;
   color: #FFF;
@@ -167,7 +154,7 @@
 }
 
 .packages-vuln .vuln>div>p.name {
-  font-family: "mononoki";
+  font-family: mononoki;
   font-size: 16px;
   color: #FFF;
 }
@@ -177,7 +164,7 @@
   background: #0000005c;
   padding: 4px 5px;
   margin-right: 10px;
-  font-family: "mononoki";
+  font-family: mononoki;
   font-size: 12px;
   border-radius: 4px;
 }
@@ -193,7 +180,7 @@
 }
 
 .packages-vuln .vuln>div .severity.high {
-  background: rgb(249, 104, 37);
+  background: rgb(249 104 37);
 }
 
 .packages-vuln .vuln>div .severity.medium,

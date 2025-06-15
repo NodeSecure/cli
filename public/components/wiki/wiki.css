@@ -7,10 +7,9 @@
   top: 10%;
   z-index: 30;
   transform: translateX(calc(100% - 26px));
-  -webkit-transform: translateX(calc(100% - 26px));
 }
 
-@media screen and (max-width: 1200px) {
+@media screen and (width <= 1200px) {
   #documentation-root-element {
     width: 600px;
   }
@@ -28,6 +27,7 @@
     align-items: center;
     justify-content: center;
   }
+
   #documentation-root-element > .open-button:hover {
     cursor: pointer;
     background: var(--primary-lighter);
@@ -40,6 +40,6 @@
     border-top: 2px solid var(--primary);
     border-bottom: 2px solid var(--primary);
     overflow: hidden;
-    box-shadow: 2px 2px 30px rgba(20, 20, 20, 0.8);
+    box-shadow: 2px 2px 30px rgb(20 20 20 / 80%);
     width: 100%;
   }

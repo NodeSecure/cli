@@ -41,7 +41,7 @@
 }
 
 #network-locker>p {
-  font-family: "mononoki";
+  font-family: mononoki;
   padding-right: 10px;
   display: flex;
   align-items: center;
