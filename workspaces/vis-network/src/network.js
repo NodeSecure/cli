@@ -78,6 +78,8 @@ export default class NodeSecureNetwork {
     this.isLoaded = false;
 
     this.lastHighlightedIds = null;
+    const networkLoaderElement = document.getElementById(NodeSecureNetwork.networkLoaderElementId);
+    networkLoaderElement.classList.remove("hidden");
     const { nodes, edges } = secureDataSet.build();
 
     const theme = options.theme?.toUpperCase() ?? "LIGHT";
@@ -102,8 +104,7 @@ export default class NodeSecureNetwork {
         return;
       }
       console.log("[NETWORK] stabilizationIterationsDone triggered");
-      const networkLoaderElement = document.getElementById(NodeSecureNetwork.networkLoaderElementId);
-      networkLoaderElement.style.display = "none";
+      networkLoaderElement.classList.add("hidden");
 
       this.isLoaded = true;
       this.network.stopSimulation();
