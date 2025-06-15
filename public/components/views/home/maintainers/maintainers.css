@@ -197,7 +197,7 @@ body.dark .maintainers--popup>.separator {
   color: #255471;
 }
 
-.maintainers--popup>.separator>p {
+body.dark .maintainers--popup>.separator>p {
   background: #303263;
   color: #3cbde5;
 }

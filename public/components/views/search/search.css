@@ -263,8 +263,12 @@ input:-webkit-autofill {
   width: 100%;
   padding: 5px 0;
   margin-top: 10px;
-  background: #0b031f71;
+  background: #54688419;
   padding: 5px 10px;
+}
+
+body.dark .package-cache-result {
+  background: #0b031f71;
 }
 
 body.dark .description {
