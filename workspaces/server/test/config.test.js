@@ -7,13 +7,13 @@ import cacache from "cacache";
 import { warnings } from "@nodesecure/js-x-ray";
 
 // Import Internal Dependencies
-import { get, set } from "../src/http-server/config.js";
-import { CACHE_PATH } from "../src/cache.js";
+import { get, set } from "../src/config.js";
+import { CACHE_PATH } from "../../../src/cache.js";
 
 // CONSTANTS
 const kConfigKey = "___config";
 
-describe("config", { concurrency: 1 }, () => {
+describe("config", () => {
   let actualConfig;
 
   before(async() => {

@@ -4,12 +4,13 @@ import path from "node:path";
 import crypto from "node:crypto";
 
 // Import Third-party Dependencies
-import * as SemVer from "semver";
 import kleur from "kleur";
+import open from "open";
+import * as SemVer from "semver";
 import * as i18n from "@nodesecure/i18n";
+import { buildServer, WebSocketServerInstanciator } from "@nodesecure/server";
 
 // Import Internal Dependencies
-import { buildServer } from "../http-server/index.js";
 import { appCache } from "../cache.js";
 
 // CONSTANTS
@@ -47,8 +48,22 @@ export async function start(
     runFromPayload
   });
 
+  httpServer.listen(port, async() => {
+    const link = `http://localhost:${port}`;
+    console.log(kleur.magenta().bold(await i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
+
+    open(link);
+  });
+
+  new WebSocketServerInstanciator();
+
   for (const eventName of ["SIGINT", "SIGTERM"]) {
-    process.on(eventName, () => httpServer.server.close());
+    process.on(eventName, () => {
+      httpServer.server.close();
+
+      console.log(kleur.red().bold(`${eventName} signal received.`));
+      process.exit(0);
+    });
   }
 }
 

@@ -1,5 +1,5 @@
 // Import Internal Dependencies
-import { context } from "../../ALS.js";
+import { context } from "../ALS.js";
 import { ViewBuilder } from "../ViewBuilder.class.js";
 
 export function buildContextMiddleware(

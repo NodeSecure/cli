@@ -10,12 +10,11 @@ import chokidar from "chokidar";
 import { globStream } from "glob";
 
 // Import Internal Dependencies
-import { logger } from "../logger.js";
+import { logger } from "../../../src/logger.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const kProjectRootDir = path.join(__dirname, "..", "..");
+const kProjectRootDir = path.join(__dirname, "..", "..", "..");
 const kComponentsDir = path.join(kProjectRootDir, "public", "components");
-
 export class ViewBuilder {
   #cached = null;
 

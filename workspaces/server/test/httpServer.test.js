@@ -1,7 +1,7 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import { after, before, describe, test, mock } from "node:test";
+import { after, before, describe, test } from "node:test";
 import { once } from "node:events";
 import path from "node:path";
 import assert from "node:assert";
@@ -15,10 +15,10 @@ import enableDestroy from "server-destroy";
 import cacache from "cacache";
 
 // Import Internal Dependencies
-import { buildServer, BROWSER } from "../src/http-server/index.js";
-import { CACHE_PATH } from "../src/cache.js";
-import * as rootEndpoint from "../src/http-server/endpoints/root.js";
-import * as flagsEndpoint from "../src/http-server/endpoints/flags.js";
+import { buildServer } from "../index.js";
+import { CACHE_PATH } from "../../../src/cache.js";
+import * as rootEndpoint from "../src/endpoints/root.js";
+import * as flagsEndpoint from "../src/endpoints/flags.js";
 
 // CONSTANTS
 const kHttpPort = 17049;
@@ -39,7 +39,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   before(async() => {
     setGlobalDispatcher(kMockAgent);
     await i18n.extendFromSystemPath(
-      path.join(__dirname, "..", "i18n")
+      path.join(__dirname, "..", "..", "..", "i18n")
     );
 
     httpServer = buildServer(JSON_PATH, {
@@ -47,6 +47,7 @@ describe("httpServer", { concurrency: 1 }, () => {
       openLink: false,
       enableWS: false
     });
+    httpServer.listen(kHttpPort);
     await once(httpServer.server, "listening");
 
     enableDestroy(httpServer.server);
@@ -332,25 +333,22 @@ describe("httpServer", { concurrency: 1 }, () => {
 
 describe("httpServer without options", () => {
   let httpServer;
-  let spawnOpen;
   // We want to disable WS
   process.env.NODE_ENV = "test";
 
   before(async() => {
-    spawnOpen = mock.method(BROWSER, "open", () => void 0);
     httpServer = buildServer(JSON_PATH);
+    httpServer.listen();
     await once(httpServer.server, "listening");
     enableDestroy(httpServer.server);
   });
 
   after(async() => {
     httpServer.server.destroy();
-    spawnOpen.mock.restore();
   });
 
-  test("should listen on random port and call childProcess.spawn method ('open' pkg) to open link", async() => {
+  test("should listen on random port", async() => {
     assert.ok(httpServer.server.address().port > 0);
-    assert.strictEqual(spawnOpen.mock.callCount(), 1);
   });
 });
 

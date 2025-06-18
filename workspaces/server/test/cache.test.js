@@ -9,8 +9,8 @@ import os from "node:os";
 import cacache from "cacache";
 
 // Import Internal Dependencies
-import { appCache } from "../src/cache.js";
-import * as config from "../src/http-server/config.js";
+import { appCache } from "../../../src/cache.js";
+import * as config from "../src/config.js";
 
 // CONSTANTS
 const kPayloadsPath = path.join(os.homedir(), ".nsecure", "payloads");

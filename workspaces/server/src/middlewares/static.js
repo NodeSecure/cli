@@ -6,8 +6,9 @@ import { fileURLToPath } from "node:url";
 import sirv from "sirv";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const kProjectRootDir = path.join(__dirname, "..", "..", "..");
+const kProjectRootDir = path.join(__dirname, "..", "..", "..", "..");
 
+console.log(path.join(kProjectRootDir, "dist"));
 export const addStaticFiles = sirv(
   path.join(kProjectRootDir, "dist"),
   { dev: true }

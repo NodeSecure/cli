@@ -9,7 +9,6 @@ import { getBuildConfiguration } from "@nodesecure/documentation-ui/node";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 const kPublicDir = path.join(__dirname, "public");
 const kOutDir = path.join(__dirname, "dist");
 const kImagesDir = path.join(kPublicDir, "img");

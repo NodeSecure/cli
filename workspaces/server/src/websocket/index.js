@@ -3,8 +3,8 @@ import { WebSocketServer } from "ws";
 import { match } from "ts-pattern";
 
 // Import Internal Dependencies
-import { appCache } from "../../cache.js";
-import { logger } from "../../logger.js";
+import { appCache } from "../../../../src/cache.js";
+import { logger } from "../../../../src/logger.js";
 import { search } from "./commands/search.js";
 import { remove } from "./commands/remove.js";
 
