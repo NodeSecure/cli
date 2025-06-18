@@ -1,7 +1,6 @@
 // Import Node.js Dependencies
 import path from "node:path";
 import fs from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 
 // Import Third-party Dependencies
 import zup from "zup";
@@ -10,17 +9,22 @@ import chokidar from "chokidar";
 import { globStream } from "glob";
 
 // Import Internal Dependencies
-import { logger } from "../logger.js";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const kProjectRootDir = path.join(__dirname, "..", "..");
-const kComponentsDir = path.join(kProjectRootDir, "public", "components");
+import { logger } from "./logger.js";
 
 export class ViewBuilder {
   #cached = null;
+  projectRootDir = null;
+  componentsDir = null;
 
-  constructor(options = {}) {
-    const { autoReload = false } = options;
+  constructor(options) {
+    const {
+      autoReload = false,
+      projectRootDir,
+      componentsDir
+    } = options;
+
+    this.projectRootDir = projectRootDir;
+    this.componentsDir = componentsDir;
 
     if (autoReload) {
       this.#enableWatcher();
@@ -30,7 +34,7 @@ export class ViewBuilder {
   async #enableWatcher() {
     logger.info("[ViewBuilder] autoReload is enabled");
 
-    const watcher = chokidar.watch(kComponentsDir, {
+    const watcher = chokidar.watch(this.componentsDir, {
       persistent: false,
       awaitWriteFinish: true,
       ignored: (path, stats) => stats?.isFile() && !path.endsWith(".html")
@@ -53,17 +57,17 @@ export class ViewBuilder {
     }
 
     let HTMLStr = await fs.readFile(
-      path.join(kProjectRootDir, "views", "index.html"),
+      path.join(this.projectRootDir, "views", "index.html"),
       "utf-8"
     );
 
     const componentsPromises = [];
     for await (
-      const htmlComponentPath of globStream("**/*.html", { cwd: kComponentsDir })
+      const htmlComponentPath of globStream("**/*.html", { cwd: this.componentsDir })
     ) {
       componentsPromises.push(
         fs.readFile(
-          path.join(kComponentsDir, htmlComponentPath),
+          path.join(this.componentsDir, htmlComponentPath),
           "utf-8"
         )
       );

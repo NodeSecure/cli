@@ -211,8 +211,10 @@ Click on one of the links to access the documentation of the workspace:
 | name | package and link |
 | --- | --- |
 | documentation-ui | [@nodesecure/documentation-ui](./workspaces/documentation-ui) |
-| vis-network | [@nodesecure/vis-network ](./workspaces/vis-network) |
-| size-satisfies | [@nodesecure/size-satisfies ](./workspaces/size-satisfies) |
+| vis-network | [@nodesecure/vis-network](./workspaces/vis-network) |
+| size-satisfies | [@nodesecure/size-satisfies](./workspaces/size-satisfies) |
+| server | [@nodesecure/server](./workspaces/server) |
+| cache | [@nodesecure/cache](./workspaces/cache) |
 
 These packages are available in the Node Package Repository and can be easily installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or [yarn](https://yarnpkg.com).
 ```bash

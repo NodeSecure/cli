@@ -32,7 +32,9 @@
   "workspaces": [
     "workspaces/documentation-ui",
     "workspaces/vis-network",
-    "workspaces/size-satisfies"
+    "workspaces/size-satisfies",
+    "workspaces/server",
+    "workspaces/cache"
   ],
   "repository": {
     "type": "git",

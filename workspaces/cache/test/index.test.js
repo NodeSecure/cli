@@ -9,22 +9,20 @@ import os from "node:os";
 import cacache from "cacache";
 
 // Import Internal Dependencies
-import { appCache } from "../src/cache.js";
-import * as config from "../src/http-server/config.js";
+import { appCache } from "../src/index.js";
 
 // CONSTANTS
 const kPayloadsPath = path.join(os.homedir(), ".nsecure", "payloads");
 
 describe("appCache", () => {
-  let actualConfig;
-
   before(async() => {
     appCache.prefix = "test_runner";
-    actualConfig = await config.get();
   });
 
   after(async() => {
-    await config.set(actualConfig);
+    appCache.availablePayloads().forEach((pkg) => {
+      appCache.removePayload(pkg);
+    });
   });
 
   it("should update and get config", async() => {

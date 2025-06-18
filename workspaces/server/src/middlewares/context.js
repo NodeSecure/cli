@@ -1,13 +1,19 @@
 // Import Internal Dependencies
-import { context } from "../../ALS.js";
+import { context } from "../ALS.js";
 import { ViewBuilder } from "../ViewBuilder.class.js";
 
-export function buildContextMiddleware(
-  autoReload = false,
-  storeProperties = {}
-) {
+export function buildContextMiddleware(options) {
+  const {
+    autoReload = false,
+    storeProperties = {},
+    projectRootDir,
+    componentsDir
+  } = options;
+
   const viewBuilder = new ViewBuilder({
-    autoReload
+    autoReload,
+    projectRootDir,
+    componentsDir
   });
 
   return function addContext(_req, _res, next) {

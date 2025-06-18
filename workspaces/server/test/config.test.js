@@ -5,15 +5,15 @@ import assert from "node:assert";
 // Import Third-party Dependencies
 import cacache from "cacache";
 import { warnings } from "@nodesecure/js-x-ray";
+import { CACHE_PATH } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { get, set } from "../src/http-server/config.js";
-import { CACHE_PATH } from "../src/cache.js";
+import { get, set } from "../src/config.js";
 
 // CONSTANTS
 const kConfigKey = "___config";
 
-describe("config", { concurrency: 1 }, () => {
+describe("config", () => {
   let actualConfig;
 
   before(async() => {

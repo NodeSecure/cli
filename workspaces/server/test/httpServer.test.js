@@ -1,7 +1,7 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
-import { after, before, describe, test, mock } from "node:test";
+import { after, before, describe, test } from "node:test";
 import { once } from "node:events";
 import path from "node:path";
 import assert from "node:assert";
@@ -9,16 +9,16 @@ import stream from "node:stream";
 
 // Import Third-party Dependencies
 import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@myunisoft/httpie";
+import { CACHE_PATH } from "@nodesecure/cache";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
 import enableDestroy from "server-destroy";
 import cacache from "cacache";
 
 // Import Internal Dependencies
-import { buildServer, BROWSER } from "../src/http-server/index.js";
-import { CACHE_PATH } from "../src/cache.js";
-import * as rootEndpoint from "../src/http-server/endpoints/root.js";
-import * as flagsEndpoint from "../src/http-server/endpoints/flags.js";
+import { buildServer } from "../index.js";
+import * as rootEndpoint from "../src/endpoints/root.js";
+import * as flagsEndpoint from "../src/endpoints/flags.js";
 
 // CONSTANTS
 const kHttpPort = 17049;
@@ -32,6 +32,8 @@ const kGlobalDispatcher = getGlobalDispatcher();
 const kMockAgent = new MockAgent();
 const kBundlephobiaPool = kMockAgent.get("https://bundlephobia.com");
 const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
+const kProjectRootDir = path.join(import.meta.dirname, "..", "..", "..");
+const kComponentsDir = path.join(kProjectRootDir, "public", "components");
 
 describe("httpServer", { concurrency: 1 }, () => {
   let httpServer;
@@ -39,14 +41,17 @@ describe("httpServer", { concurrency: 1 }, () => {
   before(async() => {
     setGlobalDispatcher(kMockAgent);
     await i18n.extendFromSystemPath(
-      path.join(__dirname, "..", "i18n")
+      path.join(__dirname, "..", "..", "..", "i18n")
     );
 
     httpServer = buildServer(JSON_PATH, {
       port: kHttpPort,
       openLink: false,
-      enableWS: false
+      enableWS: false,
+      projectRootDir: kProjectRootDir,
+      componentsDir: kComponentsDir
     });
+    httpServer.listen(kHttpPort);
     await once(httpServer.server, "listening");
 
     enableDestroy(httpServer.server);
@@ -332,25 +337,25 @@ describe("httpServer", { concurrency: 1 }, () => {
 
 describe("httpServer without options", () => {
   let httpServer;
-  let spawnOpen;
   // We want to disable WS
   process.env.NODE_ENV = "test";
 
   before(async() => {
-    spawnOpen = mock.method(BROWSER, "open", () => void 0);
-    httpServer = buildServer(JSON_PATH);
+    httpServer = buildServer(JSON_PATH, {
+      projectRootDir: kProjectRootDir,
+      componentsDir: kComponentsDir
+    });
+    httpServer.listen();
     await once(httpServer.server, "listening");
     enableDestroy(httpServer.server);
   });
 
   after(async() => {
     httpServer.server.destroy();
-    spawnOpen.mock.restore();
   });
 
-  test("should listen on random port and call childProcess.spawn method ('open' pkg) to open link", async() => {
+  test("should listen on random port", async() => {
     assert.ok(httpServer.server.address().port > 0);
-    assert.strictEqual(spawnOpen.mock.callCount(), 1);
   });
 });
 

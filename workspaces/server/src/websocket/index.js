@@ -1,10 +1,10 @@
 // Import Third-party Dependencies
 import { WebSocketServer } from "ws";
 import { match } from "ts-pattern";
+import { appCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { appCache } from "../../cache.js";
-import { logger } from "../../logger.js";
+import { logger } from "../logger.js";
 import { search } from "./commands/search.js";
 import { remove } from "./commands/remove.js";
 

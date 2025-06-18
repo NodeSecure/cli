@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert";
 
 // Import Internal Dependencies
-import { bodyParser } from "../src/http-server/middlewares/bodyParser.js";
+import { bodyParser } from "../src/middlewares/bodyParser.js";
 
 function generateFakeReq(headers = {}) {
   return {

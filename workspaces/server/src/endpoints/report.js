@@ -6,7 +6,7 @@ import { report } from "@nodesecure/report";
 import send from "@polka/send-type";
 
 // Import Internal Dependencies
-import { context } from "../../ALS.js";
+import { context } from "../ALS.js";
 import { bodyParser } from "../middlewares/bodyParser.js";
 
 // TODO: provide a non-file-based API on RC side ?
