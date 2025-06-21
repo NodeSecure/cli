@@ -11,7 +11,7 @@ hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("json", json);
 
 // CONSTANTS
-const kRawGithubFlagsURL = "https://raw.githubusercontent.com/NodeSecure/flags/main/src/flags";
+const kRawGithubFlagsURL = "https://raw.githubusercontent.com/NodeSecure/scanner/refs/heads/master/workspaces/flags/src/flags";
 const kRawGithubWarningsURL = "https://raw.githubusercontent.com/NodeSecure/js-x-ray/master/docs";
 const kMarkdownConvertor = new MarkdownIt({
   html: true
