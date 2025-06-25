@@ -79,7 +79,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     const result = await get(kHttpURL);
 
     assert.equal(result.statusCode, 200);
-    assert.equal(result.headers["content-type"], "text/html");
+    assert.ok(result.headers["content-type"]!.startsWith("text/html"));
   });
 
   test("'/' should fail", async(ctx) => {
@@ -233,6 +233,7 @@ describe("httpServer", { concurrency: 1 }, () => {
         flags: ["foo"],
         warnings: ["bar"]
       },
+      lang: "english",
       theme: "galaxy",
       disableExternalRequests: true
     };
@@ -250,19 +251,20 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("PUT '/config' should update the config", async() => {
+    const lang = await i18n.getLocalLang();
     const { data: actualConfig } = await get(new URL("/config", kHttpURL));
     // FIXME: use @mynusift/httpie instead of fetch. Atm it throws with put().
     // https://github.com/nodejs/undici/issues/583
     const { status } = await fetch(new URL("/config", kHttpURL), {
       method: "PUT",
-      body: JSON.stringify({ fooz: "baz" }),
+      body: JSON.stringify({ fooz: "baz", lang }),
       headers: { "Content-Type": "application/json" }
     });
 
     assert.equal(status, 204);
 
     const inCache = await cacache.get(CACHE_PATH, kConfigKey);
-    assert.deepEqual(JSON.parse(inCache.data.toString()), { fooz: "baz" });
+    assert.deepEqual(JSON.parse(inCache.data.toString()), { fooz: "baz", lang });
 
     await fetch(new URL("/config", kHttpURL), {
       method: "PUT",
