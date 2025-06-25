@@ -118,8 +118,13 @@
           </select>
           <label for="theme_selector" class="mt-10">[[=z.token('settings.general.themePannel')]]:</label>
           <select name="themeSelector" id="theme_selector">
-            <option value="dark">[[=z.token('package_info.navigation.dark')]]</option>
-            <option value="light">[[=z.token('package_info.navigation.light')]]</option>
+            <option value="dark">[[=z.token('settings.dark')]]</option>
+            <option value="light">[[=z.token('settings.light')]]</option>
+          </select>
+          <label for="lang_selector" class="mt-10">[[=z.token('settings.general.langPannel')]]:</label>
+          <select name="langSelector" id="lang_selector">
+            <option value="french">[[=z.token('settings.languages.fr')]]</option>
+            <option value="english">[[=z.token('settings.languages.en')]]</option>
           </select>
           <p class="settings-line-title">[[=z.token('settings.general.network')]]:</p>
           <div>

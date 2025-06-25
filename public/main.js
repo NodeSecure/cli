@@ -32,6 +32,14 @@ document.addEventListener("DOMContentLoaded", async() => {
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
 
+  const languages = window.i18n.package_info.navigation.languages;
+  const langSelector = document.getElementById("lang_selector");
+  if (langSelector && languages) {
+    langSelector.innerHTML = Object.entries(languages)
+      .map(([key, label]) => `<option value="${key}">${label}</option>`)
+      .join("");
+  }
+
   await init();
   onSettingsSaved(window.settings.config);
 
@@ -211,15 +219,21 @@ async function updateShowInfoMenu(params) {
 function onSettingsSaved(defaultConfig = null) {
   async function updateSettings(config) {
     console.log("[INFO] Settings saved:", config);
+    if (window.settings.config.lang !== config.lang) {
+      window.location.reload();
+    }
+
     const warningsToIgnore = new Set(config.ignore.warnings);
     const flagsToIgnore = new Set(config.ignore.flags);
     const theme = config.theme;
+    const lang = config.lang;
     secureDataSet.warningsToIgnore = warningsToIgnore;
     secureDataSet.flagsToIgnore = flagsToIgnore;
     secureDataSet.theme = theme;
     window.settings.config.ignore.warnings = warningsToIgnore;
     window.settings.config.ignore.flags = flagsToIgnore;
     window.settings.config.theme = theme;
+    window.settings.config.lang = lang;
     window.settings.config.disableExternalRequests = config.disableExternalRequests;
 
     if (theme === "dark") {
