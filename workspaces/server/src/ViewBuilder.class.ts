@@ -11,12 +11,18 @@ import { globStream } from "glob";
 // Import Internal Dependencies
 import { logger } from "./logger.js";
 
-export class ViewBuilder {
-  #cached = null;
-  projectRootDir = null;
-  componentsDir = null;
+export interface ViewBuilderOptions {
+  autoReload?: boolean;
+  projectRootDir: string;
+  componentsDir: string;
+}
 
-  constructor(options) {
+export class ViewBuilder {
+  #cached: string | null = null;
+  projectRootDir: string;
+  componentsDir: string;
+
+  constructor(options: ViewBuilderOptions) {
     const {
       autoReload = false,
       projectRootDir,
@@ -37,13 +43,13 @@ export class ViewBuilder {
     const watcher = chokidar.watch(this.componentsDir, {
       persistent: false,
       awaitWriteFinish: true,
-      ignored: (path, stats) => stats?.isFile() && !path.endsWith(".html")
+      ignored: (path, stats) => (stats?.isFile() ?? false) && !path.endsWith(".html")
     });
     watcher.on("change", (filePath) => this.#freeCache(filePath));
   }
 
   async #freeCache(
-    filePath
+    filePath: string
   ) {
     logger.info("[ViewBuilder] the cache has been released");
     logger.info(`[ViewBuilder](filePath: ${filePath})`);
@@ -61,7 +67,7 @@ export class ViewBuilder {
       "utf-8"
     );
 
-    const componentsPromises = [];
+    const componentsPromises: Promise<string>[] = [];
     for await (
       const htmlComponentPath of globStream("**/*.html", { cwd: this.componentsDir })
     ) {
@@ -83,17 +89,14 @@ export class ViewBuilder {
     return HTMLStr;
   }
 
-  /**
-   * @returns {Promise<string>}
-   */
-  async render() {
+  async render(): Promise<string> {
     const i18nLangName = await i18n.getLocalLang();
 
     const HTMLStr = await this.#build();
     const templateStr = zup(HTMLStr)({
       lang: i18n.getTokenSync("lang"),
       i18nLangName,
-      token: (tokenName) => i18n.getTokenSync(`ui.${tokenName}`)
+      token: (tokenName: string) => i18n.getTokenSync(`ui.${tokenName}`)
     });
 
     return templateStr;

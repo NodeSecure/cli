@@ -4,6 +4,7 @@ import stream from "node:stream";
 // Import Third-party Dependencies
 import send from "@polka/send-type";
 import { getManifest, lazyFetchFlagFile, getFlags } from "@nodesecure/flags";
+import type { Request, Response } from "express-serve-static-core";
 
 // CONSTANTS
 const kNodeSecureFlags = getFlags();
@@ -12,7 +13,7 @@ export function getAll(_req, res) {
   send(res, 200, getManifest());
 }
 
-export function get(req, res) {
+export function get(req: Request, res: Response) {
   if (req.params.title !== "hasDuplicate" && !kNodeSecureFlags.has(req.params.title)) {
     return send(res, 404, { error: "Not Found" });
   }

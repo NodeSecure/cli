@@ -5,6 +5,7 @@ import path from "node:path";
 // Import Third-party Dependencies
 import send from "@polka/send-type";
 import { appCache } from "@nodesecure/cache";
+import type { Request, Response } from "express-serve-static-core";
 
 // Import Internal Dependencies
 import { logger } from "../logger.js";
@@ -12,7 +13,7 @@ import { logger } from "../logger.js";
 // CONSTANTS
 const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
 
-export async function get(_req, res) {
+export async function get(_req: Request, res: Response) {
   if (appCache.startFromZero) {
     logger.info("[data|get](no content)");
     send(res, 204);

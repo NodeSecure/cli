@@ -1,5 +1,5 @@
 // Import Third-party Dependencies
-import pino from "pino";
+import { pino } from "pino";
 
 // CONSTANTS
 const kDefaultLogLevel = "info";

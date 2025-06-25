@@ -1,12 +1,30 @@
 // Import Third-party Dependencies
-import { WebSocketServer } from "ws";
+import { WebSocketServer, type WebSocket } from "ws";
 import { match } from "ts-pattern";
-import { appCache } from "@nodesecure/cache";
+import { appCache, type PayloadsList } from "@nodesecure/cache";
+import type { Payload } from "@nodesecure/scanner";
 
 // Import Internal Dependencies
 import { logger } from "../logger.js";
 import { search } from "./commands/search.js";
 import { remove } from "./commands/remove.js";
+
+export interface WebSocketContext {
+  socket: WebSocket;
+  cache: typeof appCache;
+  logger: typeof logger;
+}
+
+export type WebSocketMessage = {
+  action: "SEARCH" | "REMOVE";
+  pkg: string;
+  [key: string]: any;
+};
+
+type WebSocketResponse = Payload | PayloadsList | {
+  status: "RELOAD" | "SCAN";
+  pkg: string;
+};
 
 export class WebSocketServerInstanciator {
   constructor() {
@@ -16,8 +34,8 @@ export class WebSocketServerInstanciator {
     websocket.on("connection", this.onConnectionHandler.bind(this));
   }
 
-  async onConnectionHandler(socket) {
-    socket.on("message", (rawData) => {
+  async onConnectionHandler(socket: WebSocket) {
+    socket.on("message", (rawData: string) => {
       logger.info(`[ws](message: ${rawData})`);
 
       this.onMessageHandler(socket, JSON.parse(rawData))
@@ -29,12 +47,12 @@ export class WebSocketServerInstanciator {
   }
 
   async onMessageHandler(
-    socket,
-    message
+    socket: WebSocket,
+    message: WebSocketMessage
   ) {
     const ctx = { socket, cache: appCache, logger };
 
-    const socketMessages = await match(message.action)
+    const socketMessages = match(message.action)
       .with("SEARCH", () => search(message.pkg, ctx))
       .with("REMOVE", () => remove(message.pkg, ctx))
       .exhaustive();
@@ -78,8 +96,8 @@ export class WebSocketServerInstanciator {
 }
 
 function sendSocketResponse(
-  socket,
-  message
+  socket: WebSocket,
+  message: WebSocketResponse | null
 ) {
   if (message !== null) {
     socket.send(JSON.stringify(message));

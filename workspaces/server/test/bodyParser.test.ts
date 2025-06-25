@@ -5,7 +5,7 @@ import assert from "node:assert";
 // Import Internal Dependencies
 import { bodyParser } from "../src/middlewares/bodyParser.js";
 
-function generateFakeReq(headers = {}) {
+function generateFakeReq(headers = {}): any {
   return {
     headers,
     async* [Symbol.asyncIterator]() {

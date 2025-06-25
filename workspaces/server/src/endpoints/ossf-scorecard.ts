@@ -1,8 +1,18 @@
 // Import Third-party Dependencies
 import * as scorecard from "@nodesecure/ossf-scorecard-sdk";
 import send from "@polka/send-type";
+import type { Request, Response } from "express-serve-static-core";
 
-export async function get(req, res) {
+interface Params {
+  org: string;
+  pkgName: string;
+}
+
+interface Query {
+  platform?: "github.com" | "gitlab.com";
+}
+
+export async function get(req: Request<Params, scorecard.ScorecardResult, null, Query>, res: Response) {
   const { org, pkgName } = req.params;
   const { platform = "github.com" } = req.query;
 
@@ -17,7 +27,7 @@ export async function get(req, res) {
       data
     });
   }
-  catch (error) {
+  catch (error: any) {
     return send(
       res,
       error.statusCode ?? 404,

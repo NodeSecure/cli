@@ -1,0 +1,6 @@
+{
+  "extends": "@openally/config.typescript",
+  "compilerOptions": {
+    "composite": true
+  }
+}

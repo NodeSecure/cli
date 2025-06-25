@@ -8,6 +8,9 @@ import cacache from "cacache";
 
 // Import Internal Dependencies
 import { logger } from "@nodesecure/server";
+import type { Flag } from "@nodesecure/flags";
+import type { WarningName } from "@nodesecure/js-x-ray";
+import type { Payload } from "@nodesecure/scanner";
 
 // CONSTANTS
 const kConfigCache = "___config";
@@ -19,6 +22,37 @@ const kSlashReplaceToken = "______";
 export const CACHE_PATH = path.join(os.tmpdir(), "nsecure-cli");
 export const DEFAULT_PAYLOAD_PATH = path.join(process.cwd(), "nsecure-result.json");
 
+export interface AppConfig {
+  defaultPackageMenu: string;
+  ignore: {
+    flags: Flag[];
+    warnings: WarningName[];
+  };
+  theme?: "light" | "dark";
+  disableExternalRequests: boolean;
+}
+
+export interface PayloadsList {
+  mru: string[];
+  lru: string[];
+  current: string;
+  availables: string[];
+  lastUsed: Record<string, number>;
+  root: string | null;
+}
+
+export interface LoggingOption {
+  logging?: boolean;
+}
+
+export interface InitPayloadListOptions extends LoggingOption {
+  reset?: boolean;
+}
+
+export interface SetRootPayloadOptions extends LoggingOption {
+  local?: boolean;
+}
+
 class _AppCache {
   prefix = "";
   startFromZero = false;
@@ -27,30 +61,33 @@ class _AppCache {
     fs.mkdirSync(kPayloadsPath, { recursive: true });
   }
 
-  async updateConfig(newValue) {
+  async updateConfig(newValue: AppConfig) {
     await cacache.put(CACHE_PATH, kConfigCache, JSON.stringify(newValue));
   }
 
-  async getConfig() {
+  async getConfig(): Promise<AppConfig> {
     const { data } = await cacache.get(CACHE_PATH, kConfigCache);
 
     return JSON.parse(data.toString());
   }
 
-  updatePayload(pkg, payload) {
-    if (pkg.includes(kSlashReplaceToken)) {
-      throw new Error(`Invalid package name: ${pkg}`);
+  updatePayload(packageName: string, payload: Payload) {
+    if (packageName.includes(kSlashReplaceToken)) {
+      throw new Error(`Invalid package name: ${packageName}`);
     }
 
-    fs.writeFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", kSlashReplaceToken)), JSON.stringify(payload));
+    const filePath = path.join(kPayloadsPath, packageName.replaceAll("/", kSlashReplaceToken));
+    fs.writeFileSync(filePath, JSON.stringify(payload));
   }
 
-  getPayload(pkg) {
+  getPayload(packageName: string): Payload {
+    const filePath = path.join(kPayloadsPath, packageName.replaceAll("/", kSlashReplaceToken));
+
     try {
-      return JSON.parse(fs.readFileSync(path.join(kPayloadsPath, pkg.replaceAll("/", kSlashReplaceToken)), "utf-8"));
+      return JSON.parse(fs.readFileSync(filePath, "utf-8"));
     }
     catch (err) {
-      logger.error(`[cache|get](pkg: ${pkg}|cache: not found)`);
+      logger.error(`[cache|get](pkg: ${packageName}|cache: not found)`);
 
       throw err;
     }
@@ -62,20 +99,20 @@ class _AppCache {
       .map((filename) => filename.replaceAll(kSlashReplaceToken, "/"));
   }
 
-  getPayloadOrNull(pkg) {
+  getPayloadOrNull(packageName: string): Payload | null {
     try {
-      return this.getPayload(pkg);
+      return this.getPayload(packageName);
     }
     catch {
       return null;
     }
   }
 
-  async updatePayloadsList(payloadsList) {
+  async updatePayloadsList(payloadsList: PayloadsList) {
     await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
   }
 
-  async payloadsList() {
+  async payloadsList(): Promise<PayloadsList> {
     try {
       const { data } = await cacache.get(CACHE_PATH, `${this.prefix}${kPayloadsCache}`);
 
@@ -88,7 +125,7 @@ class _AppCache {
     }
   }
 
-  async #initDefaultPayloadsList(options = {}) {
+  async #initDefaultPayloadsList(options: LoggingOption = {}) {
     const { logging = true } = options;
 
     if (this.startFromZero) {
@@ -130,7 +167,7 @@ class _AppCache {
     this.updatePayload(formatted, payload);
   }
 
-  async initPayloadsList(options = {}) {
+  async initPayloadsList(options: InitPayloadListOptions = {}) {
     const {
       logging = true,
       reset = false
@@ -168,11 +205,12 @@ class _AppCache {
     }));
   }
 
-  removePayload(pkg) {
-    fs.rmSync(path.join(kPayloadsPath, pkg.replaceAll("/", kSlashReplaceToken)), { force: true });
+  removePayload(packageName: string) {
+    const filePath = path.join(kPayloadsPath, packageName.replaceAll("/", kSlashReplaceToken));
+    fs.rmSync(filePath, { force: true });
   }
 
-  async removeLastMRU() {
+  async removeLastMRU(): Promise<PayloadsList> {
     const { mru, lastUsed, lru, ...cache } = await this.payloadsList();
     if (mru.length < kMaxPayloads) {
       return {
@@ -194,7 +232,7 @@ class _AppCache {
     };
   }
 
-  async setRootPayload(payload, options) {
+  async setRootPayload(payload: Payload, options: SetRootPayloadOptions = {}) {
     const { logging = true, local = false } = options;
 
     const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];

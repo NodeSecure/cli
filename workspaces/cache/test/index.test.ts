@@ -9,7 +9,7 @@ import os from "node:os";
 import cacache from "cacache";
 
 // Import Internal Dependencies
-import { appCache } from "../src/index.js";
+import { appCache } from "../index.js";
 
 // CONSTANTS
 const kPayloadsPath = path.join(os.homedir(), ".nsecure", "payloads");
@@ -26,7 +26,7 @@ describe("appCache", () => {
   });
 
   it("should update and get config", async() => {
-    await appCache.updateConfig({ foo: "bar" });
+    await appCache.updateConfig({ foo: "bar" } as any);
 
     const updated = await appCache.getConfig();
     assert.deepEqual(updated, { foo: "bar" });
@@ -40,14 +40,14 @@ describe("appCache", () => {
       writeValue = value;
     });
 
-    appCache.updatePayload("foo/bar", { foo: "bar" });
+    appCache.updatePayload("foo/bar", { foo: "bar" } as any);
 
     assert.equal(writePath, path.join(kPayloadsPath, "foo______bar"));
     assert.equal(writeValue, JSON.stringify({ foo: "bar" }));
   });
 
   it("should throw given a package name that contains the slash replace token", () => {
-    assert.throws(() => appCache.updatePayload("foo______bar", { foo: "bar" }), {
+    assert.throws(() => appCache.updatePayload("foo______bar", { foo: "bar" } as any), {
       message: "Invalid package name: foo______bar"
     });
   });
@@ -97,7 +97,7 @@ describe("appCache", () => {
   });
 
   it("should update and get payloadsList", async() => {
-    await appCache.updatePayloadsList({ foo: "bar" });
+    await appCache.updatePayloadsList({ foo: "bar" } as any);
 
     const updated = await appCache.payloadsList();
     assert.deepEqual(updated, { foo: "bar" });
@@ -273,7 +273,7 @@ describe("appCache", () => {
       lastUsed: {},
       root: null
     });
-    const payload = {
+    const payload: any = {
       rootDependencyName: "test_runner-local",
       dependencies: {
         "test_runner-local": {
@@ -310,7 +310,7 @@ describe("appCache", () => {
       lastUsed: {},
       root: null
     });
-    const payload = {
+    const payload: any = {
       rootDependencyName: "test_runner-local",
       dependencies: {
         "test_runner-local": {

@@ -11,6 +11,10 @@ import * as i18n from "@nodesecure/i18n";
 import { buildServer, WebSocketServerInstanciator } from "@nodesecure/server";
 import { appCache } from "@nodesecure/cache";
 
+// Import Internal Dependencies
+import english from "../../i18n/english.js";
+import french from "../../i18n/french.js";
+
 // CONSTANTS
 const kRequiredScannerRange = ">=5.1.0";
 const kProjectRootDir = path.join(import.meta.dirname, "..", "..");
@@ -21,6 +25,7 @@ export async function start(
   options = {}
 ) {
   const port = Number(options.port);
+  const httpPort = Number.isNaN(port) ? 0 : port;
   const freshStart = Boolean(options.f);
   const enableDeveloperMode = Boolean(options.developer);
 
@@ -43,15 +48,19 @@ export async function start(
   }
 
   const httpServer = buildServer(dataFilePath, {
-    port: Number.isNaN(port) ? 0 : port,
+    port: httpPort,
     hotReload: enableDeveloperMode,
     runFromPayload,
     projectRootDir: kProjectRootDir,
-    componentsDir: kComponentsDir
+    componentsDir: kComponentsDir,
+    i18n: {
+      english,
+      french
+    }
   });
 
-  httpServer.listen(port, async() => {
-    const link = `http://localhost:${port}`;
+  httpServer.listen(httpPort, async() => {
+    const link = `http://localhost:${httpServer.server.address().port}`;
     console.log(kleur.magenta().bold(await i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
     open(link);

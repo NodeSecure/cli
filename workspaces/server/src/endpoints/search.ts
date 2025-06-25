@@ -1,11 +1,12 @@
 // Import Third-party Dependencies
 import send from "@polka/send-type";
 import * as npm from "@nodesecure/npm-registry-sdk";
+import type { Request, Response } from "express-serve-static-core";
 
 // Import Internal Dependencies
 import { logger } from "../logger.js";
 
-export async function get(req, res) {
+export async function get(req: Request, res: Response) {
   const { packageName } = req.params;
   logger.info(`[search|get](packageName: ${packageName}|formatted: ${decodeURIComponent(packageName)})`);
 
@@ -26,7 +27,7 @@ export async function get(req, res) {
   });
 }
 
-export async function versions(req, res) {
+export async function versions(req: Request, res: Response) {
   const { packageName } = req.params;
 
   logger.info(`[search|versions](packageName: ${packageName}|formatted: ${decodeURIComponent(packageName)})`);

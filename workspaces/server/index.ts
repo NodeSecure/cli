@@ -17,20 +17,39 @@ import * as scorecard from "./src/endpoints/ossf-scorecard.js";
 import * as locali18n from "./src/endpoints/i18n.js";
 import * as report from "./src/endpoints/report.js";
 import * as middlewares from "./src/middlewares/index.js";
+import { type BuildContextMiddlewareOptions } from "./src/middlewares/context.js";
 import { WebSocketServerInstanciator } from "./src/websocket/index.js";
 import { logger } from "./src/logger.js";
 
-export function buildServer(dataFilePath, options) {
+export type NestedStringRecord = {
+  [key: string]: string | NestedStringRecord;
+};
+
+export interface BuildServerOptions {
+  hotReload?: boolean;
+  runFromPayload?: boolean;
+  projectRootDir: string;
+  componentsDir: string;
+  i18n: {
+    english: NestedStringRecord;
+    french: NestedStringRecord;
+  };
+}
+
+export function buildServer(dataFilePath: string, options: BuildServerOptions) {
   const {
     hotReload = true,
     runFromPayload = true,
     projectRootDir,
-    componentsDir
+    componentsDir,
+    i18n
   } = options;
 
   const httpServer = polka();
 
-  const asyncStoreProperties = {};
+  const asyncStoreProperties: BuildContextMiddlewareOptions["storeProperties"] = {
+    i18n
+  };
   if (runFromPayload) {
     fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
     asyncStoreProperties.dataFilePath = dataFilePath;
@@ -40,7 +59,7 @@ export function buildServer(dataFilePath, options) {
   }
   httpServer.use(
     middlewares.buildContextMiddleware({
-      hotReload,
+      autoReload: hotReload,
       storeProperties: asyncStoreProperties,
       projectRootDir,
       componentsDir
@@ -63,6 +82,7 @@ export function buildServer(dataFilePath, options) {
   httpServer.get("/bundle/:pkgName", bundle.get);
   httpServer.get("/bundle/:pkgName/:version", bundle.get);
   httpServer.get("/downloads/:pkgName", npmDownloads.get);
+  // @ts-ignore
   httpServer.get("/scorecard/:org/:pkgName", scorecard.get);
   httpServer.post("/report", report.post);
 

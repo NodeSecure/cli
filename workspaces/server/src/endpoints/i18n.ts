@@ -2,16 +2,17 @@
 import send from "@polka/send-type";
 
 // Import Internal Dependencies
-import english from "../../../../i18n/english.js";
-import french from "../../../../i18n/french.js";
+import { context } from "../ALS.js";
 
 export async function get(_req, res) {
+  const { i18n } = context.getStore()!;
+
   send(
     res,
     200,
     {
-      english: english.ui,
-      french: french.ui
+      english: i18n.english.ui,
+      french: i18n.french.ui
     }
   );
 }

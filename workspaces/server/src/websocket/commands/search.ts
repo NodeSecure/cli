@@ -1,9 +1,13 @@
 // Import Third-party Dependencies
 import * as Scanner from "@nodesecure/scanner";
+import type { PayloadsList } from "@nodesecure/cache";
+
+// Import Internal Dependencies
+import type { WebSocketContext } from "../index.js";
 
 export async function* search(
-  pkg,
-  context
+  pkg: string,
+  context: WebSocketContext
 ) {
   const { logger, cache } = context;
   logger.info(`[ws|search](pkg: ${pkg})`);
@@ -14,7 +18,7 @@ export async function* search(
     const cacheList = await cache.payloadsList();
     if (cacheList.mru.includes(pkg)) {
       logger.info(`[ws|search](payload: ${pkg} is already in the MRU)`);
-      const updatedList = {
+      const updatedList: PayloadsList = {
         ...cacheList,
         current: pkg,
         lastUsed: { ...cacheList.lastUsed, [pkg]: Date.now() }
@@ -24,7 +28,7 @@ export async function* search(
 
       if (cache.startFromZero) {
         yield {
-          status: "RELOAD",
+          status: "RELOAD" as const,
           ...updatedList
         };
         cache.startFromZero = false;
@@ -34,7 +38,7 @@ export async function* search(
     }
 
     const { mru, lru, availables, lastUsed, ...updatedCache } = await cache.removeLastMRU();
-    const updatedList = {
+    const updatedList: PayloadsList = {
       ...updatedCache,
       mru: [...new Set([...mru, pkg])],
       current: pkg,
@@ -46,7 +50,7 @@ export async function* search(
 
     yield cachedPayload;
     yield {
-      status: "RELOAD",
+      status: "RELOAD" as const,
       ...updatedList
     };
 
@@ -57,7 +61,7 @@ export async function* search(
 
   // at this point we don't have the payload in cache so we have to scan it.
   logger.info(`[ws|search](scan ${pkg} in progress)`);
-  yield { status: "SCAN", pkg };
+  yield { status: "SCAN" as const, pkg };
 
   const payload = await Scanner.from(pkg, { maxDepth: 4 });
   const name = payload.rootDependencyName;
@@ -72,7 +76,7 @@ export async function* search(
     const { mru, lru, availables, lastUsed, ...appCache } = await cache.removeLastMRU();
     mru.push(pkg);
     cache.updatePayload(pkg, payload);
-    const updatedList = {
+    const updatedList: PayloadsList = {
       ...appCache,
       mru: [...new Set(mru)],
       lru,
@@ -84,7 +88,7 @@ export async function* search(
 
     yield payload;
     yield {
-      status: "RELOAD",
+      status: "RELOAD" as const,
       ...updatedList
     };
 
