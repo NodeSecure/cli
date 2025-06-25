@@ -84,6 +84,11 @@ const cli = {
   }
 };
 
+const languages = {
+  fr: "français",
+  en: "anglais"
+};
+
 const ui = {
   stats: {
     title: "Stats Globales",
@@ -101,9 +106,7 @@ const ui = {
       dependencies: "scripts & dépendances",
       warnings: "menaces dans le code",
       vulnerabilities: "vulnérabilités",
-      licenses: "conformité des licences (SPDX)",
-      dark: "sombre",
-      light: "clair"
+      licenses: "conformité des licences (SPDX)"
     },
     title: {
       maintainers: "mainteneurs",
@@ -184,8 +187,12 @@ const ui = {
     general: {
       title: "Général",
       save: "sauvegarder",
-      defaultPannel: "Panneau par défaut",
-      themePannel: "Thème de l'interface",
+      dark: "sombre",
+      light: "clair",
+      languages,
+      defaultPanel: "Panneau par défaut",
+      themePanel: "Thème de l'interface",
+      langPanel: "Langue de l'interface",
       warnings: "Avertissements à ignorer",
       flags: "Drapeau (emojis) à ignorer",
       network: "Réseau",

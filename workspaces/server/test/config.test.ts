@@ -6,6 +6,7 @@ import assert from "node:assert";
 import cacache from "cacache";
 import { warnings } from "@nodesecure/js-x-ray";
 import { AppConfig, CACHE_PATH } from "@nodesecure/cache";
+import * as i18n from "@nodesecure/i18n";
 
 // Import Internal Dependencies
 import { get, set } from "../src/config.js";
@@ -17,6 +18,7 @@ describe("config", () => {
   let actualConfig: AppConfig;
 
   before(async() => {
+    await i18n.getLanguages();
     actualConfig = await get();
   });
 
@@ -33,7 +35,8 @@ describe("config", () => {
       ignore: { flags: [], warnings: Object.entries(warnings)
         .filter(([_, { experimental }]) => experimental)
         .map(([warning]) => warning) },
-      disableExternalRequests: false
+      disableExternalRequests: false,
+      lang: await i18n.getLocalLang()
     });
   });
 
@@ -44,6 +47,7 @@ describe("config", () => {
         flags: ["foo"],
         warnings: ["bar"]
       },
+      lang: "english",
       theme: "galaxy",
       disableExternalRequests: true
     };
@@ -60,6 +64,7 @@ describe("config", () => {
         flags: ["foz"],
         warnings: ["baz"]
       },
+      lang: "english",
       theme: "galactic",
       disableExternalRequests: true
     };
