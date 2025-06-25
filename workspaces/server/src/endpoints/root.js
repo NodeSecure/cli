@@ -2,7 +2,7 @@
 import send from "@polka/send-type";
 
 // Import Internal Dependencies
-import { context } from "../../ALS.js";
+import { context } from "../ALS.js";
 
 export async function get(_req, res) {
   try {
@@ -13,7 +13,6 @@ export async function get(_req, res) {
     const { viewBuilder } = context.getStore();
 
     const templateStr = await viewBuilder.render();
-
     res.end(templateStr);
   }
   catch (err) {

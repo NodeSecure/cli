@@ -10,10 +10,10 @@ import { Spinner } from "@topcli/spinner";
 import ms from "ms";
 import * as i18n from "@nodesecure/i18n";
 import * as Scanner from "@nodesecure/scanner";
+import { appCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
 import * as http from "./http.js";
-import { appCache } from "../cache.js";
 import { parseContacts } from "./parsers/contacts.js";
 
 export async function auto(spec, options) {

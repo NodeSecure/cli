@@ -7,7 +7,7 @@ import fs from "node:fs";
 import cacache from "cacache";
 
 // Import Internal Dependencies
-import { logger } from "./logger.js";
+import { logger } from "@nodesecure/server";
 
 // CONSTANTS
 const kConfigCache = "___config";

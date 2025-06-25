@@ -1,9 +1,9 @@
 // Import Third-party Dependencies
 import { warnings } from "@nodesecure/js-x-ray";
+import { appCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { appCache } from "../cache.js";
-import { logger } from "../logger.js";
+import { logger } from "./logger.js";
 
 const experimentalWarnings = Object.entries(warnings)
   .flatMap(([warning, { experimental }]) => (experimental ? [warning] : []));

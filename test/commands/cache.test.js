@@ -11,10 +11,10 @@ import { after, before, describe, it } from "node:test";
 
 // Import Third-party Dependencies
 import * as i18n from "@nodesecure/i18n";
+import { appCache, DEFAULT_PAYLOAD_PATH } from "@nodesecure/cache";
 
 // Import Internal Dependencies
 import { arrayFromAsync } from "../helpers/utils.js";
-import { appCache, DEFAULT_PAYLOAD_PATH } from "../../src/cache.js";
 import { main } from "../../src/commands/cache.js";
 
 // CONSTANTS

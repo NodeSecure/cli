@@ -5,9 +5,7 @@ import { setImmediate } from "node:timers/promises";
 // Import Third-party Dependencies
 import prettyJson from "@topcli/pretty-json";
 import * as i18n from "@nodesecure/i18n";
-
-// Import Internal Dependencies
-import { appCache } from "../cache.js";
+import { appCache } from "@nodesecure/cache";
 
 export async function main(options) {
   const {

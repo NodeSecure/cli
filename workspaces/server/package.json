@@ -1,0 +1,18 @@
+{
+  "name": "@nodesecure/server",
+  "version": "1.0.0",
+  "description": "NodeSecure server module",
+  "type": "module",
+  "main": "./index.js",
+  "files": [
+    "index.js",
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint src test",
+    "test": "node --test --test-concurrency 1",
+    "test:c8": "c8 npm run test"
+  },
+  "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
+  "license": "MIT"
+}

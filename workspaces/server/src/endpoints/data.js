@@ -4,10 +4,10 @@ import path from "node:path";
 
 // Import Third-party Dependencies
 import send from "@polka/send-type";
+import { appCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { appCache } from "../../cache.js";
-import { logger } from "../../logger.js";
+import { logger } from "../logger.js";
 
 // CONSTANTS
 const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");

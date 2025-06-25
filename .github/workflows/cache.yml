@@ -1,14 +1,14 @@
-name: size-satisfies CI
+name: cache CI
 
 on:
   push:
     branches:
      - master
     paths:
-      - workspaces/size-satisfies/**
+      - workspaces/cache/**
   pull_request:
     paths:
-      - workspaces/size-satisfies/**
+      - workspaces/cache/**
 
 permissions:
   contents: read
