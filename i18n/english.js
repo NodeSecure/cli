@@ -103,7 +103,9 @@ const ui = {
       vulnerabilities: "vulnerabilities (CVE)",
       licenses: "licenses conformance (SPDX)",
       dark: "dark",
-      light: "light"
+      light: "light",
+      fr: "french",
+      en: "english"
     },
     title: {
       maintainers: "maintainers",
@@ -182,8 +184,9 @@ const ui = {
     general: {
       title: "General",
       save: "save",
-      defaultPannel: "Default Package Menu",
-      themePannel: "Interface theme",
+      defaultPanel: "Default Package Menu",
+      themePanel: "Interface theme",
+      langPanel: "Interface language",
       warnings: "SAST Warnings to ignore",
       flags: "Flags (emojis) to ignore",
       network: "Network",
