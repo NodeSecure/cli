@@ -81,7 +81,7 @@ const cli = {
   startHttp: {
     invalidScannerVersion: tS`le fichier d'analyse correspond à la version '${0}' du scanner et ne satisfait pas la range '${1}' attendu par la CLI`,
     regenerate: "veuillez re-générer un nouveau fichier d'analyse JSON en utilisant votre CLI"
-  },
+  }
 };
 
 const ui = {
@@ -103,7 +103,9 @@ const ui = {
       vulnerabilities: "vulnérabilités",
       licenses: "conformité des licences (SPDX)",
       dark: "sombre",
-      light: "clair"
+      light: "clair",
+      fr: "français",
+      en: "anglais"
     },
     title: {
       maintainers: "mainteneurs",
@@ -182,8 +184,9 @@ const ui = {
     general: {
       title: "Général",
       save: "sauvegarder",
-      defaultPannel: "Panneau par défaut",
-      themePannel: "Thème de l'interface",
+      defaultPanel: "Panneau par défaut",
+      themePanel: "Thème de l'interface",
+      langPanel: "Langue de l'interface",
       warnings: "Avertissements à ignorer",
       flags: "Drapeau (emojis) à ignorer",
       network: "Réseau",

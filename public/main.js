@@ -209,15 +209,21 @@ async function updateShowInfoMenu(params) {
 function onSettingsSaved(defaultConfig = null) {
   async function updateSettings(config) {
     console.log("[INFO] Settings saved:", config);
+    if (window.settings.config.lang !== config.lang) {
+      window.location.reload();
+    }
+
     const warningsToIgnore = new Set(config.ignore.warnings);
     const flagsToIgnore = new Set(config.ignore.flags);
     const theme = config.theme;
+    const lang = config.lang;
     secureDataSet.warningsToIgnore = warningsToIgnore;
     secureDataSet.flagsToIgnore = flagsToIgnore;
     secureDataSet.theme = theme;
     window.settings.config.ignore.warnings = warningsToIgnore;
     window.settings.config.ignore.flags = flagsToIgnore;
     window.settings.config.theme = theme;
+    window.settings.config.lang = lang;
     window.settings.config.disableExternalRequests = config.disableExternalRequests;
 
     if (theme === "dark") {
