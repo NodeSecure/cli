@@ -41,15 +41,15 @@ await appCache.setRootPayload(payload);
 
 ## API
 
-### `updateConfig(config)`
+### `updateConfig(config: AppConfig): Promise<void>`
 
 Stores a new configuration object in the cache.
 
-### `getConfig()`
+### `getConfig(): Promise<AppConfig>`
 
 Retrieves the current configuration object from the cache.
 
-### `updatePayload(pkg, payload)`
+### `updatePayload(packageName: string, payload: Payload): void`
 
 Saves an analysis payload for a given package.
 
@@ -60,18 +60,18 @@ Saves an analysis payload for a given package.
 > [!NOTE]
 > Payloads are stored in the user's home directory under `~/.nsecure/payloads/`
 
-### `getPayload(pkg)`
+### `getPayload(packageName: string): Payload`
 
 Loads an analysis payload for a given package.
 
 **Parameters**:
 `pkg` (`string`): Package name.
 
-### `availablePayloads()`
+### `availablePayloads(): string[]`
 
 Lists all available payloads (package names) in the cache.
 
-### `getPayloadOrNull(pkg)`
+### `getPayloadOrNull(packageName: string): Payload | null`
 
 Loads an analysis payload for a given package, or returns `null` if not found.
 
@@ -81,7 +81,7 @@ Loads an analysis payload for a given package, or returns `null` if not found.
 
 Returns `null` if not found.
 
-### `updatePayloadsList(payloadsList)`
+### `updatePayloadsList(payloadsList: PayloadsList): Promise<void>`
 
 Updates the internal MRU/LRU and available payloads list.
 
@@ -89,11 +89,11 @@ Updates the internal MRU/LRU and available payloads list.
 
 - `payloadsList` (`object`): The new payloads list object.
 
-### `payloadsList()`
+### `payloadsList(): Promise<PayloadsList>`
 
 Retrieves the current MRU/LRU and available payloads list.
 
-### `initPayloadsList(options = {})`
+### `initPayloadsList(options: InitPayloadListOptions = {}): Promise<void>`
 
 Initializes the payloads list, optionally resetting the cache.
 
@@ -103,18 +103,18 @@ Initializes the payloads list, optionally resetting the cache.
   - `logging` (`boolean`, default: `true`): Enable logging.
   - `reset` (`boolean`, default: `false`): If `true`, reset the cache before initializing.
 
-### `removePayload(pkg)`
+### `removePayload(packageName: string): void`
 
 Removes a payload for a given package from the cache.
 
 **Parameters**:
 - `pkg` (`string`): Package name.
 
-### `removeLastMRU()`
+### `removeLastMRU(): Promise<PayloadsList>`
 
 Removes the least recently used payload if the MRU exceeds the maximum allowed.
 
-### `setRootPayload(payload, options)`
+### `setRootPayload(payload: Payload, options: SetRootPayloadOptions = {}): Promise<void>`
 
 Sets a new root payload, updates MRU/LRU, and manages cache state.
 
@@ -124,3 +124,38 @@ Sets a new root payload, updates MRU/LRU, and manages cache state.
 - `options` (`object`):
   - `logging` (`boolean`, default: `true`): Enable logging.
   - `local` (`boolean`, default: `false`): Mark the payload as local.
+
+## Interfaces
+
+```ts
+interface AppConfig {
+  defaultPackageMenu: string;
+  ignore: {
+    flags: Flag[];
+    warnings: WarningName[];
+  };
+  theme?: "light" | "dark";
+  disableExternalRequests: boolean;
+}
+
+interface PayloadsList {
+  mru: string[];
+  lru: string[];
+  current: string;
+  availables: string[];
+  lastUsed: Record<string, number>;
+  root: string | null;
+}
+
+interface LoggingOption {
+  logging?: boolean;
+}
+
+interface InitPayloadListOptions extends LoggingOption {
+  reset?: boolean;
+}
+
+interface SetRootPayloadOptions extends LoggingOption {
+  local?: boolean;
+}
+```

@@ -1,8 +1,9 @@
 // Import Third-party Dependencies
 import { downloads } from "@nodesecure/npm-registry-sdk";
 import send from "@polka/send-type";
+import type { Request, Response } from "express-serve-static-core";
 
-export async function get(req, res) {
+export async function get(req: Request, res: Response) {
   const { pkgName } = req.params;
 
   try {
@@ -10,7 +11,7 @@ export async function get(req, res) {
 
     return send(res, 200, data);
   }
-  catch (error) {
+  catch (error: any) {
     return send(res, error.statusCode, { error: error.statusMessage });
   }
 }

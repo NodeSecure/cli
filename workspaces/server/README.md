@@ -48,7 +48,7 @@ httpServer.listen(port, async() => {
 
 ## API
 
-### `buildServer(dataFilePath, options): polka`
+### `buildServer(dataFilePath: string, options: BuildServerOptions): polka`
 
 Creates and configures a Polka HTTP server instance for the NodeSecure platform.
 
@@ -66,6 +66,10 @@ If true, the server will use the provided dataFilePath for reading and writing d
 The root directory of the project, used for serving static files and resolving paths.
   - `componentsDir` (`string`):
 Directory containing UI components.
+  - `i18n` (`object`)
+    - `english`: `NestedStringRecord`
+    - `french`: `NestedStringRecord`
+The i18n tokens required for the interface.
 
 **Returns**
 - `httpServer` (`object`):
@@ -206,3 +210,22 @@ Streams scan progress, payload data, and cache state updates.
 **Response**:
 
 Streams cache state updates after removal.
+
+## Interfaces
+
+```ts
+type NestedStringRecord = {
+  [key: string]: string | NestedStringRecord;
+};
+
+interface BuildServerOptions {
+  hotReload?: boolean;
+  runFromPayload?: boolean;
+  projectRootDir: string;
+  componentsDir: string;
+  i18n: {
+    english: NestedStringRecord;
+    french: NestedStringRecord;
+  };
+}
+```

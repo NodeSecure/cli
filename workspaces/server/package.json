@@ -3,16 +3,24 @@
   "version": "1.0.0",
   "description": "NodeSecure server module",
   "type": "module",
-  "main": "./index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
-    "index.js",
-    "src"
+    "dist"
   ],
   "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
     "lint": "eslint src test",
-    "test": "node --test --test-concurrency 1",
+    "test": "tsx --test --test-concurrency 1 \"./test/**/*.test.ts\"",
     "test:c8": "c8 npm run test"
   },
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@polka/send-type": "^0.5.2",
+    "@types/polka": "^0.5.7",
+    "@types/server-destroy": "^1.0.4",
+    "@types/ws": "^8.18.1"
+  }
 }

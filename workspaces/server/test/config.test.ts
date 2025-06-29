@@ -5,7 +5,7 @@ import assert from "node:assert";
 // Import Third-party Dependencies
 import cacache from "cacache";
 import { warnings } from "@nodesecure/js-x-ray";
-import { CACHE_PATH } from "@nodesecure/cache";
+import { AppConfig, CACHE_PATH } from "@nodesecure/cache";
 
 // Import Internal Dependencies
 import { get, set } from "../src/config.js";
@@ -14,7 +14,7 @@ import { get, set } from "../src/config.js";
 const kConfigKey = "___config";
 
 describe("config", () => {
-  let actualConfig;
+  let actualConfig: AppConfig;
 
   before(async() => {
     actualConfig = await get();
@@ -63,7 +63,7 @@ describe("config", () => {
       theme: "galactic",
       disableExternalRequests: true
     };
-    await set(expectedConfig);
+    await set(expectedConfig as any);
     const value = await get();
 
     assert.deepStrictEqual(value, expectedConfig);

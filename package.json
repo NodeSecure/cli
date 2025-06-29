@@ -69,6 +69,7 @@
     "@nodesecure/size-satisfies": "^1.1.0",
     "@nodesecure/vis-network": "^1.4.0",
     "@openally/config.eslint": "^2.1.0",
+    "@openally/config.typescript": "^1.0.3",
     "@types/node": "^24.0.3",
     "c8": "^10.1.2",
     "cross-env": "^7.0.3",
@@ -80,7 +81,9 @@
     "rimraf": "^6.0.1",
     "server-destroy": "^1.0.1",
     "stylelint": "^16.20.0",
-    "stylelint-config-standard": "^38.0.0"
+    "stylelint-config-standard": "^38.0.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@nodesecure/documentation-ui": "^1.3.0",

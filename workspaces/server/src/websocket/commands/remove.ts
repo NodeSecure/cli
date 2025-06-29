@@ -1,6 +1,12 @@
+// Import Third-party Dependencies
+import type { PayloadsList } from "@nodesecure/cache";
+
+// Import Internal Dependencies
+import type { WebSocketContext } from "../index.js";
+
 export async function* remove(
-  pkg,
-  context
+  pkg: string,
+  context: WebSocketContext
 ) {
   const { cache, logger } = context;
 
@@ -8,15 +14,16 @@ export async function* remove(
 
   try {
     const { mru, lru, current, lastUsed, root, availables } = await cache.payloadsList();
+    delete lastUsed[pkg];
     if (availables.includes(pkg)) {
       logger.info("[ws|remove] remove from availables");
       cache.removePayload(pkg);
-      const updatedList = {
+      const updatedList: PayloadsList = {
         mru,
+        current,
         lru,
         lastUsed: {
-          ...lastUsed,
-          [pkg]: void 0
+          ...lastUsed
         },
         root,
         availables: availables.filter((pkgName) => pkgName !== pkg)
@@ -59,12 +66,11 @@ export async function* remove(
         lru.splice(lru.indexOf(olderLruPkg[0]), 1);
       }
 
-      const updatedList = {
+      const updatedList: PayloadsList = {
         mru: updatedMru,
         lru,
         lastUsed: {
-          ...lastUsed,
-          [pkg]: void 0
+          ...lastUsed
         },
         current: current === pkg ? updatedMru[0] : current,
         root,
@@ -80,13 +86,12 @@ export async function* remove(
     else {
       logger.info("[ws|remove](remove from lru)");
       const updatedLru = lru.filter((pkgName) => pkgName !== pkg);
-      const updatedList = {
+      const updatedList: PayloadsList = {
         mru,
         lru: updatedLru,
         availables,
         lastUsed: {
-          ...lastUsed,
-          [pkg]: void 0
+          ...lastUsed
         },
         current,
         root
@@ -101,7 +106,7 @@ export async function* remove(
 
     cache.removePayload(pkg);
   }
-  catch (error) {
+  catch (error: any) {
     logger.error(`[ws|remove](error: ${error.message})`);
     logger.debug(error);
 

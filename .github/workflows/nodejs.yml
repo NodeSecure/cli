@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build
-        run: npm run build
+        run: npm run build --ws --if-present
       - name: Run tests
         run: npm run coverage
       - name: Send coverage report to Codecov

@@ -14,6 +14,7 @@ import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
 import enableDestroy from "server-destroy";
 import cacache from "cacache";
+import { type Polka } from "polka";
 
 // Import Internal Dependencies
 import { buildServer } from "../index.js";
@@ -36,7 +37,7 @@ const kProjectRootDir = path.join(import.meta.dirname, "..", "..", "..");
 const kComponentsDir = path.join(kProjectRootDir, "public", "components");
 
 describe("httpServer", { concurrency: 1 }, () => {
-  let httpServer;
+  let httpServer: Polka;
 
   before(async() => {
     setGlobalDispatcher(kMockAgent);
@@ -45,16 +46,21 @@ describe("httpServer", { concurrency: 1 }, () => {
     );
 
     httpServer = buildServer(JSON_PATH, {
-      port: kHttpPort,
-      openLink: false,
-      enableWS: false,
       projectRootDir: kProjectRootDir,
-      componentsDir: kComponentsDir
+      componentsDir: kComponentsDir,
+      i18n: {
+        english: {
+          ui: {}
+        },
+        french: {
+          ui: {}
+        }
+      }
     });
     httpServer.listen(kHttpPort);
-    await once(httpServer.server, "listening");
+    await once(httpServer.server!, "listening");
 
-    enableDestroy(httpServer.server);
+    enableDestroy(httpServer.server!);
 
     if (fs.existsSync(kDefaultPayloadPath) === false) {
       // When running tests on CI, we need to create the nsecure-result.json file
@@ -64,7 +70,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   }, { timeout: 5000 });
 
   after(async() => {
-    httpServer.server.destroy();
+    httpServer.server!.destroy();
     kBundlephobiaPool.close();
     setGlobalDispatcher(kGlobalDispatcher);
   });
@@ -78,18 +84,22 @@ describe("httpServer", { concurrency: 1 }, () => {
 
   test("'/' should fail", async(ctx) => {
     class Response {
+      body: string;
+      headers: Record<string, string>;
+      statusCode: number;
+
       constructor() {
         this.body = "";
         this.headers = {};
         this.statusCode = 200;
       }
-      end(str) {
+      end(str: string) {
         this.body = str;
       }
-      writeHead(int) {
+      writeHead(int: number) {
         this.statusCode = int;
       }
-      getHeader(key) {
+      getHeader(key: string) {
         return this.headers[key];
       }
     }
@@ -100,8 +110,8 @@ describe("httpServer", { concurrency: 1 }, () => {
     }
     ctx.mock.method(Response.prototype, "writeHead", toThrow, { times: 1 });
 
-    const response = new Response();
-    await rootEndpoint.get({}, response);
+    const response: any = new Response();
+    await rootEndpoint.get({} as any, response);
 
     assert.strictEqual(response.body, JSON.stringify({ error: fakeError }));
     assert.strictEqual(response.statusCode, 500);
@@ -135,10 +145,10 @@ describe("httpServer", { concurrency: 1 }, () => {
 
   test("'/flags/description/:title' should fail", async(ctx) => {
     ctx.mock.method(stream, "pipeline", (_stream, _res, err) => err("fake error"));
-    const logs = [];
-    console.error = (data) => logs.push(data);
+    const logs: string[] = [];
+    console.error = (data: string) => logs.push(data);
 
-    await flagsEndpoint.get({ params: { title: "hasWarnings" } }, ({ writeHead: () => true }));
+    await flagsEndpoint.get({ params: { title: "hasWarnings" } } as any, ({ writeHead: () => true }) as any);
     assert.deepEqual(logs, ["fake error"]);
   });
 
@@ -262,7 +272,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("GET '/i18n' should return i18n", async() => {
-    const result = await get(new URL("/i18n", kHttpURL));
+    const result = await get<any>(new URL("/i18n", kHttpURL));
     assert.equal(result.statusCode, 200);
 
     const keys = Object.keys(result.data);
@@ -270,7 +280,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/download/:pkgName' should return package downloads", async() => {
-    const result = await get(new URL("/downloads/fastify", kHttpURL));
+    const result = await get<any>(new URL("/downloads/fastify", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.data.package, "fastify");
@@ -292,14 +302,14 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/scorecard/:org/:pkgName' should return scorecard data", async() => {
-    const result = await get(new URL("/scorecard/NodeSecure/cli", kHttpURL));
+    const result = await get<any>(new URL("/scorecard/NodeSecure/cli", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.data.data.repo.name, "github.com/NodeSecure/cli");
   });
 
   test("'/scorecard/:org/:pkgName' should return scorecard data for GitLab repo", async() => {
-    const result = await get(new URL("/scorecard/gitlab-org/gitlab-ui?platform=gitlab.com", kHttpURL));
+    const result = await get<any>(new URL("/scorecard/gitlab-org/gitlab-ui?platform=gitlab.com", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.data.data.repo.name, "gitlab.com/gitlab-org/gitlab-ui");
@@ -318,7 +328,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/report' should return a Buffer", async() => {
-    const result = await post(new URL("/report", kHttpURL), { body: { title: "foo" } });
+    const result = await post<any>(new URL("/report", kHttpURL), { body: { title: "foo" } });
 
     assert.equal(result.statusCode, 200);
     const json = JSON.parse(result.data);
@@ -326,7 +336,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/search' should return the package list", async() => {
-    const result = await get(new URL("/search/nodesecure", kHttpURL));
+    const result = await get<any>(new URL("/search/nodesecure", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.ok(result.data);
@@ -343,7 +353,15 @@ describe("httpServer without options", () => {
   before(async() => {
     httpServer = buildServer(JSON_PATH, {
       projectRootDir: kProjectRootDir,
-      componentsDir: kComponentsDir
+      componentsDir: kComponentsDir,
+      i18n: {
+        english: {
+          ui: {}
+        },
+        french: {
+          ui: {}
+        }
+      }
     });
     httpServer.listen();
     await once(httpServer.server, "listening");

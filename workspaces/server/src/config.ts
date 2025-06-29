@@ -1,12 +1,12 @@
 // Import Third-party Dependencies
-import { warnings } from "@nodesecure/js-x-ray";
-import { appCache } from "@nodesecure/cache";
+import { warnings, type WarningName } from "@nodesecure/js-x-ray";
+import { appCache, type AppConfig } from "@nodesecure/cache";
 
 // Import Internal Dependencies
 import { logger } from "./logger.js";
 
 const experimentalWarnings = Object.entries(warnings)
-  .flatMap(([warning, { experimental }]) => (experimental ? [warning] : []));
+  .flatMap(([warning, { experimental }]) => (experimental ? [warning] : [])) as WarningName[];
 
 // CONSTANTS
 const kDefaultConfig = {
@@ -15,15 +15,15 @@ const kDefaultConfig = {
   disableExternalRequests: false
 };
 
-export async function get() {
+export async function get(): Promise<AppConfig> {
   try {
     const config = await appCache.getConfig();
 
     const {
       defaultPackageMenu,
       ignore: {
-        flags,
-        warnings
+        flags = [],
+        warnings = []
       } = {},
       theme,
       disableExternalRequests = false
@@ -43,7 +43,7 @@ export async function get() {
       disableExternalRequests
     };
   }
-  catch (err) {
+  catch (err: any) {
     logger.error(`[config|get](error: ${err.message})`);
 
     await appCache.updateConfig(kDefaultConfig);
@@ -54,14 +54,14 @@ export async function get() {
   }
 }
 
-export async function set(newValue) {
+export async function set(newValue: AppConfig) {
   logger.info(`[config|set](config: ${JSON.stringify(newValue)})`);
   try {
     await appCache.updateConfig(newValue);
 
     logger.info("[config|set](sucess)");
   }
-  catch (err) {
+  catch (err: any) {
     logger.error(`[config|set](error: ${err.message})`);
 
     throw err;

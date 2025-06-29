@@ -4,7 +4,11 @@ import path from "node:path";
 // Import Third-party Dependencies
 import sirv from "sirv";
 
-export function addStaticFiles(options) {
+export interface AddStaticFilesOptions {
+  projectRootDir: string;
+}
+
+export function addStaticFiles(options: AddStaticFilesOptions) {
   const {
     projectRootDir
   } = options;

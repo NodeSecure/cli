@@ -4,6 +4,8 @@ import fs from "node:fs";
 // Import Third-party Dependencies
 import { report } from "@nodesecure/report";
 import send from "@polka/send-type";
+import type { Request, Response } from "express-serve-static-core";
+import { appCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
 import { context } from "../ALS.js";
@@ -43,11 +45,13 @@ const kReportPayload = {
   ]
 };
 
-export async function post(req, res) {
+export async function post(req: Request, res: Response) {
   const body = await bodyParser(req);
   const { title, includesAllDeps, theme } = body;
-  const { dataFilePath } = context.getStore();
-  const scannerPayload = JSON.parse(fs.readFileSync(dataFilePath, "utf-8"));
+  const { dataFilePath } = context.getStore()!;
+  const scannerPayload = dataFilePath ?
+    JSON.parse(fs.readFileSync(dataFilePath, "utf-8")) :
+    appCache.getPayload((await appCache.payloadsList()).current);
   const reportPayload = structuredClone(kReportPayload);
   const rootDependencyName = scannerPayload.rootDependencyName;
   const [organizationPrefixOrRepo, repo] = rootDependencyName.split("/");
