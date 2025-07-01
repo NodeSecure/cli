@@ -17,8 +17,10 @@
     "lint-fix": "npm run lint -- --fix",
     "prepublishOnly": "rimraf ./dist && npm run build && pkg-ok",
     "build": "node ./esbuild.config.js",
-    "test": "npm run test-only && npm run lint && npm run lint:css",
-    "test-only": "glob -c \"node --no-warnings --test-concurrency 1 --test\" \"test/**/*.test.js\"",
+    "build:all": "npm run build --ws --if-present",
+    "test": "npm run test:cli && npm run lint && npm run lint:css",
+    "test:cli": "glob -c \"node --no-warnings --test-concurrency 1 --test\" \"test/**/*.test.js\"",
+    "test:all": "npm run test --ws --if-present",
     "coverage": "c8 --reporter=lcov npm run test"
   },
   "files": [
