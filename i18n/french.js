@@ -81,7 +81,7 @@ const cli = {
   startHttp: {
     invalidScannerVersion: tS`le fichier d'analyse correspond à la version '${0}' du scanner et ne satisfait pas la range '${1}' attendu par la CLI`,
     regenerate: "veuillez re-générer un nouveau fichier d'analyse JSON en utilisant votre CLI"
-  },
+  }
 };
 
 const ui = {
@@ -128,6 +128,7 @@ const ui = {
       tsTypings: "Typages TS",
       node: "Compatibilité Node.js",
       npm: "Compatibilité NPM",
+      type: "Type de module",
       lastReleaseVersion: "Dernière version publiée",
       lastReleaseDate: "Date de la dernière version",
       publishedReleases: "Nombre de versions publiées",
@@ -174,6 +175,7 @@ const ui = {
     },
     watch: "Packages dans l'arbre de dépendance nécessitant une plus grande attention",
     criticalWarnings: "Avertissements critiques",
+    moduleTypes: "Types de modules",
     maintainers: "Mainteneurs",
     showMore: "voir plus",
     showLess: "voir moins"

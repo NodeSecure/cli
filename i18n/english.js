@@ -128,6 +128,7 @@ const ui = {
       tsTypings: "TS Typings",
       node: "Node.js Compatibility",
       npm: "NPM Compatibility",
+      type: "Module type",
       lastReleaseVersion: "Last release version",
       lastReleaseDate: "Last release date",
       publishedReleases: "Number of published releases",
@@ -174,6 +175,7 @@ const ui = {
     },
     watch: "Packages in the dependency tree requiring greater attention",
     criticalWarnings: "Critical Warnings",
+    moduleTypes: "Module Types",
     maintainers: "Maintainers",
     showMore: "show more",
     showLess: "show less"
