@@ -127,7 +127,7 @@ export class Overview {
   }
 
   renderTopFields() {
-    const { size, composition, engines = {} } = this.package.dependencyVersion;
+    const { size, composition, engines = {}, type } = this.package.dependencyVersion;
     const { metadata } = this.package.dependency;
 
     const fragment = document.createDocumentFragment();
@@ -167,6 +167,10 @@ export class Overview {
         i18n.package_info.overview.npm, engines.npm
       ));
     }
+
+    fragment.appendChild(utils.createLiField(
+      i18n.package_info.overview.type, type
+    ));
 
     return fragment;
   }

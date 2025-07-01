@@ -6,7 +6,7 @@ import { appCache, type AppConfig } from "@nodesecure/cache";
 import { logger } from "./logger.js";
 
 const experimentalWarnings = Object.entries(warnings)
-  .flatMap(([warning, { experimental }]) => (experimental ? [warning] : [])) as WarningName[];
+  .flatMap(([warning, metadata]) => ("experimental" in metadata && metadata.experimental ? [warning] : [])) as WarningName[];
 
 // CONSTANTS
 const kDefaultConfig = {

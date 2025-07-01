@@ -54,6 +54,7 @@ export class HomeView {
     this.generateExtensions();
     this.generateLicenses();
     this.generateMaintainers();
+    this.generateModuleTypes();
     this.handleReport();
   }
 
@@ -314,6 +315,33 @@ export class HomeView {
   generateMaintainers() {
     new Maintainers(this.secureDataSet, this.nsn)
       .render();
+  }
+
+  generateModuleTypes() {
+    const moduleTypesElement = document.getElementById("home-modules-types");
+    const moduleTypes = Object.values(this.secureDataSet.data.dependencies).reduce((acc, dep) => {
+      const types = Object.values(dep.versions).map((version) => version.type);
+      for (const type of types) {
+        acc[type] += 1;
+      }
+
+      return acc;
+    }, {
+      esm: 0,
+      cjs: 0,
+      dual: 0,
+      dts: 0,
+      faux: 0
+    });
+    const moduleTypesJaugeData = [...Object.entries(moduleTypes)]
+      .sort(([, left], [, right]) => right - left)
+      .map(([name, value]) => {
+        return { name, value };
+      });
+
+    moduleTypesElement.appendChild(
+      new Gauge(moduleTypesJaugeData).render()
+    );
   }
 
   async generateDownloads() {
