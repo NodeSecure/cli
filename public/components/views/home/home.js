@@ -232,7 +232,7 @@ export class HomeView {
   }
 
   renderPackage(dependencyVer) {
-    const { name, version, flags } = dependencyVer;
+    const { name, version, flags, deprecated } = dependencyVer;
     const inlinedEmojis = getFlagsEmojisInlined(
       flags.filter((name) => kFlagsToWatch.has(name)),
       new Set(window.settings.config.ignore.flags)
@@ -241,19 +241,29 @@ export class HomeView {
     const childs = utils.extractEmojis(inlinedEmojis)
       .map((emoji) => utils.createDOMElement("p", { text: `${emoji} ${kEmojiDescription[emoji]}` }));
 
+    const packageContents = [
+      utils.createDOMElement("div", {
+        className: "home--package--header",
+        childs: [
+          utils.createDOMElement("p", {
+            childs: [
+              document.createTextNode(name),
+              utils.createDOMElement("span", { text: `v${version}` })
+            ]
+          }),
+          utils.createDOMElement("div", {
+            className: "chips",
+            childs
+          })]
+      })
+    ];
+
+    if (deprecated) {
+      packageContents.push(utils.createDOMElement("p", { text: deprecated }));
+    }
+
     return utils.createDOMElement("div", {
-      childs: [
-        utils.createDOMElement("p", {
-          childs: [
-            document.createTextNode(name),
-            utils.createDOMElement("span", { text: `v${version}` })
-          ]
-        }),
-        utils.createDOMElement("div", {
-          className: "chips",
-          childs
-        })
-      ]
+      childs: packageContents
     });
   }
 

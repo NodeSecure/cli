@@ -197,7 +197,7 @@ export class PackageHeader {
   }
 
   renderFlags(flags) {
-    const { warnings } = this.package.dependencyVersion;
+    const { warnings, deprecated } = this.package.dependencyVersion;
     const warningsLength = warnings.filter(
       (warning) => !window.settings.config.ignore.warnings.has(warning.kind)
     ).length;
@@ -228,7 +228,7 @@ export class PackageHeader {
 
         const htmlElement = createFlagInfoBulle(
           icon,
-          flagsMap.get(icon).tooltipDescription
+          name === "isDeprecated" ? deprecated : flagsMap.get(icon).tooltipDescription
         );
         htmlElement.addEventListener("click", () => {
           const { name } = flagsMap.get(icon);
