@@ -358,8 +358,6 @@ body.dark .home--overview>div>span {
 
 .home--packages--overview>div {
   background: linear-gradient(to right, rgb(231 216 195) 0%, rgb(255 255 255 / 0%) 100%);
-  display: flex;
-  align-items: center;
   padding: 5px 10px;
   position: relative;
   box-sizing: border-box;
@@ -370,8 +368,15 @@ body.dark .home--overview>div>span {
   border-left: 2px solid #da9744;
   color: #992323;
   font-size: 16px;
-  flex-wrap: wrap;
   transition: 0.5s linear all;
+}
+
+.home--package--header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 body.dark .home--packages--overview>div {
