@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint src test",
     "lint:fix": "eslint --fix src test",
-    "test": "node --test test/",
+    "test": "node --test test/*.test.js",
     "test:c8": "c8 npm run test",
     "start": "npm run build && http-server ./dist",
     "build": "rimraf ./dist && node esbuild.config.js"

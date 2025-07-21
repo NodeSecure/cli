@@ -8,6 +8,14 @@ import { getDataSetPayload } from "./dataset.fixture.js";
 
 const dataSetPayload = await getDataSetPayload();
 
+global.window = {
+  settings: {
+    config: {
+      showFriendlyDependencies: true
+    }
+  }
+};
+
 test("NodeSecureDataSet.init with given payload", async() => {
   const nsDataSet = new NodeSecureDataSet();
   await nsDataSet.init(dataSetPayload);
@@ -57,21 +65,17 @@ test("NodeSecureDataSet.isHighlighted", async() => {
 
 test("NodeSecureDataSet.computeLicenses", () => {
   const nsDataSet = new NodeSecureDataSet();
-  nsDataSet.computeLicense("MIT");
-  assert.equal(Object.keys(nsDataSet.licenses).length, 1, "should have 1 license");
-  assert.equal(nsDataSet.licenses.Unknown, 1, "should have 1 unknown license");
-
-  nsDataSet.computeLicense({ uniqueLicenseIds: ["MIT", "MIT", "RND"] });
+  nsDataSet.computeLicense(["MIT", "MIT", "RND"]);
   assert.equal(Object.keys(nsDataSet.licenses).length, 3, "should have 3 licenses (MIT, RND & 1 unknown)");
   assert.equal(nsDataSet.licenses.MIT, 2, "should have 2 MIT licenses");
 });
 
 test("NodeSecureDataSet.computeAuthors", () => {
   const nsDataSet = new NodeSecureDataSet();
-  nsDataSet.computeAuthor({ name: "John Doe" });
+  nsDataSet.computeAuthor({ name: "John Doe" }, "pkg@1.1");
   assert.equal(nsDataSet.authors.get("John Doe").packages.size, 1, "should have 1 author: John Doe");
 
-  nsDataSet.computeAuthor({ name: "John Doe" });
+  nsDataSet.computeAuthor({ name: "John Doe" }, "pkg@1.2");
 
   assert.equal(nsDataSet.authors.size, 1, "should have 1 author: John Doe (after the 2nd contribution");
   assert.equal(nsDataSet.authors.get("John Doe").packages.size, 2, "should have 1 author: John Doe (2nd time)");

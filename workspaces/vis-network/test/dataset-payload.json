@@ -1,6 +1,6 @@
 {
   "id": "abcde",
-  "rootDepencyName": "pkg1",
+  "rootDependencyName": "pkg1",
   "highlighted": {
     "contacts": [
       {
@@ -11,7 +11,7 @@
           "js-x-ray"
         ]
       },
-    {
+      {
         "name": "Rich Harris",
         "email": "rich.harris@gmail.com",
         "dependencies": [
@@ -34,6 +34,13 @@
   },
   "dependencies": {
     "pkg2": {
+      "metadata": {
+        "author": {
+          "name": "john papa"
+        },
+        "maintainers": [],
+        "publishers": []
+      },
       "versions": {
         "1.0.3": {
           "usedBy": {
@@ -51,17 +58,23 @@
               ".json"
             ]
           },
-          "license": {
-            "uniqueLicenseIds": [
-              "Unlicense"
-            ]
-          },
+          "licenses": [],
+          "uniqueLicenseIds": [
+            "Unlicense"
+          ],
           "name": "pkg2",
           "version": "1.0.3"
         }
       }
     },
     "pkg3": {
+      "metadata": {
+        "author": {
+          "name": "john wick"
+        },
+        "maintainers": [],
+        "publishers": []
+      },
       "versions": {
         "3.4.0": {
           "id": 4,
@@ -85,15 +98,21 @@
               ".json"
             ]
           },
-          "license": {
-            "uniqueLicenseIds": [
-              "Licence1"
-            ]
-          }
+          "licenses": [],
+          "uniqueLicenseIds": [
+            "Licence1"
+          ]
         }
       }
     },
     "pkg1": {
+      "metadata": {
+        "author": {
+          "name": "john doe"
+        },
+        "maintainers": [],
+        "publishers": []
+      },
       "versions": {
         "3.0.0": {
           "id": 0,
@@ -114,15 +133,27 @@
               ".json"
             ]
           },
-          "license": "a string licence (should be unknown)",
+          "licenses": [
+            {
+              "licenses": {},
+              "spdx": {
+                "osi": true,
+                "fsf": true,
+                "fsfAndOsi": true,
+                "includesDeprecated": true
+              }
+            }
+          ],
+          "uniqueLicenseIds": [],
           "warnings": []
         }
       }
     }
   },
-  "version": "2.2.0",
+  "scannerVersion": "2.2.0",
   "warnings": [
     "warning_01",
     "warning_02"
-  ]
+  ],
+  "vulnerabilityStrategy": "npm"
 }
