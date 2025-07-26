@@ -5,7 +5,7 @@ import { getManifestEmoji } from "@nodesecure/flags/web";
 import * as CONSTANTS from "./constants.js";
 
 // CONSTANTS
-const kFlagsEmojis = Object.fromEntries(getManifestEmoji());
+export const FLAGS_EMOJIS = Object.fromEntries(getManifestEmoji());
 
 export async function getJSON(path, customHeaders = Object.create(null)) {
   const headers = {
@@ -73,7 +73,7 @@ export function getFlagsEmojisInlined(
       }
 
       // FIX: when scanner resolve to flags ^3.x
-      const emoji = kFlagsEmojis[title === "hasDuplicate" ? "isDuplicated" : title];
+      const emoji = FLAGS_EMOJIS[title === "hasDuplicate" ? "isDuplicated" : title];
 
       return emoji ? [emoji] : [];
     })

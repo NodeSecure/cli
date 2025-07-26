@@ -97,3 +97,39 @@ test("NodeSecureDataSet.build", () => {
   assert.equal(builtData.nodes.length, 2, "should have 2 nodes");
   assert.equal(builtData.edges.length, 3, "should have 3 edges");
 });
+
+test("NodeSecureDataSet.findPackagesByName should have no packages when no name matches", async() => {
+  const nsDataSet = new NodeSecureDataSet();
+  await nsDataSet.init(dataSetPayload);
+
+  assert.equal(nsDataSet.findPackagesByName("unknown").length, 0, "should have no packages");
+});
+
+test("NodeSecureDataSet.findPackagesByName should have packages when name matches", async() => {
+  const nsDataSet = new NodeSecureDataSet();
+  await nsDataSet.init(dataSetPayload);
+  const packages = nsDataSet.findPackagesByName("pkg2");
+
+  const expectedPackages = [
+    {
+      id: undefined,
+      name: "pkg2",
+      version: "1.0.3",
+      hasWarnings: false,
+      flags: "",
+      links: undefined,
+      isFriendly: 0
+    },
+    {
+      id: undefined,
+      name: "pkg2",
+      version: "1.0.4",
+      hasWarnings: false,
+      flags: "",
+      links: undefined,
+      isFriendly: 0
+    }
+  ];
+
+  assert.deepEqual(packages, expectedPackages, "should all versions by name");
+});

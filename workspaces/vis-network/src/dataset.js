@@ -228,4 +228,8 @@ export default class NodeSecureDataSet extends EventTarget {
   isHighlighted(contact) {
     return this.#highligthedContacts.names.has(contact.name) || this.#highligthedContacts.emails.has(contact.email);
   }
+
+  findPackagesByName(name) {
+    return this.packages.filter((pkg) => pkg.name === name);
+  }
 }

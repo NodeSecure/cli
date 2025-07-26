@@ -66,12 +66,27 @@ div.package-header>.package-name>.info-menu>a {
 /**
  * DESC
  */
+
+div.package-header>.package-description{
+  display: flex;
+  justify-content: space-between;
+}
+
 div.package-header>.description {
   width: 100%;
   color: #FFF;
   text-align: left;
   font-size: 15px;
   margin-top: 7px;
+}
+
+div.package-header>.package-description>.has-duplicate {
+  border: none;
+  background: transparent;
+  transform: translateY(-4px);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
 }
 
 /**

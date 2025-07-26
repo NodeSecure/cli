@@ -64,6 +64,29 @@
           ],
           "name": "pkg2",
           "version": "1.0.3"
+        },
+        "1.0.4": {
+          "usedBy": {
+            "pkg3": "3.4.0"
+          },
+          "flags": [],
+          "size": 100,
+          "author": {},
+          "warnings": [],
+          "composition": {
+            "extensions": [
+              ".md",
+              ".js",
+              "",
+              ".json"
+            ]
+          },
+          "licenses": [],
+          "uniqueLicenseIds": [
+            "Unlicense"
+          ],
+          "name": "pkg2",
+          "version": "1.0.4"
         }
       }
     },
