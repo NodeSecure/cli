@@ -1,5 +1,5 @@
 // Import Third-party Dependencies
-import { getFlagsEmojisInlined } from "@nodesecure/vis-network";
+import { getFlagsEmojisInlined, FLAGS_EMOJIS } from "@nodesecure/vis-network";
 
 // Import Internal Dependencies
 import * as utils from "../../../common/utils.js";
@@ -107,6 +107,11 @@ export class PackageHeader {
     const flagFragment = this.renderFlags(flags);
     if (flagFragment) {
       flagsDomElement.appendChild(flagFragment);
+    }
+
+    // Has Duplicate Button
+    if (this.#hasDuplicate()) {
+      this.#renderHasDuplicateBtn(clone);
     }
 
     return links;
@@ -243,6 +248,29 @@ export class PackageHeader {
     }
 
     return fragment;
+  }
+
+  #hasDuplicate() {
+    return this.package.dependencyVersion.flags.some((title) => title === "hasDuplicate") &&
+      !window.settings.config.ignore.warnings.has("hasDuplicate") &&
+      "isDuplicated" in FLAGS_EMOJIS;
+  }
+
+  #renderHasDuplicateBtn(clone) {
+    const hasDuplicateBtn = utils.createDOMElement("button",
+      { classList: ["has-duplicate"], text: FLAGS_EMOJIS.isDuplicated });
+
+    const packagesList = this.nsn.secureDataSet.findPackagesByName(this.package.dependencyVersion.name)
+      .map(({ name, version }) => `${name}@${version}`);
+
+    hasDuplicateBtn.addEventListener("click", () => {
+      const nodeIds = [...this.nsn.findNodeIds(new Set(packagesList))];
+      this.nsn.highlightMultipleNodes(nodeIds);
+      window.locker.lock();
+    });
+
+    const packageDescDiv = clone.querySelector(".package-description");
+    packageDescDiv.appendChild(hasDuplicateBtn);
   }
 }
 
