@@ -180,9 +180,9 @@ export class Overview {
     const {
       downloads
     } = await fetch(`/downloads/${name.replaceAll("/", "%2F")}`)
-      .then((value) => value.json());
-
-    document.querySelector("#npm-stats .weekly-downloads").textContent = downloads ?? "N/A";
+        .then((value) => value.json());
+    console.log("test from omar")
+    document.querySelector("#npm-stats .weekly-downloads").textContent = typeof downloads === "number" ? downloads.toLocaleString() : "N/A";
     document.querySelector("#npm-stats .weekly-traffic").textContent = downloads ? prettyBytes(downloads * size) : "N/A";
   }
 
