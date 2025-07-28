@@ -1,37 +1,58 @@
+// Import Node.js Dependencies
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 // Import Third-party Dependencies
-import kleur from "kleur";
-import { diffChars } from "diff";
-import { packumentVersion } from "@nodesecure/npm-registry-sdk";
+import * as npmRegistrySDK from "@nodesecure/npm-registry-sdk";
+import { diff } from "json-diff-ts";
 import { tarball } from "@nodesecure/scanner";
+import {
+  parseNpmSpec,
+  packageJSONIntegrityHash
+} from "@nodesecure/mama";
 
-export async function main(spec, options) {
-  const [pkgName, pkgVersion] = spec.split("@");
-  const { dist: { tarball: location, shasum: manifestIntegrity } } = await packumentVersion(pkgName, pkgVersion, {
-    token: options.token
-  });
-  const manifestManager = await tarball.extractAndResolve(location, {
-    spec
-  });
-  const tarballIntegrity = manifestManager.integrity;
-  if (manifestIntegrity === tarballIntegrity) {
-    console.log(`integrity: ${manifestIntegrity}`);
-
-    return;
+export async function main(
+  npmPackageSpec
+) {
+  const parsedPackageSpec = parseNpmSpec(npmPackageSpec);
+  if (!parsedPackageSpec) {
+    throw new Error(`Invalid npm spec: ${npmPackageSpec}`);
   }
 
-  console.log(`manifest integrity: ${manifestIntegrity}`);
-  console.log(`tarball integrity: ${tarballIntegrity}`);
-  process.stdout.write("integrity diff: ");
-  for (const { added, removed, value } of diffChars(manifestIntegrity, tarballIntegrity)) {
-    if (added) {
-      process.stdout.write(kleur.green().bold(`+${value}`));
+  const packumentVersion = await npmRegistrySDK.packumentVersion(
+    parsedPackageSpec.name,
+    parsedPackageSpec.semver,
+    {
+      token: process.env.NODE_SECURE_TOKEN
     }
-    else if (removed) {
-      process.stdout.write(kleur.red().bold(`-${value}`));
+  );
+  const remote = packageJSONIntegrityHash(
+    packumentVersion,
+    { isFromRemoteRegistry: true }
+  );
+
+  const extractionDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "nodesecure-tarball-integrity-")
+  );
+
+  try {
+    const mama = await tarball.extractAndResolve(extractionDirectory, {
+      spec: npmPackageSpec
+    });
+    const local = packageJSONIntegrityHash(mama.document);
+
+    if (local.integrity === remote.integrity) {
+      console.log("no integrity diff found");
+
+      return;
     }
-    else {
-      process.stdout.write(value);
-    }
+
+    const diffs = diff(local.object, remote.object);
+    console.log("integrity diff found:");
+    console.log(JSON.stringify(diffs, null, 2));
   }
-  console.log("\n");
+  finally {
+    await fs.rm(extractionDirectory, { recursive: true, force: true });
+  }
 }
