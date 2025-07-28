@@ -111,6 +111,7 @@ For complete details on each command, refer to the following documents:
 - [`config create`](./docs/cli/config.md)
 - [`config`](./docs/cli/config.md)
 - [`cache`](./docs/cli/cache.md)
+- [`extract integrity`](./docs/cli/extract-integrity.md)
 
 Each link provides access to the full documentation for the command, including additional details, options, and usage examples.
 

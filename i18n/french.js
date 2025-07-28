@@ -76,6 +76,10 @@ const cli = {
       cacheTitle: "Cache NodeSecure:",
       scannedPayloadsTitle: "Payloads scannés disponibles sur le disque:",
       cleared: "Cache nettoyé avec succès !"
+    },
+    extractIntegrity: {
+      desc: "Extraire l'intégrité d'un paquet à partir de son manifeste et du tarball et comparer les deux intégrités si elles sont différentes.",
+      option_token: "Jeton NPM"
     }
   },
   startHttp: {

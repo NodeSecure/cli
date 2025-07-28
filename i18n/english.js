@@ -76,6 +76,10 @@ const cli = {
       cacheTitle: "NodeSecure Cache:",
       scannedPayloadsTitle: "Scanned payloads available on disk:",
       cleared: "Cache cleared successfully!"
+    },
+    extractIntegrity: {
+      desc: "Extract the integrity of a package from its manifest and tarball and compare the two integrities if different from one another.",
+      option_token: "NPM token"
     }
   },
   startHttp: {
