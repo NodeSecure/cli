@@ -182,7 +182,9 @@ export class Overview {
     } = await fetch(`/downloads/${name.replaceAll("/", "%2F")}`)
       .then((value) => value.json());
 
-    document.querySelector("#npm-stats .weekly-downloads").textContent = downloads ?? "N/A";
+    const numberFormat = new Intl.NumberFormat();
+
+    document.querySelector("#npm-stats .weekly-downloads").textContent = downloads ? numberFormat.format(downloads) : "N/A";
     document.querySelector("#npm-stats .weekly-traffic").textContent = downloads ? prettyBytes(downloads * size) : "N/A";
   }
 
