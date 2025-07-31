@@ -91,7 +91,7 @@
     "@nodesecure/documentation-ui": "^1.3.0",
     "@nodesecure/flags": "^3.0.3",
     "@nodesecure/i18n": "^4.0.1",
-    "@nodesecure/js-x-ray": "^9.2.0",
+    "@nodesecure/js-x-ray": "^10.0.0",
     "@nodesecure/licenses-conformance": "^2.1.0",
     "@nodesecure/npm-registry-sdk": "^3.0.0",
     "@nodesecure/ossf-scorecard-sdk": "^3.2.1",
