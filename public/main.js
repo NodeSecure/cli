@@ -7,7 +7,7 @@ import { ViewNavigation } from "./components/navigation/navigation.js";
 import { Wiki } from "./components/wiki/wiki.js";
 import { Popup } from "./components/popup/popup.js";
 import { Locker } from "./components/locker/locker.js";
-import { Legend } from "./components/legend/legend.js";
+import "./components/legend/legend.js";
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import { SearchView } from "./components/views/search/search.js";
@@ -125,7 +125,9 @@ async function init(options = {}) {
     theme: window.settings.config.theme
   });
   window.locker = new Locker(nsn);
-  window.legend = new Legend({ show: window.settings.config.showFriendlyDependencies });
+  const legend = document.getElementById("legend");
+  legend.isVisible = window.settings.config.showFriendlyDependencies;
+  window.legend = legend;
   homeView ??= new HomeView(secureDataSet, nsn);
   searchview ??= new SearchView(secureDataSet, nsn);
 
