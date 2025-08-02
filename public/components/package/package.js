@@ -1,7 +1,8 @@
 // Import Internal Dependencies
-import { Bundlephobia } from "../bundlephobia/bundlephobia.js";
+import "../bundlephobia/bundlephobia.js";
 import { PackageHeader } from "./header/header.js";
 import * as Pannels from "./pannels/index.js";
+import * as utils from "../../common/utils.js";
 
 export class PackageInfo {
   static DOMElementName = "package-info";
@@ -83,17 +84,19 @@ export class PackageInfo {
     packageHTMLElement.setAttribute("class", "slide-in");
 
     if (window.settings.config.disableExternalRequests) {
-      const bundlephobiaElement = packageHTMLElement.querySelector("#bundlephobia-sizes");
-      const bundlephobiaTitleElement = bundlephobiaElement.previousElementSibling;
-      bundlephobiaElement.classList.add("hidden");
-      bundlephobiaTitleElement.classList.add("hidden");
-
       return;
     }
 
-    new Bundlephobia(this.dependencyVersion.name, this.dependencyVersion.version)
-      .fetchDataOnHttpServer()
-      .catch(console.error);
+    const panFiles = packageHTMLElement.querySelector("#pan-files");
+
+    const bundlephobia = utils.createDOMElement("bundle-phobia", {
+      attributes: {
+        name: this.dependencyVersion.name,
+        version: this.dependencyVersion.version
+      }
+    });
+
+    panFiles.appendChild(bundlephobia);
   }
 
   /**
