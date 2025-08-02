@@ -5,6 +5,7 @@ import fs from "node:fs";
 
 // Import Third-party Dependencies
 import cacache from "cacache";
+import * as i18n from "@nodesecure/i18n";
 
 // Import Internal Dependencies
 import { logger } from "@nodesecure/server";
@@ -30,6 +31,7 @@ export interface AppConfig {
   };
   theme?: "light" | "dark";
   disableExternalRequests: boolean;
+  lang?: i18n.Languages;
 }
 
 export interface PayloadsList {
