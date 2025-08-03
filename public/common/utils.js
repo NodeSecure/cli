@@ -1,6 +1,6 @@
 // Import Internal Dependencies
 import avatarURL from "../img/avatar-default.png";
-import { createExpandableSpan } from "../components/expandable/expandable.js";
+import "../components/expandable/expandable.js";
 
 window.activeLegendElement = null;
 
@@ -195,9 +195,34 @@ export function createItemsList(node, items = [], options = {}) {
   }
 
   if (hideItems && items.length > hideItemsLength) {
-    fragment.appendChild(createExpandableSpan(hideItemsLength));
+    const expandableSpan = document.createElement("expandable-span");
+    expandableSpan.onToggle = (expandable) => toggle(expandable, node, hideItemsLength);
+    fragment.appendChild(expandableSpan);
   }
   node.appendChild(fragment);
+}
+
+/*
+TODO: this util function won't be necessary once the parents of the expandable component will be migrated to lit
+becuase the parents will handle the filtering of their children themselves
+*/
+export function toggle(expandable, parentNode, hideItemsLength) {
+  expandable.isClosed = !expandable.isClosed;
+  for (let id = 0; id < parentNode.childNodes.length; id++) {
+    const node = parentNode.childNodes[id];
+    if (node.tagName === "EXPANDABLE-SPAN") {
+      continue;
+    }
+
+    if (node !== this) {
+      if (expandable.isClosed) {
+        node.classList.remove("hidden");
+      }
+      else if (id >= hideItemsLength) {
+        node.classList.add("hidden");
+      }
+    }
+  }
 }
 
 export function copyToClipboard(str) {
