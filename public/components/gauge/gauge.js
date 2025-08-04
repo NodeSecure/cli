@@ -1,6 +1,6 @@
 // Import Internal Dependencies
 import * as utils from "../../common/utils.js";
-import { createExpandableSpan } from "../expandable/expandable.js";
+import "../expandable/expandable.js";
 
 export class Gauge {
   /**
@@ -80,6 +80,9 @@ export class Gauge {
   render() {
     const childs = [];
     const hideItems = this.data.length > this.maxLength;
+    const gauge = utils.createDOMElement("div", {
+      className: "gauge"
+    });
 
     for (let id = 0; id < this.data.length; id++) {
       const { name, value, link = null, chips = null } = this.data[id];
@@ -100,12 +103,13 @@ export class Gauge {
     }
 
     if (hideItems) {
-      childs.push(createExpandableSpan(this.maxLength));
+      const expandableSpan = document.createElement("expandable-span");
+      expandableSpan.onToggle = (expandable) => utils.toggle(expandable, gauge, this.maxLength);
+      childs.push(expandableSpan);
     }
 
-    return utils.createDOMElement("div", {
-      className: "gauge",
-      childs
-    });
+    gauge.replaceChildren(...childs);
+
+    return gauge;
   }
 }

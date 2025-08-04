@@ -1,7 +1,7 @@
 // Import Internal Dependencies
 import * as utils from "../../../../common/utils.js";
-import { createExpandableSpan } from "../../../expandable/expandable.js";
 import { PopupTemplate } from "../../../popup/popup.js";
+import "../../../expandable/expandable.js";
 
 export class Maintainers {
   static whois(name, email) {
@@ -30,8 +30,8 @@ export class Maintainers {
       .sort((left, right) => right[1].packages.size - left[1].packages.size));
 
     document.getElementById("authors-count").innerHTML = authors.length;
-    document.querySelector(".home--maintainers")
-      .appendChild(this.generate(authors));
+    const maintainers = document.querySelector(".home--maintainers");
+    this.generate(authors, maintainers);
   }
 
   #highlightContacts(authors) {
@@ -43,7 +43,7 @@ export class Maintainers {
     return [...highlightedAuthors, ...authorsRest];
   }
 
-  generate(authors) {
+  generate(authors, maintainers) {
     const fragment = document.createDocumentFragment();
     const hideItems = authors.length > this.maximumMaintainers;
 
@@ -85,11 +85,14 @@ export class Maintainers {
 
       fragment.appendChild(person);
     }
-    if (hideItems) {
-      fragment.appendChild(createExpandableSpan(this.maximumMaintainers));
-    }
 
-    return fragment;
+    maintainers.appendChild(fragment);
+    if (hideItems) {
+      const expandableSpan = document.createElement("expandable-span");
+      expandableSpan.onToggle = (expandable) => utils.toggle(expandable, maintainers, this.maximumMaintainers);
+
+      maintainers.appendChild(expandableSpan);
+    }
   }
 }
 

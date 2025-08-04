@@ -1,44 +1,45 @@
+// Import Third-party Dependencies
+import { LitElement, html } from "lit";
+import { when } from "lit/directives/when.js";
+
 // Import Internal Dependencies
-import { createDOMElement, currentLang } from "../../common/utils";
+import { currentLang } from "../../common/utils";
 
-export function createExpandableSpan(
-  hideItemsLength,
-  onclick = () => void 0
-) {
-  const lang = currentLang();
-  const span = createDOMElement("span", {
-    classList: ["expandable"],
-    attributes: { "data-value": "closed" },
-    childs: [
-      createDOMElement("i", { className: "icon-plus-squared-alt" }),
-      createDOMElement("p", { text: window.i18n[lang].home.showMore })
-    ]
-  });
-  span.addEventListener("click", function itemListClickAction() {
-    const isClosed = this.getAttribute("data-value") === "closed";
-    {
-      const innerI = this.querySelector("i");
-      innerI.classList.remove(isClosed ? "icon-plus-squared-alt" : "icon-minus-squared-alt");
-      innerI.classList.add(isClosed ? "icon-minus-squared-alt" : "icon-plus-squared-alt");
-    }
+class Expandable extends LitElement {
+  static properties = {
+    onToggle: { type: Function },
+    isClosed: { type: Boolean }
+  };
 
-    this.querySelector("p").textContent = isClosed ?
-      window.i18n[lang].home.showLess : window.i18n[lang].home.showMore;
-    this.setAttribute("data-value", isClosed ? "opened" : "closed");
+  constructor() {
+    super();
+    this.isClosed = false;
+    this.onToggle = () => void 0;
+  }
 
-    for (let id = 0; id < this.parentNode.childNodes.length; id++) {
-      const node = this.parentNode.childNodes[id];
-      if (node !== this) {
-        if (isClosed) {
-          node.classList.remove("hidden");
-        }
-        else if (id >= hideItemsLength) {
-          node.classList.add("hidden");
-        }
-      }
-    }
-    onclick(this);
-  });
+  // FIXME: must opt out from the shadow DOM for now because of to be able to apply CSS from fontello
+  createRenderRoot() {
+    return this;
+  }
 
-  return span;
+  render() {
+    const lang = currentLang();
+
+    return html`
+      <span data-value=${this.isClosed ? "opened" : "closed"}  @click=${this.#handleClick} class="expandable">
+        ${when(this.isClosed,
+          () => html`<i class="icon-minus-squared-alt"></i>
+        <p>${window.i18n[lang].home.showLess}</p>`,
+          () => html`<i class="icon-plus-squared-alt"></i>
+        <p>${window.i18n[lang].home.showMore}</p>`
+        )}
+      </span>
+`;
+  }
+
+  #handleClick() {
+    this.onToggle(this);
+  }
 }
+
+customElements.define("expandable-span", Expandable);

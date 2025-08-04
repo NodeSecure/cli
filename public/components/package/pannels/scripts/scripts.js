@@ -1,6 +1,6 @@
 // Import Internal Dependencies
 import * as utils from "../../../../common/utils.js";
-import { createExpandableSpan } from "../../../expandable/expandable.js";
+import "../../../expandable/expandable.js";
 
 // CONSTANTS
 const kUnsafeNpmScripts = new Set([
@@ -24,14 +24,14 @@ export class Scripts {
   generate(clone) {
     this.setupSignal(clone);
 
-    const fragment = this.renderScripts();
     const packageScriptsElement = clone.querySelector(".package-scripts");
+    const fragment = this.renderScripts(packageScriptsElement);
     if (fragment === null) {
       clone.getElementById("script-title").style.display = "none";
       packageScriptsElement.style.display = "none";
     }
     else {
-      packageScriptsElement.appendChild(this.renderScripts());
+      packageScriptsElement.appendChild(this.renderScripts(packageScriptsElement));
     }
     this.renderDependencies(clone);
     this.showHideDependenciesInTree(clone);
@@ -51,7 +51,7 @@ export class Scripts {
     }
   }
 
-  renderScripts() {
+  renderScripts(packageScriptsElement) {
     const fragment = document.createDocumentFragment();
     function createPElement(className, text) {
       return utils.createDOMElement("p", { className, text });
@@ -86,7 +86,9 @@ export class Scripts {
     }
 
     if (hideItems) {
-      fragment.appendChild(createExpandableSpan(hideItemsLength));
+      const expandableSpan = document.createElement("expandable-span");
+      expandableSpan.onToggle = (expandable) => utils.toggle(expandable, packageScriptsElement, hideItemsLength);
+      fragment.appendChild(expandableSpan);
     }
 
     return fragment;

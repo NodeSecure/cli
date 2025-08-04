@@ -6,7 +6,7 @@ import { getScoreColor, getVCSRepositoryPathAndPlatform } from "@nodesecure/util
 // Import Internal Dependencies
 import * as utils from "../../../common/utils.js";
 import { Gauge } from "../../gauge/gauge.js";
-import { createExpandableSpan } from "../../expandable/expandable.js";
+import "../../expandable/expandable.js";
 import { fetchScorecardData, getScorecardLink } from "../../../common/scorecard.js";
 
 // Import Components
@@ -223,7 +223,11 @@ export class HomeView {
     }
     else {
       if (hideItems) {
-        fragment.appendChild(createExpandableSpan(maxPackages));
+        const expandableSpan = document.createElement("expandable-span");
+        expandableSpan.onToggle = (expandable) => utils.toggle(expandable,
+          document.querySelector(".home--packages--overview"),
+          maxPackages);
+        fragment.appendChild(expandableSpan);
       }
 
       document.querySelector(".home--packages--overview")
