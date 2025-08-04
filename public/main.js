@@ -8,6 +8,7 @@ import { Wiki } from "./components/wiki/wiki.js";
 import { Popup } from "./components/popup/popup.js";
 import { Locker } from "./components/locker/locker.js";
 import "./components/legend/legend.js";
+import "./components/locked-navigation/locked-navigation.js";
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import { SearchView } from "./components/views/search/search.js";
@@ -15,6 +16,7 @@ import { NetworkNavigation } from "./core/network-navigation.js";
 import { i18n } from "./core/i18n.js";
 import { initSearchNav } from "./core/search-nav.js";
 import * as utils from "./common/utils.js";
+import { EVENTS } from "./core/events.js";
 
 let secureDataSet;
 let nsn;
@@ -131,7 +133,7 @@ async function init(options = {}) {
   homeView ??= new HomeView(secureDataSet, nsn);
   searchview ??= new SearchView(secureDataSet, nsn);
 
-  window.addEventListener("package-info-closed", () => {
+  window.addEventListener(EVENTS.PACKAGE_INFO_CLOSED, () => {
     window.networkNav.currentNodeParams = null;
     packageInfoOpened = false;
   });
@@ -261,7 +263,7 @@ function onSettingsSaved(defaultConfig = null) {
     updateSettings(defaultConfig);
   }
 
-  window.addEventListener("settings-saved", async(event) => {
+  window.addEventListener(EVENTS.SETTINGS_SAVED, async(event) => {
     updateSettings(event.detail);
   });
 }

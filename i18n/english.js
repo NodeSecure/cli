@@ -227,6 +227,10 @@ const ui = {
     default: "The package is fine.",
     warn: "The package has warnings.",
     friendly: "The package is maintained by the same authors as the root package."
+  },
+  lockedNavigation: {
+    next: "Next",
+    prev: "Prev"
   }
 };
 

@@ -3,6 +3,7 @@ import "../bundlephobia/bundlephobia.js";
 import { PackageHeader } from "./header/header.js";
 import * as Pannels from "./pannels/index.js";
 import * as utils from "../../common/utils.js";
+import { EVENTS } from "../../core/events.js";
 
 export class PackageInfo {
   static DOMElementName = "package-info";
@@ -13,7 +14,7 @@ export class PackageInfo {
       domElement.setAttribute("class", "slide-out");
     }
 
-    window.dispatchEvent(new CustomEvent("package-info-closed", { detail: null }));
+    window.dispatchEvent(new CustomEvent(EVENTS.PACKAGE_INFO_CLOSED, { detail: null }));
   }
 
   /**
