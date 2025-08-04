@@ -1,5 +1,6 @@
 // Import Internal Dependencies
 import * as utils from "../../common/utils.js";
+import { EVENTS } from "../../core/events.js";
 
 export class Locker {
   constructor(nsn) {
@@ -58,6 +59,7 @@ export class Locker {
       console.log("[LOCKER] lock triggered");
       this.renderLock();
       this.locked = true;
+      window.dispatchEvent(new CustomEvent(EVENTS.LOCKED, { composed: true }));
     }
   }
 
@@ -69,6 +71,7 @@ export class Locker {
     console.log("[LOCKER] unlock triggered");
     this.renderUnlock();
     this.locked = false;
+    window.dispatchEvent(new CustomEvent(EVENTS.UNLOCKED, { composed: true }));
 
     // No node selected, so we reset highlight
     const selectedNode = window.networkNav.currentNodeParams;

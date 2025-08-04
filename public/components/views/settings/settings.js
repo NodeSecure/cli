@@ -4,6 +4,7 @@ import { warnings } from "@nodesecure/js-x-ray/warnings";
 
 // Import Internal Dependencies
 import * as utils from "../../../common/utils.js";
+import { EVENTS } from "../../../core/events.js";
 
 // CONSTANTS
 const kAllowedHotKeys = new Set([
@@ -231,7 +232,7 @@ export class Settings {
     this.config = newConfig;
     this.saveButton.classList.add("disabled");
 
-    window.dispatchEvent(new CustomEvent("settings-saved", { detail: this.config }));
+    window.dispatchEvent(new CustomEvent(EVENTS.SETTINGS_SAVED, { detail: this.config }));
   }
 
   updateSettings() {

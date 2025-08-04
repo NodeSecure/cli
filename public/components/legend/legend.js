@@ -1,5 +1,5 @@
 // Import Third-party Dependencies
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, nothing } from "lit";
 
 // Import Internal Dependencies
 import { COLORS } from "../../../workspaces/vis-network/src/constants.js";
@@ -79,7 +79,7 @@ class Legend extends LitElement {
 
   render() {
     if (!this.isVisible) {
-      return html``;
+      return nothing;
     }
 
     const colors = COLORS.LIGHT;

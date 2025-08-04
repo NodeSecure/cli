@@ -1,5 +1,6 @@
 // Import Internal Dependencies
 import { PackageInfo } from "../components/package/package.js";
+import { EVENTS } from "./events.js";
 
 export class NetworkNavigation {
   /**
@@ -118,6 +119,13 @@ export class NetworkNavigation {
 
     this.#dependenciesMapByLevel.set(0, this.rootNodeParams);
 
+    window.addEventListener(EVENTS.MOVED_TO_NEXT_LOCKED_NODE, () => {
+      this.#moveToNextLockedNode();
+    });
+    window.addEventListener(EVENTS.MOVED_TO_PREVIOUS_LOCKED_NODE, () => {
+      this.#moveToPreviousLockedNode();
+    });
+
     document.addEventListener("keydown", (event) => {
       const isNetworkViewHidden = document.getElementById("network--view").classList.contains("hidden");
       const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
@@ -147,22 +155,9 @@ export class NetworkNavigation {
 
       const nodeParam = this.#currentNodeParams ?? this.rootNodeParams;
 
-      if (this.#nsn.lastHighlightedIds === null) {
-        this.#lockedNodes = [];
-      }
-      else {
-        this.#lockedNodes = this.#sortByAngle(
-          [...this.#nsn.lastHighlightedIds].map(
-            (id) => [id, {
-              ...this.#secureDataSet.linker.get(id),
-              position: nsn.network.getPosition(id)
-            }]
-          ),
-          { ...nsn.network.getPosition(this.rootNodeParams.nodes[0]) }
-        );
-      }
+      this.#updateLockedNodes();
 
-      if (this.#lockedNodes.length > 0) {
+      if (this.#hasLockedNodes()) {
         this.#navigateBetweenLockedNodes(event);
 
         return;
@@ -361,32 +356,81 @@ export class NetworkNavigation {
     this.#navigateTreeLevel(nearthestNode);
   }
 
+  #updateLockedNodes() {
+    if (this.#nsn.lastHighlightedIds === null) {
+      this.#lockedNodes = [];
+    }
+    else {
+      this.#lockedNodes = this.#sortByAngle(
+        [...this.#nsn.lastHighlightedIds].map(
+          (id) => [id, {
+            ...this.#secureDataSet.linker.get(id),
+            position: this.#nsn.network.getPosition(id)
+          }]
+        ),
+        { ...this.#nsn.network.getPosition(this.rootNodeParams.nodes[0]) }
+      );
+    }
+  }
+
+  #moveToPreviousLockedNode() {
+    this.#updateLockedNodes();
+    if (this.#hasLockedNodes()) {
+      this.#selectPreviousLockedNode();
+      this.#focusOnActiveLockedNode();
+    }
+  }
+
+  #moveToNextLockedNode() {
+    this.#updateLockedNodes();
+    if (this.#hasLockedNodes()) {
+      this.#selectNextLockedNode();
+      this.#focusOnActiveLockedNode();
+    }
+  }
+
   #navigateBetweenLockedNodes(event) {
     switch (event.code) {
       case "ArrowLeft":
-        if (this.#lockedNodesActiveIndex === 0) {
-          this.#lockedNodesActiveIndex = this.#lockedNodes.length - 1;
-        }
-        else {
-          this.#lockedNodesActiveIndex--;
-        }
+        this.#selectPreviousLockedNode();
         break;
       case "ArrowRight":
-        if (this.#lockedNodesActiveIndex === this.#lockedNodes.length - 1) {
-          this.#lockedNodesActiveIndex = 0;
-        }
-        else {
-          this.#lockedNodesActiveIndex++;
-        }
+        this.#selectNextLockedNode();
         break;
       default:
         return;
     }
 
+    this.#focusOnActiveLockedNode();
+  }
+
+  #selectPreviousLockedNode() {
+    if (this.#lockedNodesActiveIndex === 0) {
+      this.#lockedNodesActiveIndex = this.#lockedNodes.length - 1;
+    }
+    else {
+      this.#lockedNodesActiveIndex--;
+    }
+  }
+
+  #selectNextLockedNode() {
+    if (this.#lockedNodesActiveIndex === this.#lockedNodes.length - 1) {
+      this.#lockedNodesActiveIndex = 0;
+    }
+    else {
+      this.#lockedNodesActiveIndex++;
+    }
+  }
+
+  #focusOnActiveLockedNode() {
     this.#nsn.network.focus(this.#lockedNodes[this.#lockedNodesActiveIndex][0], {
       animation: true,
       scale: 0.35,
       offset: { x: 150, y: 0 }
     });
+  }
+
+  #hasLockedNodes() {
+    return this.#lockedNodes.length > 0;
   }
 }

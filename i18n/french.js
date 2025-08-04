@@ -227,6 +227,10 @@ const ui = {
     default: "Rien à signaler.",
     warn: "La dépendance contient des menaces.",
     friendly: "La dépendance est maintenu par des auteurs du package principal."
+  },
+  lockedNavigation: {
+    next: "Suivant",
+    prev: "Précédent"
   }
 };
 
