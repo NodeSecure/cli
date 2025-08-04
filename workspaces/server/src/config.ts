@@ -1,6 +1,7 @@
 // Import Third-party Dependencies
 import { warnings, type WarningName } from "@nodesecure/js-x-ray";
 import { appCache, type AppConfig } from "@nodesecure/cache";
+import * as i18n from "@nodesecure/i18n";
 
 // Import Internal Dependencies
 import { logger } from "./logger.js";
@@ -16,6 +17,7 @@ const kDefaultConfig = {
 };
 
 export async function get(): Promise<AppConfig> {
+  const localLang = await i18n.getLocalLang();
   try {
     const config = await appCache.getConfig();
 
@@ -26,7 +28,8 @@ export async function get(): Promise<AppConfig> {
         warnings = []
       } = {},
       theme,
-      disableExternalRequests = false
+      disableExternalRequests = false,
+      lang = localLang
     } = config;
     logger.info(
       // eslint-disable-next-line @stylistic/max-len
@@ -40,7 +43,8 @@ export async function get(): Promise<AppConfig> {
         warnings
       },
       theme,
-      disableExternalRequests
+      disableExternalRequests,
+      lang
     };
   }
   catch (err: any) {
@@ -50,7 +54,7 @@ export async function get(): Promise<AppConfig> {
 
     logger.info(`[config|get](fallback to default: ${JSON.stringify(kDefaultConfig)})`);
 
-    return kDefaultConfig;
+    return { ...kDefaultConfig, lang: localLang };
   }
 }
 
@@ -65,5 +69,12 @@ export async function set(newValue: AppConfig) {
     logger.error(`[config|set](error: ${err.message})`);
 
     throw err;
+  }
+
+  const i18nLocalLang = await i18n.getLocalLang();
+  if (i18nLocalLang !== newValue.lang) {
+    logger.info(`[config|set](updating i18n lang to: ${newValue.lang})`);
+    await i18n.setLocalLang(newValue.lang!);
+    await i18n.getLanguages();
   }
 }

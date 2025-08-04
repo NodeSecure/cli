@@ -39,6 +39,7 @@ export class Settings {
       /** @type {HTMLInputElement} */
       showFriendlyDependenciesCheckbox: document.querySelector("#show-friendly"),
       themeSelector: document.querySelector("#theme_selector"),
+      langSelector: document.querySelector("#lang_selector"),
       disableExternalRequestsCheckbox: document.querySelector("#disable-external")
     };
 
@@ -52,6 +53,7 @@ export class Settings {
       ...this.dom.flagsCheckbox,
       this.dom.showFriendlyDependenciesCheckbox,
       this.dom.themeSelector,
+      this.dom.langSelector,
       this.dom.disableExternalRequestsCheckbox
     ];
     for (const formField of formFields) {
@@ -203,7 +205,8 @@ export class Settings {
       ignore: { flags: new Set(), warnings: new Set() },
       showFriendlyDependencies: this.dom.showFriendlyDependenciesCheckbox.checked,
       theme: this.dom.themeSelector.value,
-      disableExternalRequests: this.dom.disableExternalRequestsCheckbox.checked
+      disableExternalRequests: this.dom.disableExternalRequestsCheckbox.checked,
+      lang: this.dom.langSelector.value
     };
 
     for (const checkbox of this.dom.warningsCheckbox) {
@@ -228,15 +231,21 @@ export class Settings {
         "content-type": "application/json"
       }
     });
-    this.config = newConfig;
+    this.config = { ...newConfig, lang: this.config.lang };
     this.saveButton.classList.add("disabled");
 
-    window.dispatchEvent(new CustomEvent("settings-saved", { detail: this.config }));
+    window.dispatchEvent(new CustomEvent("settings-saved", {
+      detail: {
+        ...this.config,
+        lang: newConfig.lang
+      }
+    }));
   }
 
   updateSettings() {
     this.dom.defaultPackageMenu.value = this.config.defaultPackageMenu;
     this.dom.themeSelector.value = this.config.theme;
+    this.dom.langSelector.value = this.config.lang;
 
     const warnings = new Set(this.config.ignore.warnings);
     const flags = new Set(this.config.ignore.flags);
