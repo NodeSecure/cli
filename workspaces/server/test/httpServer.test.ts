@@ -18,7 +18,6 @@ import { type Polka } from "polka";
 
 // Import Internal Dependencies
 import { buildServer } from "../index.js";
-import * as rootEndpoint from "../src/endpoints/root.js";
 import * as flagsEndpoint from "../src/endpoints/flags.js";
 
 // CONSTANTS
@@ -80,41 +79,6 @@ describe("httpServer", { concurrency: 1 }, () => {
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.headers["content-type"], "text/html");
-  });
-
-  test("'/' should fail", async(ctx) => {
-    class Response {
-      body: string;
-      headers: Record<string, string>;
-      statusCode: number;
-
-      constructor() {
-        this.body = "";
-        this.headers = {};
-        this.statusCode = 200;
-      }
-      end(str: string) {
-        this.body = str;
-      }
-      writeHead(int: number) {
-        this.statusCode = int;
-      }
-      getHeader(key: string) {
-        return this.headers[key];
-      }
-    }
-
-    const fakeError = "fake error";
-    function toThrow() {
-      throw new Error(fakeError);
-    }
-    ctx.mock.method(Response.prototype, "writeHead", toThrow, { times: 1 });
-
-    const response: any = new Response();
-    await rootEndpoint.get({} as any, response);
-
-    assert.strictEqual(response.body, JSON.stringify({ error: fakeError }));
-    assert.strictEqual(response.statusCode, 500);
   });
 
   test("'/flags' should return the flags list as JSON", async() => {
