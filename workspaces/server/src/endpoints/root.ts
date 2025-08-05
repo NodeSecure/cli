@@ -7,13 +7,13 @@ import { context } from "../ALS.js";
 
 export async function get(_req: Request, res: Response) {
   try {
-    res.writeHead(200, {
-      "Content-Type": "text/html"
-    });
-
     const { viewBuilder } = context.getStore()!;
 
     const templateStr = await viewBuilder.render();
+
+    res.writeHead(200, {
+      "Content-Type": "text/html"
+    });
     res.end(templateStr);
   }
   catch (err: any) {
