@@ -10,6 +10,4 @@ $ nsecure extract integrity [spec]
 
 ## ⚙️ Available Options
 
-| Name | Shortcut | Default Value | Description |
-|---|---|---|---|
-| `--token` | `-t` | undefined | NPM token. |
+NONE
