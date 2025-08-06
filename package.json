@@ -107,7 +107,7 @@
     "@topcli/pretty-json": "^1.0.0",
     "@topcli/prompts": "^2.0.0",
     "@topcli/spinner": "^3.0.0",
-    "cacache": "^19.0.1",
+    "cacache": "^20.0.0",
     "chokidar": "^4.0.3",
     "diff": "^8.0.2",
     "dotenv": "^17.0.0",
