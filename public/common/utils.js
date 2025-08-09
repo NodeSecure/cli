@@ -214,13 +214,11 @@ export function toggle(expandable, parentNode, hideItemsLength) {
       continue;
     }
 
-    if (node !== this) {
-      if (expandable.isClosed) {
-        node.classList.remove("hidden");
-      }
-      else if (id >= hideItemsLength) {
-        node.classList.add("hidden");
-      }
+    if (!expandable.isClosed) {
+      node.classList.remove("hidden");
+    }
+    else if (id >= hideItemsLength) {
+      node.classList.add("hidden");
     }
   }
 }

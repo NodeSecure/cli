@@ -2,7 +2,6 @@
 import "../bundlephobia/bundlephobia.js";
 import { PackageHeader } from "./header/header.js";
 import * as Pannels from "./pannels/index.js";
-import * as utils from "../../common/utils.js";
 import { EVENTS } from "../../core/events.js";
 
 export class PackageInfo {
@@ -89,15 +88,11 @@ export class PackageInfo {
     }
 
     const panFiles = packageHTMLElement.querySelector("#pan-files");
-
-    const bundlephobia = utils.createDOMElement("bundle-phobia", {
-      attributes: {
-        name: this.dependencyVersion.name,
-        version: this.dependencyVersion.version
-      }
-    });
-
-    panFiles.appendChild(bundlephobia);
+    const files = document.createElement("package-files");
+    files.package = this;
+    files.id = "pan-files";
+    files.classList.add("package-container");
+    panFiles.parentElement.replaceChild(files, panFiles);
   }
 
   /**
@@ -165,7 +160,6 @@ export class PackageInfo {
     if (window.settings.config.disableExternalRequests === false) {
       new Pannels.Scorecard(this).generate(clone);
     }
-    new Pannels.Files(this).generate(clone);
 
     return clone;
   }
