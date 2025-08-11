@@ -91,7 +91,7 @@ export class PackageInfo {
     const files = document.createElement("package-files");
     files.package = this;
     files.id = "pan-files";
-    files.classList.add("package-container");
+    files.classList.add("package-container", "hidden");
     panFiles.parentElement.replaceChild(files, panFiles);
   }
 
