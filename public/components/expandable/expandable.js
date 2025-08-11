@@ -42,7 +42,7 @@ span.expandable nsecure-icon {
 
   constructor() {
     super();
-    this.isClosed = false;
+    this.isClosed = true;
     this.onToggle = () => void 0;
   }
 
@@ -50,12 +50,12 @@ span.expandable nsecure-icon {
     const lang = currentLang();
 
     return html`
-      <span data-value=${this.isClosed ? "opened" : "closed"}  @click=${this.#handleClick} class="expandable">
+      <span data-value=${this.isClosed ? "closed" : "opened"}  @click=${this.#handleClick} class="expandable">
         ${when(this.isClosed,
-          () => html`<nsecure-icon name="minus"></nsecure-icon>
-        <p>${window.i18n[lang].home.showLess}</p>`,
           () => html`<nsecure-icon name="plus"></nsecure-icon>
-        <p>${window.i18n[lang].home.showMore}</p>`
+        <p>${window.i18n[lang].home.showMore}</p>`,
+          () => html`<nsecure-icon name="minus"></nsecure-icon>
+        <p>${window.i18n[lang].home.showLess}</p>`
         )}
       </span>
 `;
