@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ quiet: true });
 
 // Import Node.js Dependencies
 import fs from "node:fs";
