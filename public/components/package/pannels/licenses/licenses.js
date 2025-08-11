@@ -1,6 +1,6 @@
 // Import Internal Dependencies
 import * as utils from "../../../../common/utils.js";
-import { createFileBox } from "../../../file-box/file-box.js";
+import "../../../file-box/file-box.js";
 
 export class Licenses {
   constructor(pkg) {
@@ -36,13 +36,12 @@ export class Licenses {
         childs: spdx.map((text) => utils.createDOMElement("div", { text }))
       });
 
-      const box = createFileBox({
-        title: licenseName,
-        fileName: license.from,
-        childs: [boxContainer],
-        titleHref: licenseLink,
-        fileHref: `${unpkgRoot}${license.from}`
-      });
+      const box = document.createElement("file-box");
+      box.title = licenseName;
+      box.fileName = license.from;
+      box.titleHref = licenseLink;
+      box.fileHref = `${unpkgRoot}${license.from}`;
+      box.appendChild(boxContainer);
       fragment.appendChild(box);
     }
 

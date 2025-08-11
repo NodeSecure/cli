@@ -2,7 +2,7 @@
 import { locationToString } from "@nodesecure/utils";
 
 // Import Internal Dependencies
-import { createFileBox } from "../../../file-box/file-box.js";
+import "../../../file-box/file-box.js";
 import { CodeFetcher } from "./code-fetcher.js";
 import * as utils from "../../../../common/utils.js";
 
@@ -110,15 +110,15 @@ export class Warnings {
         ]
       });
 
-      const box = createFileBox({
-        title: warning.kind,
-        fileName: warning.file.length > 20 ? `${warning.file.slice(0, 20)}...` : warning.file,
-        childs: [boxContainer, boxPosition],
-        titleHref: warning.kind === "invalid-semver" ?
-          null : `https://github.com/NodeSecure/js-x-ray/blob/master/docs/${warning.kind}.md`,
-        fileHref: `${unpkgRoot}${warning.file}`,
-        severity: warning.severity ?? "Information"
-      });
+      const box = document.createElement("file-box");
+      box.title = warning.kind;
+      box.fileName = warning.file.length > 20 ? `${warning.file.slice(0, 20)}...` : warning.file;
+      box.titleHref = warning.kind === "invalid-semver" ?
+        null : `https://github.com/NodeSecure/js-x-ray/blob/master/docs/${warning.kind}.md`;
+      box.fileHref = `${unpkgRoot}${warning.file}`;
+      box.severity = warning.severity ?? "Information";
+      box.appendChild(boxContainer);
+      box.appendChild(boxPosition);
       fragment.appendChild(box);
     }
 
