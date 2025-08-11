@@ -7,7 +7,7 @@ import "../icon/icon.js";
 
 class FileBox extends LitElement {
   static styles = css`
-  .box-file-info {
+.box-file-info {
   display: flex;
   flex-direction: column;
   padding: 10px;
