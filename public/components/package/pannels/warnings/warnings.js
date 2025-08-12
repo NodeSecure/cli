@@ -118,7 +118,9 @@ export class Warnings {
       box.fileHref = `${unpkgRoot}${warning.file}`;
       box.severity = warning.severity ?? "Information";
       box.appendChild(boxContainer);
-      box.appendChild(boxPosition);
+      if (boxPosition) {
+        box.appendChild(boxPosition);
+      }
       fragment.appendChild(box);
     }
 

@@ -93,6 +93,13 @@ export class PackageInfo {
     files.id = "pan-files";
     files.classList.add("package-container", "hidden");
     panFiles.parentElement.replaceChild(files, panFiles);
+
+    const panLicenses = packageHTMLElement.querySelector("#pan-licenses");
+    const licenses = document.createElement("package-licenses");
+    licenses.package = this;
+    licenses.id = "pan-licenses";
+    files.classList.add("package-container", "hidden");
+    panLicenses.parentElement.replaceChild(licenses, panLicenses);
   }
 
   /**
@@ -153,7 +160,6 @@ export class PackageInfo {
     this.links = new PackageHeader(this).generate(clone);
 
     new Pannels.Overview(this).generate(clone);
-    new Pannels.Licenses(this).generate(clone);
     new Pannels.Warnings(this).generate(clone);
     new Pannels.Scripts(this).generate(clone);
     new Pannels.Vulnerabilities(this).generate(clone);

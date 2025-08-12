@@ -1,24 +1,4 @@
 /**
- * LICENSES
- */
-.box-container-licenses {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.box-container-licenses>div {
-  flex-grow: 1;
-  flex-basis: 150px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-  font-weight: 500;
-  color: #D1C4E9;
-  font-family: system-ui;
-}
-
-/**
  * WARNINGS
  */
 .box-container-warning {
