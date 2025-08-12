@@ -4,6 +4,7 @@ declare class Header {
   defaultName: string | null;
 
   setNewActiveView(name: string): void;
+  switchActiveView(): void;
 }
 
 declare class Navigation {
@@ -14,6 +15,9 @@ declare class Navigation {
   fetchCallback: (name: string, menu: HTMLElement) => any;
 
   setNewActiveMenu(name: string): void;
+  generateFromIterable(items: Iterable<HTMLElement>): DocumentFragment;
+  next(): void;
+  previous(): void;
 }
 
 export interface RenderDocumentationUIOptions {

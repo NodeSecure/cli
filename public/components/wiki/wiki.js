@@ -13,7 +13,9 @@ export class Wiki {
     const { header, navigation } = documentationUI.render(
       this.documentationRenderContainer, { preCacheAllFlags: true }
     );
+    /** @type {documentationUI.Header} */
     this.header = header;
+    /** @type {Record<string, documentationUI.Navigation>} */
     this.navigation = navigation;
 
     const packageInfoDomElement = document.getElementById(PackageInfo.DOMElementName);
@@ -31,18 +33,51 @@ export class Wiki {
     });
 
     document.addEventListener("keydown", (event) => {
-      const isTargetInput = event.target.tagName === "INPUT";
-      const isTargetPopup = event.target.id === "popup--background";
-      if (isTargetInput || isTargetPopup) {
-        return;
-      }
-
-      const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
-
-      if (event.key.toUpperCase() === hotkeys.wiki) {
-        this[this.isOpen ? "close" : "open"]();
+      this.#keydownHotkeys(event);
+      if (this.isOpen) {
+        this.#keydownArrows(event);
       }
     });
+  }
+
+  /**
+   * @param {KeyboardEvent} event
+   */
+  #keydownHotkeys(event) {
+    const isTargetInput = event.target.tagName === "INPUT";
+    const isTargetPopup = event.target.id === "popup--background";
+    if (isTargetInput || isTargetPopup) {
+      return;
+    }
+
+    const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
+
+    if (event.key.toUpperCase() === hotkeys.wiki) {
+      this[this.isOpen ? "close" : "open"]();
+    }
+  }
+
+  /**
+   * @param {KeyboardEvent} event
+   */
+  #keydownArrows(event) {
+    /** @type {documentationUI.Navigation} */
+    const activeNav = this.navigation[this.header.active.getAttribute("data-menu")];
+
+    switch (event.key) {
+      case "ArrowLeft":
+      case "ArrowRight":
+        this.header.switchActiveView();
+        break;
+      case "ArrowUp":
+        activeNav.previous();
+        break;
+      case "ArrowDown":
+        activeNav.next();
+        break;
+      default:
+        break;
+    }
   }
 
   get isOpen() {
