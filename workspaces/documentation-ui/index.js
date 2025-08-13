@@ -54,7 +54,9 @@ const kHeaderMenus = Object.entries(kWikiMenus)
 export function render(rootElement, options = {}) {
   const { prefetch = false } = options;
 
+  /** @type {Record<string, Navigation>} */
   const navigation = {};
+  /** @type {HTMLElement[]} */
   const containers = [];
   for (const [name, properties] of Object.entries(kWikiMenus)) {
     const nav = new Navigation({
@@ -90,30 +92,6 @@ export function render(rootElement, options = {}) {
     node.remove();
   }
   rootElement.appendChild(mainContainer);
-
-  document.addEventListener("keydown", (event) => {
-    const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
-    if (!isWikiOpen) {
-      return;
-    }
-
-    const activeNav = navigation[header.active.getAttribute("data-menu")];
-
-    switch (event.key) {
-      case "ArrowLeft":
-      case "ArrowRight":
-        header.switchActiveView();
-        break;
-      case "ArrowUp":
-        activeNav.previous();
-        break;
-      case "ArrowDown":
-        activeNav.next();
-        break;
-      default:
-        break;
-    }
-  });
 
   return {
     header,
