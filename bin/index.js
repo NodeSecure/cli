@@ -131,7 +131,6 @@ prog
 prog
   .command("extract integrity [spec]")
   .describe(i18n.getTokenSync("cli.commands.extractIntegrity.desc"))
-  .option("-t, --token", i18n.getTokenSync("cli.commands.extractIntegrity.option_token"))
   .action(commands.extractIntegrity.main);
 
 prog.parse(process.argv);
