@@ -5,7 +5,7 @@ import { getScoreColor, getVCSRepositoryPathAndPlatform } from "@nodesecure/util
 
 // Import Internal Dependencies
 import * as utils from "../../../common/utils.js";
-import { Gauge } from "../../gauge/gauge.js";
+import "../../gauge/gauge.js";
 import "../../expandable/expandable.js";
 import { fetchScorecardData, getScorecardLink } from "../../../common/scorecard.js";
 
@@ -295,9 +295,11 @@ export class HomeView {
         return { name, value };
       });
 
-    document.getElementById("home-extensions").appendChild(
-      new Gauge(extensions).render()
-    );
+    const gauge = document.createElement("gauge-bar");
+    gauge.data = extensions;
+    gauge.theme = this.secureDataSet.theme;
+
+    document.getElementById("home-extensions").appendChild(gauge);
   }
 
   generateLicenses() {
@@ -321,9 +323,11 @@ export class HomeView {
         ];
       });
 
-    document.getElementById("home-licenses").appendChild(
-      new Gauge(licenses).render()
-    );
+    const gauge = document.createElement("gauge-bar");
+    gauge.data = licenses;
+    gauge.theme = this.secureDataSet.theme;
+
+    document.getElementById("home-licenses").appendChild(gauge);
   }
 
   generateMaintainers() {
@@ -353,9 +357,11 @@ export class HomeView {
         return { name, value };
       });
 
-    moduleTypesElement.appendChild(
-      new Gauge(moduleTypesJaugeData).render()
-    );
+    const gauge = document.createElement("gauge-bar");
+    gauge.data = moduleTypesJaugeData;
+    gauge.theme = this.secureDataSet.theme;
+
+    moduleTypesElement.appendChild(gauge);
   }
 
   async generateDownloads() {

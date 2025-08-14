@@ -1,115 +1,201 @@
+// Import Third-party Dependencies
+import { LitElement, html, css, nothing } from "lit";
+import { repeat } from "lit/directives/repeat.js";
+import { when } from "lit/directives/when.js";
+
 // Import Internal Dependencies
-import * as utils from "../../common/utils.js";
+import { EVENTS } from "../../core/events.js";
 import "../expandable/expandable.js";
 
-export class Gauge {
-  /**
-   * @param {{ name: string, value: number, chips?: string[] }[]} data
-   */
-  constructor(
-    data,
-    options = {}
-  ) {
-    this.maxLength = options.maxLength ?? 8;
+class Gauge extends LitElement {
+  static styles = css`
+.gauge {
+  display: flex;
+  flex-direction: column;
+}
 
-    this.data = data;
-    this.length = data.reduce((prev, curr) => prev + curr.value, 0);
+.gauge>.line {
+  display: flex;
+  flex-direction: column;
+  color: #546884;
+  padding: 0 10px;
+  border-radius: 4px;
+}
+
+.dark >.line {
+  color: white;
+}
+
+.gauge>.line.clickable:hover {
+  background: linear-gradient(to bottom,  rgb(255 255 255 / 100%) 0%,rgb(255 255 255 / 0%) 100%);
+  cursor: pointer;
+}
+
+.dark >.line.clickable:hover {
+  background: var(--dark-theme-primary-color);
+}
+
+.gauge>.line+.line {
+  margin-top: 5px;
+}
+
+.gauge>.line>.line--column {
+  display: flex;
+  height: 24px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.gauge>.line>.line--column span {
+  width: 30px;
+  flex-shrink: 0;
+  text-align: right;
+  font-family: mononoki;
+  color: var(--secondary-darker);
+}
+
+.gauge>.line>.line--column.border-bottom {
+  border-bottom: 1px solid #8080803d;
+  padding-bottom: 5px;
+}
+
+.gauge .item-name {
+  width: 130px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.gauge .gauge--bar {
+  flex-grow: 1;
+  margin: 0 10px;
+  background: #e1e4e6;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.gauge .gauge--bar >.usage {
+  height: inherit;
+  background-color: var(--secondary-darker);
+}
+
+.gauge .chip {
+  font-family: mononoki;
+  background: #8dabe536;
+  border-radius: 8px;
+  font-size: 14px;
+  padding: 3px 5px;
+}
+
+.gauge .chip:last-child {
+  margin-right: 30px;
+}
+
+.gauge .chip + .chip {
+  margin-left: 10px;
+}
+`;
+
+  static properties = {
+    data: { type: Object },
+    maxLength: { type: Number },
+    isClosed: { type: Boolean },
+    theme: { type: String }
+  };
+
+  constructor() {
+    super();
+    this.data = [];
+    this.maxLength = 8;
+    this.isClosed = true;
+    this.settingsChanged = ({ detail: { theme } }) => {
+      if (theme !== this.theme) {
+        this.theme = theme;
+      }
+    };
   }
 
-  pourcentFromValue(value) {
-    return Math.round((value / this.length) * 100);
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener(EVENTS.SETTINGS_SAVED, this.settingsChanged);
   }
 
-  createGaugeBar(usagePourcent) {
-    const usageBar = utils.createDOMElement("div", {
-      className: "usage"
-    });
-    usageBar.style.width = `${usagePourcent}%`;
-
-    return utils.createDOMElement("div", {
-      className: "gauge--bar",
-      childs: [usageBar]
-    });
-  }
-
-  * createChips(chips) {
-    for (const text of chips) {
-      yield utils.createDOMElement("div", {
-        className: "chip",
-        text
-      });
-    }
-  }
-
-  /**
-   * @param {!string} text
-   * @param {!number} value
-   * @param {string[]} chips
-   * @returns {HTMLDivElement}
-   */
-  createLine(
-    text,
-    value,
-    chips
-  ) {
-    const columnsLines = [
-      utils.createDOMElement("div", {
-        className: "line--column",
-        childs: [
-          utils.createDOMElement("p", { className: "item-name", text }),
-          this.createGaugeBar(this.pourcentFromValue(value)),
-          utils.createDOMElement("span", { text: value })
-        ]
-      })
-    ];
-    if (chips !== null) {
-      columnsLines.push(
-        utils.createDOMElement("div", {
-          classList: ["line--column", "border-bottom"],
-          childs: [...this.createChips(chips)]
-        })
-      );
-    }
-
-    return utils.createDOMElement("div", {
-      className: "line",
-      childs: columnsLines
-    });
+  disconnectedCallback() {
+    window.removeEventListener(EVENTS.SETTINGS_SAVED, this.settingsChanged);
+    super.disconnectedCallback();
   }
 
   render() {
-    const childs = [];
     const hideItems = this.data.length > this.maxLength;
-    const gauge = utils.createDOMElement("div", {
-      className: "gauge"
-    });
+    const length = this.data.reduce((prev, curr) => prev + curr.value, 0);
 
-    for (let id = 0; id < this.data.length; id++) {
-      const { name, value, link = null, chips = null } = this.data[id];
-      if (value === 0) {
-        continue;
+    return html`<div class="gauge ${this.theme}">
+      ${repeat(this.data.filter(({ value }, i) => value !== 0 && (!hideItems || !this.isClosed || i < this.maxLength)),
+          (item) => item,
+          ({ name, value, link = null, chips = null }) => html`${this.#createLine({ text: name, value, chips, link, length })}`)
       }
+      ${when(hideItems,
+        () => html`<expandable-span .isClosed=${this.isClosed} .onToggle=${() => {
+          this.isClosed = !this.isClosed;
+        }}></expandable-span>`,
+        () => nothing)}
+    </div>`;
+  }
 
-      const line = this.createLine(name, value, chips);
-      if (hideItems && id >= this.maxLength) {
-        line.classList.add("hidden");
-      }
-      if (link !== null) {
-        line.classList.add("clickable");
-        line.addEventListener("click", () => window.open(link, "_blank"));
-      }
+  #createLine({
+    text, value, chips, link, length
+  }) {
+    const lineColumn = html`
+    <div class="line--column">
+        <p class="item-name">${text}</p>
+        ${this.#createGaugeBar(this.#pourcentFromValue(value, length))}
+        <span>${value}</span>
+    </div>
+    ${when(chips,
+      () => html`<div class="line--column border-bottom">${this.#createChips(chips)}</div>`,
+      () => nothing)}
+`;
 
-      childs.push(line);
-    }
+    return html`
+    ${when(link !== null,
+      () => html`
+    <div class="clickable line" @click=${() => {
+      window.open(link, "_blank");
+    }}>
+      ${lineColumn}
+    </div>
+    `,
+      () => html`
+    <div class="line">
+      ${lineColumn}
+    </div>
+    `)}
+    `;
+  }
 
-    if (hideItems) {
-      const expandableSpan = document.createElement("expandable-span");
-      expandableSpan.onToggle = (expandable) => utils.toggle(expandable, gauge, this.maxLength);
-      childs.push(expandableSpan);
-    }
+  #createChips(chips) {
+    return html`
+    ${repeat(chips,
+      (chip) => chip,
+      (chip) => html`<div class="chip">${chip}</div>`)}
+`;
+  }
 
-    gauge.replaceChildren(...childs);
+  #createGaugeBar(percent) {
+    return html`
+    <div class="gauge--bar">
+      <div class="usage" style="width: ${percent}%"></div>
+    </div>`;
+  }
 
-    return gauge;
+  #pourcentFromValue(value, length) {
+    return Math.round((value / length) * 100);
   }
 }
+
+customElements.define("gauge-bar", Gauge);
