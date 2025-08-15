@@ -1,3 +1,5 @@
+/* FIXME: remove the !important when the popup is migrated to lit */
+
 .report--popup {
   min-width: 400px;
   padding: 40px;
@@ -15,8 +17,8 @@
   flex-shrink: 0;
 }
 
-body.dark .report--popup>.title {
-  background: var(--dark-theme-secondary-color);
+.popup-dark>.title {
+  background: var(--dark-theme-secondary-color) !important;
 }
 
 .report--popup>.title>p {
@@ -29,9 +31,9 @@ body.dark .report--popup>.title {
   font-size: 20px;
 }
 
-body.dark .report--popup>.title>p {
-  background: #303263;
-  color: #3cbde5;
+.popup-dark>.title>p {
+  background: #303263 !important;
+  color: #3cbde5 !important;
 }
 
 .report--popup>form {
@@ -48,8 +50,8 @@ body.dark .report--popup>.title>p {
   font-size: 18px;
 }
 
-body.dark .report--popup>form label {
-  color: white;
+.popup-dark>form label {
+  color: white !important;
 }
 
 .report--popup>form input {

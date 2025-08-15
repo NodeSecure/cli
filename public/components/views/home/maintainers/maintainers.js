@@ -1,7 +1,7 @@
 // Import Internal Dependencies
 import * as utils from "../../../../common/utils.js";
-import { PopupTemplate } from "../../../popup/popup.js";
 import "../../../expandable/expandable.js";
+import { EVENTS } from "../../../../core/events.js";
 
 export class Maintainers {
   static whois(name, email) {
@@ -78,9 +78,11 @@ export class Maintainers {
       }
       person.addEventListener("click", () => {
         // TODO: close package info?
-        window.popup.open(
-          new PopupMaintainer(name, data, this.nsn).render()
-        );
+        window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
+          detail: {
+            content: new PopupMaintainer(name, data, this.nsn).render()
+          }
+        }));
       });
 
       fragment.appendChild(person);
@@ -144,7 +146,7 @@ export class PopupMaintainer {
 
       this.nsn.highlightMultipleNodes(nodeIds);
       window.locker.lock();
-      window.popup.close();
+      window.dispatchEvent(new CustomEvent(EVENTS.MODAL_CLOSED));
       window.navigation.setNavByName("network--view");
 
       const currentSelectedNode = window.networkNav.currentNodeParams;
@@ -169,10 +171,7 @@ export class PopupMaintainer {
 
     this.generatePackagesList(clone);
 
-    return new PopupTemplate(
-      "maintainer",
-      clone
-    );
+    return clone;
   }
 
   /**
@@ -188,7 +187,7 @@ export class PopupMaintainer {
         className: "icon-right-open-big"
       });
       iconNetwork.addEventListener("click", () => {
-        window.popup.close();
+        window.dispatchEvent(new CustomEvent(EVENTS.MODAL_CLOSED));
         window.navigation.setNavByName("network--view");
         setTimeout(() => this.nsn.focusNodeByNameAndVersion(name, version), 25);
       });

@@ -5,7 +5,7 @@ import { NodeSecureDataSet, NodeSecureNetwork } from "@nodesecure/vis-network";
 import { PackageInfo } from "./components/package/package.js";
 import { ViewNavigation } from "./components/navigation/navigation.js";
 import { Wiki } from "./components/wiki/wiki.js";
-import { Popup } from "./components/popup/popup.js";
+import "./components/popup/popup.js";
 import { Locker } from "./components/locker/locker.js";
 import "./components/legend/legend.js";
 import "./components/locked-navigation/locked-navigation.js";
@@ -28,13 +28,13 @@ document.addEventListener("DOMContentLoaded", async() => {
   window.scannedPackageCache = [];
   window.recentPackageCache = [];
   window.locker = null;
-  window.popup = new Popup();
   window.settings = await new Settings().fetchUserConfig();
   window.i18n = await new i18n().fetch();
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
 
   await init();
+  window.dispatchEvent(new CustomEvent(EVENTS.SETTINGS_SAVED, { detail: window.settings.config }));
   onSettingsSaved(window.settings.config);
 
   window.socket = new WebSocket(`ws://${window.location.hostname}:1338`);
