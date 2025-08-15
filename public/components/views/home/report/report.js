@@ -1,5 +1,3 @@
-// Import Internal Dependencies
-import { PopupTemplate } from "../../../popup/popup.js";
 
 export class PopupReport {
   constructor(rootDependencyName) {
@@ -52,9 +50,6 @@ export class PopupReport {
       });
     }, { once: true });
 
-    return new PopupTemplate(
-      "report",
-      clone
-    );
+    return clone;
   }
 }

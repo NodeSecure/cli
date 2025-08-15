@@ -86,6 +86,7 @@ body.dark .home--maintainers > .highlighted {
 
 /**
  * POPUP
+ * FIXME: remove the !important when the popup is migrated to lit
  **/
 .maintainers--popup {
   display: flex;
@@ -130,8 +131,8 @@ body.dark .home--maintainers > .highlighted {
   color: #546884;
 }
 
-body.dark .maintainers--popup>.header>.informations>p.name {
-  color: white;
+.popup-dark >.header>.informations>p.name {
+  color: white !important;
 }
 
 .maintainers--popup>.header>.informations>p.email {
@@ -140,9 +141,9 @@ body.dark .maintainers--popup>.header>.informations>p.name {
   font-family: monospace;
 }
 
-body.dark .maintainers--popup>.header>.informations>p.email {
-  color: var(--dark-theme-secondary-color);
-  opacity: 0.9;
+.popup-dark >.header>.informations>p.email {
+  color: var(--dark-theme-secondary-color) !important;
+  opacity: 0.9 !important;
 }
 
 .maintainers--popup>.header>.icons {
@@ -182,8 +183,8 @@ body.dark .maintainers--popup>.header>.informations>p.email {
   flex-shrink: 0;
 }
 
-body.dark .maintainers--popup>.separator {
-  background: var(--dark-theme-secondary-color);
+.popup-dark >.separator {
+  background: var(--dark-theme-secondary-color) !important;
 }
 
 .maintainers--popup>.separator>p {
@@ -195,9 +196,9 @@ body.dark .maintainers--popup>.separator {
   color: #255471;
 }
 
-body.dark .maintainers--popup>.separator>p {
-  background: #303263;
-  color: #3cbde5;
+.popup-dark>.separator>p {
+  background: #303263 !important;
+  color: #3cbde5 !important;
 }
 
 .maintainers--popup>ul {
@@ -224,18 +225,18 @@ body.dark .maintainers--popup>.separator>p {
   font-size: 15px;
 }
 
-body.dark .maintainers--popup>ul li {
-  background: linear-gradient(to right, var(--dark-theme-primary-color) 0%, rgb(28 29 58 / 18.5%) 100%);
-  border: none;
-  color: white;
+.popup-dark>ul li {
+  background: linear-gradient(to right, var(--dark-theme-primary-color) 0%, rgb(28 29 58 / 18.5%) 100%) !important;
+  border: none !important;
+  color: white !important;
 }
 
 .maintainers--popup>ul li>p{
   color: #234c99;
 }
 
-body.dark .maintainers--popup>ul li>p{
-  color: #9ca6b7;
+.popup-dark>ul li>p{
+  color: #9ca6b7 !important;
 }
 
 .maintainers--popup>ul li>span{
@@ -243,8 +244,8 @@ body.dark .maintainers--popup>ul li>p{
   margin-left: 10px;
 }
 
-body.dark .maintainers--popup>ul li>span{
-  color: var(--dark-theme-secondary-color);
+.popup-dark>ul li>span{
+  color: var(--dark-theme-secondary-color) !important;
 }
 
 .maintainers--popup>ul li>i{

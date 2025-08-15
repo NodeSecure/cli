@@ -7,6 +7,7 @@ import { getScoreColor, getVCSRepositoryPathAndPlatform } from "@nodesecure/util
 import * as utils from "../../../common/utils.js";
 import "../../gauge/gauge.js";
 import "../../expandable/expandable.js";
+import { EVENTS } from "../../../core/events.js";
 import { fetchScorecardData, getScorecardLink } from "../../../common/scorecard.js";
 
 // Import Components
@@ -389,9 +390,11 @@ export class HomeView {
 
   handleReport() {
     document.querySelector(".home--header--report").addEventListener("click", async() => {
-      window.popup.open(
-        new PopupReport(this.secureDataSet.data.rootDependencyName).render()
-      );
+      window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
+        detail: {
+          content: new PopupReport(this.secureDataSet.data.rootDependencyName).render()
+        }
+      }));
     });
   }
 }
