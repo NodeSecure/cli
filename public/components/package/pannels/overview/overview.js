@@ -4,6 +4,7 @@ import prettyBytes from "pretty-bytes";
 // Import Internal Dependencies
 import * as utils from "../../../../common/utils.js";
 import { PopupMaintainer } from "../../../views/home/maintainers/maintainers.js";
+import { EVENTS } from "../../../../core/events.js";
 
 // CONSTANTS
 const kEnGBDateFormat = Intl.DateTimeFormat("en-GB", {
@@ -235,9 +236,11 @@ export class Overview {
         divElement.addEventListener("click", () => {
           const [name, data] = result;
 
-          window.popup.open(
-            new PopupMaintainer(name, data, this.package.nsn).render()
-          );
+          window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
+            detail: {
+              content: new PopupMaintainer(name, data, this.package.nsn).render()
+            }
+          }));
         });
         divElement.classList.add("clickable");
       }
