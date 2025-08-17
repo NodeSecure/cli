@@ -12,7 +12,7 @@ import { fetchScorecardData, getScorecardLink } from "../../../common/scorecard.
 
 // Import Components
 import { Maintainers } from "./maintainers/maintainers.js";
-import { PopupReport } from "./report/report.js";
+import "./report/report.js";
 
 // CONSTANTS
 const kFlagsToWatch = new Set([
@@ -390,9 +390,14 @@ export class HomeView {
 
   handleReport() {
     document.querySelector(".home--header--report").addEventListener("click", async() => {
+      const popupReport = document.createElement("popup-report");
+      popupReport.rootDependencyName = this.secureDataSet.data.rootDependencyName;
+      popupReport.theme = this.secureDataSet.theme;
+      const fragment = document.createDocumentFragment();
+      fragment.appendChild(popupReport);
       window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
         detail: {
-          content: new PopupReport(this.secureDataSet.data.rootDependencyName).render()
+          content: fragment
         }
       }));
     });
