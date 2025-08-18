@@ -3,8 +3,8 @@ import { LitElement, html, css, nothing } from "lit";
 import { when } from "lit/directives/when.js";
 
 // Import Internal Dependencies
-import { EVENTS } from "../../../../core/events";
-import { currentLang } from "../../../../common/utils";
+import { EVENTS } from "../../../../core/events.js";
+import { currentLang } from "../../../../common/utils.js";
 
 class PopupReport extends LitElement {
   static styles = css`
