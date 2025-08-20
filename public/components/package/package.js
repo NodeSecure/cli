@@ -98,8 +98,17 @@ export class PackageInfo {
     const licenses = document.createElement("package-licenses");
     licenses.package = this;
     licenses.id = "pan-licenses";
-    files.classList.add("package-container", "hidden");
+    licenses.classList.add("package-container", "hidden");
     panLicenses.parentElement.replaceChild(licenses, panLicenses);
+
+    const panVulns = packageHTMLElement.querySelector("#pan-vulnerabilities");
+    const vulns = document.createElement("package-vulnerabilities");
+    vulns.package = this;
+    vulns.vulnerabilityStrategy = window.vulnerabilityStrategy;
+    vulns.theme = window.settings.config.theme;
+    vulns.id = "pan-vulnerabilities";
+    vulns.classList.add("package-container", "hidden");
+    panVulns.parentElement.replaceChild(vulns, panVulns);
   }
 
   /**
@@ -162,7 +171,8 @@ export class PackageInfo {
     new Pannels.Overview(this).generate(clone);
     new Pannels.Warnings(this).generate(clone);
     new Pannels.Scripts(this).generate(clone);
-    new Pannels.Vulnerabilities(this).generate(clone);
+    this.addNavigationSignal(clone.getElementById("vulnerabilities-nav-menu"),
+      this.dependency.vulnerabilities.length);
     if (window.settings.config.disableExternalRequests === false) {
       new Pannels.Scorecard(this).generate(clone);
     }
