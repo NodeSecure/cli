@@ -47,11 +47,10 @@ const kHeaderMenus = Object.entries(kWikiMenus)
 
 /**
  * @description Render the documentation module in a given container
- * @param {!HTMLElement} rootElement
  * @param {object} [options]
  * @param {boolean} [options.prefetch=false]
  */
-export function render(rootElement, options = {}) {
+export function render(options = {}) {
   const { prefetch = false } = options;
 
   /** @type {Record<string, Navigation>} */
@@ -83,17 +82,13 @@ export function render(rootElement, options = {}) {
   }
 
   const header = new Header(kHeaderMenus, { defaultName: "flags" });
-  const mainContainer = utils.createDOMElement("div", {
+  const container = utils.createDOMElement("div", {
     className: "documentation--main",
     childs: [header.dom, ...containers]
   });
 
-  for (const node of rootElement.childNodes) {
-    node.remove();
-  }
-  rootElement.appendChild(mainContainer);
-
   return {
+    container,
     header,
     navigation
   };

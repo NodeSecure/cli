@@ -6,13 +6,25 @@ import { PackageInfo } from "../package/package.js";
 
 export class Wiki {
   constructor() {
-    this.documentationRootElement = document.querySelector("#documentation-root-element");
-    this.documentationRenderContainer = this.documentationRootElement.querySelector(".documentation-render-container");
-    this.openButton = this.documentationRootElement.querySelector(".open-button");
-
-    const { header, navigation } = documentationUI.render(
-      this.documentationRenderContainer, { preCacheAllFlags: true }
+    this.documentationRootElement = document.querySelector(
+      "#documentation-root-element"
     );
+    this.openButton = this.documentationRootElement.querySelector(
+      ".open-button"
+    );
+
+    const { container, header, navigation } = documentationUI.render(
+      { preCacheAllFlags: true }
+    );
+
+    const documentationRenderContainer = this.documentationRootElement.querySelector(
+      ".documentation-render-container"
+    );
+    for (const node of documentationRenderContainer.childNodes) {
+      node.remove();
+    }
+    documentationRenderContainer.appendChild(container);
+
     /** @type {documentationUI.Header} */
     this.header = header;
     /** @type {Record<string, documentationUI.Navigation>} */
