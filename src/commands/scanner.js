@@ -78,12 +78,13 @@ export async function cwd(options) {
 }
 
 export async function from(spec, options) {
-  const { depth: maxDepth = Infinity, output, silent, contacts } = options;
+  const { depth: maxDepth = Infinity, output, silent, contacts, vulnerabilityStrategy } = options;
 
   const payload = await Scanner.from(
     spec,
     {
       maxDepth,
+      vulnerabilityStrategy,
       highlight: {
         contacts: parseContacts(contacts)
       }
