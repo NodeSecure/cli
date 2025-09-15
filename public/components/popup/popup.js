@@ -70,10 +70,6 @@ section#popup--background>.popup {
       if (this.isOpen) {
         return;
       }
-      // FIXME: temporary fix until all the popups content are migrated
-      if (this.theme === "dark" && content.firstElementChild) {
-        content.firstElementChild.classList.add("popup-dark");
-      }
       this.appendChild(content);
       this.isOpen = true;
     };
