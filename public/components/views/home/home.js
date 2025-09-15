@@ -393,11 +393,9 @@ export class HomeView {
       const popupReport = document.createElement("popup-report");
       popupReport.rootDependencyName = this.secureDataSet.data.rootDependencyName;
       popupReport.theme = this.secureDataSet.theme;
-      const fragment = document.createDocumentFragment();
-      fragment.appendChild(popupReport);
       window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
         detail: {
-          content: fragment
+          content: popupReport
         }
       }));
     });
