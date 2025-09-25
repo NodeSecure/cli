@@ -26,6 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "@nodesecure/flags": "^2.4.0",
+    "@nodesecure/js-x-ray": "^9.2.0",
     "highlight.js": "^11.10.0",
     "markdown-it": "^14.1.0"
   }
