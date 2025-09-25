@@ -2,6 +2,7 @@
 
 // Import Third-party Dependencies
 import { getManifest } from "@nodesecure/flags/web";
+import { warnings } from "@nodesecure/js-x-ray/warnings";
 
 // Import Internal Dependencies
 import * as utils from "./src/utils.js";
@@ -11,19 +12,9 @@ import { Navigation } from "./src/components/navigation.class.js";
 import { fetchAndRenderByMenu } from "./src/fetch.js";
 
 // CONSTANTS
-const kSASTWarnings = [
-  "parsing-error",
-  "unsafe-import",
-  "unsafe-regex",
-  "unsafe-stmt",
-  "shady-link",
-  "encoded-literal",
-  "short-identifiers",
-  "suspicious-literal",
-  "suspicious-file",
-  "obfuscated-code",
-  "weak-crypto"
-].map((name) => ({ name }));
+const kSASTWarnings = Object
+  .keys(warnings)
+  .map((name) => ({ name }));
 
 const kWikiMenus = {
   flags: {
