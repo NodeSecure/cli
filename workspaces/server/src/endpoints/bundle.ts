@@ -1,5 +1,5 @@
 // Import Third-party Dependencies
-import * as httpie from "@myunisoft/httpie";
+import * as httpie from "@openally/httpie";
 import send from "@polka/send-type";
 import type { Request, Response } from "express-serve-static-core";
 
