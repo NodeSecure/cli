@@ -67,11 +67,11 @@
   },
   "homepage": "https://github.com/NodeSecure/cli#readme",
   "devDependencies": {
-    "@myunisoft/httpie": "^5.0.0",
     "@nodesecure/size-satisfies": "^1.1.0",
     "@nodesecure/vis-network": "^1.4.0",
     "@openally/config.eslint": "^2.1.0",
     "@openally/config.typescript": "^1.0.3",
+    "@openally/httpie": "^1.0.0",
     "@types/node": "^24.0.3",
     "c8": "^10.1.2",
     "cross-env": "^7.0.3",

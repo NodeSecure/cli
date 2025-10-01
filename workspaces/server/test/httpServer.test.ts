@@ -8,7 +8,7 @@ import assert from "node:assert";
 import stream from "node:stream";
 
 // Import Third-party Dependencies
-import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@myunisoft/httpie";
+import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@openally/httpie";
 import { CACHE_PATH } from "@nodesecure/cache";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
@@ -215,7 +215,7 @@ describe("httpServer", { concurrency: 1 }, () => {
 
   test("PUT '/config' should update the config", async() => {
     const { data: actualConfig } = await get(new URL("/config", kHttpURL));
-    // FIXME: use @mynusift/httpie instead of fetch. Atm it throws with put().
+    // FIXME: use @openally/httpie instead of fetch. Atm it throws with put().
     // https://github.com/nodejs/undici/issues/583
     const { status } = await fetch(new URL("/config", kHttpURL), {
       method: "PUT",
