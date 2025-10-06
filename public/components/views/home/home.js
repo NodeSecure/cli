@@ -11,7 +11,7 @@ import { EVENTS } from "../../../core/events.js";
 import { fetchScorecardData, getScorecardLink } from "../../../common/scorecard.js";
 
 // Import Components
-import { Maintainers } from "./maintainers/maintainers.js";
+import "./maintainers/maintainers.js";
 import "./report/report.js";
 
 // CONSTANTS
@@ -332,8 +332,15 @@ export class HomeView {
   }
 
   generateMaintainers() {
-    new Maintainers(this.secureDataSet, this.nsn)
-      .render();
+    const maintainers = document.createElement("nsecure-maintainers");
+    maintainers.secureDataSet = this.secureDataSet;
+    maintainers.nsn = this.nsn;
+    maintainers.theme = this.secureDataSet.theme;
+    maintainers.options = {
+      maximumMaintainers: 5
+    };
+    const pannel = document.getElementById("pannel-right");
+    pannel.prepend(maintainers);
   }
 
   generateModuleTypes() {

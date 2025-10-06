@@ -5,6 +5,7 @@ import prettyBytes from "pretty-bytes";
 import * as utils from "../../../../common/utils.js";
 import { PopupMaintainer } from "../../../views/home/maintainers/maintainers.js";
 import { EVENTS } from "../../../../core/events.js";
+import "../../../npm-avatar/npm-avatar.js";
 
 // CONSTANTS
 const kEnGBDateFormat = Intl.DateTimeFormat("en-GB", {
@@ -219,9 +220,13 @@ export class Overview {
     const fragment = document.createDocumentFragment();
 
     for (const author of metadata.maintainers) {
+      const authorAvatar = document.createElement("npm-avatar");
+      authorAvatar.avatar = author.npmAvatar;
+      authorAvatar.email = author.email;
+      authorAvatar.imgStyle = "width: 40px; margin-right: 6px;";
       const divElement = utils.createDOMElement("div", {
         childs: [
-          utils.createAvatarImageElementForAuthor(author),
+          authorAvatar,
           utils.createDOMElement("p", {
             text: author.name
           }),

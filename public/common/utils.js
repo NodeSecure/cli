@@ -1,5 +1,4 @@
 // Import Internal Dependencies
-import avatarURL from "../img/avatar-default.png";
 import "../components/expandable/expandable.js";
 
 window.activeLegendElement = null;
@@ -106,43 +105,6 @@ export function parseRepositoryUrl(repository = {}, defaultValue = null) {
   catch {
     return defaultValue;
   }
-}
-
-function createImageElement(baseUrl, id = null) {
-  const imageElement = document.createElement("img");
-  if (id === null || id === "") {
-    imageElement.src = `${avatarURL}`;
-  }
-  else {
-    imageElement.src = `${baseUrl}/${id}`;
-    imageElement.onerror = () => {
-      imageElement.src = `${avatarURL}`;
-    };
-  }
-
-  return imageElement;
-}
-
-export function createAvatarImageElementForAuthor(author = {}) {
-  return author.npmAvatar
-    ? createImageElement("https://www.npmjs.com", author.npmAvatar)
-    : createImageElement("https://unavatar.io", author.email);
-}
-
-export function createAvatar(name, desc) {
-  const pElement = createDOMElement("p", {
-    classList: ["count"], text: desc.count
-  });
-  const aElement = createLink(desc.url || "#");
-  const divEl = createDOMElement("div", {
-    classList: ["avatar"], childs: [pElement, aElement]
-  });
-
-  const imgEl = createAvatarImageElementForAuthor({ email: desc.email });
-  imgEl.alt = name;
-  aElement.appendChild(imgEl);
-
-  return divEl;
 }
 
 export function createLiField(title, value, options = {}) {
