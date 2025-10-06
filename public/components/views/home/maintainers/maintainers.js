@@ -2,43 +2,288 @@
 import { LitElement, html, css, nothing } from "lit";
 import { when } from "lit/directives/when.js";
 import { repeat } from "lit/directives/repeat.js";
+import { classMap } from "lit/directives/class-map.js";
 
 // Import Internal Dependencies
 import * as utils from "../../../../common/utils.js";
 import "../../../expandable/expandable.js";
 import { EVENTS } from "../../../../core/events.js";
 import "../../../icon/icon.js";
-import avatarURL from "../../../../img/avatar-default.png";
+import "../../../npm-avatar/npm-avatar.js";
 
-export class Maintainers {
-  static whois(name, email) {
-    const childs = [
-      utils.createDOMElement("p", { text: name })
-    ];
-    if (typeof email === "string") {
-      childs.push(utils.createDOMElement("span", { text: email }));
-    }
+export class Maintainers extends LitElement {
+  static styles = css`
 
-    return utils.createDOMElement("div", {
-      className: "whois", childs
-    });
+.module {
+  display: flex;
+  flex-direction: column;
+}
+
+.title{
+  height: 34px;
+  display: flex;
+  background: rgb(55 34 175);
+  background: linear-gradient(-45deg, rgb(55 34 175 / 100%) 0%,
+  rgb(55 34 175 / 100%) 48%, rgb(90 68 218 / 100%) 75%, rgb(90 68 218 / 100%) 100%);
+  background: linear-gradient(-45deg, rgb(55 34 175 / 100%) 0%,
+  rgb(55 34 175 / 100%) 48%, rgb(90 68 218 / 100%) 75%, rgb(90 68 218 / 100%) 100%);
+  background: linear-gradient(135deg, rgb(55 34 175 / 100%) 0%,
+  rgb(55 34 175 / 100%) 48%, rgb(90 68 218 / 100%) 75%, rgb(90 68 218 / 100%) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3722af', endColorstr='#5a44da', GradientType=1);
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 0 10px;
+  align-items: center;
+  font-family: mononoki;
+  text-shadow: 1px 1px 10px #05a0ff6b;
+}
+
+ .users {
+  width: fit-content;
+  transform: scale(2);
+  display: flex;
+  padding: 0px;
+  justify-content: center;
+  align-items: center;
+  margin: 0px;
+  margin-right: 6px;
+  margin-left: 15px;
+  margin-top: 18px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.link nsecure-icon {
+  color: rgb(25, 118, 210);
+}
+
+.count{
+width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FDD835;
+  margin-left: 10px;
+  color: #263238;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px;
+}
+
+ .home--maintainers {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -10px;
+  margin-top: -10px;
+}
+
+.name {
+  margin: 0px;
+}
+
+.home--maintainers>.person {
+  height: 65px;
+  flex-basis: 330px;
+  background: linear-gradient(to bottom, rgb(255 255 255) 0%, rgb(245 252 255) 100%);
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-left: 10px;
+  margin-top: 10px;
+  box-shadow: 1px 1px 4px 0 #271e792b;
+  color: #546884;
+  flex-grow: 1;
+}
+
+.dark .home--maintainers>.person {
+  color: white;
+  background: var(--dark-theme-primary-color);
+}
+
+.home--maintainers> .highlighted{
+  background: linear-gradient(to bottom, rgb(230 240 250) 0%, rgb(220 235 245) 100%);
+}
+
+.dark .home--maintainers > .highlighted {
+  background: linear-gradient(to right, rgb(11 3 31) 0%, rgb(46 10 10 / 80%) 100%);
+}
+
+.home--maintainers>.person:hover {
+  border-color: var(--secondary-darker);
+  cursor: pointer;
+}
+
+.home--maintainers>.person>nsecure-icon {
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  color: #1976D2;
+  font-size: 18px;
+}
+
+.home--maintainers>.person>.whois {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 10px;
+  font-size: 15px;
+  font-family: mononoki;
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.home--maintainers>.person>.whois>span {
+  color: var(--secondary-darker);
+  font-size: 14px;
+  margin-top: 5px;
+  font-family: monospace;
+}
+
+.home--maintainers>.person>div.packagescount {
+  display: flex;
+  align-items: center;
+  font-family: mononoki;
+  font-size: 18px;
+  margin-right: 15px;
+  flex-basis: 40px;
+  flex-shrink: 0;
+}
+
+.home--maintainers>.person>div.packagescount>nsecure-icon {
+  margin-right: 4px;
+}
+`;
+
+  static properties = {
+    secureDataSet: { type: Object },
+    nsn: { type: Object },
+    options: { type: Object },
+    isClosed: { type: Boolean },
+    theme: { type: String }
+  };
+
+  constructor() {
+    super();
+    this.isClosed = true;
+    this.settingsChanged = ({ detail: { theme } }) => {
+      if (theme !== this.theme) {
+        this.theme = theme;
+      }
+    };
   }
 
-  constructor(secureDataSet, nsn, options = {}) {
-    const { maximumMaintainers = 5 } = options;
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener(EVENTS.SETTINGS_SAVED, this.settingsChanged);
+  }
 
-    this.secureDataSet = secureDataSet;
-    this.nsn = nsn;
-    this.maximumMaintainers = maximumMaintainers;
+  disconnectedCallback() {
+    window.removeEventListener(EVENTS.SETTINGS_SAVED, this.settingsChanged);
+    super.disconnectedCallback();
   }
 
   render() {
     const authors = this.#highlightContacts([...this.secureDataSet.authors.entries()]
       .sort((left, right) => right[1].packages.size - left[1].packages.size));
 
-    document.getElementById("authors-count").innerHTML = authors.length;
-    const maintainers = document.querySelector(".home--maintainers");
-    this.generate(authors, maintainers);
+    const { maximumMaintainers } = this.options;
+
+    const hideItems = authors.length > maximumMaintainers;
+
+    const numOfMaintainers = this.isClosed ? maximumMaintainers : authors.length;
+
+    const visibleAuthors = hideItems ? authors.slice(0, numOfMaintainers) : authors;
+
+    const i18n = window.i18n[utils.currentLang()];
+
+    return html`
+    <div class="module ${this.theme}">
+        <div class="title">
+          <nsecure-icon
+          class="users"
+          name="users"></nsecure-icon>
+          <p>${i18n.home.maintainers}</p>
+          <span class="count">${authors.length}</span>
+        </div>
+        <div class="content">
+          <div class="home--maintainers">
+            ${this.#generateMaintainers(visibleAuthors)}
+
+        </div>
+      ${when(hideItems,
+        () => html`<expandable-span .isClosed=${this.isClosed} .onToggle=${() => {
+          this.isClosed = !this.isClosed;
+        }}></expandable-span>`,
+        () => nothing)}
+        </div>
+      </div>
+    `;
+  }
+
+  #generateMaintainers(authors) {
+    return html`
+    ${repeat(authors.filter(([name]) => typeof name != "undefined"),
+        (author) => author,
+        ([name, data]) => {
+          const { packages, email, url = null, npmAvatar } = data;
+          const personClasses = {
+            person: true,
+            highlighted: this.secureDataSet.isHighlighted(data)
+          };
+
+          return html`
+            <div @click=${() => {
+            // TODO: close package info?
+              const popupMaintainer = document.createElement("popup-maintainer");
+              popupMaintainer.data = data;
+              popupMaintainer.theme = this.secureDataSet.theme;
+              popupMaintainer.nsn = this.nsn;
+              popupMaintainer.name = name;
+              window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
+                detail: {
+                  content: popupMaintainer
+                }
+              }));
+            }}
+              class="${classMap(personClasses)}">
+            <npm-avatar
+              avatar="${npmAvatar}"
+              email="${email}"
+              imgStyle="width: 65px; flex-shrink: 0;"
+            ></npm-avatar>
+            <div class="whois">
+              <p class="name">${name}</p>
+              ${when(
+                typeof email === "string",
+                () => html`<span class="email">${email}</span>`,
+                () => nothing
+              )}
+            </div>
+            ${when(
+              typeof url === "string",
+              () => html`
+           <div class="link"><nsecure-icon name="link"></nsecure-icon></div>
+            `
+            )}
+            <div class="packagescount">
+              <nsecure-icon name="cube"></nsecure-icon>
+              <p>${packages.size}</p>
+          </div>
+          </div>
+      `;
+        }
+      )
+    }
+`;
   }
 
   #highlightContacts(authors) {
@@ -49,66 +294,9 @@ export class Maintainers {
 
     return [...highlightedAuthors, ...authorsRest];
   }
-
-  generate(authors, maintainers) {
-    const fragment = document.createDocumentFragment();
-    const hideItems = authors.length > this.maximumMaintainers;
-
-    for (let id = 0; id < authors.length; id++) {
-      const [name, data] = authors[id];
-      if (typeof name === "undefined") {
-        continue;
-      }
-      const { packages, email, url = null } = data;
-
-      const hasURL = typeof url === "string";
-      const person = utils.createDOMElement("div", {
-        className: "person",
-        childs: [
-          utils.createAvatarImageElementForAuthor(data),
-          Maintainers.whois(name, email),
-          hasURL ? utils.createDOMElement("i", { className: "icon-link" }) : null,
-          utils.createDOMElement("div", {
-            className: "packagescount",
-            childs: [
-              utils.createDOMElement("i", { className: "icon-cube" }),
-              utils.createDOMElement("p", { text: packages.size })
-            ]
-          })
-        ]
-      });
-      if (this.secureDataSet.isHighlighted(data)) {
-        person.classList.add("highlighted");
-      }
-      if (hideItems && id >= this.maximumMaintainers) {
-        person.classList.add("hidden");
-      }
-      person.addEventListener("click", () => {
-        // TODO: close package info?
-        const popupMaintainer = document.createElement("popup-maintainer");
-        popupMaintainer.data = data;
-        popupMaintainer.theme = this.secureDataSet.theme;
-        popupMaintainer.nsn = this.nsn;
-        popupMaintainer.name = name;
-        window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
-          detail: {
-            content: popupMaintainer
-          }
-        }));
-      });
-
-      fragment.appendChild(person);
-    }
-
-    maintainers.appendChild(fragment);
-    if (hideItems) {
-      const expandableSpan = document.createElement("expandable-span");
-      expandableSpan.onToggle = (expandable) => utils.toggle(expandable, maintainers, this.maximumMaintainers);
-
-      maintainers.appendChild(expandableSpan);
-    }
-  }
 }
+
+customElements.define("nsecure-maintainers", Maintainers);
 
 export class PopupMaintainer extends LitElement {
   static styles = css`
@@ -136,10 +324,6 @@ export class PopupMaintainer extends LitElement {
   border-radius: 8px;
   box-sizing: border-box;
   box-shadow: 2px 2px 6px 0 #00000012;
-}
-
-.maintainers--popup>.header>.avatar>img {
-  width: 80px;
 }
 
 .maintainers--popup>.header>.informations {
@@ -346,18 +530,9 @@ export class PopupMaintainer extends LitElement {
   <div class="maintainers--popup ${this.theme}">
     <div class="header">
       <div class="avatar">
-      ${when(
-          this.data.npmAvatar,
-          () => html`<img src="https://www.npmjs.com/${this.data.npmAvatar}"
-              @error=${(e) => {
-                e.currentTarget.src = avatarURL;
-              }}></img>`,
-          () => html`<img src="https://unavatar.io/${this.data.email}"
-               @error=${(e) => {
-                  e.currentTarget.src = avatarURL;
-                }}></img>`
-        )
-      }
+      <npm-avatar imgStyle="width: 80px;"
+          avatar="${this.data.npmAvatar}"
+          email="${this.data.email}"></npm-avatar>
       </div>
       <div class="informations">
         <p class="name">
