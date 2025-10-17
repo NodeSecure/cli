@@ -126,7 +126,7 @@ NodeSecure is capable to work behind a custom private npm registry too by search
 
 ```bash
 $ npm config get registry
-$ npm config set "http://your-registry/"
+$ npm config set registry "http://your-registry/"
 ```
 
 ## API
