@@ -1,5 +1,6 @@
 // Import Internal Dependencies
 import { PackageInfo } from "../package/package.js";
+import { EVENTS } from "../../core/events.js";
 
 // CONSTANTS
 const kAvailableView = new Set([
@@ -122,6 +123,10 @@ export class ViewNavigation {
       return;
     }
 
+    if (menuName === "network--view") {
+      window.dispatchEvent(new CustomEvent(EVENTS.NETWORK_VIEW_HID, { composed: true }));
+    }
+
     menu.classList.add("hidden");
   }
 
@@ -129,6 +134,10 @@ export class ViewNavigation {
     const menu = this.menus.get(menuName);
     if (!menu) {
       return;
+    }
+
+    if (menuName === "network--view") {
+      window.dispatchEvent(new CustomEvent(EVENTS.NETWORK_VIEW_SHOWED, { composed: true }));
     }
 
     menu.classList.remove("hidden");
