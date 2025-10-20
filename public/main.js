@@ -6,7 +6,7 @@ import { PackageInfo } from "./components/package/package.js";
 import { ViewNavigation } from "./components/navigation/navigation.js";
 import { Wiki } from "./components/wiki/wiki.js";
 import "./components/popup/popup.js";
-import { Locker } from "./components/locker/locker.js";
+import "./components/locker/locker.js";
 import "./components/legend/legend.js";
 import "./components/locked-navigation/locked-navigation.js";
 import { Settings } from "./components/views/settings/settings.js";
@@ -126,7 +126,10 @@ async function init(options = {}) {
     i18n: window.i18n[utils.currentLang()],
     theme: window.settings.config.theme
   });
-  window.locker = new Locker(nsn);
+  window.locker = document.createElement("nsecure-locker");
+  window.locker.nsn = nsn;
+  const locker = document.getElementById("network-locker");
+  locker.replaceWith(window.locker);
   const legend = document.getElementById("legend");
   legend.isVisible = window.settings.config.showFriendlyDependencies;
   window.legend = legend;
@@ -263,7 +266,17 @@ function onSettingsSaved(defaultConfig = null) {
     updateSettings(defaultConfig);
   }
 
+  const networkView = document.getElementById("network--view");
+
   window.addEventListener(EVENTS.SETTINGS_SAVED, async(event) => {
     updateSettings(event.detail);
+  });
+
+  window.addEventListener(EVENTS.LOCKED, () => {
+    networkView.classList.add("locked");
+  });
+
+  window.addEventListener(EVENTS.UNLOCKED, () => {
+    networkView.classList.remove("locked");
   });
 }

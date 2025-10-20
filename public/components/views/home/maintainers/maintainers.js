@@ -523,7 +523,7 @@ export class PopupMaintainer extends LitElement {
       .map((spec) => {
         const { name, version } = utils.parseNpmSpec(spec);
 
-        return `${name} @${version} `;
+        return `${name}@${version}`;
       });
 
     return html`
@@ -565,12 +565,14 @@ export class PopupMaintainer extends LitElement {
           const moveTo = currentSelectedNode === null || !nodeIds.includes(currentSelectedNode.nodes[0]);
           if (moveTo) {
             const origin = this.nsn.network.getViewPosition();
-            const closestNode = nodeIds
+            const nodes = nodeIds
               .map((id) => {
                 return { id, pos: this.nsn.network.getPosition(id) };
-              })
+              });
+            const closestNode = nodes
               .reduce(
-                (a, b) => (utils.vec2Distance(origin, a.pos) < utils.vec2Distance(origin, b.pos) ? a : b)
+                (a, b) => (utils.vec2Distance(origin, a.pos) < utils.vec2Distance(origin, b.pos) ? a : b),
+                nodes[0]
               );
 
             const scale = nodeIds.length > 3 ? 0.25 : 0.35;
