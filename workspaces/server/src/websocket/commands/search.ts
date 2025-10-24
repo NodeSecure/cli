@@ -1,5 +1,5 @@
 // Import Third-party Dependencies
-import * as Scanner from "@nodesecure/scanner";
+import * as scanner from "@nodesecure/scanner";
 import type { PayloadsList } from "@nodesecure/cache";
 
 // Import Internal Dependencies
@@ -63,7 +63,7 @@ export async function* search(
   logger.info(`[ws|search](scan ${pkg} in progress)`);
   yield { status: "SCAN" as const, pkg };
 
-  const payload = await Scanner.from(pkg, { maxDepth: 4 });
+  const payload = await scanner.from(pkg, { maxDepth: 4 });
   const name = payload.rootDependencyName;
   const version = Object.keys(payload.dependencies[name].versions)[0];
 

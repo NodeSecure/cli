@@ -56,6 +56,7 @@ export default class NodeSecureDataSet extends EventTarget {
   ) {
     console.log("[NodeSecureDataSet] Initialization started...");
     let FLAGS;
+    /** @type {import("@nodesecure/scanner").Payload | null} */
     let data;
     this.reset();
 
@@ -76,7 +77,9 @@ export default class NodeSecureDataSet extends EventTarget {
       return;
     }
 
-    this.warnings = data.warnings;
+    this.warnings = data.warnings.map(
+      (warning) => (typeof warning === "string" ? warning : warning.message)
+    );
 
     this.#highligthedContacts = data.highlighted.contacts
       .reduce((acc, { name, email }) => {
