@@ -5,11 +5,12 @@ import events from "node:events";
 
 // Import Third-party Dependencies
 import kleur from "kleur";
+import semver from "semver";
 import filenamify from "filenamify";
 import { Spinner } from "@topcli/spinner";
 import ms from "ms";
 import * as i18n from "@nodesecure/i18n";
-import * as Scanner from "@nodesecure/scanner";
+import * as scanner from "@nodesecure/scanner";
 import { appCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
@@ -67,7 +68,7 @@ export async function cwd(options) {
     contacts
   } = options;
 
-  const payload = await Scanner.cwd(
+  const payload = await scanner.cwd(
     process.cwd(),
     { maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy, highlight:
       { contacts: parseContacts(contacts) } },
@@ -80,7 +81,7 @@ export async function cwd(options) {
 export async function from(spec, options) {
   const { depth: maxDepth = Infinity, output, silent, contacts, vulnerabilityStrategy } = options;
 
-  const payload = await Scanner.from(
+  const payload = await scanner.from(
     spec,
     {
       maxDepth,
@@ -121,7 +122,7 @@ function initLogger(spec, verbose = true) {
     }
   };
 
-  const logger = new Scanner.Logger();
+  const logger = new scanner.Logger();
   logger.on("start", (eventName) => {
     if (!(eventName in spinner)) {
       return;
@@ -174,7 +175,12 @@ function initLogger(spec, verbose = true) {
   return logger;
 }
 
-async function logAndWrite(payload, output = "nsecure-result", options = {}) {
+async function logAndWrite(
+  /** @type {import("@nodesecure/scanner").Payload} */
+  payload,
+  output = "nsecure-result",
+  options = {}
+) {
   const { local = false } = options;
 
   if (payload === null) {
@@ -184,10 +190,12 @@ async function logAndWrite(payload, output = "nsecure-result", options = {}) {
   }
 
   if (payload.warnings.length > 0) {
-    console.log(`\n ${kleur.yellow().underline().bold("Global Warning:")}\n`);
-    for (const warning of payload.warnings) {
-      console.log(kleur.red().bold(warning));
-    }
+    console.log(`\n ${kleur.yellow().bold("Global Warning:")}\n`);
+    const logFn = semver.satisfies(payload.scannerVersion, ">=7.0.0") ?
+      logGlobalWarningsV7 :
+      logGlobalWarningsV6;
+    logFn(payload.warnings);
+    console.log("");
   }
 
   const ret = JSON.stringify(payload, null, 2);
@@ -210,4 +218,25 @@ async function logAndWrite(payload, output = "nsecure-result", options = {}) {
   await appCache.setRootPayload(payload, { logging: false, local });
 
   return filePath;
+}
+
+function logGlobalWarningsV7(
+  /** @type {import("@nodesecure/scanner").GlobalWarning[]} */
+  warnings
+) {
+  for (const warning of warnings) {
+    const isTypoSquatting = warning.type === "typo-squatting";
+
+    const type = kleur[isTypoSquatting ? "cyan" : "yellow"]().bold(`${warning.type}`);
+    console.log(kleur.gray().bold(`[${type}] ${warning.message}`));
+  }
+}
+
+function logGlobalWarningsV6(
+  /** @type {string[]} */
+  warnings
+) {
+  for (const warning of warnings) {
+    console.log(kleur.yellow().bold(warning));
+  }
 }

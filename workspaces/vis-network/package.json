@@ -29,7 +29,7 @@
     "vis-network": "^9.1.9"
   },
   "devDependencies": {
-    "@nodesecure/flags": "^2.4.0",
-    "@nodesecure/scanner": "^6.0.2"
+    "@nodesecure/flags": "^3.0.3",
+    "@nodesecure/scanner": "^7.1.0"
   }
 }
