@@ -1,5 +1,5 @@
 // Import Third-party Dependencies
-import { Network } from "vis-network/standalone/esm/index.js";
+import { Network } from "vis-network/standalone";
 
 // Import Internal Dependencies
 import * as CONSTANTS from "./constants.js";
