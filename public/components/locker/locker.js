@@ -166,7 +166,7 @@ export class Locker extends LitElement {
     this[this.locked ? "unlock" : "lock"]();
   }
 
-  highlightDone() {
+  highlightDone = () => {
     if (!this.unlockAuthorized) {
       return;
     }
@@ -178,7 +178,7 @@ export class Locker extends LitElement {
     }, 1);
 
     this.unlock();
-  }
+  };
 
   lock() {
     if (!this.locked) {
