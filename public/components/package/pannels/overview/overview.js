@@ -3,7 +3,7 @@ import prettyBytes from "pretty-bytes";
 
 // Import Internal Dependencies
 import * as utils from "../../../../common/utils.js";
-import { PopupMaintainer } from "../../../views/home/maintainers/maintainers.js";
+import "../../../views/home/maintainers/maintainers.js";
 import { EVENTS } from "../../../../core/events.js";
 import "../../../npm-avatar/npm-avatar.js";
 
@@ -240,10 +240,15 @@ export class Overview {
       if (result !== null) {
         divElement.addEventListener("click", () => {
           const [name, data] = result;
+          const popupMaintainer = document.createElement("popup-maintainer");
+          popupMaintainer.data = data;
+          popupMaintainer.theme = this.package.nsn.secureDataSet.theme;
+          popupMaintainer.nsn = this.package.nsn;
+          popupMaintainer.name = name;
 
           window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
             detail: {
-              content: new PopupMaintainer(name, data, this.package.nsn).render()
+              content: popupMaintainer
             }
           }));
         });
