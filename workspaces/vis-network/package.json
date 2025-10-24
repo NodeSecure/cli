@@ -25,8 +25,8 @@
   "license": "MIT",
   "dependencies": {
     "pretty-bytes": "^7.0.0",
-    "vis-data": "^7.1.9",
-    "vis-network": "^9.1.9"
+    "vis-data": "^8.0.3",
+    "vis-network": "^10.0.2"
   },
   "devDependencies": {
     "@nodesecure/flags": "^3.0.3",
