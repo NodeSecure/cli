@@ -13,7 +13,6 @@ import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
 import enableDestroy from "server-destroy";
 import cacache from "cacache";
-import { type Polka } from "polka";
 
 // Import Internal Dependencies
 import { buildServer } from "../index.js";
