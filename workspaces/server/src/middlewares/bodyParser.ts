@@ -7,7 +7,9 @@ import type { Request } from "express-serve-static-core";
  * @param {*} req
  * @returns {Promise<any>}
  */
-export async function bodyParser(req: Request) {
+export async function bodyParser(
+  req: Request
+) {
   let rawBody = "";
   for await (const chunk of req) {
     rawBody += chunk;
