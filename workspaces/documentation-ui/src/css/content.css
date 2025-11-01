@@ -179,7 +179,7 @@ table tr th {
   border: 2px solid rgb(55 71 79 / 30%);
   text-align: center;
   letter-spacing: 0.5px;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   padding: 0 10px;
 }
 
@@ -187,7 +187,7 @@ table tr th {
 pre {
   background: #263238;
   white-space: pre;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   overflow: auto;
   border-radius: 4px;
   flex-shrink: 0;

@@ -102,7 +102,7 @@
 #pan-scorecard .check .reason,
 #pan-scorecard .check .detail {
   margin-bottom: 10px;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 #pan-scorecard .check .detail {
