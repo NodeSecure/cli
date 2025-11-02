@@ -14,7 +14,7 @@
   font-size: 14px;
   font-family: mononoki;
   letter-spacing: 0.5px;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .package-code pre {
