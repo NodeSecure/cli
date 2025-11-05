@@ -43,7 +43,10 @@ document.addEventListener("DOMContentLoaded", async() => {
     console.log(`[WEBSOCKET] data status = '${data.status || "NONE"}'`);
 
     if (data.rootDependencyName) {
-      window.activePackage = data.rootDependencyName;
+      // TODO: implement rootDependency as a whole spec in scanner
+      const rootDepVersion = Object.keys(data.dependencies[data.rootDependencyName].versions)[0];
+      window.activePackage = data.rootDependencyName + "@" + rootDepVersion;
+
       await init({ navigateToNetworkView: true });
       initSearchNav(data, {
         initFromZero: false,
@@ -245,7 +248,7 @@ function onSettingsSaved(defaultConfig = null) {
     const { nodes } = secureDataSet.build();
     nsn.nodes.update(nodes.get());
     const rootNode = secureDataSet.linker.get(0);
-    window.activePackage = rootNode.name;
+    window.activePackage = rootNode.name + "@" + rootNode.version;
 
     if (window.networkNav.currentNodeParams !== null) {
       window.navigation.setNavByName("network--view");
