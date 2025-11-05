@@ -129,7 +129,10 @@ async function init(options = {}) {
   window.locker = document.createElement("nsecure-locker");
   window.locker.nsn = nsn;
   const locker = document.getElementById("network-locker");
-  locker.replaceWith(window.locker);
+  // locker may already have been replaced when reinitializing via the search view
+  if (locker) {
+    locker.replaceWith(window.locker);
+  }
   const legend = document.getElementById("legend");
   legend.isVisible = window.settings.config.showFriendlyDependencies;
   window.legend = legend;
