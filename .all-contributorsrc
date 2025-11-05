@@ -177,6 +177,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Markobobby",
+      "name": "Mark MALAJ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15210179?v=4",
+      "profile": "https://www.linkedin.com/in/mark-malaj-99b1b8b7/",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
