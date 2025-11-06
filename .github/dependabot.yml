@@ -4,6 +4,8 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 5
     groups:
       github-actions:
         patterns:
@@ -14,6 +16,8 @@ updates:
     versioning-strategy: widen
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 5
     groups:
       dependencies:
         dependency-type: "production"
