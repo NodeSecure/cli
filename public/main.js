@@ -72,7 +72,8 @@ document.addEventListener("DOMContentLoaded", async() => {
           nsn, secureDataSet
         }
       });
-      searchview.reset();
+      searchview.mount();
+      searchview.initialize();
       const nsnActivePackage = secureDataSet.linker.get(0);
       const nsnRootPackage = nsnActivePackage ? `${nsnActivePackage.name}@${nsnActivePackage.version}` : null;
       if (data.status === "RELOAD" && nsnRootPackage !== null && nsnRootPackage !== window.activePackage) {
