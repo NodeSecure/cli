@@ -106,7 +106,7 @@
     "@topcli/cliui": "^1.1.0",
     "@topcli/pretty-json": "^1.0.0",
     "@topcli/prompts": "^2.0.0",
-    "@topcli/spinner": "^3.0.0",
+    "@topcli/spinner": "^4.0.0",
     "cacache": "^20.0.1",
     "chokidar": "^4.0.3",
     "dotenv": "^17.0.0",
