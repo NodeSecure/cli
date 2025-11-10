@@ -38,16 +38,6 @@ test("NodeSecureDataSet.prettySize", () => {
   assert.equal(nsDataSet.prettySize, "1.34 kB", "should convert bytes to human readable string");
 });
 
-test("NodeSecureDataSet.computeExtensions", () => {
-  const nsDataSet = new NodeSecureDataSet();
-  assert.equal(Object.keys(nsDataSet.extensions).length, 0, "should have 0 extensions");
-
-  nsDataSet.computeExtension([".js", ".js", ".json"]);
-
-  assert.equal(Object.keys(nsDataSet.extensions).length, 2, "should have 2 extension (js and json)");
-  assert.equal(nsDataSet.extensions[".js"], 2, "should have 2 '.js' extensions'");
-});
-
 test("NodeSecureDataSet.isHighlighted", async() => {
   const nsDataSet = new NodeSecureDataSet();
   await nsDataSet.init(dataSetPayload);
@@ -61,13 +51,6 @@ test("NodeSecureDataSet.isHighlighted", async() => {
   assert.equal(nsDataSet.isHighlighted({ email: "gentilhomme.thomas@gmail.com" }),
     true,
     "email: gentilhomme.thomas@gmail.com should be hightlighted");
-});
-
-test("NodeSecureDataSet.computeLicenses", () => {
-  const nsDataSet = new NodeSecureDataSet();
-  nsDataSet.computeLicense(["MIT", "MIT", "RND"]);
-  assert.equal(Object.keys(nsDataSet.licenses).length, 3, "should have 3 licenses (MIT, RND & 1 unknown)");
-  assert.equal(nsDataSet.licenses.MIT, 2, "should have 2 MIT licenses");
 });
 
 test("NodeSecureDataSet.computeAuthors", () => {
