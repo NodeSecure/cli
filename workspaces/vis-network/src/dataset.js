@@ -1,4 +1,5 @@
 // Import Third-party Dependencies
+import { Extractors } from "@nodesecure/scanner";
 import prettyBytes from "pretty-bytes";
 import { DataSet } from "vis-data";
 
@@ -50,10 +51,7 @@ export default class NodeSecureDataSet extends EventTarget {
     this.indirectDependencies = 0;
   }
 
-  async init(
-    initialPayload = null,
-    initialFlags = {}
-  ) {
+  async init(initialPayload = null, initialFlags = {}) {
     console.log("[NodeSecureDataSet] Initialization started...");
     let FLAGS;
     /** @type {import("@nodesecure/scanner").Payload | null} */
@@ -65,9 +63,10 @@ export default class NodeSecureDataSet extends EventTarget {
       FLAGS = initialFlags;
     }
     else {
-      ([data, FLAGS] = await Promise.all([
-        utils.getJSON("/data"), utils.getJSON("/flags")
-      ]));
+      [data, FLAGS] = await Promise.all([
+        utils.getJSON("/data"),
+        utils.getJSON("/flags")
+      ]);
     }
 
     this.FLAGS = FLAGS;
@@ -77,12 +76,11 @@ export default class NodeSecureDataSet extends EventTarget {
       return;
     }
 
-    this.warnings = data.warnings.map(
-      (warning) => (typeof warning === "string" ? warning : warning.message)
+    this.warnings = data.warnings.map((warning) => (typeof warning === "string" ? warning : warning.message)
     );
 
-    this.#highligthedContacts = data.highlighted.contacts
-      .reduce((acc, { name, email }) => {
+    this.#highligthedContacts = data.highlighted.contacts.reduce(
+      (acc, { name, email }) => {
         if (name) {
           acc.names.add(name);
         }
@@ -91,26 +89,51 @@ export default class NodeSecureDataSet extends EventTarget {
         }
 
         return acc;
-      }, { names: new Set(), emails: new Set() });
+      },
+      { names: new Set(), emails: new Set() }
+    );
 
-    const dataEntries = Object.entries(data.dependencies);
-    this.dependenciesCount = dataEntries.length;
+    const dependencies = Object.entries(data.dependencies);
+    this.dependenciesCount = dependencies.length;
 
     this.rawEdgesData = [];
     this.rawNodesData = [];
 
-    const rootDependency = dataEntries.find(([name]) => name === data.rootDependencyName);
+    const rootDependency = dependencies.find(
+      ([name]) => name === data.rootDependencyName
+    );
     const rootContributors = [
       rootDependency[1].metadata.author,
       ...rootDependency[1].metadata.maintainers,
       ...rootDependency[1].metadata.publishers
     ];
-    for (const [packageName, descriptor] of dataEntries) {
-      const contributors = [descriptor.metadata.author, ...descriptor.metadata.maintainers, ...descriptor.metadata.publishers];
+
+    const extractor = new Extractors.Payload(data, [
+      new Extractors.Probes.Licenses(),
+      new Extractors.Probes.Extensions()]);
+
+    const { extensions, licenses } = extractor.extractAndMerge();
+
+    this.extensions = extensions;
+    this.licenses = licenses;
+
+    for (const [packageName, descriptor] of dependencies) {
+      const contributors = [
+        descriptor.metadata.author, ...descriptor.metadata.maintainers, ...descriptor.metadata.publishers
+      ];
       for (const [currVersion, opt] of Object.entries(descriptor.versions)) {
-        const { id, usedBy, flags, size, uniqueLicenseIds, author, composition, warnings, links } = opt;
-        const filteredWarnings = warnings
-          .filter((row) => !this.warningsToIgnore.has(row.kind));
+        const {
+          id,
+          usedBy,
+          flags,
+          size,
+          author,
+          warnings,
+          links
+        } = opt;
+        const filteredWarnings = warnings.filter(
+          (row) => !this.warningsToIgnore.has(row.kind)
+        );
         const hasWarnings = filteredWarnings.length > 0;
 
         opt.name = packageName;
@@ -118,34 +141,45 @@ export default class NodeSecureDataSet extends EventTarget {
         opt.hidden = false;
         opt.hasWarnings = hasWarnings;
 
-        this.computeExtension(composition.extensions);
-        this.computeLicense(uniqueLicenseIds);
-        this.computeAuthor(author, `${packageName}@${currVersion}`, contributors);
+        this.computeAuthor(
+          author,
+          `${packageName}@${currVersion}`,
+          contributors
+        );
 
         if (flags.includes("hasIndirectDependencies")) {
           this.indirectDependencies++;
         }
-        this.size += size;
+        this.size = size;
 
         const flagStr = utils.getFlagsEmojisInlined(
           flags,
-          hasWarnings ? this.flagsToIgnore : new Set([...this.flagsToIgnore, "hasWarnings"])
+          hasWarnings
+            ? this.flagsToIgnore
+            : new Set([...this.flagsToIgnore, "hasWarnings"])
         );
-        const isFriendly = window.settings.config.showFriendlyDependencies & rootContributors.some(
-          (rootContributor) => contributors.some((contributor) => {
+        const isFriendly =
+          window.settings.config.showFriendlyDependencies &
+          rootContributors.some((rootContributor) => contributors.some((contributor) => {
             if (contributor === null || rootContributor === null) {
               return false;
             }
-            else if (contributor.email && contributor.email === rootContributor.email) {
+            else if (
+              contributor.email &&
+              contributor.email === rootContributor.email
+            ) {
               return true;
             }
-            else if (contributor.name && contributor.name === rootContributor.name) {
+            else if (
+              contributor.name &&
+              contributor.name === rootContributor.name
+            ) {
               return true;
             }
 
             return false;
           })
-        );
+          );
         opt.isFriendly = isFriendly;
         this.packages.push({
           id,
@@ -170,7 +204,10 @@ export default class NodeSecureDataSet extends EventTarget {
         this.rawNodesData.push(Object.assign({ id, label }, color));
 
         for (const [name, version] of Object.entries(usedBy)) {
-          this.rawEdgesData.push({ from: id, to: data.dependencies[name].versions[version].id });
+          this.rawEdgesData.push({
+            from: id,
+            to: data.dependencies[name].versions[version].id
+          });
         }
       }
     }
@@ -187,25 +224,13 @@ export default class NodeSecureDataSet extends EventTarget {
     return null;
   }
 
-  computeExtension(extensions) {
-    for (const extName of extensions) {
-      if (extName !== "") {
-        this.extensions[extName] = Reflect.has(this.extensions, extName) ? ++this.extensions[extName] : 1;
-      }
-    }
-  }
-
-  computeLicense(uniqueLicenseIds) {
-    for (const licenseName of uniqueLicenseIds) {
-      this.licenses[licenseName] = Reflect.has(this.licenses, licenseName) ? ++this.licenses[licenseName] : 1;
-    }
-  }
-
   computeAuthor(author, spec, contributors = []) {
     if (author === null) {
       return;
     }
-    const contributor = contributors.find((contributor) => contributor.email === author.email && contributor.npmAvatar !== null);
+    const contributor = contributors.find(
+      (contributor) => contributor.email === author.email && contributor.npmAvatar !== null
+    );
 
     if (this.authors.has(author.name)) {
       this.authors.get(author.name).packages.add(spec);
@@ -229,7 +254,10 @@ export default class NodeSecureDataSet extends EventTarget {
   }
 
   isHighlighted(contact) {
-    return this.#highligthedContacts.names.has(contact.name) || this.#highligthedContacts.emails.has(contact.email);
+    return (
+      this.#highligthedContacts.names.has(contact.name) ||
+      this.#highligthedContacts.emails.has(contact.email)
+    );
   }
 
   findPackagesByName(name) {
