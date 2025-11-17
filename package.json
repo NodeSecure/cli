@@ -75,7 +75,7 @@
     "@types/node": "^24.0.3",
     "c8": "^10.1.2",
     "cross-env": "^10.1.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.27.0",
     "eslint-plugin-jsdoc": "^61.1.11",
     "http-server": "^14.1.1",
     "pkg-ok": "^3.0.0",
