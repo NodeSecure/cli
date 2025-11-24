@@ -109,6 +109,14 @@ export class PackageInfo {
     vulns.id = "pan-vulnerabilities";
     vulns.classList.add("package-container", "hidden");
     panVulns.parentElement.replaceChild(vulns, panVulns);
+
+    const panDependencies = packageHTMLElement.querySelector("#pan-dependencies");
+    const scripts = document.createElement("package-scripts");
+    scripts.package = this;
+    scripts.isHidden = this.dependencyVersion.hidden;
+    scripts.id = "pan-dependencies";
+    scripts.classList.add("package-container", "hidden");
+    panDependencies.parentElement.replaceChild(scripts, panDependencies);
   }
 
   /**
@@ -123,6 +131,20 @@ export class PackageInfo {
       const counter = navElement.querySelector(".signal");
       counter.style.display = "flex";
       counter.appendChild(document.createTextNode(count));
+    }
+  }
+
+  /**
+   * @param {!HTMLTemplateElement} clone
+   */
+  setupSignal(clone) {
+    const { flags } = this.dependencyVersion;
+
+    if (flags.includes("hasScript")) {
+      this.addNavigationSignal(
+        clone.getElementById("dependencies-nav-menu"),
+        "!"
+      );
     }
   }
 
@@ -170,7 +192,7 @@ export class PackageInfo {
 
     new Pannels.Overview(this).generate(clone);
     new Pannels.Warnings(this).generate(clone);
-    new Pannels.Scripts(this).generate(clone);
+    this.setupSignal(clone);
     this.addNavigationSignal(clone.getElementById("vulnerabilities-nav-menu"),
       this.dependency.vulnerabilities.length);
     if (window.settings.config.disableExternalRequests === false) {
