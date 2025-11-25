@@ -17,6 +17,7 @@ export class Maintainers extends LitElement {
 .module {
   display: flex;
   flex-direction: column;
+  margin-bottom: 20px;
 }
 
 .title{
