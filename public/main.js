@@ -140,7 +140,7 @@ async function init(options = {}) {
   const legend = document.getElementById("legend");
   legend.isVisible = window.settings.config.showFriendlyDependencies;
   window.legend = legend;
-  homeView ??= new HomeView(secureDataSet, nsn);
+  homeView = new HomeView(secureDataSet, nsn);
   searchview ??= new SearchView(secureDataSet, nsn);
 
   window.addEventListener(EVENTS.PACKAGE_INFO_CLOSED, () => {
