@@ -162,7 +162,7 @@ class Scripts extends LitElement {
     const hideItemsLength = 4;
     const scripts = Object.entries(this.package.dependencyVersion.scripts);
     const hideItems = scripts.length > hideItemsLength;
-    const scriptsToDisplay = this.isClosed ? scripts.slice(0, hideItemsLength) : scripts;
+    const scriptsToDisplay = this.#sortScripts(this.isClosed ? scripts.slice(0, hideItemsLength) : scripts);
 
     if (scripts.length === 0) {
       return nothing;
@@ -176,7 +176,7 @@ class Scripts extends LitElement {
       ${repeat(scriptsToDisplay,
         (script) => script,
         ([scriptName, scriptContent]) => {
-          const isSuspicious = kUnsafeNpmScripts.has(scriptName);
+          const isSuspicious = this.#isSuspicious(scriptName);
           const scriptClasses = classMap({
             script: true,
             suspicious: isSuspicious
@@ -201,6 +201,15 @@ class Scripts extends LitElement {
     )}
     </div>
    `;
+  }
+
+  #sortScripts(scripts) {
+    return [...scripts.filter(([scriptName]) => this.#isSuspicious(scriptName)),
+      ...scripts.filter(([scriptName]) => !this.#isSuspicious(scriptName))];
+  }
+
+  #isSuspicious(scriptName) {
+    return kUnsafeNpmScripts.has(scriptName);
   }
 
   #renderDependencies() {
