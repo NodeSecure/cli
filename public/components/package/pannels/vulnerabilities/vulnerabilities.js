@@ -6,9 +6,17 @@ import { repeat } from "lit/directives/repeat.js";
 // Import Internal Dependencies
 import { EVENTS } from "../../../../core/events.js";
 import "../../../icon/icon.js";
+import { scrollbarStyle } from "../../../../common/scrollbar-style.js";
 
 class Vulnerabilities extends LitElement {
-  static styles = css`
+  static styles = [scrollbarStyle, css`
+:host {
+  display: block;
+  overflow: hidden auto;
+  height: calc(100vh - 315px);
+  box-sizing: border-box;
+  }
+
 p {
   margin: 0;
 }
@@ -218,7 +226,7 @@ p {
 .packages-vuln .vuln>div .severity.low {
   background: #2545f9;
 }
-`;
+`];
 
   static properties = {
     package: { type: Object },

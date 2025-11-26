@@ -9,6 +9,7 @@ import * as utils from "../../../../common/utils.js";
 import "../../../expandable/expandable.js";
 import "../../../items-list/items-list.js";
 import "../../../icon/icon.js";
+import { scrollbarStyle } from "../../../../common/scrollbar-style.js";
 
 // CONSTANTS
 const kUnsafeNpmScripts = new Set([
@@ -20,7 +21,15 @@ const kUnsafeNpmScripts = new Set([
 ]);
 
 class Scripts extends LitElement {
-  static styles = css`
+  static styles = [
+    scrollbarStyle,
+    css`
+ :host {
+  display: block;
+  overflow: hidden auto;
+  height: calc(100vh - 315px);
+  box-sizing: border-box;
+  }
 .package-scripts {
   display: flex;
   flex-direction: column;
@@ -127,7 +136,7 @@ class Scripts extends LitElement {
 #show-hide-dependency nsecure-icon {
   transform: translateY(2px);
 }
-`;
+`];
 
   static properties = {
     package: { type: Object },
