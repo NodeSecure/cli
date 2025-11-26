@@ -7,9 +7,17 @@ import { selectLicenses } from "./view-model.js";
 import { currentLang } from "../../../../common/utils.js";
 import "../../../file-box/file-box.js";
 import "../../../icon/icon.js";
+import { scrollbarStyle } from "../../../../common/scrollbar-style.js";
 
 class Licenses extends LitElement {
-  static styles = css`
+  static styles = [scrollbarStyle, css`
+  :host {
+  display: block;
+  overflow: hidden auto;
+  height: calc(100vh - 315px);
+  box-sizing: border-box;
+  }
+
   .box-container-licenses {
    display: flex;
     flex-wrap: wrap;
@@ -68,7 +76,7 @@ class Licenses extends LitElement {
     text-decoration: underline;
     font-weight: bold;
   }
-`;
+`];
 
   static properties = {
     package: { type: Object }

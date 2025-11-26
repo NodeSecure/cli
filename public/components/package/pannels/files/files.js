@@ -6,11 +6,15 @@ import { when } from "lit/directives/when.js";
 import { currentLang } from "../../../../common/utils.js";
 import "../../../bundlephobia/bundlephobia.js";
 import "../../../items-list/items-list.js";
+import { scrollbarStyle } from "../../../../common/scrollbar-style.js";
 
 class Files extends LitElement {
-  static styles = css`
+  static styles = [scrollbarStyle, css`
   :host{
   display: block;
+  overflow: hidden auto;
+  height: calc(100vh - 315px);
+  box-sizing: border-box;
   }
 
  .head-title {
@@ -39,7 +43,7 @@ class Files extends LitElement {
   letter-spacing: 1px;
   padding: 0 10px;
 }
-`;
+`];
   static properties = {
     package: { type: Object }
   };
