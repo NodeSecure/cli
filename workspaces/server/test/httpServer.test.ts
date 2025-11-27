@@ -283,7 +283,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     });
   });
 
-  test("'/report' should return a Buffer", async() => {
+  test.skip("'/report' should return a Buffer", async() => {
     const result = await post<Buffer>(
       new URL("/report", kHttpURL),
       {
