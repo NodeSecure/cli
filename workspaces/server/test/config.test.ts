@@ -4,7 +4,7 @@ import assert from "node:assert";
 
 // Import Third-party Dependencies
 import cacache from "cacache";
-import { warnings } from "@nodesecure/js-x-ray";
+import { warnings, type Warning } from "@nodesecure/js-x-ray";
 import { AppConfig, CACHE_PATH } from "@nodesecure/cache";
 
 // Import Internal Dependencies
@@ -30,9 +30,12 @@ describe("config", () => {
 
     assert.deepStrictEqual(value, {
       defaultPackageMenu: "info",
-      ignore: { flags: [], warnings: Object.entries(warnings)
-        .filter(([_, { experimental }]) => experimental)
-        .map(([warning]) => warning) },
+      ignore: {
+        flags: [],
+        warnings: Object.entries(warnings as unknown as Warning[])
+          .filter(([_, { experimental }]) => experimental)
+          .map(([warning]) => warning)
+      },
       disableExternalRequests: false
     });
   });

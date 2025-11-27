@@ -108,7 +108,7 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/flags/description/:title' should fail", async(ctx) => {
-    ctx.mock.method(stream, "pipeline", (_stream, _res, err) => err("fake error"));
+    ctx.mock.method(stream, "pipeline", (_stream: any, _res: any, err: any) => err("fake error"));
     const logs: string[] = [];
     console.error = (data: string) => logs.push(data);
 
@@ -310,7 +310,7 @@ describe("httpServer", { concurrency: 1 }, () => {
 });
 
 describe("httpServer without options", () => {
-  let httpServer;
+  let httpServer: any;
   // We want to disable WS
   process.env.NODE_ENV = "test";
 
@@ -345,7 +345,7 @@ describe("httpServer without options", () => {
  * HELPERS
  */
 
-function checkBundleResponse(payload) {
+function checkBundleResponse(payload: any) {
   assert.ok(payload.gzip);
   assert.ok(payload.size);
   assert.ok(payload.dependencySizes);
