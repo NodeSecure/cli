@@ -3,12 +3,15 @@ import * as scanner from "@nodesecure/scanner";
 import type { PayloadsList } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import type { WebSocketContext } from "../index.js";
+import type {
+  WebSocketContext,
+  WebSocketResponse
+} from "../websocket.types.js";
 
 export async function* search(
   pkg: string,
   context: WebSocketContext
-) {
+): AsyncGenerator<WebSocketResponse, void, unknown> {
   const { logger, cache } = context;
   logger.info(`[ws|search](pkg: ${pkg})`);
 

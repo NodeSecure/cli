@@ -1,30 +1,17 @@
 // Import Third-party Dependencies
 import { WebSocketServer, type WebSocket } from "ws";
 import { match } from "ts-pattern";
-import { appCache, type PayloadsList } from "@nodesecure/cache";
-import type { Payload } from "@nodesecure/scanner";
+import { appCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
 import { logger } from "../logger.js";
 import { search } from "./commands/search.js";
 import { remove } from "./commands/remove.js";
-
-export interface WebSocketContext {
-  socket: WebSocket;
-  cache: typeof appCache;
-  logger: typeof logger;
-}
-
-export type WebSocketMessage = {
-  action: "SEARCH" | "REMOVE";
-  pkg: string;
-  [key: string]: any;
-};
-
-type WebSocketResponse = Payload | PayloadsList | {
-  status: "RELOAD" | "SCAN";
-  pkg: string;
-};
+import type {
+  WebSocketResponse,
+  WebSocketContext,
+  WebSocketMessage
+} from "./websocket.types.js";
 
 export class WebSocketServerInstanciator {
   constructor() {
@@ -50,7 +37,11 @@ export class WebSocketServerInstanciator {
     socket: WebSocket,
     message: WebSocketMessage
   ) {
-    const ctx = { socket, cache: appCache, logger };
+    const ctx: WebSocketContext = {
+      socket,
+      cache: appCache,
+      logger
+    };
 
     const socketMessages = match(message.action)
       .with("SEARCH", () => search(message.pkg, ctx))
@@ -64,12 +55,17 @@ export class WebSocketServerInstanciator {
 
   async initializeServer(
     stopInitializationOnError = false
-  ) {
+  ): Promise<WebSocketResponse | null> {
     try {
-      const { current, mru, lru, availables, root } = await appCache.payloadsList();
+      const {
+        current, mru, lru, availables, root, lastUsed
+      } = await appCache.payloadsList();
       logger.info(`[ws|init](mru: ${mru}|lru: ${lru}|availables: ${availables}|current: ${current}|root: ${root})`);
 
-      if (mru === void 0 || current === void 0) {
+      if (
+        mru === void 0 ||
+        current === void 0
+      ) {
         throw new Error("Payloads list not found in cache.");
       }
 
@@ -79,7 +75,8 @@ export class WebSocketServerInstanciator {
         mru,
         lru,
         availables,
-        root
+        root,
+        lastUsed
       };
     }
     catch {
