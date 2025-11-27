@@ -1,0 +1,39 @@
+// Import Third-party Dependencies
+import type { WebSocket } from "ws";
+import type { PayloadsList, appCache } from "@nodesecure/cache";
+import type { Payload } from "@nodesecure/scanner";
+
+// Import Internal Dependencies
+import type { logger } from "../logger.js";
+
+/**
+ * A (NodeSecure) scan is in progress
+ */
+type ScanResponse = {
+  status: "SCAN";
+  pkg: string;
+};
+
+/**
+ * Initialize or Reload the list of packages available in cache
+ */
+type CachedResponse = {
+  status: "INIT" | "RELOAD";
+} & PayloadsList;
+
+export type WebSocketResponse =
+  | Payload
+  | CachedResponse
+  | ScanResponse;
+
+export type WebSocketMessage = {
+  action: "SEARCH" | "REMOVE";
+  pkg: string;
+  [key: string]: any;
+};
+
+export interface WebSocketContext {
+  socket: WebSocket;
+  cache: typeof appCache;
+  logger: typeof logger;
+}

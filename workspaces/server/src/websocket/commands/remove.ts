@@ -2,12 +2,15 @@
 import type { PayloadsList } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import type { WebSocketContext } from "../index.js";
+import type {
+  WebSocketContext,
+  WebSocketResponse
+} from "../websocket.types.js";
 
 export async function* remove(
   pkg: string,
   context: WebSocketContext
-) {
+): AsyncGenerator<WebSocketResponse, void, unknown> {
   const { cache, logger } = context;
 
   logger.info(`[ws|remove](pkg: ${pkg})`);
