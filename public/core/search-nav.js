@@ -77,7 +77,7 @@ function initPackagesNavigation(data) {
     }
     pkgElement.addEventListener("click", () => {
       if (window.activePackage !== pkg) {
-        window.socket.send(JSON.stringify({ pkg, action: "SEARCH" }));
+        window.socket.commands.search(pkg);
       }
     });
 
@@ -118,7 +118,7 @@ function renderPackageRemoveButton(packageName, options) {
 
   removeButton.addEventListener("click", (event) => {
     event.stopPropagation();
-    window.socket.send(JSON.stringify({ action: "REMOVE", pkg: packageName }));
+    window.socket.commands.remove(packageName);
 
     if (hasExactly2Packages) {
       document
