@@ -33,9 +33,9 @@ describe("appCache", () => {
   });
 
   it("should write payload into ~/.nsecure/payloads", (t) => {
-    let writePath;
-    let writeValue;
-    t.mock.method(fs, "writeFileSync", (path, value) => {
+    let writePath = "";
+    let writeValue = "";
+    t.mock.method(fs, "writeFileSync", (path: string, value: string) => {
       writePath = path;
       writeValue = value;
     });
@@ -192,8 +192,8 @@ describe("appCache", () => {
   });
 
   it("should remove payload from disk", (t) => {
-    let removedPath;
-    t.mock.method(fs, "rmSync", (path) => {
+    let removedPath = "";
+    t.mock.method(fs, "rmSync", (path: string) => {
       removedPath = path;
     });
 
@@ -268,7 +268,7 @@ describe("appCache", () => {
     await appCache.updatePayloadsList({
       mru: [],
       lru: [],
-      current: null,
+      current: "",
       availables: [],
       lastUsed: {},
       root: null
@@ -305,7 +305,7 @@ describe("appCache", () => {
     await appCache.updatePayloadsList({
       mru: [],
       lru: [],
-      current: null,
+      current: "",
       availables: [],
       lastUsed: {},
       root: null

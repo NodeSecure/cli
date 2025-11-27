@@ -49,6 +49,7 @@ export async function post(req: Request, res: Response) {
   const body = await bodyParser(req);
   const { title, includesAllDeps, theme } = body;
   const { dataFilePath } = context.getStore()!;
+
   const scannerPayload = dataFilePath ?
     JSON.parse(fs.readFileSync(dataFilePath, "utf-8")) :
     appCache.getPayload((await appCache.payloadsList()).current);
