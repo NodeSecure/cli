@@ -6,6 +6,11 @@ import type { Payload } from "@nodesecure/scanner";
 // Import Internal Dependencies
 import type { logger } from "../logger.js";
 
+type PayloadResponse = {
+  status: "PAYLOAD";
+  payload: Payload;
+};
+
 /**
  * A (NodeSecure) scan is in progress
  */
@@ -22,7 +27,7 @@ type CachedResponse = {
 } & PayloadsList;
 
 export type WebSocketResponse =
-  | Payload
+  | PayloadResponse
   | CachedResponse
   | ScanResponse;
 

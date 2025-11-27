@@ -27,7 +27,10 @@ export async function* search(
         lastUsed: { ...cacheList.lastUsed, [pkg]: Date.now() }
       };
       await cache.updatePayloadsList(updatedList);
-      yield cachedPayload;
+      yield {
+        status: "PAYLOAD" as const,
+        payload: cachedPayload
+      };
 
       if (cache.startFromZero) {
         yield {
@@ -51,7 +54,10 @@ export async function* search(
     };
     await cache.updatePayloadsList(updatedList);
 
-    yield cachedPayload;
+    yield {
+      status: "PAYLOAD" as const,
+      payload: cachedPayload
+    };
     yield {
       status: "RELOAD" as const,
       ...updatedList
@@ -89,7 +95,10 @@ export async function* search(
     };
     await cache.updatePayloadsList(updatedList);
 
-    yield payload;
+    yield {
+      status: "PAYLOAD" as const,
+      payload
+    };
     yield {
       status: "RELOAD" as const,
       ...updatedList

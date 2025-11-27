@@ -17,6 +17,7 @@ import { i18n } from "./core/i18n.js";
 import { initSearchNav } from "./core/search-nav.js";
 import * as utils from "./common/utils.js";
 import { EVENTS } from "./core/events.js";
+import { WebSocketClient } from "./websocket.js";
 
 let secureDataSet;
 let nsn;
@@ -34,70 +35,85 @@ document.addEventListener("DOMContentLoaded", async() => {
   window.wiki = new Wiki();
 
   await init();
-  window.dispatchEvent(new CustomEvent(EVENTS.SETTINGS_SAVED, { detail: window.settings.config }));
+  window.dispatchEvent(
+    new CustomEvent(EVENTS.SETTINGS_SAVED, {
+      detail: window.settings.config
+    })
+  );
   onSettingsSaved(window.settings.config);
 
-  window.socket = new WebSocket(`ws://${window.location.hostname}:1338`);
-  window.socket.addEventListener("message", async(event) => {
-    const data = JSON.parse(event.data);
-    console.log(`[WEBSOCKET] data status = '${data.status || "NONE"}'`);
+  const socket = new WebSocketClient(`ws://${window.location.hostname}:1338`);
+  socket.addEventListener("PAYLOAD", onSocketPayload);
+  socket.addEventListener("INIT", onSocketInitOrReload);
+  socket.addEventListener("RELOAD", onSocketInitOrReload);
+  socket.addEventListener("SCAN", (event) => {
+    const data = event.detail;
 
-    if (data.rootDependencyName) {
-      // TODO: implement rootDependency as a whole spec in scanner
-      const rootDepVersion = Object.keys(data.dependencies[data.rootDependencyName].versions)[0];
-      window.activePackage = data.rootDependencyName + "@" + rootDepVersion;
+    searchview.onScan(data.pkg);
+  });
+});
 
-      await init({ navigateToNetworkView: true });
-      initSearchNav(data, {
-        initFromZero: false,
-        searchOptions: {
-          nsn, secureDataSet
-        }
-      });
-    }
-    else if (data.status === "INIT" || data.status === "RELOAD") {
-      window.scannedPackageCache = data.availables;
-      window.recentPackageCache = data.lru;
-      console.log(
-        "[INFO] Older packages are loaded!",
-        window.scannedPackageCache
-      );
-      console.log(
-        "[INFO] Recent packages are loaded!",
-        window.recentPackageCache
-      );
+async function onSocketPayload(event) {
+  const data = event.detail;
+  const { payload } = data;
 
-      initSearchNav(data, {
-        searchOptions: {
-          nsn, secureDataSet
-        }
-      });
-      searchview.mount();
-      searchview.initialize();
-      const nsnActivePackage = secureDataSet.linker.get(0);
-      const nsnRootPackage = nsnActivePackage ? `${nsnActivePackage.name}@${nsnActivePackage.version}` : null;
-      if (data.status === "RELOAD" && nsnRootPackage !== null && nsnRootPackage !== window.activePackage) {
-        // it means we removed the previous active package, which is still active in network, so we need to re-init
-        await init();
+  // TODO: implement rootDependency as a whole spec in scanner
+  const rootDepVersion = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
+  window.activePackage = payload.rootDependencyName + "@" + rootDepVersion;
 
-        // FIXME: initSearchNav is called twice, we need to fix this
-        initSearchNav(data, {
-          searchOptions: {
-            nsn, secureDataSet
-          }
-        });
-      }
-    }
-    else if (data.status === "SCAN") {
-      searchview.onScan(data.pkg);
+  await init({ navigateToNetworkView: true });
+  initSearchNav(payload, {
+    initFromZero: false,
+    searchOptions: {
+      nsn,
+      secureDataSet
     }
   });
+}
 
-  window.onbeforeunload = () => {
-    window.socket.onclose = () => void 0;
-    window.socket.close();
-  };
-});
+async function onSocketInitOrReload(event) {
+  const data = event.detail;
+
+  window.scannedPackageCache = data.availables;
+  window.recentPackageCache = data.lru;
+  console.log(
+    "[INFO] Older packages are loaded!",
+    window.scannedPackageCache
+  );
+  console.log(
+    "[INFO] Recent packages are loaded!",
+    window.recentPackageCache
+  );
+
+  initSearchNav(data, {
+    searchOptions: {
+      nsn,
+      secureDataSet
+    }
+  });
+  searchview.mount();
+  searchview.initialize();
+
+  const nsnActivePackage = secureDataSet.linker.get(0);
+  const nsnRootPackage = nsnActivePackage ?
+    `${nsnActivePackage.name}@${nsnActivePackage.version}` :
+    null;
+  if (
+    data.status === "RELOAD" &&
+    nsnRootPackage !== null &&
+    nsnRootPackage !== window.activePackage
+  ) {
+    // it means we removed the previous active package, which is still active in network, so we need to re-init
+    await init();
+
+    // FIXME: initSearchNav is called twice, we need to fix this
+    initSearchNav(data, {
+      searchOptions: {
+        nsn, secureDataSet
+      }
+    });
+  }
+}
 
 async function init(options = {}) {
   const { navigateToNetworkView = false } = options;
@@ -246,6 +262,11 @@ function onSettingsSaved(defaultConfig = null) {
       secureDataSet.FLAGS,
       secureDataSet.theme
     );
+
+    if (!nsn) {
+      return;
+    }
+
     const { nodes } = secureDataSet.build();
     nsn.nodes.update(nodes.get());
     const rootNode = secureDataSet.linker.get(0);

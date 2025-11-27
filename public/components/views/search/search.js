@@ -230,7 +230,7 @@ export class SearchView {
     const pkgSpanElement = document.createElement("span");
     pkgSpanElement.innerHTML = `${name}@${version}${local ? " <b>local</b>" : ""}`;
     pkgSpanElement.addEventListener("click", () => {
-      window.socket.send(JSON.stringify({ action: "SEARCH", pkg }));
+      window.socket.commands.search(pkg);
     }, { once: true });
 
     const removeButton = createDOMElement("button", {
@@ -239,7 +239,7 @@ export class SearchView {
     });
     removeButton.addEventListener("click", (event) => {
       event.stopPropagation();
-      window.socket.send(JSON.stringify({ action: "REMOVE", pkg }));
+      window.socket.commands.remove(pkg);
     }, { once: true });
 
     pkgElement.append(pkgSpanElement, removeButton);
@@ -250,7 +250,7 @@ export class SearchView {
   fetchPackage(packageName, version) {
     const pkg = `${packageName}@${version}`;
 
-    window.socket.send(JSON.stringify({ action: "SEARCH", pkg }));
+    window.socket.commands.search(pkg);
   }
 
   async fetchPackageVersions(packageName) {
