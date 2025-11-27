@@ -7,6 +7,7 @@ import { appCache } from "@nodesecure/cache";
 import { logger } from "../logger.js";
 import { search } from "./commands/search.js";
 import { remove } from "./commands/remove.js";
+import { context } from "./websocket.als.js";
 import type {
   WebSocketResponse,
   WebSocketContext,
@@ -43,22 +44,24 @@ export class WebSocketServerInstanciator {
     const commandName = message.commandName;
     logger.info(`[ws|command.${commandName.toLowerCase()}] ${message.spec}`);
 
-    try {
-      const socketMessages = match(message)
-        .with({ commandName: "SEARCH" }, (command) => search(command.spec, ctx))
-        .with({ commandName: "REMOVE" }, (command) => remove(command.spec, ctx))
-        .exhaustive();
+    context.run(ctx, async() => {
+      try {
+        const socketMessages = match(message)
+          .with({ commandName: "SEARCH" }, (command) => search(command.spec))
+          .with({ commandName: "REMOVE" }, (command) => remove(command.spec))
+          .exhaustive();
 
-      for await (const message of socketMessages) {
-        sendSocketResponse(socket, message);
+        for await (const message of socketMessages) {
+          sendSocketResponse(socket, message);
+        }
       }
-    }
-    catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
 
-      logger.error(`[ws|command.${commandName}](error: ${errorMessage})`);
-      logger.debug(error);
-    }
+        logger.error(`[ws|command.${commandName}](error: ${errorMessage})`);
+        logger.debug(error);
+      }
+    });
   }
 
   async initializeServer(
