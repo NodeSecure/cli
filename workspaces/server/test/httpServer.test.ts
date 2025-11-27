@@ -1,5 +1,4 @@
 // Import Node.js Dependencies
-import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { after, before, describe, test } from "node:test";
 import { once } from "node:events";
@@ -31,7 +30,6 @@ const kConfigKey = "___config";
 const kGlobalDispatcher = getGlobalDispatcher();
 const kMockAgent = new MockAgent();
 const kBundlephobiaPool = kMockAgent.get("https://bundlephobia.com");
-const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
 const kProjectRootDir = path.join(import.meta.dirname, "..", "..", "..");
 const kComponentsDir = path.join(kProjectRootDir, "public", "components");
 
@@ -60,12 +58,6 @@ describe("httpServer", { concurrency: 1 }, () => {
     await once(httpServer.server!, "listening");
 
     enableDestroy(httpServer.server!);
-
-    if (fs.existsSync(kDefaultPayloadPath) === false) {
-      // When running tests on CI, we need to create the nsecure-result.json file
-      const payload = fs.readFileSync(JSON_PATH, "utf-8");
-      fs.writeFileSync(kDefaultPayloadPath, payload);
-    }
   }, { timeout: 5000 });
 
   after(async() => {
@@ -295,7 +287,10 @@ describe("httpServer", { concurrency: 1 }, () => {
     const result = await post<Buffer>(
       new URL("/report", kHttpURL),
       {
-        body: { title: "foo" },
+        body: {
+          title: "foo",
+          includesAllDeps: true
+        },
         mode: "raw"
       }
     );

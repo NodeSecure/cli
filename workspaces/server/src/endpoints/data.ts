@@ -8,6 +8,7 @@ import { appCache } from "@nodesecure/cache";
 import type { Request, Response } from "express-serve-static-core";
 
 // Import Internal Dependencies
+import { context } from "../ALS.js";
 import { logger } from "../logger.js";
 
 // CONSTANTS
@@ -31,7 +32,10 @@ export async function get(_req: Request, res: Response) {
   catch {
     logger.error("[data|get](No cache yet. Creating one...)");
 
-    const payload = JSON.parse(fs.readFileSync(kDefaultPayloadPath, "utf-8"));
+    const { dataFilePath } = context.getStore()!;
+
+    const payloadPath = dataFilePath || kDefaultPayloadPath;
+    const payload = JSON.parse(fs.readFileSync(payloadPath, "utf-8"));
     const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
     const formatted = `${payload.rootDependencyName}@${version}${payload.local ? "#local" : ""}`;
     const payloadsList = {
