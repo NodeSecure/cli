@@ -248,9 +248,8 @@ export class SearchView {
   }
 
   fetchPackage(packageName, version) {
-    const pkg = `${packageName}@${version}`;
-
-    window.socket.commands.search(pkg);
+    const spec = `${packageName}@${version}`;
+    window.socket.commands.search(spec);
   }
 
   async fetchPackageVersions(packageName) {
@@ -259,7 +258,7 @@ export class SearchView {
     return versions.reverse();
   }
 
-  onScan(pkg) {
+  onScan(spec) {
     const searchViewForm = document.querySelector("#search--view form");
     searchViewForm?.remove();
     const containerResult = document.querySelector("#search--view .result-container");
@@ -268,7 +267,7 @@ export class SearchView {
     const searchViewContainer = document.querySelector("#search--view .container");
     const scanInfo = document.createElement("div");
     scanInfo.classList.add("scan-info");
-    scanInfo.textContent = `Scanning ${pkg}.`;
+    scanInfo.textContent = `Scanning ${spec}`;
     const spinner = document.createElement("div");
     spinner.classList.add("spinner");
     searchViewContainer.appendChild(scanInfo);

@@ -9,22 +9,21 @@ import type {
 } from "../websocket.types.js";
 
 export async function* search(
-  pkg: string,
+  spec: string,
   context: WebSocketContext
 ): AsyncGenerator<WebSocketResponse, void, unknown> {
   const { logger, cache } = context;
-  logger.info(`[ws|search](pkg: ${pkg})`);
 
-  const cachedPayload = cache.getPayloadOrNull(pkg);
+  const cachedPayload = cache.getPayloadOrNull(spec);
   if (cachedPayload) {
-    logger.info(`[ws|search](payload: ${pkg} found in cache)`);
+    logger.info("[ws|command.search] one entry found in cache");
     const cacheList = await cache.payloadsList();
-    if (cacheList.mru.includes(pkg)) {
-      logger.info(`[ws|search](payload: ${pkg} is already in the MRU)`);
+    if (cacheList.mru.includes(spec)) {
+      logger.info("[ws|command.search] payload is already in the MRU");
       const updatedList: PayloadsList = {
         ...cacheList,
-        current: pkg,
-        lastUsed: { ...cacheList.lastUsed, [pkg]: Date.now() }
+        current: spec,
+        lastUsed: { ...cacheList.lastUsed, [spec]: Date.now() }
       };
       await cache.updatePayloadsList(updatedList);
       yield {
@@ -35,7 +34,7 @@ export async function* search(
       if (cache.startFromZero) {
         yield {
           status: "RELOAD" as const,
-          ...updatedList
+          cache: updatedList
         };
         cache.startFromZero = false;
       }
@@ -46,11 +45,11 @@ export async function* search(
     const { mru, lru, availables, lastUsed, ...updatedCache } = await cache.removeLastMRU();
     const updatedList: PayloadsList = {
       ...updatedCache,
-      mru: [...new Set([...mru, pkg])],
-      current: pkg,
-      lru: lru.filter((pckg) => pckg !== pkg),
-      availables: availables.filter((pckg) => pckg !== pkg),
-      lastUsed: { ...lastUsed, [pkg]: Date.now() }
+      mru: [...new Set([...mru, spec])],
+      current: spec,
+      lru: lru.filter((pckg) => pckg !== spec),
+      availables: availables.filter((pckg) => pckg !== spec),
+      lastUsed: { ...lastUsed, [spec]: Date.now() }
     };
     await cache.updatePayloadsList(updatedList);
 
@@ -60,7 +59,7 @@ export async function* search(
     };
     yield {
       status: "RELOAD" as const,
-      ...updatedList
+      cache: updatedList
     };
 
     cache.startFromZero = false;
@@ -69,29 +68,29 @@ export async function* search(
   }
 
   // at this point we don't have the payload in cache so we have to scan it.
-  logger.info(`[ws|search](scan ${pkg} in progress)`);
-  yield { status: "SCAN" as const, pkg };
+  logger.info(`[ws|command.search](scan ${spec} in progress)`);
+  yield { status: "SCAN" as const, spec };
 
-  const payload = await scanner.from(pkg, { maxDepth: 4 });
+  const payload = await scanner.from(spec, { maxDepth: 4 });
   const name = payload.rootDependencyName;
   const version = Object.keys(payload.dependencies[name].versions)[0];
 
   {
     // save the payload in cache
-    const pkg = `${name}@${version}`;
-    logger.info(`[ws|search](scan ${pkg} done|cache: updated)`);
+    const inScanPackageSpec = `${name}@${version}`;
+    logger.info(`[ws|command.search](scan ${inScanPackageSpec} done|cache: updated)`);
 
     // update the payloads list
     const { mru, lru, availables, lastUsed, ...appCache } = await cache.removeLastMRU();
-    mru.push(pkg);
-    cache.updatePayload(pkg, payload);
+    mru.push(inScanPackageSpec);
+    cache.updatePayload(inScanPackageSpec, payload);
     const updatedList: PayloadsList = {
       ...appCache,
       mru: [...new Set(mru)],
       lru,
       availables,
-      lastUsed: { ...lastUsed, [pkg]: Date.now() },
-      current: pkg
+      lastUsed: { ...lastUsed, [inScanPackageSpec]: Date.now() },
+      current: inScanPackageSpec
     };
     await cache.updatePayloadsList(updatedList);
 
@@ -101,11 +100,11 @@ export async function* search(
     };
     yield {
       status: "RELOAD" as const,
-      ...updatedList
+      cache: updatedList
     };
 
     cache.startFromZero = false;
 
-    logger.info("[ws|search](data sent to client|cache: updated)");
+    logger.info("[ws|command.search](data sent to client|cache: updated)");
   }
 }

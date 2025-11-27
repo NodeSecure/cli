@@ -173,7 +173,7 @@ All static files (UI, assets, etc.) are served from the project root directory.
 > [!NOTE]
 > For more details on each endpoint, see the corresponding files in /src/endpoints.
 
-## Websocket actions
+## Websocket commands
 
 The `WebSocketServerInstanciator` class sets up and manages a WebSocket server for real-time communication with NodeSecure clients. It provides live updates and cache management features for package analysis.
 
@@ -183,13 +183,13 @@ new WebSocketServerInstanciator();
 - Initializes a WebSocket server on port 1338.
 - Listens for client connections and incoming messages.
 
-- `SEARCH`:
+### SEARCH
 
 **Request**:
 ```json
 {
-  "action": "SEARCH",
-  "pkg": "<package-name>"
+  "commandName": "SEARCH",
+  "spec": "<package-name>@<package-version>"
 }
 ```
 
@@ -197,13 +197,13 @@ new WebSocketServerInstanciator();
 
 Streams scan progress, payload data, and cache state updates.
 
-- `REMOVE`:
+### REMOVE
 
 **Request**:
 ```json
 {
-  "action": "REMOVE",
-  "pkg": "<package-name>"
+  "commandName": "REMOVE",
+  "spec": "<package-name>@<package-version>"
 }
 ```
 
