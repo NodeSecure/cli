@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   socket.addEventListener("SCAN", (event) => {
     const data = event.detail;
 
-    searchview.onScan(data.pkg);
+    searchview.onScan(data.spec);
   });
 });
 
@@ -73,9 +73,10 @@ async function onSocketPayload(event) {
 
 async function onSocketInitOrReload(event) {
   const data = event.detail;
+  const { cache } = data;
 
-  window.scannedPackageCache = data.availables;
-  window.recentPackageCache = data.lru;
+  window.scannedPackageCache = cache.availables;
+  window.recentPackageCache = cache.lru;
   console.log(
     "[INFO] Older packages are loaded!",
     window.scannedPackageCache
@@ -85,7 +86,7 @@ async function onSocketInitOrReload(event) {
     window.recentPackageCache
   );
 
-  initSearchNav(data, {
+  initSearchNav(cache, {
     searchOptions: {
       nsn,
       secureDataSet
@@ -107,9 +108,10 @@ async function onSocketInitOrReload(event) {
     await init();
 
     // FIXME: initSearchNav is called twice, we need to fix this
-    initSearchNav(data, {
+    initSearchNav(cache, {
       searchOptions: {
-        nsn, secureDataSet
+        nsn,
+        secureDataSet
       }
     });
   }

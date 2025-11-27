@@ -10,8 +10,8 @@ export class WebSocketClient extends EventTarget {
     this.client = new WebSocket(url);
     this.client.addEventListener("message", this.#messageHandler.bind(this));
     this.commands = {
-      search: (pkg) => this.send({ action: "SEARCH", pkg }),
-      remove: (pkg) => this.send({ action: "REMOVE", pkg })
+      search: (spec) => this.send({ commandName: "SEARCH", spec }),
+      remove: (spec) => this.send({ commandName: "REMOVE", spec })
     };
 
     window.socket = this;

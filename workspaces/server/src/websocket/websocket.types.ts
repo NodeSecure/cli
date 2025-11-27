@@ -16,7 +16,7 @@ type PayloadResponse = {
  */
 type ScanResponse = {
   status: "SCAN";
-  pkg: string;
+  spec: string;
 };
 
 /**
@@ -24,7 +24,8 @@ type ScanResponse = {
  */
 type CachedResponse = {
   status: "INIT" | "RELOAD";
-} & PayloadsList;
+  cache: PayloadsList;
+};
 
 export type WebSocketResponse =
   | PayloadResponse
@@ -32,9 +33,8 @@ export type WebSocketResponse =
   | ScanResponse;
 
 export type WebSocketMessage = {
-  action: "SEARCH" | "REMOVE";
-  pkg: string;
-  [key: string]: any;
+  commandName: "SEARCH" | "REMOVE";
+  spec: string;
 };
 
 export interface WebSocketContext {

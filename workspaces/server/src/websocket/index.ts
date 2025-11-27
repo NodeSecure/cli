@@ -23,17 +23,14 @@ export class WebSocketServerInstanciator {
 
   async onConnectionHandler(socket: WebSocket) {
     socket.on("message", (rawData: string) => {
-      logger.info(`[ws](message: ${rawData})`);
-
-      this.onMessageHandler(socket, JSON.parse(rawData))
-        .catch(console.error);
+      this.#onMessageHandler(socket, JSON.parse(rawData));
     });
 
     const data = await this.initializeServer();
     sendSocketResponse(socket, data);
   }
 
-  async onMessageHandler(
+  async #onMessageHandler(
     socket: WebSocket,
     message: WebSocketMessage
   ) {
@@ -43,13 +40,24 @@ export class WebSocketServerInstanciator {
       logger
     };
 
-    const socketMessages = match(message.action)
-      .with("SEARCH", () => search(message.pkg, ctx))
-      .with("REMOVE", () => remove(message.pkg, ctx))
-      .exhaustive();
+    const commandName = message.commandName;
+    logger.info(`[ws|command.${commandName.toLowerCase()}] ${message.spec}`);
 
-    for await (const message of socketMessages) {
-      sendSocketResponse(socket, message);
+    try {
+      const socketMessages = match(message)
+        .with({ commandName: "SEARCH" }, (command) => search(command.spec, ctx))
+        .with({ commandName: "REMOVE" }, (command) => remove(command.spec, ctx))
+        .exhaustive();
+
+      for await (const message of socketMessages) {
+        sendSocketResponse(socket, message);
+      }
+    }
+    catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      logger.error(`[ws|command.${commandName}](error: ${errorMessage})`);
+      logger.debug(error);
     }
   }
 
@@ -57,26 +65,20 @@ export class WebSocketServerInstanciator {
     stopInitializationOnError = false
   ): Promise<WebSocketResponse | null> {
     try {
-      const {
-        current, mru, lru, availables, root, lastUsed
-      } = await appCache.payloadsList();
-      logger.info(`[ws|init](mru: ${mru}|lru: ${lru}|availables: ${availables}|current: ${current}|root: ${root})`);
-
+      const cache = await appCache.payloadsList();
       if (
-        mru === void 0 ||
-        current === void 0
+        cache.mru === void 0 ||
+        cache.current === void 0
       ) {
         throw new Error("Payloads list not found in cache.");
       }
+      logger.info(
+        `[ws|init](current: ${cache.current}|root: ${cache.root})`
+      );
 
       return {
         status: "INIT",
-        current,
-        mru,
-        lru,
-        availables,
-        root,
-        lastUsed
+        cache
       };
     }
     catch {
@@ -84,7 +86,7 @@ export class WebSocketServerInstanciator {
         return null;
       }
 
-      logger.error("[ws|init](No cache yet. Creating one...)");
+      logger.error("[ws|init] creating new payloads list in cache");
       await appCache.initPayloadsList();
 
       return this.initializeServer(true);
