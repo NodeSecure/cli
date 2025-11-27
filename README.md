@@ -227,7 +227,7 @@ $ yarn add @nodesecure/documentation-ui
 ## Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-19-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-20-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -261,6 +261,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Dafyh"><img src="https://avatars.githubusercontent.com/u/47780300?v=4?s=100" width="100px;" alt="Dafyh"/><br /><sub><b>Dafyh</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=Dafyh" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://clementgombauld.netlify.app/"><img src="https://avatars.githubusercontent.com/u/91478082?v=4?s=100" width="100px;" alt="Clement Gombauld"/><br /><sub><b>Clement Gombauld</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=clemgbld" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/mark-malaj-99b1b8b7/"><img src="https://avatars.githubusercontent.com/u/15210179?v=4?s=100" width="100px;" alt="Mark MALAJ"/><br /><sub><b>Mark MALAJ</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/issues?q=author%3AMarkobobby" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/iddahadev"><img src="https://avatars.githubusercontent.com/u/30631818?v=4?s=100" width="100px;" alt="Younes Iddahamou Idrissi"/><br /><sub><b>Younes Iddahamou Idrissi</b></sub></a><br /><a href="https://github.com/NodeSecure/cli/commits?author=iddahadev" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
