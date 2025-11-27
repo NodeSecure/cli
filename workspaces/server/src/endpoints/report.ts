@@ -2,17 +2,18 @@
 import fs from "node:fs";
 
 // Import Third-party Dependencies
-import { report } from "@nodesecure/report";
 import send from "@polka/send-type";
-import type { Request, Response } from "express-serve-static-core";
+import { report } from "@nodesecure/report";
 import { appCache } from "@nodesecure/cache";
+import type { Request, Response } from "express-serve-static-core";
+import type { RC } from "@nodesecure/rc";
 
 // Import Internal Dependencies
 import { context } from "../ALS.js";
 import { bodyParser } from "../middlewares/bodyParser.js";
 
 // TODO: provide a non-file-based API on RC side ?
-const kReportPayload = {
+const kReportPayload: Partial<RC["report"]> = {
   includeTransitiveInternal: false,
   reporters: [
     "pdf"
@@ -46,17 +47,23 @@ const kReportPayload = {
 };
 
 export async function post(req: Request, res: Response) {
-  const body = await bodyParser(req);
+  const body = await bodyParser(req) as {
+    title: string;
+    includesAllDeps: boolean;
+    theme: "light" | "dark";
+  };
   const { title, includesAllDeps, theme } = body;
+
   const { dataFilePath } = context.getStore()!;
 
   const scannerPayload = dataFilePath ?
     JSON.parse(fs.readFileSync(dataFilePath, "utf-8")) :
     appCache.getPayload((await appCache.payloadsList()).current);
-  const reportPayload = structuredClone(kReportPayload);
+
   const rootDependencyName = scannerPayload.rootDependencyName;
   const [organizationPrefixOrRepo, repo] = rootDependencyName.split("/");
-  Object.assign(reportPayload, {
+  const reportPayload = structuredClone({
+    ...kReportPayload,
     title,
     npm: {
       organizationPrefix: repo === undefined ? null : organizationPrefixOrRepo,
@@ -66,8 +73,14 @@ export async function post(req: Request, res: Response) {
   });
 
   try {
+    const dependencies = includesAllDeps ?
+      scannerPayload.dependencies :
+      {
+        [rootDependencyName]: scannerPayload.dependencies[rootDependencyName]
+      };
+
     const data = await report(
-      includesAllDeps ? scannerPayload.dependencies : { [rootDependencyName]: scannerPayload.dependencies[rootDependencyName] },
+      dependencies,
       reportPayload
     );
 
