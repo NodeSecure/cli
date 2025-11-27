@@ -292,11 +292,16 @@ describe("httpServer", { concurrency: 1 }, () => {
   });
 
   test("'/report' should return a Buffer", async() => {
-    const result = await post<any>(new URL("/report", kHttpURL), { body: { title: "foo" } });
+    const result = await post<Buffer>(
+      new URL("/report", kHttpURL),
+      {
+        body: { title: "foo" },
+        mode: "raw"
+      }
+    );
 
     assert.equal(result.statusCode, 200);
-    const json = JSON.parse(result.data);
-    assert.strictEqual(json.data.type, "Buffer");
+    assert.ok(Buffer.isBuffer(result.data));
   });
 
   test("'/search' should return the package list", async() => {
