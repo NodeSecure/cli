@@ -191,24 +191,6 @@ async function init(options = {}) {
   console.log("[INFO] Node-Secure is ready!");
 }
 
-function getNodeLevel(node) {
-  const rootNode = secureDataSet.linker.get(0);
-  if (node.id === rootNode.id) {
-    return 0;
-  }
-
-  let level = 1;
-  let currentNode = node;
-  while (currentNode.usedBy[rootNode.name] === undefined) {
-    currentNode = secureDataSet.linker.get(
-      [...secureDataSet.linker].find(([_, { name }]) => Object.keys(currentNode.usedBy)[0] === name)[0]
-    );
-    level++;
-  }
-
-  return level;
-}
-
 async function updateShowInfoMenu(params) {
   if (params.nodes.length === 0) {
     window.networkNav.currentNodeParams = null;
@@ -226,7 +208,7 @@ async function updateShowInfoMenu(params) {
   const selectedNode = secureDataSet.linker.get(
     Number(currentNode)
   );
-  const selectedNodeLevel = getNodeLevel(selectedNode);
+  const selectedNodeLevel = nsn.getNodeLevel(selectedNode);
 
   window.networkNav.setLevel(selectedNodeLevel);
   if (window.networkNav.dependenciesMapByLevel.get(selectedNodeLevel) === undefined) {
