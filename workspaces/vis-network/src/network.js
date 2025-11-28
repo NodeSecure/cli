@@ -279,6 +279,24 @@ export default class NodeSecureNetwork {
     this.network.stopSimulation();
   }
 
+  getNodeLevel(node) {
+    const rootNode = this.secureDataSet.linker.get(0);
+    if (node.id === rootNode.id) {
+      return 0;
+    }
+
+    let level = 1;
+    let currentNode = node;
+    while (currentNode.usedBy[rootNode.name] === undefined) {
+      currentNode = this.secureDataSet.linker.get(
+        [...this.secureDataSet.linker].find(([_, { name }]) => Object.keys(currentNode.usedBy)[0] === name)[0]
+      );
+      level++;
+    }
+
+    return level;
+  }
+
   /**
    * Search for neighbours nodes of a given node
    *
