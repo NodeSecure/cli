@@ -9,7 +9,7 @@ import chokidar from "chokidar";
 import { globStream } from "glob";
 
 // Import Internal Dependencies
-import { logger } from "./logger.js";
+import { logger } from "./logger.ts";
 
 export interface ViewBuilderOptions {
   autoReload?: boolean;

@@ -5,10 +5,10 @@ import assert from "node:assert";
 // Import Third-party Dependencies
 import cacache from "cacache";
 import { warnings, type Warning } from "@nodesecure/js-x-ray";
-import { AppConfig, CACHE_PATH } from "@nodesecure/cache";
+import { type AppConfig, CACHE_PATH } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { get, set } from "../src/config.js";
+import { get, set } from "../src/config.ts";
 
 // CONSTANTS
 const kConfigKey = "___config";

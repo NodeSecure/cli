@@ -5,7 +5,7 @@ import { setImmediate } from "node:timers/promises";
 // Import Third-party Dependencies
 import prettyJson from "@topcli/pretty-json";
 import * as i18n from "@nodesecure/i18n";
-import { appCache } from "@nodesecure/cache";
+import { cache } from "@nodesecure/server";
 
 export async function main(options) {
   const {
@@ -31,14 +31,14 @@ export async function main(options) {
 }
 
 async function listCache(full) {
-  const paylodsList = await appCache.payloadsList();
+  const paylodsList = await cache.payloadsList();
   console.log(styleText(["underline"], i18n.getTokenSync("cli.commands.cache.cacheTitle")));
   prettyJson(paylodsList);
 
   if (full) {
     console.log(styleText(["underline"], i18n.getTokenSync("cli.commands.cache.scannedPayloadsTitle")));
     try {
-      const payloads = appCache.availablePayloads();
+      const payloads = cache.availablePayloads();
       prettyJson(payloads);
     }
     catch {
@@ -49,12 +49,12 @@ async function listCache(full) {
 
 async function clearCache(full) {
   if (full) {
-    appCache.availablePayloads().forEach((pkg) => {
-      appCache.removePayload(pkg);
+    cache.availablePayloads().forEach((pkg) => {
+      cache.removePayload(pkg);
     });
   }
 
-  await appCache.initPayloadsList({ logging: false, reset: true });
+  await cache.initPayloadsList({ logging: false, reset: true });
 
   console.log(styleText("green", i18n.getTokenSync("cli.commands.cache.cleared")));
 }

@@ -4,18 +4,18 @@ import path from "node:path";
 
 // Import Third-party Dependencies
 import send from "@polka/send-type";
-import { appCache } from "@nodesecure/cache";
 import type { Request, Response } from "express-serve-static-core";
 
 // Import Internal Dependencies
-import { context } from "../ALS.js";
-import { logger } from "../logger.js";
+import { context } from "../ALS.ts";
+import { logger } from "../logger.ts";
+import { cache } from "../cache.ts";
 
 // CONSTANTS
 const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
 
 export async function get(_req: Request, res: Response) {
-  if (appCache.startFromZero) {
+  if (cache.startFromZero) {
     logger.info("[data|get](no content)");
     send(res, 204);
 
@@ -23,11 +23,11 @@ export async function get(_req: Request, res: Response) {
   }
 
   try {
-    const { current, mru } = await appCache.payloadsList();
+    const { current, mru } = await cache.payloadsList();
     logger.info(`[data|get](current: ${current})`);
     logger.debug(`[data|get](lru: ${mru})`);
 
-    send(res, 200, appCache.getPayload(current));
+    send(res, 200, cache.getPayload(current));
   }
   catch {
     logger.error("[data|get](No cache yet. Creating one...)");
@@ -42,7 +42,7 @@ export async function get(_req: Request, res: Response) {
       mru: [formatted],
       current: formatted,
       lru: [],
-      availables: appCache.availablePayloads().filter((pkg) => pkg !== formatted),
+      availables: cache.availablePayloads().filter((pkg) => pkg !== formatted),
       lastUsed: {
         [formatted]: Date.now()
       },
@@ -50,8 +50,8 @@ export async function get(_req: Request, res: Response) {
     };
     logger.info(`[data|get](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
 
-    await appCache.updatePayloadsList(payloadsList);
-    appCache.updatePayload(formatted, payload);
+    await cache.updatePayloadsList(payloadsList);
+    cache.updatePayload(formatted, payload);
     logger.info(`[data|get](cache: created|payloadsList: ${payloadsList.lru})`);
 
     send(res, 200, payload);

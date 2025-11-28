@@ -13,10 +13,11 @@ import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
 import enableDestroy from "server-destroy";
 import cacache from "cacache";
+import type { Polka } from "polka";
 
 // Import Internal Dependencies
-import { buildServer } from "../index.js";
-import * as flagsEndpoint from "../src/endpoints/flags.js";
+import { buildServer } from "../src/index.ts";
+import * as flagsEndpoint from "../src/endpoints/flags.ts";
 
 // CONSTANTS
 const kHttpPort = 17049;

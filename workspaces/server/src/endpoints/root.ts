@@ -3,7 +3,7 @@ import send from "@polka/send-type";
 import type { Request, Response } from "express-serve-static-core";
 
 // Import Internal Dependencies
-import { context } from "../ALS.js";
+import { context } from "../ALS.ts";
 
 export async function get(_req: Request, res: Response) {
   try {

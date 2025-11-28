@@ -3,8 +3,8 @@ import send from "@polka/send-type";
 import type { Request, Response } from "express-serve-static-core";
 
 // Import Internal Dependencies
-import * as config from "../config.js";
-import { bodyParser } from "../middlewares/bodyParser.js";
+import * as config from "../config.ts";
+import { bodyParser } from "../middlewares/bodyParser.ts";
 
 export async function get(_req: Request, res: Response) {
   const result = await config.get();

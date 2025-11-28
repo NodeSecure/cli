@@ -1,18 +1,18 @@
 // Import Third-party Dependencies
 import { WebSocketServer, type WebSocket } from "ws";
 import { match } from "ts-pattern";
-import { appCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { logger } from "../logger.js";
-import { search } from "./commands/search.js";
-import { remove } from "./commands/remove.js";
-import { context } from "./websocket.als.js";
+import { logger } from "../logger.ts";
+import { cache } from "../cache.ts";
+import { search } from "./commands/search.ts";
+import { remove } from "./commands/remove.ts";
+import { context } from "./websocket.als.ts";
 import type {
   WebSocketResponse,
   WebSocketContext,
   WebSocketMessage
-} from "./websocket.types.js";
+} from "./websocket.types.ts";
 
 export class WebSocketServerInstanciator {
   constructor() {
@@ -37,7 +37,7 @@ export class WebSocketServerInstanciator {
   ) {
     const ctx: WebSocketContext = {
       socket,
-      cache: appCache,
+      cache,
       logger
     };
 
@@ -68,20 +68,20 @@ export class WebSocketServerInstanciator {
     stopInitializationOnError = false
   ): Promise<WebSocketResponse | null> {
     try {
-      const cache = await appCache.payloadsList();
+      const cached = await cache.payloadsList();
       if (
-        cache.mru === void 0 ||
-        cache.current === void 0
+        cached.mru === void 0 ||
+        cached.current === void 0
       ) {
         throw new Error("Payloads list not found in cache.");
       }
       logger.info(
-        `[ws|init](current: ${cache.current}|root: ${cache.root})`
+        `[ws|init](current: ${cached.current}|root: ${cached.root})`
       );
 
       return {
         status: "INIT",
-        cache
+        cache: cached
       };
     }
     catch {
@@ -90,7 +90,7 @@ export class WebSocketServerInstanciator {
       }
 
       logger.error("[ws|init] creating new payloads list in cache");
-      await appCache.initPayloadsList();
+      await cache.initPayloadsList();
 
       return this.initializeServer(true);
     }

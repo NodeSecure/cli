@@ -4,13 +4,13 @@ import fs from "node:fs";
 // Import Third-party Dependencies
 import send from "@polka/send-type";
 import { report } from "@nodesecure/report";
-import { appCache } from "@nodesecure/cache";
 import type { Request, Response } from "express-serve-static-core";
 import type { RC } from "@nodesecure/rc";
 
 // Import Internal Dependencies
-import { context } from "../ALS.js";
-import { bodyParser } from "../middlewares/bodyParser.js";
+import { context } from "../ALS.ts";
+import { cache } from "../cache.ts";
+import { bodyParser } from "../middlewares/bodyParser.ts";
 
 // TODO: provide a non-file-based API on RC side ?
 const kReportPayload: Partial<RC["report"]> = {
@@ -58,7 +58,7 @@ export async function post(req: Request, res: Response) {
 
   const scannerPayload = dataFilePath ?
     JSON.parse(fs.readFileSync(dataFilePath, "utf-8")) :
-    appCache.getPayload((await appCache.payloadsList()).current);
+    cache.getPayload((await cache.payloadsList()).current);
 
   const rootDependencyName = scannerPayload.rootDependencyName;
   const [organizationPrefixOrRepo, repo] = rootDependencyName.split("/");

@@ -2,11 +2,11 @@
 import type { PayloadsList } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { context } from "../websocket.als.js";
+import { context } from "../websocket.als.ts";
 import type {
   WebSocketResponse,
   WebSocketContext
-} from "../websocket.types.js";
+} from "../websocket.types.ts";
 
 export async function* remove(
   spec: string

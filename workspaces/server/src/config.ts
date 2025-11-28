@@ -1,9 +1,9 @@
 // Import Third-party Dependencies
 import { warnings, type WarningName } from "@nodesecure/js-x-ray";
-import { appCache, type AppConfig } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { logger } from "./logger.js";
+import { cache, type AppConfig } from "./cache.ts";
+import { logger } from "./logger.ts";
 
 const experimentalWarnings = Object.entries(warnings)
   .flatMap(([warning, metadata]) => ("experimental" in metadata && metadata.experimental ? [warning] : [])) as WarningName[];
@@ -17,7 +17,7 @@ const kDefaultConfig = {
 
 export async function get(): Promise<AppConfig> {
   try {
-    const config = await appCache.getConfig();
+    const config = await cache.getConfig();
 
     const {
       defaultPackageMenu,
@@ -46,7 +46,7 @@ export async function get(): Promise<AppConfig> {
   catch (err: any) {
     logger.error(`[config|get](error: ${err.message})`);
 
-    await appCache.updateConfig(kDefaultConfig);
+    await cache.updateConfig(kDefaultConfig);
 
     logger.info(`[config|get](fallback to default: ${JSON.stringify(kDefaultConfig)})`);
 
@@ -57,7 +57,7 @@ export async function get(): Promise<AppConfig> {
 export async function set(newValue: AppConfig) {
   logger.info(`[config|set](config: ${JSON.stringify(newValue)})`);
   try {
-    await appCache.updateConfig(newValue);
+    await cache.updateConfig(newValue);
 
     logger.info("[config|set](sucess)");
   }

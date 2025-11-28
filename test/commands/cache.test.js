@@ -11,7 +11,8 @@ import { after, before, describe, it } from "node:test";
 
 // Import Third-party Dependencies
 import * as i18n from "@nodesecure/i18n";
-import { appCache, DEFAULT_PAYLOAD_PATH } from "@nodesecure/cache";
+import { cache } from "@nodesecure/server";
+import { DEFAULT_PAYLOAD_PATH } from "@nodesecure/cache";
 
 // Import Internal Dependencies
 import { arrayFromAsync } from "../helpers/utils.js";
@@ -46,22 +47,22 @@ describe("Cache command", { concurrency: 1 }, () => {
     lang = await i18n.getLocalLang();
 
     try {
-      actualCache = await appCache.payloadsList();
+      actualCache = await cache.payloadsList();
     }
     catch {
-      await appCache.initPayloadsList({ logging: false });
-      actualCache = await appCache.payloadsList();
+      await cache.initPayloadsList({ logging: false });
+      actualCache = await cache.payloadsList();
     }
 
-    appCache.updatePayload("test-package", { foo: "bar" });
+    cache.updatePayload("test-package", { foo: "bar" });
   });
 
   after(async() => {
     await i18n.setLocalLang(lang);
     await i18n.getLocalLang();
 
-    await appCache.updatePayloadsList(actualCache, { logging: false });
-    appCache.removePayload("test-package");
+    await cache.updatePayloadsList(actualCache, { logging: false });
+    cache.removePayload("test-package");
 
     if (dummyPayload !== null) {
       fs.rmSync(DEFAULT_PAYLOAD_PATH);

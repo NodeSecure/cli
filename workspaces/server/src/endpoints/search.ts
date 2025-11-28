@@ -4,7 +4,7 @@ import * as npm from "@nodesecure/npm-registry-sdk";
 import type { Request, Response } from "express-serve-static-core";
 
 // Import Internal Dependencies
-import { logger } from "../logger.js";
+import { logger } from "../logger.ts";
 
 export async function get(req: Request, res: Response) {
   const { packageName } = req.params;

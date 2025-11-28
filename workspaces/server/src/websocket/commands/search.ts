@@ -1,12 +1,12 @@
 // Import Third-party Dependencies
 import * as scanner from "@nodesecure/scanner";
-import type { PayloadsList, appCache } from "@nodesecure/cache";
+import type { PayloadsList, AppCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { context } from "../websocket.als.js";
+import { context } from "../websocket.als.ts";
 import type {
   WebSocketResponse
-} from "../websocket.types.js";
+} from "../websocket.types.ts";
 
 export async function* search(
   spec: string
@@ -72,7 +72,7 @@ async function* searchInCache(
 
 async function handleMruCache(
   spec: string,
-  cache: typeof appCache,
+  cache: AppCache,
   cacheList: PayloadsList
 ): Promise<PayloadsList> {
   const updatedList: PayloadsList = {
@@ -88,7 +88,7 @@ async function handleMruCache(
 
 async function handleLruOrAvailableCache(
   spec: string,
-  cache: typeof appCache
+  cache: AppCache
 ): Promise<PayloadsList> {
   const {
     mru, lru, availables, lastUsed,

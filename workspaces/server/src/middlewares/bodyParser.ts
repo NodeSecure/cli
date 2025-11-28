@@ -1,5 +1,5 @@
-// Import Third-party Dependencies
-import type { Request } from "express-serve-static-core";
+// Import Node.js Dependencies
+import type { IncomingMessage } from "node:http";
 
 /**
  * @async
@@ -8,7 +8,7 @@ import type { Request } from "express-serve-static-core";
  * @returns {Promise<any>}
  */
 export async function bodyParser(
-  req: Request
+  req: IncomingMessage
 ) {
   let rawBody = "";
   for await (const chunk of req) {
