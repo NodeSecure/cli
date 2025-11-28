@@ -9,17 +9,20 @@ import os from "node:os";
 import cacache from "cacache";
 
 // Import Internal Dependencies
-import { appCache } from "../index.js";
+import { AppCache } from "../src/index.ts";
 
 // CONSTANTS
 const kPayloadsPath = path.join(os.homedir(), ".nsecure", "payloads");
 
 describe("appCache", () => {
-  before(async() => {
+  let appCache: AppCache;
+
+  before(() => {
+    appCache = new AppCache();
     appCache.prefix = "test_runner";
   });
 
-  after(async() => {
+  after(() => {
     appCache.availablePayloads().forEach((pkg) => {
       appCache.removePayload(pkg);
     });

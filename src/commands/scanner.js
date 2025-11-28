@@ -11,7 +11,7 @@ import { Spinner } from "@topcli/spinner";
 import ms from "ms";
 import * as i18n from "@nodesecure/i18n";
 import * as scanner from "@nodesecure/scanner";
-import { appCache } from "@nodesecure/cache";
+import { cache } from "@nodesecure/server";
 
 // Import Internal Dependencies
 import * as http from "./http.js";
@@ -215,7 +215,7 @@ async function logAndWrite(
   console.log(kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath))));
   console.log("");
 
-  await appCache.setRootPayload(payload, { logging: false, local });
+  await cache.setRootPayload(payload, { logging: false, local });
 
   return filePath;
 }

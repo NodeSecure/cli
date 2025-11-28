@@ -1,8 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./",
-    "outDir": "dist",
+    "outDir": "./dist",
+    "rootDir": "./src",
   },
-  "include": ["index.ts", "src"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    {
+      "path": "../cache"
+    }
+  ]
 }

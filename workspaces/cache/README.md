@@ -33,10 +33,12 @@ $ yarn add @nodesecure/cache
 ## Usage example
 
 ```js
-import { appCache } from "@nodesecure/cache"
+import { AppCache } from "@nodesecure/cache";
 
-await appCache.initPayloadsList();
-await appCache.setRootPayload(payload);
+const cache = new AppCache();
+
+await cache.initPayloadsList();
+await cache.setRootPayload(payload);
 ```
 
 ## API

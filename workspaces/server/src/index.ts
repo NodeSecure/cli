@@ -3,23 +3,23 @@ import fs from "node:fs";
 
 // Import Third-party Dependencies
 import polka from "polka";
-import { appCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import * as root from "./src/endpoints/root.js";
-import * as data from "./src/endpoints/data.js";
-import * as flags from "./src/endpoints/flags.js";
-import * as config from "./src/endpoints/config.js";
-import * as search from "./src/endpoints/search.js";
-import * as bundle from "./src/endpoints/bundle.js";
-import * as npmDownloads from "./src/endpoints/npm-downloads.js";
-import * as scorecard from "./src/endpoints/ossf-scorecard.js";
-import * as locali18n from "./src/endpoints/i18n.js";
-import * as report from "./src/endpoints/report.js";
-import * as middlewares from "./src/middlewares/index.js";
-import { type BuildContextMiddlewareOptions } from "./src/middlewares/context.js";
-import { WebSocketServerInstanciator } from "./src/websocket/index.js";
-import { logger } from "./src/logger.js";
+import * as root from "./endpoints/root.ts";
+import * as data from "./endpoints/data.ts";
+import * as flags from "./endpoints/flags.ts";
+import * as config from "./endpoints/config.ts";
+import * as search from "./endpoints/search.ts";
+import * as bundle from "./endpoints/bundle.ts";
+import * as npmDownloads from "./endpoints/npm-downloads.ts";
+import * as scorecard from "./endpoints/ossf-scorecard.ts";
+import * as locali18n from "./endpoints/i18n.ts";
+import * as report from "./endpoints/report.ts";
+import * as middlewares from "./middlewares/index.ts";
+import { type BuildContextMiddlewareOptions } from "./middlewares/context.ts";
+import { WebSocketServerInstanciator } from "./websocket/index.ts";
+import { logger } from "./logger.ts";
+import { cache } from "./cache.ts";
 
 export type NestedStringRecord = {
   [key: string]: string | NestedStringRecord;
@@ -55,7 +55,7 @@ export function buildServer(dataFilePath: string, options: BuildServerOptions) {
     asyncStoreProperties.dataFilePath = dataFilePath;
   }
   else {
-    appCache.startFromZero = true;
+    cache.startFromZero = true;
   }
   httpServer.use(
     middlewares.buildContextMiddleware({
@@ -91,5 +91,6 @@ export function buildServer(dataFilePath: string, options: BuildServerOptions) {
 
 export {
   WebSocketServerInstanciator,
-  logger
+  logger,
+  cache
 };

@@ -5,12 +5,12 @@ import fs from "node:fs";
 
 // Import Third-party Dependencies
 import cacache from "cacache";
-
-// Import Internal Dependencies
-import { logger } from "@nodesecure/server";
 import type { Flag } from "@nodesecure/flags";
 import type { WarningName } from "@nodesecure/js-x-ray";
 import type { Payload } from "@nodesecure/scanner";
+
+// Import Internal Dependencies
+import { type AbstractLogger, createNoopLogger } from "./abstract-logging.ts";
 
 // CONSTANTS
 const kConfigCache = "___config";
@@ -53,11 +53,16 @@ export interface SetRootPayloadOptions extends LoggingOption {
   local?: boolean;
 }
 
-class _AppCache {
+export class AppCache {
+  #logger: AbstractLogger;
+
   prefix = "";
   startFromZero = false;
 
-  constructor() {
+  constructor(
+    logger: AbstractLogger = createNoopLogger()
+  ) {
+    this.#logger = logger;
     fs.mkdirSync(kPayloadsPath, { recursive: true });
   }
 
@@ -87,7 +92,7 @@ class _AppCache {
       return JSON.parse(fs.readFileSync(filePath, "utf-8"));
     }
     catch (err) {
-      logger.error(`[cache|get](pkg: ${packageName}|cache: not found)`);
+      this.#logger.error(`[cache|get](pkg: ${packageName}|cache: not found)`);
 
       throw err;
     }
@@ -119,7 +124,7 @@ class _AppCache {
       return JSON.parse(data.toString());
     }
     catch (err) {
-      logger.error("[cache|get](cache: not found)");
+      this.#logger.error("[cache|get](cache: not found)");
 
       throw err;
     }
@@ -139,7 +144,7 @@ class _AppCache {
       };
 
       if (logging) {
-        logger.info("[cache|init](startFromZero)");
+        this.#logger.info("[cache|init](startFromZero)");
       }
       await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
 
@@ -161,7 +166,7 @@ class _AppCache {
     };
 
     if (logging) {
-      logger.info(`[cache|init](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
+      this.#logger.info(`[cache|init](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
     }
     await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
     this.updatePayload(formatted, payload);
@@ -194,7 +199,7 @@ class _AppCache {
     }
 
     if (logging) {
-      logger.info(`[cache|init](packagesInFolder: ${packagesInFolder})`);
+      this.#logger.info(`[cache|init](packagesInFolder: ${packagesInFolder})`);
     }
 
     await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify({
@@ -254,5 +259,3 @@ class _AppCache {
     await this.updatePayloadsList(updatedPayloadsCache);
   }
 }
-
-export const appCache = new _AppCache();

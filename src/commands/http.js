@@ -8,8 +8,11 @@ import kleur from "kleur";
 import open from "open";
 import * as SemVer from "semver";
 import * as i18n from "@nodesecure/i18n";
-import { buildServer, WebSocketServerInstanciator } from "@nodesecure/server";
-import { appCache } from "@nodesecure/cache";
+import {
+  cache,
+  buildServer,
+  WebSocketServerInstanciator
+} from "@nodesecure/server";
 
 // Import Internal Dependencies
 import english from "../../i18n/english.js";
@@ -44,7 +47,7 @@ export async function start(
     assertScannerVersion(dataFilePath);
   }
   else {
-    appCache.prefix = crypto.randomBytes(4).toString("hex");
+    cache.prefix = crypto.randomBytes(4).toString("hex");
   }
 
   const httpServer = buildServer(dataFilePath, {

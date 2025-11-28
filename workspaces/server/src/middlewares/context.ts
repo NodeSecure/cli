@@ -2,9 +2,9 @@
 import type { Request, Response, NextFunction } from "express-serve-static-core";
 
 // Import Internal Dependencies
-import { context } from "../ALS.js";
-import { ViewBuilder } from "../ViewBuilder.class.js";
-import type { NestedStringRecord } from "../../index.js";
+import { context } from "../ALS.ts";
+import { ViewBuilder } from "../ViewBuilder.class.ts";
+import type { NestedStringRecord } from "../index.ts";
 
 export interface AyncStoreContext {
   dataFilePath?: string;

@@ -2,7 +2,7 @@
 import send from "@polka/send-type";
 
 // Import Internal Dependencies
-import { context } from "../ALS.js";
+import { context } from "../ALS.ts";
 
 export async function get(_req, res) {
   const { i18n } = context.getStore()!;
