@@ -1,10 +1,10 @@
 // Import Third-party Dependencies
 import { WebSocketServer, type WebSocket } from "ws";
 import { match } from "ts-pattern";
+import type { Logger } from "pino";
+import type { AppCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { logger } from "../logger.ts";
-import { cache } from "../cache.ts";
 import { search } from "./commands/search.ts";
 import { remove } from "./commands/remove.ts";
 import { context } from "./websocket.als.ts";
@@ -14,8 +14,20 @@ import type {
   WebSocketMessage
 } from "./websocket.types.ts";
 
+export interface WebSocketServerInstanciatorOptions {
+  logger: Logger<never, boolean>;
+  cache: AppCache;
+}
+
 export class WebSocketServerInstanciator {
-  constructor() {
+  #logger: Logger<never, boolean>;
+  #cache: AppCache;
+
+  constructor(
+    options: WebSocketServerInstanciatorOptions
+  ) {
+    this.#logger = options.logger;
+    this.#cache = options.cache;
     const websocket = new WebSocketServer({
       port: 1338
     });
@@ -37,12 +49,12 @@ export class WebSocketServerInstanciator {
   ) {
     const ctx: WebSocketContext = {
       socket,
-      cache,
-      logger
+      cache: this.#cache,
+      logger: this.#logger
     };
 
     const commandName = message.commandName;
-    logger.info(`[ws|command.${commandName.toLowerCase()}] ${message.spec}`);
+    this.#logger.info(`[ws|command.${commandName.toLowerCase()}] ${message.spec}`);
 
     context.run(ctx, async() => {
       try {
@@ -58,8 +70,8 @@ export class WebSocketServerInstanciator {
       catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
 
-        logger.error(`[ws|command.${commandName}](error: ${errorMessage})`);
-        logger.debug(error);
+        this.#logger.error(`[ws|command.${commandName}](error: ${errorMessage})`);
+        this.#logger.debug(error);
       }
     });
   }
@@ -68,14 +80,14 @@ export class WebSocketServerInstanciator {
     stopInitializationOnError = false
   ): Promise<WebSocketResponse | null> {
     try {
-      const cached = await cache.payloadsList();
+      const cached = await this.#cache.payloadsList();
       if (
         cached.mru === void 0 ||
         cached.current === void 0
       ) {
         throw new Error("Payloads list not found in cache.");
       }
-      logger.info(
+      this.#logger.info(
         `[ws|init](current: ${cached.current}|root: ${cached.root})`
       );
 
@@ -89,8 +101,8 @@ export class WebSocketServerInstanciator {
         return null;
       }
 
-      logger.error("[ws|init] creating new payloads list in cache");
-      await cache.initPayloadsList();
+      this.#logger.error("[ws|init] creating new payloads list in cache");
+      await this.#cache.initPayloadsList();
 
       return this.initializeServer(true);
     }

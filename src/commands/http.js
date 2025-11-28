@@ -10,6 +10,7 @@ import * as SemVer from "semver";
 import * as i18n from "@nodesecure/i18n";
 import {
   cache,
+  logger,
   buildServer,
   WebSocketServerInstanciator
 } from "@nodesecure/server";
@@ -69,7 +70,10 @@ export async function start(
     open(link);
   });
 
-  new WebSocketServerInstanciator();
+  new WebSocketServerInstanciator({
+    cache,
+    logger
+  });
 
   for (const eventName of ["SIGINT", "SIGTERM"]) {
     process.on(eventName, () => {
