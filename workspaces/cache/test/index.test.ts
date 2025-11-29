@@ -143,7 +143,10 @@ describe("appCache", () => {
     appCache.startFromZero = false;
     t.mock.method(fs, "readdirSync", () => []);
     t.mock.method(fs, "readFileSync", () => JSON.stringify({
-      rootDependencyName: "test_runner",
+      rootDependency: {
+        name: "test_runner",
+        version: "1.0.0"
+      },
       dependencies: {
         test_runner: {
           versions: {
@@ -277,7 +280,11 @@ describe("appCache", () => {
       root: null
     });
     const payload: any = {
-      rootDependencyName: "test_runner-local",
+      rootDependency: {
+        name: "test_runner-local",
+        version: "1.0.0",
+        integrity: null
+      },
       dependencies: {
         "test_runner-local": {
           versions: {
@@ -314,7 +321,11 @@ describe("appCache", () => {
       root: null
     });
     const payload: any = {
-      rootDependencyName: "test_runner-local",
+      rootDependency: {
+        name: "test_runner-local",
+        version: "1.0.0",
+        integrity: null
+      },
       dependencies: {
         "test_runner-local": {
           versions: {

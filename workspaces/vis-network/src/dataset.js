@@ -99,7 +99,7 @@ export default class NodeSecureDataSet extends EventTarget {
     this.rawEdgesData = [];
     this.rawNodesData = [];
 
-    const rootDependency = dataEntries.find(([name]) => name === data.rootDependencyName);
+    const rootDependency = dataEntries.find(([name]) => name === data.rootDependency.name);
     const rootContributors = [
       rootDependency[1].metadata.author,
       ...rootDependency[1].metadata.maintainers,

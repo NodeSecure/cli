@@ -152,24 +152,25 @@ export class AppCache {
     }
 
     const payload = JSON.parse(fs.readFileSync(DEFAULT_PAYLOAD_PATH, "utf-8"));
-    const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
-    const formatted = `${payload.rootDependencyName}@${version}`;
+    const { name, version } = payload.rootDependency;
+
+    const spec = `${name}@${version}`;
     const payloadsList = {
-      mru: [formatted],
+      mru: [spec],
       lru: [],
-      current: formatted,
+      current: spec,
       availables: [],
       lastUsed: {
-        [formatted]: Date.now()
+        [spec]: Date.now()
       },
-      root: formatted
+      root: spec
     };
 
     if (logging) {
-      this.#logger.info(`[cache|init](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
+      this.#logger.info(`[cache|init](dep: ${spec})`);
     }
     await cacache.put(CACHE_PATH, `${this.prefix}${kPayloadsCache}`, JSON.stringify(payloadsList));
-    this.updatePayload(formatted, payload);
+    this.updatePayload(spec, payload);
   }
 
   async initPayloadsList(options: InitPayloadListOptions = {}) {
@@ -240,8 +241,9 @@ export class AppCache {
   async setRootPayload(payload: Payload, options: SetRootPayloadOptions = {}) {
     const { logging = true, local = false } = options;
 
-    const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
-    const pkg = `${payload.rootDependencyName}@${version}${local ? "#local" : ""}`;
+    const { name, version } = payload.rootDependency;
+
+    const pkg = `${name}@${version}${local ? "#local" : ""}`;
     this.updatePayload(pkg, payload);
 
     await this.initPayloadsList({ logging });

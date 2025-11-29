@@ -114,8 +114,7 @@ async function* saveInCache(
 ): AsyncGenerator<WebSocketResponse, void, unknown> {
   const { logger, cache } = context.getStore()!;
 
-  const name = payload.rootDependencyName;
-  const version = Object.keys(payload.dependencies[name].versions)[0];
+  const { name, version } = payload.rootDependency;
   const spec = `${name}@${version}`;
 
   const { mru, lru, availables, lastUsed, ...appCache } = await cache.removeLastMRU();

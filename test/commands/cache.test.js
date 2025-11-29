@@ -29,7 +29,11 @@ describe("Cache command", { concurrency: 1 }, () => {
   before(async() => {
     if (fs.existsSync(DEFAULT_PAYLOAD_PATH) === false) {
       dummyPayload = {
-        rootDependencyName: "test_runner",
+        rootDependency: {
+          name: "test_runner",
+          version: "1.0.0",
+          integrity: null
+        },
         dependencies: {
           test_runner: {
             versions: {

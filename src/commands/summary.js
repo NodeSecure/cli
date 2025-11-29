@@ -19,10 +19,10 @@ export async function main(json = "nsecure-result.json") {
   await i18n.getLocalLang();
   const dataFilePath = path.join(process.cwd(), json);
   const rawAnalysis = await fs.readFile(dataFilePath, { encoding: "utf-8" });
-  const { rootDependencyName, dependencies } = JSON.parse(rawAnalysis);
+  const { rootDependency, dependencies } = JSON.parse(rawAnalysis);
 
   const ui = cliui({ width: 80 });
-  const title = `${white().bold(`${i18n.getTokenSync("ui.stats.title")}:`)} ${cyan().bold(rootDependencyName)}`;
+  const title = `${white().bold(`${i18n.getTokenSync("ui.stats.title")}:`)} ${cyan().bold(rootDependency.name)}`;
   ui.div(
     { text: title, width: 50 }
   );
