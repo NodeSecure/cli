@@ -178,7 +178,7 @@ All static files (UI, assets, etc.) are served from the project root directory.
 The `WebSocketServerInstanciator` class sets up and manages a WebSocket server for real-time communication with NodeSecure clients. It provides live updates and cache management features for package analysis.
 
 ```js
-new WebSocketServerInstanciator();
+new WebSocketServerInstanciator({ cache, logger });
 ```
 - Initializes a WebSocket server on port 1338.
 - Listens for client connections and incoming messages.
