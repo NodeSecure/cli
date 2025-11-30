@@ -60,8 +60,8 @@ export async function post(req: Request, res: Response) {
     JSON.parse(fs.readFileSync(dataFilePath, "utf-8")) :
     cache.getPayload((await cache.payloadsList()).current);
 
-  const rootDependencyName = scannerPayload.rootDependencyName;
-  const [organizationPrefixOrRepo, repo] = rootDependencyName.split("/");
+  const name = scannerPayload.rootDependency.name;
+  const [organizationPrefixOrRepo, repo] = name.split("/");
   const reportPayload = structuredClone({
     ...kReportPayload,
     title,
@@ -76,7 +76,7 @@ export async function post(req: Request, res: Response) {
     const dependencies = includesAllDeps ?
       scannerPayload.dependencies :
       {
-        [rootDependencyName]: scannerPayload.dependencies[rootDependencyName]
+        [name]: scannerPayload.dependencies[name]
       };
 
     const data = await report(

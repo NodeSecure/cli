@@ -157,7 +157,7 @@ class PopupReport extends LitElement {
 
   static properties = {
     theme: { type: String },
-    rootDependencyName: { type: String },
+    dependencyName: { type: String },
     isLoading: { type: Boolean }
   };
 
@@ -193,7 +193,7 @@ class PopupReport extends LitElement {
 
   render() {
     const { popup: { report } } = window.i18n[currentLang()];
-    const defaultTitle = `${this.rootDependencyName}'s report`;
+    const defaultTitle = `${this.dependencyName}'s report`;
 
     return html`
   <div class="${this.theme} report--popup">
@@ -236,7 +236,7 @@ class PopupReport extends LitElement {
     }
     this.isLoading = true;
     const formData = new FormData(e.target);
-    const title = formData.get("title") || `${this.rootDependencyName} 's report`;
+    const title = formData.get("title") || `${this.dependencyName} 's report`;
     const theme = formData.get("theme");
     const includesAllDeps = formData.get("includesAllDeps") === "includesAllDeps";
 

@@ -1,6 +1,10 @@
 {
   "id": "abcde",
-  "rootDependencyName": "pkg1",
+  "rootDependency": {
+    "name": "pkg1",
+    "version": "3.0.0",
+    "integrity": null
+  },
   "highlighted": {
     "contacts": [
       {

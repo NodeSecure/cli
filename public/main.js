@@ -57,9 +57,8 @@ async function onSocketPayload(event) {
   const data = event.detail;
   const { payload } = data;
 
-  // TODO: implement rootDependency as a whole spec in scanner
-  const rootDepVersion = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
-  window.activePackage = payload.rootDependencyName + "@" + rootDepVersion;
+  const { name, version } = payload.rootDependency;
+  window.activePackage = name + "@" + version;
 
   await init({ navigateToNetworkView: true });
   initSearchNav(payload, {

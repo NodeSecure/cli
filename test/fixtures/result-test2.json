@@ -1,6 +1,10 @@
 {
   "id": "RGGiTs",
-  "rootDependencyName": "express",
+  "rootDependency": {
+    "name": "express",
+    "version": "3.0.0",
+    "integrity": null
+  },
   "version": "3.0.0",
   "vulnerabilityStrategy": "none",
   "warnings": []

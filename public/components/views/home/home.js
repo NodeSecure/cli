@@ -398,7 +398,7 @@ export class HomeView {
   handleReport() {
     document.querySelector(".home--header--report").addEventListener("click", async() => {
       const popupReport = document.createElement("popup-report");
-      popupReport.rootDependencyName = this.secureDataSet.data.rootDependencyName;
+      popupReport.dependencyName = this.secureDataSet.data.rootDependency.name;
       popupReport.theme = this.secureDataSet.theme;
       window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
         detail: {

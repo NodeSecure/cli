@@ -99,7 +99,7 @@
     "@nodesecure/ossf-scorecard-sdk": "^3.2.1",
     "@nodesecure/rc": "^5.0.0",
     "@nodesecure/report": "4.0.0",
-    "@nodesecure/scanner": "^7.1.0",
+    "@nodesecure/scanner": "8.1.0",
     "@nodesecure/server": "1.0.0",
     "@nodesecure/utils": "^2.2.0",
     "@nodesecure/vulnera": "^2.0.1",

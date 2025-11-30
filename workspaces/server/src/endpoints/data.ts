@@ -36,8 +36,9 @@ export async function get(_req: Request, res: Response) {
 
     const payloadPath = dataFilePath || kDefaultPayloadPath;
     const payload = JSON.parse(fs.readFileSync(payloadPath, "utf-8"));
-    const version = Object.keys(payload.dependencies[payload.rootDependencyName].versions)[0];
-    const formatted = `${payload.rootDependencyName}@${version}${payload.local ? "#local" : ""}`;
+
+    const { name, version } = payload.rootDependency;
+    const formatted = `${name}@${version}${payload.local ? "#local" : ""}`;
     const payloadsList = {
       mru: [formatted],
       current: formatted,
@@ -48,7 +49,7 @@ export async function get(_req: Request, res: Response) {
       },
       root: formatted
     };
-    logger.info(`[data|get](dep: ${formatted}|version: ${version}|rootDependencyName: ${payload.rootDependencyName})`);
+    logger.info(`[data|get](dep: ${formatted})`);
 
     await cache.updatePayloadsList(payloadsList);
     cache.updatePayload(formatted, payload);
