@@ -1,11 +1,17 @@
-// Import Third-party Dependencies
-import send from "@polka/send-type";
-import type { Request, Response } from "express-serve-static-core";
+// Import Node.js Dependencies
+import type {
+  IncomingMessage,
+  ServerResponse
+} from "node:http";
 
 // Import Internal Dependencies
 import { context } from "../ALS.ts";
+import { send } from "./util/send.ts";
 
-export async function get(_req: Request, res: Response) {
+export async function get(
+  _req: IncomingMessage,
+  res: ServerResponse
+) {
   try {
     const { viewBuilder } = context.getStore()!;
 
@@ -17,6 +23,8 @@ export async function get(_req: Request, res: Response) {
     res.end(templateStr);
   }
   catch (err: any) {
-    send(res, 500, { error: err.message });
+    send(res, { error: err.message }, {
+      code: 500
+    });
   }
 }

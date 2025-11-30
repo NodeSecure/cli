@@ -2,6 +2,7 @@
 import { fileURLToPath } from "node:url";
 import { after, before, describe, test } from "node:test";
 import { once } from "node:events";
+import type { Server } from "node:http";
 import path from "node:path";
 import assert from "node:assert";
 import stream from "node:stream";
@@ -11,9 +12,8 @@ import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "
 import { CACHE_PATH } from "@nodesecure/cache";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
-import enableDestroy from "server-destroy";
 import cacache from "cacache";
-import type { Polka } from "polka";
+import enableDestroy from "server-destroy";
 
 // Import Internal Dependencies
 import { buildServer } from "../src/index.ts";
@@ -34,7 +34,7 @@ const kProjectRootDir = path.join(import.meta.dirname, "..", "..", "..");
 const kComponentsDir = path.join(kProjectRootDir, "public", "components");
 
 describe("httpServer", { concurrency: 1 }, () => {
-  let httpServer: Polka;
+  let httpServer: Server;
 
   before(async() => {
     setGlobalDispatcher(kMockAgent);
@@ -55,13 +55,12 @@ describe("httpServer", { concurrency: 1 }, () => {
       }
     });
     httpServer.listen(kHttpPort);
-    await once(httpServer.server!, "listening");
-
-    enableDestroy(httpServer.server!);
+    await once(httpServer, "listening");
+    enableDestroy(httpServer);
   }, { timeout: 5000 });
 
-  after(async() => {
-    httpServer.server!.destroy();
+  after(() => {
+    httpServer.destroy();
     kBundlephobiaPool.close();
     setGlobalDispatcher(kGlobalDispatcher);
   });
@@ -104,7 +103,11 @@ describe("httpServer", { concurrency: 1 }, () => {
     const logs: string[] = [];
     console.error = (data: string) => logs.push(data);
 
-    await flagsEndpoint.get({ params: { title: "hasWarnings" } } as any, ({ writeHead: () => true }) as any);
+    flagsEndpoint.get(
+      void 0 as any,
+      ({ writeHead: () => true }) as any,
+      { title: "hasWarnings" }
+    );
     assert.deepEqual(logs, ["fake error"]);
   });
 
@@ -235,7 +238,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     assert.deepEqual(keys, ["english", "french"]);
   });
 
-  test("'/download/:pkgName' should return package downloads", async() => {
+  test("'/download/:packageName' should return package downloads", async() => {
     const result = await get<any>(new URL("/downloads/fastify", kHttpURL));
 
     assert.equal(result.statusCode, 200);
@@ -245,7 +248,7 @@ describe("httpServer", { concurrency: 1 }, () => {
     assert.ok(result.data.end);
   });
 
-  test("'/download/:pkgName' should not find package", async() => {
+  test("'/download/:packageName' should not find package", async() => {
     const wrongPackageName = "br-br-br-brah";
 
     await assert.rejects(async() => {
@@ -257,21 +260,21 @@ describe("httpServer", { concurrency: 1 }, () => {
     });
   });
 
-  test("'/scorecard/:org/:pkgName' should return scorecard data", async() => {
+  test("'/scorecard/:org/:packageName' should return scorecard data", async() => {
     const result = await get<any>(new URL("/scorecard/NodeSecure/cli", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.data.data.repo.name, "github.com/NodeSecure/cli");
   });
 
-  test("'/scorecard/:org/:pkgName' should return scorecard data for GitLab repo", async() => {
+  test("'/scorecard/:org/:packageName' should return scorecard data for GitLab repo", async() => {
     const result = await get<any>(new URL("/scorecard/gitlab-org/gitlab-ui?platform=gitlab.com", kHttpURL));
 
     assert.equal(result.statusCode, 200);
     assert.equal(result.data.data.repo.name, "gitlab.com/gitlab-org/gitlab-ui");
   });
 
-  test("'/scorecard/:org/:pkgName' should not find repo", async() => {
+  test("'/scorecard/:org/:packageName' should not find repo", async() => {
     const wrongPackageName = "br-br-br-brah";
 
     await assert.rejects(async() => {
@@ -310,9 +313,7 @@ describe("httpServer", { concurrency: 1 }, () => {
 });
 
 describe("httpServer without options", () => {
-  let httpServer: any;
-  // We want to disable WS
-  process.env.NODE_ENV = "test";
+  let httpServer: Server;
 
   before(async() => {
     httpServer = buildServer(JSON_PATH, {
@@ -328,23 +329,23 @@ describe("httpServer without options", () => {
       }
     });
     httpServer.listen();
-    await once(httpServer.server, "listening");
-    enableDestroy(httpServer.server);
+    await once(httpServer, "listening");
+    enableDestroy(httpServer);
   });
 
-  after(async() => {
-    httpServer.server.destroy();
+  after(() => {
+    httpServer.destroy();
   });
 
-  test("should listen on random port", async() => {
-    assert.ok(httpServer.server.address().port > 0);
+  test("should listen on random port", () => {
+    const address = httpServer.address();
+    assert.ok(address !== null && typeof address === "object" && address.port > 0);
   });
 });
 
 /**
  * HELPERS
  */
-
 function checkBundleResponse(payload: any) {
   assert.ok(payload.gzip);
   assert.ok(payload.size);

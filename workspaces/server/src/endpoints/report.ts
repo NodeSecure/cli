@@ -1,16 +1,19 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
+import type {
+  IncomingMessage,
+  ServerResponse
+} from "node:http";
 
 // Import Third-party Dependencies
-import send from "@polka/send-type";
 import { report } from "@nodesecure/report";
-import type { Request, Response } from "express-serve-static-core";
 import type { RC } from "@nodesecure/rc";
 
 // Import Internal Dependencies
 import { context } from "../ALS.ts";
 import { cache } from "../cache.ts";
-import { bodyParser } from "../middlewares/bodyParser.ts";
+import { send } from "./util/send.ts";
+import { bodyParser } from "./util/bodyParser.ts";
 
 // TODO: provide a non-file-based API on RC side ?
 const kReportPayload: Partial<RC["report"]> = {
@@ -46,12 +49,17 @@ const kReportPayload: Partial<RC["report"]> = {
   ]
 };
 
-export async function post(req: Request, res: Response) {
-  const body = await bodyParser(req) as {
-    title: string;
-    includesAllDeps: boolean;
-    theme: "light" | "dark";
-  };
+interface ReportRequestBody {
+  title: string;
+  includesAllDeps: boolean;
+  theme: "light" | "dark";
+}
+
+export async function post(
+  req: IncomingMessage,
+  res: ServerResponse
+) {
+  const body = await bodyParser<ReportRequestBody>(req);
   const { title, includesAllDeps, theme } = body;
 
   const { dataFilePath } = context.getStore()!;
@@ -84,10 +92,12 @@ export async function post(req: Request, res: Response) {
       reportPayload
     );
 
-    return send(res, 200, {
+    return send(res, {
       data
     }, {
-      "Content-type": "application/pdf"
+      headers: {
+        "content-type": "application/pdf"
+      }
     });
   }
   catch (err) {
@@ -95,7 +105,10 @@ export async function post(req: Request, res: Response) {
 
     return send(
       res,
-      500
+      void 0,
+      {
+        code: 500
+      }
     );
   }
 }
