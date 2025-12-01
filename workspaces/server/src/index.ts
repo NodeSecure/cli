@@ -1,29 +1,20 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
+import path from "node:path";
+import http from "node:http";
 
 // Import Third-party Dependencies
-import polka from "polka";
+import sirv from "sirv";
 
 // Import Internal Dependencies
-import * as root from "./endpoints/root.ts";
-import * as data from "./endpoints/data.ts";
-import * as flags from "./endpoints/flags.ts";
-import * as config from "./endpoints/config.ts";
-import * as search from "./endpoints/search.ts";
-import * as bundle from "./endpoints/bundle.ts";
-import * as npmDownloads from "./endpoints/npm-downloads.ts";
-import * as scorecard from "./endpoints/ossf-scorecard.ts";
-import * as locali18n from "./endpoints/i18n.ts";
-import * as report from "./endpoints/report.ts";
-import * as middlewares from "./middlewares/index.ts";
-import { type BuildContextMiddlewareOptions } from "./middlewares/context.ts";
-import { WebSocketServerInstanciator } from "./websocket/index.ts";
-import { logger } from "./logger.ts";
+import { getApiRouter } from "./endpoints/index.ts";
+import { ViewBuilder } from "./ViewBuilder.class.ts";
+import {
+  context,
+  type AsyncStoreContext,
+  type NestedStringRecord
+} from "./ALS.ts";
 import { cache } from "./cache.ts";
-
-export type NestedStringRecord = {
-  [key: string]: string | NestedStringRecord;
-};
 
 export interface BuildServerOptions {
   hotReload?: boolean;
@@ -36,7 +27,10 @@ export interface BuildServerOptions {
   };
 }
 
-export function buildServer(dataFilePath: string, options: BuildServerOptions) {
+export function buildServer(
+  dataFilePath: string,
+  options: BuildServerOptions
+) {
   const {
     hotReload = true,
     runFromPayload = true,
@@ -45,52 +39,41 @@ export function buildServer(dataFilePath: string, options: BuildServerOptions) {
     i18n
   } = options;
 
-  const httpServer = polka();
-
-  const asyncStoreProperties: BuildContextMiddlewareOptions["storeProperties"] = {
-    i18n
+  const viewBuilder = new ViewBuilder({
+    autoReload: hotReload,
+    projectRootDir,
+    componentsDir
+  });
+  const store: AsyncStoreContext = {
+    i18n,
+    viewBuilder
   };
   if (runFromPayload) {
     fs.accessSync(dataFilePath, fs.constants.R_OK | fs.constants.W_OK);
-    asyncStoreProperties.dataFilePath = dataFilePath;
+    store.dataFilePath = dataFilePath;
   }
   else {
     cache.startFromZero = true;
   }
-  httpServer.use(
-    middlewares.buildContextMiddleware({
-      autoReload: hotReload,
-      storeProperties: asyncStoreProperties,
-      projectRootDir,
-      componentsDir
-    })
+
+  const apiRouter = getApiRouter();
+
+  const serving = sirv(
+    path.join(projectRootDir, "dist"),
+    { dev: true }
   );
-
-  httpServer.use(middlewares.addStaticFiles({ projectRootDir }));
-  httpServer.get("/", root.get);
-
-  httpServer.get("/data", data.get);
-  httpServer.get("/config", config.get);
-  httpServer.put("/config", config.save);
-  httpServer.get("/i18n", locali18n.get);
-
-  httpServer.get("/search/:packageName", search.get);
-  httpServer.get("/search-versions/:packageName", search.versions);
-
-  httpServer.get("/flags", flags.getAll);
-  httpServer.get("/flags/description/:title", flags.get);
-  httpServer.get("/bundle/:pkgName", bundle.get);
-  httpServer.get("/bundle/:pkgName/:version", bundle.get);
-  httpServer.get("/downloads/:pkgName", npmDownloads.get);
-  // @ts-ignore
-  httpServer.get("/scorecard/:org/:pkgName", scorecard.get);
-  httpServer.post("/report", report.post);
+  const httpServer = http.createServer((req, res) => {
+    context.run(store, () => {
+      serving(req, res, () => apiRouter.lookup(req, res));
+    });
+  });
 
   return httpServer;
 }
 
+export { WebSocketServerInstanciator } from "./websocket/index.ts";
+export { logger } from "./logger.ts";
+
 export {
-  WebSocketServerInstanciator,
-  logger,
   cache
 };

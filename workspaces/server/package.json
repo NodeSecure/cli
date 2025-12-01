@@ -18,20 +18,18 @@
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@polka/send-type": "0.5.2",
-    "@types/polka": "^0.5.7",
     "@types/server-destroy": "^1.0.4",
-    "@types/ws": "^8.18.1"
+    "@types/ws": "^8.18.1",
+    "server-destroy": "1.0.1"
   },
   "dependencies": {
     "@nodesecure/cache": "1.0.0",
     "cacache": "20.0.3",
     "chokidar": "5.0.0",
+    "find-my-way": "9.3.0",
     "glob": "13.0.0",
     "pino": "10.1.0",
     "pino-pretty": "13.1.2",
-    "polka": "0.5.2",
-    "server-destroy": "1.0.1",
     "sirv": "3.0.2",
     "ts-pattern": "5.9.0",
     "ws": "8.18.3",

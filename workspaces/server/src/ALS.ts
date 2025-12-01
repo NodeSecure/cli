@@ -2,6 +2,19 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 
 // Import Internal Dependencies
-import type { AyncStoreContext } from "./middlewares/context.ts";
+import type { ViewBuilder } from "./ViewBuilder.class.ts";
 
-export const context = new AsyncLocalStorage<AyncStoreContext>();
+export type NestedStringRecord = {
+  [key: string]: string | NestedStringRecord;
+};
+
+export interface AsyncStoreContext {
+  dataFilePath?: string;
+  i18n: {
+    english: NestedStringRecord;
+    french: NestedStringRecord;
+  };
+  viewBuilder: ViewBuilder;
+}
+
+export const context = new AsyncLocalStorage<AsyncStoreContext>();

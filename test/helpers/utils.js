@@ -1,11 +1,11 @@
-export function getExpectedScorecardLines(pkgName, body) {
+export function getExpectedScorecardLines(packageName, body) {
   const { date, score: scorePkg, checks } = body;
 
   const expectedLines = [
     "",
     "                                 OSSF Scorecard",
     "",
-    mockScorecardCliLine("Repository", pkgName),
+    mockScorecardCliLine("Repository", packageName),
     mockScorecardCliLine("Scan at", date),
     mockScorecardCliLine("Score", scorePkg),
     "--------------------------------------------------------------------------------"

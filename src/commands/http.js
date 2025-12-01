@@ -64,7 +64,7 @@ export async function start(
   });
 
   httpServer.listen(httpPort, async() => {
-    const link = `http://localhost:${httpServer.server.address().port}`;
+    const link = `http://localhost:${httpServer.address().port}`;
     console.log(kleur.magenta().bold(await i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
     open(link);
@@ -77,7 +77,7 @@ export async function start(
 
   for (const eventName of ["SIGINT", "SIGTERM"]) {
     process.on(eventName, () => {
-      httpServer.server.close();
+      httpServer.close();
 
       console.log(kleur.red().bold(`${eventName} signal received.`));
       process.exit(0);

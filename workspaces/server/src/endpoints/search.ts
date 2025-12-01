@@ -1,13 +1,30 @@
+// Import Node.js Dependencies
+import type {
+  IncomingMessage,
+  ServerResponse
+} from "node:http";
+
 // Import Third-party Dependencies
-import send from "@polka/send-type";
 import * as npm from "@nodesecure/npm-registry-sdk";
-import type { Request, Response } from "express-serve-static-core";
 
 // Import Internal Dependencies
 import { logger } from "../logger.ts";
+import { send } from "./util/send.ts";
 
-export async function get(req: Request, res: Response) {
-  const { packageName } = req.params;
+export async function get(
+  _: IncomingMessage,
+  res: ServerResponse,
+  params: Record<string, string | undefined>
+) {
+  const { packageName } = params;
+  if (!packageName) {
+    send(res, {
+      error: "Package name is missing."
+    }, { code: 400 });
+
+    return;
+  }
+
   logger.info(`[search|get](packageName: ${packageName}|formatted: ${decodeURIComponent(packageName)})`);
 
   const { objects, total } = await npm.search({
@@ -15,7 +32,7 @@ export async function get(req: Request, res: Response) {
   });
   logger.debug(`[search|get](npmSearchResult: ${JSON.stringify(objects.map((pkg) => pkg.package.name))})`);
 
-  send(res, 200, {
+  send(res, {
     count: total,
     result: objects.map((pkg) => {
       return {
@@ -27,8 +44,19 @@ export async function get(req: Request, res: Response) {
   });
 }
 
-export async function versions(req: Request, res: Response) {
-  const { packageName } = req.params;
+export async function versions(
+  _: IncomingMessage,
+  res: ServerResponse,
+  params: Record<string, string | undefined>
+) {
+  const { packageName } = params;
+  if (!packageName) {
+    send(res, {
+      error: "Package name is missing."
+    }, { code: 400 });
+
+    return;
+  }
 
   logger.info(`[search|versions](packageName: ${packageName}|formatted: ${decodeURIComponent(packageName)})`);
 
@@ -38,5 +66,5 @@ export async function versions(req: Request, res: Response) {
   logger.info(`[search|versions](packageName: ${packageName}|versions: ${versions})`);
   logger.debug(`[search|versions](packument: ${packument})`);
 
-  send(res, 200, versions);
+  send(res, versions);
 }

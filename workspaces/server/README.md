@@ -7,11 +7,11 @@ Scorecard](https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli
 ![size](https://img.shields.io/github/languages/code-size/NodeSecure/server?style=for-the-badge)
 [![build](https://img.shields.io/github/actions/workflow/status/NodeSecure/cli/server.yml?style=for-the-badge)](https://github.com/NodeSecure/cli/actions?query=workflow%3A%22server+CI%22)
 
-NodeSecure CLI's http server based on `polka`.
+NodeSecure CLI's http and websocket server.
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/en/) v20 or higher
+- [Node.js](https://nodejs.org/en/) v22 or higher
 
 ## Getting Started
 
@@ -50,7 +50,7 @@ httpServer.listen(port, async() => {
 
 ### `buildServer(dataFilePath: string, options: BuildServerOptions): polka`
 
-Creates and configures a Polka HTTP server instance for the NodeSecure platform.
+Creates and configures a Node.js HTTP server instance for the NodeSecure CLI.
 
 **Parameters**
 - `dataFilePath` (`string`):
@@ -73,105 +73,129 @@ The i18n tokens required for the interface.
 
 **Returns**
 - `httpServer` (`object`):
-A configured **Polka** server instance with all routes and middlewares registered.
+A configured Node.js server instance with all routes and middlewares registered.
 
 ## API Endpoints
+
 The server exposes the following REST API endpoints:
 
-- `GET /`
+### `GET /`
+
 Render and return the main HTML page for the NodeSecure UI.
 
-- `GET /data`
+### `GET /data`
+
 Returns the current analysis payload from the cache.
 
-- **204**: No content if running from an empty cache.
-- **200**: JSON payload with analysis data.
+| Status | Description |
+| ------ | ----------- |
+| 204 | No content if running from an empty cache |
+| 200 | JSON payload with analysis data |
 
-- `GET /config`
+### `GET /config`
+
 Fetch the current server configuration.
 
-- `PUT /config`
+### `PUT /config`
+
 Update and save the server configuration.
 
-**Body**: JSON configuration object.
+| Body | Description |
+| ---- | ----------- |
+| `config` | JSON configuration object |
 
-- `GET /i18n`
+### `GET /i18n`
+
 Returns UI translations for supported languages (English and French).
 
-- `GET /search/:packageName`
+### `GET /search/:packageName`
+
 Search for npm packages by name.
 
-**Params**:
-- `packageName`: The name (or partial name) of the npm package to search for.
+| Param | Description |
+| ----- | ----------- |
+| `packageName` | The name (or partial name) of the npm package to search for |
 
-**Response**:
-- `count`: Number of results.
-- `result`: Array of package objects (name, version, description).
+| Response Field | Description |
+| -------------- | ----------- |
+| `count` | Number of results |
+| `result` | Array of package objects (name, version, description) |
 
-- `GET /search-versions/:packageName`
+### `GET /search-versions/:packageName`
+
 Get all available versions for a given npm package.
 
-**Params**:
-- `packageName`: The npm package name.
+| Param | Description |
+| ----- | ----------- |
+| `packageName` | The npm package name |
 
-**Response**:
-Array of version strings.
+**Response**: Array of version strings.
 
-- `GET /flags`
+### `GET /flags`
+
 List all available NodeSecure flags and their metadata.
 
-- `GET /flags/description/:title`
+### `GET /flags/description/:title`
+
 Get the HTML description for a specific flag.
 
-**Params**:
-- `title`: The flag name.
+| Param | Description |
+| ----- | ----------- |
+| `title` | The flag name |
 
-- `GET /bundle/:pkgName`
+### `GET /bundle/:packageName`
+
 Get bundle size information for a package from Bundlephobia.
 
-**Params**:
-- `pkgName`: The npm package name.
+| Param | Description |
+| ----- | ----------- |
+| `packageName` | The npm package name |
 
-- `GET /bundle/:pkgName/:version`
+### `GET /bundle/:packageName/:version`
+
 Get bundle size information for a specific version of a package from Bundlephobia.
 
-**Params**:
-- `pkgName`: The npm package name.
-- `version`: The package version.
+| Param | Description |
+| ----- | ----------- |
+| `packageName` | The npm package name |
+| `version` | The package version |
 
-- `GET /downloads/:pkgName`
+### `GET /downloads/:packageName`
+
 Get npm download statistics for the last week for a package.
 
-**Params**:
-- `pkgName`: The npm package name.
+| Param | Description |
+| ----- | ----------- |
+| `packageName` | The npm package name |
 
-- `GET /scorecard/:org/:pkgName`
+### `GET /scorecard/:org/:packageName`
+
 Get OSSF Scorecard results for a package repository.
 
-**Params**:
-- `org`: The organization or user.
-- `pkgName`: The repository name.
+| Param | Description |
+| ----- | ----------- |
+| `org` | The organization or user |
+| `packageName` | The repository name |
 
-**Query**:
-`platform` (*optional*): The platform (default: `github.com`).
+| Query | Description |
+| ----- | ----------- |
+| `platform` *(optional)* | The platform (default: `github.com`) |
 
-- `POST /report`
+### `POST /report`
+
 Generate a PDF report for the current analysis.
 
-**Body**:
-- `title`: Report title.
-- `includesAllDeps`: Boolean, include all dependencies or only the root.
-- `theme`: Report theme.
+| Body Field | Description |
+| ---------- | ----------- |
+| `title` | Report title |
+| `includesAllDeps` | Boolean, include all dependencies or only the root |
+| `theme` | Report theme |
 
-**Response**:
-PDF file as binary data.
+**Response**: PDF file as binary data.
 
 ### Static Files
 
 All static files (UI, assets, etc.) are served from the project root directory.
-
-> [!NOTE]
-> For more details on each endpoint, see the corresponding files in /src/endpoints.
 
 ## Websocket commands
 

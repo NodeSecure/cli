@@ -1,37 +1,53 @@
+// Import Node.js Dependencies
+import type {
+  IncomingMessage,
+  ServerResponse
+} from "node:http";
+
 // Import Third-party Dependencies
 import * as scorecard from "@nodesecure/ossf-scorecard-sdk";
-import send from "@polka/send-type";
-import type { Request, Response } from "express-serve-static-core";
+
+// Import Internal Dependencies
+import { send } from "./util/send.ts";
 
 interface Params {
   org: string;
-  pkgName: string;
+  packageName: string;
 }
 
 interface Query {
   platform?: "github.com" | "gitlab.com";
 }
 
-export async function get(req: Request<Params, scorecard.ScorecardResult, null, Query>, res: Response) {
-  const { org, pkgName } = req.params;
-  const { platform = "github.com" } = req.query;
+// eslint-disable-next-line max-params
+export async function get(
+  _: IncomingMessage,
+  res: ServerResponse,
+  params: Record<string, string | undefined>,
+  _store: unknown,
+  querystring: Record<string, string | undefined>
+) {
+  const { org, packageName } = params as unknown as Params;
+  const { platform = "github.com" } = querystring as Query;
 
   try {
-    const data = await scorecard.result(`${org}/${pkgName}`, {
+    const data = await scorecard.result(`${org}/${packageName}`, {
       resolveOnVersionControl: Boolean(process.env.GITHUB_TOKEN),
       resolveOnNpmRegistry: false,
       platform
     });
 
-    return send(res, 200, {
+    return send(res, {
       data
     });
   }
   catch (error: any) {
     return send(
       res,
-      error.statusCode ?? 404,
-      { error: error.statusMessage ?? "Not Found" }
+      { error: error.statusMessage ?? "Not Found" },
+      {
+        code: error.statusCode ?? 404
+      }
     );
   }
 }
