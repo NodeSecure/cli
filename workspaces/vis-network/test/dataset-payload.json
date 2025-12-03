@@ -64,7 +64,7 @@
           },
           "licenses": [],
           "uniqueLicenseIds": [
-            "Unlicense"
+            "MIT"
           ],
           "name": "pkg2",
           "version": "1.0.3"
@@ -87,7 +87,7 @@
           },
           "licenses": [],
           "uniqueLicenseIds": [
-            "Unlicense"
+            "MIT"
           ],
           "name": "pkg2",
           "version": "1.0.4"
@@ -127,7 +127,7 @@
           },
           "licenses": [],
           "uniqueLicenseIds": [
-            "Licence1"
+            "RND"
           ]
         }
       }
@@ -149,7 +149,8 @@
           ],
           "size": 200,
           "author": {
-            "name": "john doe"
+            "name": "john doe",
+            "email": "dummy@email.com"
           },
           "composition": {
             "extensions": [

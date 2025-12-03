@@ -1,4 +1,5 @@
 // Import Third-party Dependencies
+import { Extractors } from "@nodesecure/scanner/extractors";
 import prettyBytes from "pretty-bytes";
 import { DataSet } from "vis-data";
 
@@ -93,87 +94,97 @@ export default class NodeSecureDataSet extends EventTarget {
         return acc;
       }, { names: new Set(), emails: new Set() });
 
-    const dataEntries = Object.entries(data.dependencies);
-    this.dependenciesCount = dataEntries.length;
+    const dependencies = Object.entries(data.dependencies);
+    this.dependenciesCount = dependencies.length;
 
     this.rawEdgesData = [];
     this.rawNodesData = [];
 
-    const rootDependency = dataEntries.find(([name]) => name === data.rootDependency.name);
-    const rootContributors = [
+    const rootDependency = dependencies.find(([name]) => name === data.rootDependency.name);
+    this.rootContributors = [
       rootDependency[1].metadata.author,
       ...rootDependency[1].metadata.maintainers,
       ...rootDependency[1].metadata.publishers
     ];
-    for (const [packageName, descriptor] of dataEntries) {
-      const contributors = [descriptor.metadata.author, ...descriptor.metadata.maintainers, ...descriptor.metadata.publishers];
-      for (const [currVersion, opt] of Object.entries(descriptor.versions)) {
-        const { id, usedBy, flags, size, uniqueLicenseIds, author, composition, warnings, links } = opt;
-        const filteredWarnings = warnings
-          .filter((row) => !this.warningsToIgnore.has(row.kind));
-        const hasWarnings = filteredWarnings.length > 0;
 
-        opt.name = packageName;
-        opt.version = currVersion;
-        opt.hidden = false;
-        opt.hasWarnings = hasWarnings;
+    const extractor = new Extractors.Payload(data, [
+      new Extractors.Probes.Licenses(),
+      new Extractors.Probes.Extensions()
+    ]);
 
-        this.computeExtension(composition.extensions);
-        this.computeLicense(uniqueLicenseIds);
-        this.computeAuthor(author, `${packageName}@${currVersion}`, contributors);
+    extractor.on("manifest", (currVersion, opt, { name, dependency }) => {
+      const contributors = [dependency.metadata.author, ...dependency.metadata.maintainers, ...dependency.metadata.publishers];
+      const packageName = name;
+      const { id, usedBy, flags, size, author, warnings, links } = opt;
+      const filteredWarnings = warnings
+        .filter((row) => !this.warningsToIgnore.has(row.kind));
+      const hasWarnings = filteredWarnings.length > 0;
 
-        if (flags.includes("hasIndirectDependencies")) {
-          this.indirectDependencies++;
-        }
-        this.size += size;
+      opt.name = packageName;
+      opt.version = currVersion;
+      opt.hidden = false;
+      opt.hasWarnings = hasWarnings;
 
-        const flagStr = utils.getFlagsEmojisInlined(
-          flags,
-          hasWarnings ? this.flagsToIgnore : new Set([...this.flagsToIgnore, "hasWarnings"])
-        );
-        const isFriendly = window.settings.config.showFriendlyDependencies & rootContributors.some(
-          (rootContributor) => contributors.some((contributor) => {
-            if (contributor === null || rootContributor === null) {
-              return false;
-            }
-            else if (contributor.email && contributor.email === rootContributor.email) {
-              return true;
-            }
-            else if (contributor.name && contributor.name === rootContributor.name) {
-              return true;
-            }
+      this.computeAuthor(author, `${packageName}@${currVersion}`, contributors);
 
-            return false;
-          })
-        );
-        opt.isFriendly = isFriendly;
-        this.packages.push({
-          id,
-          name: packageName,
-          version: currVersion,
-          hasWarnings,
-          flags: flagStr.replace(/\s/g, ""),
-          links,
-          isFriendly
-        });
-
-        const label = `<b>${packageName}@${currVersion}</b>${flagStr}\n<b>[${prettyBytes(size)}]</b>`;
-        const color = utils.getNodeColor({
-          id,
-          hasWarnings,
-          isFriendly,
-          theme: this.theme.toUpperCase()
-        });
-        color.font.multi = "html";
-
-        this.linker.set(Number(id), opt);
-        this.rawNodesData.push(Object.assign({ id, label }, color));
-
-        for (const [name, version] of Object.entries(usedBy)) {
-          this.rawEdgesData.push({ from: id, to: data.dependencies[name].versions[version].id });
-        }
+      if (flags.includes("hasIndirectDependencies")) {
+        this.indirectDependencies++;
       }
-    }
+      this.size += size;
+
+      const flagStr = utils.getFlagsEmojisInlined(
+        flags,
+        hasWarnings ? this.flagsToIgnore : new Set([...this.flagsToIgnore, "hasWarnings"])
+      );
+      const isFriendly = window.settings.config.showFriendlyDependencies & this.rootContributors.some(
+        (rootContributor) => contributors.some((contributor) => {
+          if (contributor === null || rootContributor === null) {
+            return false;
+          }
+          else if (contributor.email && contributor.email === rootContributor.email) {
+            return true;
+          }
+          else if (contributor.name && contributor.name === rootContributor.name) {
+            return true;
+          }
+
+          return false;
+        })
+      );
+      opt.isFriendly = isFriendly;
+
+      this.packages.push({
+        id,
+        name: packageName,
+        version: currVersion,
+        hasWarnings,
+        flags: flagStr.replace(/\s/g, ""),
+        links,
+        isFriendly
+      });
+
+      const label = `<b>${packageName}@${currVersion}</b>${flagStr}\n<b>[${prettyBytes(size)}]</b>`;
+      const color = utils.getNodeColor({
+        id,
+        hasWarnings,
+        isFriendly,
+        theme: this.theme.toUpperCase()
+      });
+      color.font.multi = "html";
+
+      this.linker.set(Number(id), opt);
+      this.rawNodesData.push(Object.assign({ id, label }, color));
+
+      for (const [name, version] of Object.entries(usedBy)) {
+        this.rawEdgesData.push({ from: id, to: this.data.dependencies[name].versions[version].id });
+      }
+    });
+
+    const { extensions, licenses } = extractor.extractAndMerge();
+
+    this.extensions = extensions;
+    this.licenses = licenses;
+
     console.log("[NodeSecureDataSet] Initialization done!");
   }
 
@@ -185,20 +196,6 @@ export default class NodeSecureDataSet extends EventTarget {
     }
 
     return null;
-  }
-
-  computeExtension(extensions) {
-    for (const extName of extensions) {
-      if (extName !== "") {
-        this.extensions[extName] = Reflect.has(this.extensions, extName) ? ++this.extensions[extName] : 1;
-      }
-    }
-  }
-
-  computeLicense(uniqueLicenseIds) {
-    for (const licenseName of uniqueLicenseIds) {
-      this.licenses[licenseName] = Reflect.has(this.licenses, licenseName) ? ++this.licenses[licenseName] : 1;
-    }
   }
 
   computeAuthor(author, spec, contributors = []) {
