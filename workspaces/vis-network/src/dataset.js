@@ -1,4 +1,5 @@
 // Import Third-party Dependencies
+import { Extractors } from "@nodesecure/scanner/extractors";
 import prettyBytes from "pretty-bytes";
 import { DataSet } from "vis-data";
 
@@ -93,22 +94,33 @@ export default class NodeSecureDataSet extends EventTarget {
         return acc;
       }, { names: new Set(), emails: new Set() });
 
-    const dataEntries = Object.entries(data.dependencies);
-    this.dependenciesCount = dataEntries.length;
+    const dependencies = Object.entries(data.dependencies);
+    this.dependenciesCount = dependencies.length;
 
     this.rawEdgesData = [];
     this.rawNodesData = [];
 
-    const rootDependency = dataEntries.find(([name]) => name === data.rootDependency.name);
+    const rootDependency = dependencies.find(([name]) => name === data.rootDependency.name);
     const rootContributors = [
       rootDependency[1].metadata.author,
       ...rootDependency[1].metadata.maintainers,
       ...rootDependency[1].metadata.publishers
     ];
-    for (const [packageName, descriptor] of dataEntries) {
+
+    const extractor = new Extractors.Payload(data, [
+      // new Extractors.Probes.Licenses(),
+      //   new Extractors.Probes.Extensions()
+    ]);
+
+    // const result = extractor.extractAndMerge();
+
+    // this.extensions = extensions;
+    // this.licenses = licenses;
+
+    for (const [packageName, descriptor] of dependencies) {
       const contributors = [descriptor.metadata.author, ...descriptor.metadata.maintainers, ...descriptor.metadata.publishers];
       for (const [currVersion, opt] of Object.entries(descriptor.versions)) {
-        const { id, usedBy, flags, size, uniqueLicenseIds, author, composition, warnings, links } = opt;
+        const { id, usedBy, flags, size, author, warnings, links } = opt;
         const filteredWarnings = warnings
           .filter((row) => !this.warningsToIgnore.has(row.kind));
         const hasWarnings = filteredWarnings.length > 0;
@@ -118,8 +130,6 @@ export default class NodeSecureDataSet extends EventTarget {
         opt.hidden = false;
         opt.hasWarnings = hasWarnings;
 
-        this.computeExtension(composition.extensions);
-        this.computeLicense(uniqueLicenseIds);
         this.computeAuthor(author, `${packageName}@${currVersion}`, contributors);
 
         if (flags.includes("hasIndirectDependencies")) {
@@ -185,20 +195,6 @@ export default class NodeSecureDataSet extends EventTarget {
     }
 
     return null;
-  }
-
-  computeExtension(extensions) {
-    for (const extName of extensions) {
-      if (extName !== "") {
-        this.extensions[extName] = Reflect.has(this.extensions, extName) ? ++this.extensions[extName] : 1;
-      }
-    }
-  }
-
-  computeLicense(uniqueLicenseIds) {
-    for (const licenseName of uniqueLicenseIds) {
-      this.licenses[licenseName] = Reflect.has(this.licenses, licenseName) ? ++this.licenses[licenseName] : 1;
-    }
   }
 
   computeAuthor(author, spec, contributors = []) {
