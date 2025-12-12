@@ -9,7 +9,7 @@
   },
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "lint": "eslint bin src test workspaces public",
