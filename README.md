@@ -44,7 +44,7 @@
 
 ## 🚧 Requirements
 
-- [Node.js](https://nodejs.org/en/) v22 or higher
+- [Node.js](https://nodejs.org/en/) v24 or higher
 
 ## 💃 Getting Started
 
