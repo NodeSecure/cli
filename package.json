@@ -98,7 +98,7 @@
     "@nodesecure/npm-registry-sdk": "^4.4.0",
     "@nodesecure/ossf-scorecard-sdk": "^3.2.1",
     "@nodesecure/rc": "^5.0.0",
-    "@nodesecure/report": "4.1.0",
+    "@nodesecure/report": "4.1.1",
     "@nodesecure/scanner": "8.1.0",
     "@nodesecure/server": "1.0.0",
     "@nodesecure/utils": "^2.2.0",
