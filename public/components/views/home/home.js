@@ -8,7 +8,11 @@ import * as utils from "../../../common/utils.js";
 import "../../gauge/gauge.js";
 import "../../expandable/expandable.js";
 import { EVENTS } from "../../../core/events.js";
-import { fetchScorecardData, getScorecardLink } from "../../../common/scorecard.js";
+import { PackageInfo } from "../../package/package.js";
+import {
+  fetchScorecardData,
+  getScorecardLink
+} from "../../../common/scorecard.js";
 
 // Import Components
 import "./maintainers/maintainers.js";
@@ -22,11 +26,35 @@ const kFlagsToWatch = new Set([
   "hasScript"
 ]);
 
-const kEmojiDescription = {
-  "📦": "scripts",
-  "⚔️": "sensitive files",
-  "🚨": "vulnerabilities",
-  "⛔️": "deprecated"
+const kEmojiMetadata = {
+  "📦": {
+    description: "scripts",
+    menu: {
+      name: "dependencies",
+      priority: 3
+    }
+  },
+  "⚔️": {
+    description: "sensitive files",
+    menu: {
+      name: "files",
+      priority: 1
+    }
+  },
+  "🚨": {
+    description: "vulnerabilities",
+    menu: {
+      name: "vulnerabilities",
+      priority: 2
+    }
+  },
+  "⛔️": {
+    description: "deprecated",
+    menu: {
+      name: "info",
+      priority: 0
+    }
+  }
 };
 
 export class HomeView {
@@ -207,10 +235,16 @@ export class HomeView {
     for (let id = 0; id < deps.length; id++) {
       const dependency = deps[id];
 
-      const element = this.renderPackage(dependency);
+      const [element, menuToOpen] = this.renderPackage(dependency);
       element.addEventListener("click", () => {
         window.navigation.setNavByName("network--view");
-        setTimeout(() => this.nsn.focusNodeByNameAndVersion(dependency.name, dependency.version), 25);
+        setTimeout(() => {
+          PackageInfo.ForcedPackageMenu = menuToOpen;
+          this.nsn.focusNodeByNameAndVersion(
+            dependency.name,
+            dependency.version
+          );
+        }, 25);
       });
       if (hideItems && id >= maxPackages) {
         element.classList.add("hidden");
@@ -238,13 +272,30 @@ export class HomeView {
 
   renderPackage(dependencyVer) {
     const { name, version, flags, deprecated } = dependencyVer;
+
+    const menuToOpen = {
+      name: "info",
+      priority: 0
+    };
     const inlinedEmojis = getFlagsEmojisInlined(
       flags.filter((name) => kFlagsToWatch.has(name)),
       new Set(window.settings.config.ignore.flags)
     );
 
-    const childs = utils.extractEmojis(inlinedEmojis)
-      .map((emoji) => utils.createDOMElement("p", { text: `${emoji} ${kEmojiDescription[emoji]}` }));
+    const childs = [];
+    for (const emoji of utils.extractEmojis(inlinedEmojis)) {
+      const { menu, description } = kEmojiMetadata[emoji];
+      if (menu.priority > menuToOpen.priority) {
+        menuToOpen.name = menu.name;
+        menuToOpen.priority = menu.priority;
+      }
+
+      childs.push(
+        utils.createDOMElement("p", {
+          text: `${emoji} ${description}`
+        })
+      );
+    }
 
     const packageContents = [
       utils.createDOMElement("div", {
@@ -267,9 +318,12 @@ export class HomeView {
       packageContents.push(utils.createDOMElement("p", { text: deprecated }));
     }
 
-    return utils.createDOMElement("div", {
-      childs: packageContents
-    });
+    return [
+      utils.createDOMElement("div", {
+        childs: packageContents
+      }),
+      menuToOpen.name
+    ];
   }
 
   generateWarnings() {

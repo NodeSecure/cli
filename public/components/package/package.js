@@ -6,6 +6,10 @@ import { EVENTS } from "../../core/events.js";
 
 export class PackageInfo {
   static DOMElementName = "package-info";
+  /**
+   * Used to force a specific menu to open when focusing a package in the network
+   */
+  static ForcedPackageMenu = null;
 
   static close() {
     const domElement = document.getElementById(PackageInfo.DOMElementName);
@@ -78,14 +82,6 @@ export class PackageInfo {
     packageHTMLElement.appendChild(
       this.render()
     );
-    this.enableNavigation(
-      window.settings.config.defaultPackageMenu
-    );
-    packageHTMLElement.setAttribute("class", "slide-in");
-
-    if (window.settings.config.disableExternalRequests) {
-      return;
-    }
 
     const panFiles = packageHTMLElement.querySelector("#pan-files");
     const files = document.createElement("package-files");
@@ -117,6 +113,12 @@ export class PackageInfo {
     scripts.id = "pan-dependencies";
     scripts.classList.add("package-container", "hidden");
     panDependencies.parentElement.replaceChild(scripts, panDependencies);
+
+    const menuToOpen = PackageInfo.ForcedPackageMenu ??
+      window.settings.config.defaultPackageMenu;
+    this.enableNavigation(menuToOpen);
+    PackageInfo.ForcedPackageMenu = null;
+    packageHTMLElement.setAttribute("class", "slide-in");
   }
 
   /**
@@ -153,7 +155,9 @@ export class PackageInfo {
    * @returns {void}
    */
   enableNavigation(name) {
-    const div = this.menus.has(name) ? this.menus.get(name) : this.menus.get("info");
+    const div = this.menus.has(name) ?
+      this.menus.get(name) :
+      this.menus.get("info");
 
     const isActive = div.classList.contains("active");
     const isDisabled = div.classList.contains("disabled");
@@ -166,10 +170,10 @@ export class PackageInfo {
     div.classList.add("active");
     this.activeNavigation.classList.remove("active");
 
-    const targetPan = document.getElementById(`pan-${name}`);
     const currentPan = document.getElementById(`pan-${this.activeNavigation.getAttribute("data-menu")}`);
-    targetPan.classList.remove("hidden");
     currentPan.classList.add("hidden");
+    const targetPan = document.getElementById(`pan-${name}`);
+    targetPan.classList.remove("hidden");
     document.querySelector(".container-title").textContent = dataTitle;
 
     this.activeNavigation = div;
