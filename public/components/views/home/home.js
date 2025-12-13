@@ -8,7 +8,11 @@ import * as utils from "../../../common/utils.js";
 import "../../gauge/gauge.js";
 import "../../expandable/expandable.js";
 import { EVENTS } from "../../../core/events.js";
-import { fetchScorecardData, getScorecardLink } from "../../../common/scorecard.js";
+import { PackageInfo } from "../../package/package.js";
+import {
+  fetchScorecardData,
+  getScorecardLink
+} from "../../../common/scorecard.js";
 
 // Import Components
 import "./maintainers/maintainers.js";
@@ -210,7 +214,13 @@ export class HomeView {
       const element = this.renderPackage(dependency);
       element.addEventListener("click", () => {
         window.navigation.setNavByName("network--view");
-        setTimeout(() => this.nsn.focusNodeByNameAndVersion(dependency.name, dependency.version), 25);
+        setTimeout(() => {
+          PackageInfo.ForcedPackageMenu = "dependencies";
+          this.nsn.focusNodeByNameAndVersion(
+            dependency.name,
+            dependency.version
+          );
+        }, 25);
       });
       if (hideItems && id >= maxPackages) {
         element.classList.add("hidden");
