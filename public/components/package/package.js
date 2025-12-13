@@ -6,6 +6,10 @@ import { EVENTS } from "../../core/events.js";
 
 export class PackageInfo {
   static DOMElementName = "package-info";
+  /**
+   * Used to force a specific menu to open when focusing a package in the network
+   */
+  static ForcedPackageMenu = null;
 
   static close() {
     const domElement = document.getElementById(PackageInfo.DOMElementName);
@@ -78,9 +82,10 @@ export class PackageInfo {
     packageHTMLElement.appendChild(
       this.render()
     );
-    this.enableNavigation(
-      window.settings.config.defaultPackageMenu
-    );
+
+    const menuToOpen = PackageInfo.ForcedPackageMenu ?? window.settings.config.defaultPackageMenu;
+    this.enableNavigation(menuToOpen);
+    PackageInfo.ForcedPackageMenu = null;
     packageHTMLElement.setAttribute("class", "slide-in");
 
     if (window.settings.config.disableExternalRequests) {

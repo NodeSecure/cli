@@ -86,21 +86,16 @@ class Bundlephobia extends LitElement {
 
   #bunldeTask = new Task(this, {
     task: async([name, version]) => {
-      try {
-        const {
-          gzip, size, dependencySizes
-        } = await getJSON(`/bundle/${this.#httpName(name)}/${version}`);
-        const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
+      const {
+        gzip, size, dependencySizes
+      } = await getJSON(`/bundle/${this.#httpName(name)}/${version}`);
+      const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
 
-        return {
-          gzip: prettyBytes(gzip),
-          min: prettyBytes(size),
-          full: prettyBytes(fullSize)
-        };
-      }
-      catch {
-        return null;
-      }
+      return {
+        gzip: prettyBytes(gzip),
+        min: prettyBytes(size),
+        full: prettyBytes(fullSize)
+      };
     },
     args: () => [this.name, this.version]
   });
