@@ -24,12 +24,13 @@ class Scripts extends LitElement {
   static styles = [
     scrollbarStyle,
     css`
- :host {
+:host {
   display: block;
   overflow: hidden auto;
   height: calc(100vh - 315px);
   box-sizing: border-box;
-  }
+}
+
 .package-scripts {
   display: flex;
   flex-direction: column;
@@ -58,6 +59,10 @@ class Scripts extends LitElement {
 
 .package-scripts .script.suspicious p.name {
   color: #efe493;
+}
+
+.package-scripts .script > p {
+  margin: 0;
 }
 
 .package-scripts .script p.name {
