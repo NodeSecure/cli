@@ -11,39 +11,40 @@ import { scrollbarStyle } from "../../../../common/scrollbar-style.js";
 class Files extends LitElement {
   static styles = [scrollbarStyle, css`
   :host{
-  display: block;
-  overflow: hidden auto;
-  height: calc(100vh - 315px);
-  box-sizing: border-box;
+    display: block;
+    overflow: hidden auto;
+    height: calc(100vh - 315px);
+    box-sizing: border-box;
   }
 
  .head-title {
-  background: var(--primary-darker);
-  height: 28px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  border-bottom: 2px solid var(--primary-lighter);
-  border-radius: 2px 2px 0 0;
-}
+    background: var(--primary-darker);
+    height: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--primary-lighter);
+    border-radius: 2px 2px 0 0;
+  }
 
  .head-title.no-margin {
-  margin-top: 0;
-}
+    margin-top: 0;
+  }
 
  .head-title>p {
-  text-shadow: 1px 1px 5px rgb(20 20 20 / 50%);
-  font-size: 18px;
-  font-variant: small-caps;
+    text-shadow: 1px 1px 5px rgb(20 20 20 / 50%);
+    font-size: 18px;
+    font-variant: small-caps;
 
-  /* lowercase is needed with small-caps font variant */
-  text-transform: lowercase;
-  font-family: mononoki;
-  font-weight: bold;
-  letter-spacing: 1px;
-  padding: 0 10px;
-}
+    /* lowercase is needed with small-caps font variant */
+    text-transform: lowercase;
+    font-family: mononoki;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 0 10px;
+  }
 `];
+
   static properties = {
     package: { type: Object }
   };
@@ -107,7 +108,12 @@ class Files extends LitElement {
     `,
     () => nothing
   )}
-    <bundle-phobia name=${name} version=${version}></bundle-phobia>
+
+  ${when(
+    window.settings.config.disableExternalRequests === false,
+    () => html`<bundle-phobia name=${name} version=${version}></bundle-phobia>`,
+    () => nothing
+  )}
     `;
   }
 
