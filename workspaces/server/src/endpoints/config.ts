@@ -4,9 +4,6 @@ import type {
   ServerResponse
 } from "node:http";
 
-// Import Third-party Dependencies
-import type { AppConfig } from "@nodesecure/cache";
-
 // Import Internal Dependencies
 import * as config from "../config.ts";
 import { bodyParser } from "./util/bodyParser.ts";
@@ -25,7 +22,7 @@ export async function save(
   req: IncomingMessage,
   res: ServerResponse
 ) {
-  const data = await bodyParser<AppConfig>(req);
+  const data = await bodyParser<config.WebUISettings>(req);
   await config.set(data);
 
   res.statusCode = 204;

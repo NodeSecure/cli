@@ -2,7 +2,7 @@
 import { WebSocketServer, type WebSocket } from "ws";
 import { match } from "ts-pattern";
 import type { Logger } from "pino";
-import type { AppCache } from "@nodesecure/cache";
+import type { AppCache } from "@nodesecure/cache/dist/AppCache.ts";
 
 // Import Internal Dependencies
 import { search } from "./commands/search.ts";

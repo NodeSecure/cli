@@ -73,6 +73,7 @@ export function buildServer(
 
 export { WebSocketServerInstanciator } from "./websocket/index.ts";
 export { logger } from "./logger.ts";
+export * as config from "./config.ts";
 
 export {
   cache

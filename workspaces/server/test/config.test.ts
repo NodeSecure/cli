@@ -1,31 +1,39 @@
 // Import Node.js Dependencies
-import { describe, it, before, after } from "node:test";
+import { describe, it, before, after, beforeEach } from "node:test";
 import assert from "node:assert";
 
 // Import Third-party Dependencies
-import cacache from "cacache";
 import { warnings, type Warning } from "@nodesecure/js-x-ray";
-import { type AppConfig, CACHE_PATH } from "@nodesecure/cache";
+import {
+  FilePersistanceProvider
+} from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { get, set } from "../src/config.ts";
-
-// CONSTANTS
-const kConfigKey = "___config";
+import {
+  getProvider,
+  get,
+  set,
+  type WebUISettings
+} from "../src/config.ts";
 
 describe("config", () => {
-  let actualConfig: AppConfig;
-
+  let currentConfig: WebUISettings;
+  let filePersistance: FilePersistanceProvider<WebUISettings>;
   before(async() => {
-    actualConfig = await get();
+    currentConfig = await get();
+  });
+
+  beforeEach(async() => {
+    filePersistance = getProvider();
+    await filePersistance.remove();
   });
 
   after(async() => {
-    await set(actualConfig);
+    await filePersistance.remove();
+    await set(currentConfig);
   });
 
   it("should get default config from empty cache", async() => {
-    await cacache.rm(CACHE_PATH, kConfigKey);
     const value = await get();
 
     assert.deepStrictEqual(value, {
@@ -41,32 +49,33 @@ describe("config", () => {
   });
 
   it("should get config from cache", async() => {
-    const expectedConfig = {
+    const expectedConfig: WebUISettings = {
       defaultPackageMenu: "foo",
       ignore: {
         flags: ["foo"],
-        warnings: ["bar"]
+        warnings: []
       },
-      theme: "galaxy",
+      theme: "light",
       disableExternalRequests: true
     };
-    await cacache.put(CACHE_PATH, kConfigKey, JSON.stringify(expectedConfig));
+
+    await filePersistance.set(expectedConfig);
     const value = await get();
 
     assert.deepStrictEqual(value, expectedConfig);
   });
 
   it("should set config in cache", async() => {
-    const expectedConfig = {
-      defaultPackageMenu: "foz",
+    const expectedConfig: WebUISettings = {
+      defaultPackageMenu: "foo",
       ignore: {
         flags: ["foz"],
-        warnings: ["baz"]
+        warnings: []
       },
-      theme: "galactic",
+      theme: "light",
       disableExternalRequests: true
     };
-    await set(expectedConfig as any);
+    await set(expectedConfig);
     const value = await get();
 
     assert.deepStrictEqual(value, expectedConfig);

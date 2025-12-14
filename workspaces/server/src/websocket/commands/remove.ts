@@ -1,5 +1,5 @@
 // Import Third-party Dependencies
-import type { PayloadsList } from "@nodesecure/cache";
+import type { PayloadsList } from "@nodesecure/cache/dist/AppCache.ts";
 
 // Import Internal Dependencies
 import { context } from "../websocket.als.ts";

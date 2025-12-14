@@ -9,14 +9,13 @@ import stream from "node:stream";
 
 // Import Third-party Dependencies
 import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@openally/httpie";
-import { CACHE_PATH } from "@nodesecure/cache";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
-import cacache from "cacache";
 import enableDestroy from "server-destroy";
 
 // Import Internal Dependencies
 import { buildServer } from "../src/index.ts";
+import * as config from "../src/config.ts";
 import * as flagsEndpoint from "../src/endpoints/flags.ts";
 
 // CONSTANTS
@@ -26,7 +25,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const JSON_PATH = path.join(__dirname, "fixtures", "httpServer.json");
 
-const kConfigKey = "___config";
 const kGlobalDispatcher = getGlobalDispatcher();
 const kMockAgent = new MockAgent();
 const kBundlephobiaPool = kMockAgent.get("https://bundlephobia.com");
@@ -186,17 +184,17 @@ describe("httpServer", { concurrency: 1 }, () => {
   test("GET '/config' should return the config", async() => {
     const { data: actualConfig } = await get(new URL("/config", kHttpURL));
 
-    const expectedConfig = {
+    const expectedConfig: config.WebUISettings = {
       defaultPackageMenu: "foo",
       ignore: {
         flags: ["foo"],
-        warnings: ["bar"]
+        warnings: []
       },
-      theme: "galaxy",
+      theme: "light",
       disableExternalRequests: true
     };
 
-    await cacache.put(CACHE_PATH, kConfigKey, JSON.stringify(expectedConfig));
+    await config.set(expectedConfig);
     const result = await get(new URL("/config", kHttpURL));
 
     assert.deepEqual(result.data, expectedConfig);
@@ -220,8 +218,8 @@ describe("httpServer", { concurrency: 1 }, () => {
 
     assert.equal(status, 204);
 
-    const inCache = await cacache.get(CACHE_PATH, kConfigKey);
-    assert.deepEqual(JSON.parse(inCache.data.toString()), { fooz: "baz" });
+    const inCache = await config.get();
+    assert.deepEqual(inCache, { fooz: "baz" });
 
     await fetch(new URL("/config", kHttpURL), {
       method: "PUT",
