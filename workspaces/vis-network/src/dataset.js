@@ -73,7 +73,7 @@ export default class NodeSecureDataSet extends EventTarget {
     this.FLAGS = FLAGS;
     this.data = data;
 
-    if (data === null) {
+    if (data === null || data === undefined) {
       return;
     }
 
