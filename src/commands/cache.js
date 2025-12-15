@@ -5,7 +5,7 @@ import { setImmediate } from "node:timers/promises";
 // Import Third-party Dependencies
 import prettyJson from "@topcli/pretty-json";
 import * as i18n from "@nodesecure/i18n";
-import { cache } from "@nodesecure/server";
+import { cache, config } from "@nodesecure/server";
 
 export async function main(options) {
   const {
@@ -54,6 +54,7 @@ async function clearCache(full) {
     });
   }
 
+  await config.setDefault();
   await cache.initPayloadsList({ logging: false, reset: true });
 
   console.log(styleText("green", i18n.getTokenSync("cli.commands.cache.cleared")));

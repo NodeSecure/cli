@@ -28,13 +28,6 @@ describe("appCache", () => {
     });
   });
 
-  it("should update and get config", async() => {
-    await appCache.updateConfig({ foo: "bar" } as any);
-
-    const updated = await appCache.getConfig();
-    assert.deepEqual(updated, { foo: "bar" });
-  });
-
   it("should write payload into ~/.nsecure/payloads", (t) => {
     let writePath = "";
     let writeValue = "";
