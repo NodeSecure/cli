@@ -23,7 +23,7 @@
   "dependencies": {
     "@nodesecure/flags": "3.0.3",
     "@nodesecure/js-x-ray": "10.2.1",
-    "@nodesecure/scanner": "8.1.0",
+    "@nodesecure/scanner": "8.2.0",
     "cacache": "20.0.3"
   }
 }
