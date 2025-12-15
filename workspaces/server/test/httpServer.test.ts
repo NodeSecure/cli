@@ -31,7 +31,7 @@ const kBundlephobiaPool = kMockAgent.get("https://bundlephobia.com");
 const kProjectRootDir = path.join(import.meta.dirname, "..", "..", "..");
 const kComponentsDir = path.join(kProjectRootDir, "public", "components");
 
-describe("httpServer", { concurrency: 1 }, () => {
+describe("httpServer", () => {
   let httpServer: Server;
 
   before(async() => {
@@ -40,7 +40,7 @@ describe("httpServer", { concurrency: 1 }, () => {
       path.join(__dirname, "..", "..", "..", "i18n")
     );
 
-    httpServer = buildServer(JSON_PATH, {
+    ({ httpServer } = await buildServer(JSON_PATH, {
       projectRootDir: kProjectRootDir,
       componentsDir: kComponentsDir,
       i18n: {
@@ -51,13 +51,13 @@ describe("httpServer", { concurrency: 1 }, () => {
           ui: {}
         }
       }
-    });
+    }));
     httpServer.listen(kHttpPort);
     await once(httpServer, "listening");
     enableDestroy(httpServer);
   }, { timeout: 5000 });
 
-  after(() => {
+  after(async() => {
     httpServer.destroy();
     kBundlephobiaPool.close();
     setGlobalDispatcher(kGlobalDispatcher);
@@ -314,7 +314,7 @@ describe("httpServer without options", () => {
   let httpServer: Server;
 
   before(async() => {
-    httpServer = buildServer(JSON_PATH, {
+    ({ httpServer } = await buildServer(JSON_PATH, {
       projectRootDir: kProjectRootDir,
       componentsDir: kComponentsDir,
       i18n: {
@@ -325,7 +325,7 @@ describe("httpServer without options", () => {
           ui: {}
         }
       }
-    });
+    }));
     httpServer.listen();
     await once(httpServer, "listening");
     enableDestroy(httpServer);

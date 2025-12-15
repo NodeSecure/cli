@@ -1,6 +1,5 @@
 // Import Third-party Dependencies
 import * as scanner from "@nodesecure/scanner";
-import type { PayloadsList, AppCache } from "@nodesecure/cache/dist/AppCache.ts";
 
 // Import Internal Dependencies
 import { context } from "../websocket.als.ts";
@@ -37,98 +36,12 @@ async function* searchInCache(
 ): AsyncGenerator<WebSocketResponse, boolean, unknown> {
   const { logger, cache } = context.getStore()!;
 
-  const payload = cache.getPayloadOrNull(spec);
+  const payload = await cache.findBySpec(spec);
   if (!payload) {
     return false;
   }
-
-  logger.info("[ws|command.search] fetching cache list");
-  const cacheList = await cache.payloadsList();
-
-  const isInMru = cacheList.mru.includes(spec);
-  logger.info(`[ws|command.search] payload detected in ${isInMru ? "MRU" : "LRU/Availables"}`);
-
-  let cachePayloadList: PayloadsList;
-  if (isInMru) {
-    cachePayloadList = await handleMruCache(spec, cache, cacheList);
-  }
-  else {
-    cachePayloadList = await handleLruOrAvailableCache(spec, cache);
-  }
-
-  yield {
-    status: "PAYLOAD" as const,
-    payload
-  };
-  if (!isInMru || cache.startFromZero) {
-    yield {
-      status: "RELOAD" as const,
-      cache: cachePayloadList
-    };
-  }
-
-  return true;
-}
-
-async function handleMruCache(
-  spec: string,
-  cache: AppCache,
-  cacheList: PayloadsList
-): Promise<PayloadsList> {
-  const updatedList: PayloadsList = {
-    ...cacheList,
-    current: spec,
-    lastUsed: { ...cacheList.lastUsed, [spec]: Date.now() }
-  };
-
-  await cache.updatePayloadsList(updatedList);
-
-  return updatedList;
-}
-
-async function handleLruOrAvailableCache(
-  spec: string,
-  cache: AppCache
-): Promise<PayloadsList> {
-  const {
-    mru, lru, availables, lastUsed,
-    ...updatedCache
-  } = await cache.removeLastMRU();
-  const updatedList: PayloadsList = {
-    ...updatedCache,
-    mru: [...new Set([...mru, spec])],
-    current: spec,
-    lru: lru.filter((pckg) => pckg !== spec),
-    availables: availables.filter((pckg) => pckg !== spec),
-    lastUsed: { ...lastUsed, [spec]: Date.now() }
-  };
-
-  await cache.updatePayloadsList(updatedList);
-  cache.startFromZero = false;
-
-  return updatedList;
-}
-
-async function* saveInCache(
-  payload: scanner.Payload
-): AsyncGenerator<WebSocketResponse, void, unknown> {
-  const { logger, cache } = context.getStore()!;
-
-  const { name, version } = payload.rootDependency;
-  const spec = `${name}@${version}`;
-
-  const { mru, lru, availables, lastUsed, ...appCache } = await cache.removeLastMRU();
-  mru.push(spec);
-  cache.updatePayload(spec, payload);
-  const updatedList: PayloadsList = {
-    ...appCache,
-    mru: [...new Set(mru)],
-    lru,
-    availables,
-    lastUsed: { ...lastUsed, [spec]: Date.now() },
-    current: spec
-  };
-  await cache.updatePayloadsList(updatedList);
+  logger.info("[ws|command.search] payload found in cache");
+  cache.setCurrentSpec(spec);
 
   yield {
     status: "PAYLOAD" as const,
@@ -136,10 +49,29 @@ async function* saveInCache(
   };
   yield {
     status: "RELOAD" as const,
-    cache: updatedList
+    cache: Array.from(cache)
   };
 
-  cache.startFromZero = false;
+  return true;
+}
 
+async function* saveInCache(
+  payload: scanner.Payload
+): AsyncGenerator<WebSocketResponse, void, unknown> {
+  const { logger, cache } = context.getStore()!;
+
+  await cache.save(payload, {
+    useAsCurrent: true,
+    scanType: "from"
+  });
   logger.info("[ws|command.search] cache updated");
+
+  yield {
+    status: "PAYLOAD" as const,
+    payload
+  };
+  yield {
+    status: "RELOAD" as const,
+    cache: Array.from(cache)
+  };
 }

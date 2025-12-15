@@ -1,17 +1,16 @@
 // Import Node.js Dependencies
 import { styleText } from "node:util";
-import { setImmediate } from "node:timers/promises";
 
 // Import Third-party Dependencies
 import prettyJson from "@topcli/pretty-json";
 import * as i18n from "@nodesecure/i18n";
-import { cache, config } from "@nodesecure/server";
+import { PayloadCache } from "@nodesecure/cache";
+import { config } from "@nodesecure/server";
 
 export async function main(options) {
   const {
     list,
-    clear,
-    full
+    clear
   } = options;
 
   await i18n.getLocalLang();
@@ -22,40 +21,35 @@ export async function main(options) {
   }
 
   if (list) {
-    listCache(full);
+    await listCache();
   }
   if (clear) {
-    await setImmediate();
-    await clearCache(full);
+    await clearCache();
+  }
+  console.log();
+}
+
+async function listCache() {
+  const cache = new PayloadCache();
+  await cache.load();
+
+  const metadata = Array.from(cache);
+  console.log(
+    styleText(["underline"], i18n.getTokenSync("cli.commands.cache.cacheTitle"))
+  );
+
+  for (const data of metadata) {
+    prettyJson(data);
   }
 }
 
-async function listCache(full) {
-  const paylodsList = await cache.payloadsList();
-  console.log(styleText(["underline"], i18n.getTokenSync("cli.commands.cache.cacheTitle")));
-  prettyJson(paylodsList);
-
-  if (full) {
-    console.log(styleText(["underline"], i18n.getTokenSync("cli.commands.cache.scannedPayloadsTitle")));
-    try {
-      const payloads = cache.availablePayloads();
-      prettyJson(payloads);
-    }
-    catch {
-      prettyJson([]);
-    }
-  }
-}
-
-async function clearCache(full) {
-  if (full) {
-    cache.availablePayloads().forEach((pkg) => {
-      cache.removePayload(pkg);
-    });
-  }
-
+async function clearCache() {
   await config.setDefault();
-  await cache.initPayloadsList({ logging: false, reset: true });
 
-  console.log(styleText("green", i18n.getTokenSync("cli.commands.cache.cleared")));
+  const cache = new PayloadCache();
+  await cache.clear();
+
+  console.log(
+    styleText("green", i18n.getTokenSync("cli.commands.cache.cleared"))
+  );
 }

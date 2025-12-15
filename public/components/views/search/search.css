@@ -289,7 +289,7 @@ body.dark .description {
   height: 20px;
 }
 
-.cache-packages, .recent-packages {
+.cache-packages {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -306,20 +306,20 @@ body.dark .description {
   overflow: auto;
 }
 
-body.dark .cache-packages, body.dark .recent-packages {
+body.dark .cache-packages {
   color: var(--secondary-darker);
 }
 
-.cache-packages h1, .recent-packages h1 {
+.cache-packages h1 {
   font-family: mononoki;
   color: #546884;
 }
 
-body.dark .cache-packages h1, body.dark .recent-packages h1 {
+body.dark .cache-packages h1 {
   color: white;
 }
 
-.cache-packages .package-cache-result:has(span:hover), .recent-packages .package-cache-result:has(span:hover) {
+.cache-packages .package-cache-result:has(span:hover) {
   color: var(--secondary-darker);
   background: #5468842a;
   cursor: pointer;
