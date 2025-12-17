@@ -1,6 +1,9 @@
 // Import Node.js Dependencies
 import { AsyncLocalStorage } from "node:async_hooks";
 
+// Import Third-party Dependencies
+import type { PayloadCache } from "@nodesecure/cache";
+
 // Import Internal Dependencies
 import type { ViewBuilder } from "./ViewBuilder.class.ts";
 
@@ -9,7 +12,7 @@ export type NestedStringRecord = {
 };
 
 export interface AsyncStoreContext {
-  dataFilePath?: string;
+  cache: PayloadCache;
   i18n: {
     english: NestedStringRecord;
     french: NestedStringRecord;

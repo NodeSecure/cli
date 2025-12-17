@@ -2,7 +2,7 @@
 import { WebSocketServer, type WebSocket } from "ws";
 import { match } from "ts-pattern";
 import type { Logger } from "pino";
-import type { AppCache } from "@nodesecure/cache/dist/AppCache.ts";
+import type { PayloadCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
 import { search } from "./commands/search.ts";
@@ -16,12 +16,12 @@ import type {
 
 export interface WebSocketServerInstanciatorOptions {
   logger: Logger<never, boolean>;
-  cache: AppCache;
+  cache: PayloadCache;
 }
 
 export class WebSocketServerInstanciator {
   #logger: Logger<never, boolean>;
-  #cache: AppCache;
+  #cache: PayloadCache;
 
   constructor(
     options: WebSocketServerInstanciatorOptions
@@ -39,7 +39,7 @@ export class WebSocketServerInstanciator {
       this.#onMessageHandler(socket, JSON.parse(rawData));
     });
 
-    const data = await this.initializeServer();
+    const data = this.initializeServer();
     sendSocketResponse(socket, data);
   }
 
@@ -76,36 +76,17 @@ export class WebSocketServerInstanciator {
     });
   }
 
-  async initializeServer(
-    stopInitializationOnError = false
-  ): Promise<WebSocketResponse | null> {
-    try {
-      const cached = await this.#cache.payloadsList();
-      if (
-        cached.mru === void 0 ||
-        cached.current === void 0
-      ) {
-        throw new Error("Payloads list not found in cache.");
-      }
-      this.#logger.info(
-        `[ws|init](current: ${cached.current}|root: ${cached.root})`
-      );
+  initializeServer(): WebSocketResponse {
+    const cached = Array.from(this.#cache);
 
-      return {
-        status: "INIT",
-        cache: cached
-      };
-    }
-    catch {
-      if (stopInitializationOnError) {
-        return null;
-      }
+    this.#logger.info(
+      `[ws|init](current: ${this.#cache.getCurrentSpec()})`
+    );
 
-      this.#logger.error("[ws|init] creating new payloads list in cache");
-      await this.#cache.initPayloadsList();
-
-      return this.initializeServer(true);
-    }
+    return {
+      status: "INIT",
+      cache: cached
+    };
   }
 }
 

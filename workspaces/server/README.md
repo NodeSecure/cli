@@ -35,7 +35,7 @@ const kDataFilePath = path.join(
   "nsecure-result.json"
 );
 
-const httpServer = buildServer(kDataFilePath, {
+const httpServer = await buildServer(kDataFilePath, {
   port: 3000,
   projectRootDir: kProjectRootDir,
   componentsDir: kComponentsDir
@@ -48,7 +48,7 @@ httpServer.listen(port, async() => {
 
 ## API
 
-### `buildServer(dataFilePath: string, options: BuildServerOptions): polka`
+### `buildServer(dataFilePath: string, options: BuildServerOptions): Promise<Server>`
 
 Creates and configures a Node.js HTTP server instance for the NodeSecure CLI.
 

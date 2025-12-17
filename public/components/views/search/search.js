@@ -56,11 +56,7 @@ export class SearchView {
 
     this.#initializePackages(
       ".cache-packages",
-      window.scannedPackageCache
-    );
-    this.#initializePackages(
-      ".recent-packages",
-      window.recentPackageCache
+      window.cachedSpecs
     );
   }
 

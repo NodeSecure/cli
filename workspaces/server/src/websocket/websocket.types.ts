@@ -1,6 +1,6 @@
 // Import Third-party Dependencies
 import type { WebSocket } from "ws";
-import type { AppCache, PayloadsList } from "@nodesecure/cache/dist/AppCache.ts";
+import type { PayloadCache, PayloadMetadata } from "@nodesecure/cache";
 import type { Payload } from "@nodesecure/scanner";
 
 // Import Internal Dependencies
@@ -24,7 +24,7 @@ type ScanResponse = {
  */
 type CachedResponse = {
   status: "INIT" | "RELOAD";
-  cache: PayloadsList;
+  cache: PayloadMetadata[];
 };
 
 export type WebSocketResponse =
@@ -39,6 +39,6 @@ export type WebSocketMessage = {
 
 export interface WebSocketContext {
   socket: WebSocket;
-  cache: AppCache;
+  cache: PayloadCache;
   logger: typeof logger;
 }
