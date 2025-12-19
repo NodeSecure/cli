@@ -1,6 +1,12 @@
 #!/usr/bin/env node
-import dotenv from "dotenv";
-dotenv.config({ quiet: true });
+
+// Load .env file if it exists (quiet - no error if missing)
+try {
+  process.loadEnvFile();
+}
+catch {
+  // .env file not found or not readable - ignore silently
+}
 
 // Import Node.js Dependencies
 import path from "node:path";
