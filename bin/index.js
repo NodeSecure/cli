@@ -14,7 +14,6 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 // Import Third-party Dependencies
-import kleur from "kleur";
 import sade from "sade";
 import semver from "semver";
 import * as i18n from "@nodesecure/i18n";
@@ -23,6 +22,7 @@ import { loadRegistryURLFromLocalSystem } from "@nodesecure/npm-registry-sdk";
 
 // Import Internal Dependencies
 import * as commands from "../src/commands/index.js";
+import kleur from "../src/utils/styleText.js";
 
 // CONSTANTS
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

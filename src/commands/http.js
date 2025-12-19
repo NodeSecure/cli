@@ -4,7 +4,6 @@ import path from "node:path";
 import crypto from "node:crypto";
 
 // Import Third-party Dependencies
-import kleur from "kleur";
 import open from "open";
 import * as SemVer from "semver";
 import * as i18n from "@nodesecure/i18n";
@@ -18,6 +17,7 @@ import {
 // Import Internal Dependencies
 import english from "../../i18n/english.js";
 import french from "../../i18n/french.js";
+import kleur from "../utils/styleText.js";
 
 // CONSTANTS
 const kRequiredScannerRange = ">=5.1.0";

@@ -7,7 +7,9 @@ import { spawn } from "node:child_process";
 
 // Import Third-party Dependencies
 import * as RC from "@nodesecure/rc";
-import kleur from "kleur";
+
+// Import Internal Dependencies
+import kleur from "../utils/styleText.js";
 
 const K_HOME_PATH = path.join(os.homedir(), "nodesecure");
 

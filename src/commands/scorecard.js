@@ -3,10 +3,12 @@ import fs from "node:fs";
 
 // Import Third-party Dependencies
 import cliui from "@topcli/cliui";
-import kleur from "kleur";
 import * as scorecard from "@nodesecure/ossf-scorecard-sdk";
 import ini from "ini";
 import { Ok, Err } from "@openally/result";
+
+// Import Internal Dependencies
+import kleur from "../utils/styleText.js";
 
 // VARS
 const { yellow, grey, cyan, white } = kleur;
