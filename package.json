@@ -108,7 +108,6 @@
     "@topcli/pretty-json": "^1.0.0",
     "@topcli/prompts": "^2.0.0",
     "@topcli/spinner": "^4.0.0",
-    "dotenv": "^17.0.0",
     "filenamify": "^7.0.0",
     "highlightjs-line-numbers.js": "^2.8.0",
     "ini": "^6.0.0",
