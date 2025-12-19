@@ -1,7 +1,9 @@
 // Import Third-party Dependencies
 import * as i18n from "@nodesecure/i18n";
 import { select } from "@topcli/prompts";
-import kleur from "kleur";
+
+// Import Internal Dependencies
+import kleur from "../utils/styleText.js";
 
 export async function set() {
   const langs = await i18n.getLanguages();

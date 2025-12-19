@@ -4,7 +4,6 @@ import path from "node:path";
 import events from "node:events";
 
 // Import Third-party Dependencies
-import kleur from "kleur";
 import semver from "semver";
 import filenamify from "filenamify";
 import { Spinner } from "@topcli/spinner";
@@ -14,6 +13,7 @@ import * as scanner from "@nodesecure/scanner";
 import { cache } from "@nodesecure/server";
 
 // Import Internal Dependencies
+import kleur from "../utils/styleText.js";
 import * as http from "./http.js";
 import { parseContacts } from "./parsers/contacts.js";
 
