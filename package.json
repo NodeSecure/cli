@@ -103,7 +103,7 @@
     "@nodesecure/server": "1.0.0",
     "@nodesecure/utils": "^2.2.0",
     "@nodesecure/vulnera": "^2.0.1",
-    "@openally/result": "^1.3.0",
+    "@openally/result": "^2.0.0",
     "@topcli/cliui": "^1.1.0",
     "@topcli/pretty-json": "^1.0.0",
     "@topcli/prompts": "^2.0.0",
