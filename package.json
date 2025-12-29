@@ -100,6 +100,7 @@
     "@nodesecure/rc": "^5.0.0",
     "@nodesecure/report": "4.1.1",
     "@nodesecure/scanner": "8.2.0",
+    "@nodesecure/mama": "2.0.2",
     "@nodesecure/server": "1.0.0",
     "@nodesecure/utils": "^2.2.0",
     "@nodesecure/vulnera": "^2.0.1",
