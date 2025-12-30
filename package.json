@@ -74,7 +74,7 @@
     "@openally/config.eslint": "^2.1.0",
     "@openally/config.typescript": "1.2.1",
     "@openally/httpie": "^1.0.0",
-    "@types/node": "^24.0.3",
+    "@types/node": "^25.0.3",
     "c8": "^10.1.2",
     "cross-env": "^10.1.0",
     "esbuild": "^0.27.0",
