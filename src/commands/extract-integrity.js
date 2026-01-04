@@ -4,29 +4,53 @@ import os from "node:os";
 import path from "node:path";
 
 // Import Third-party Dependencies
-import * as npmRegistrySDK from "@nodesecure/npm-registry-sdk";
-import { diff } from "json-diff-ts";
-import { tarball } from "@nodesecure/scanner";
+import * as i18n from "@nodesecure/i18n";
+
 import {
-  parseNpmSpec,
-  packageJSONIntegrityHash
+  packageJSONIntegrityHash,
+  parseNpmSpec
 } from "@nodesecure/mama";
+import * as npmRegistrySDK from "@nodesecure/npm-registry-sdk";
+import { tarball } from "@nodesecure/scanner";
+import { diff } from "json-diff-ts";
+
+// Import Internal Dependencies
+import kleur from "../utils/styleText.js";
+
+const Ki18nCommandName = "cli.commands.extractIntegrity";
 
 export async function main(
   npmPackageSpec
 ) {
   const parsedPackageSpec = parseNpmSpec(npmPackageSpec);
   if (!parsedPackageSpec) {
-    throw new Error(`Invalid npm spec: ${npmPackageSpec}`);
+    console.log(kleur.red().bold(` [!] ${i18n.getTokenSync(`${Ki18nCommandName}.invalidSpec`, npmPackageSpec)}\n`));
+    process.exit(1);
   }
 
-  const packumentVersion = await npmRegistrySDK.packumentVersion(
-    parsedPackageSpec.name,
-    parsedPackageSpec.semver,
-    {
-      token: process.env.NODE_SECURE_TOKEN
+  const { name, semver } = parsedPackageSpec;
+  if (!semver) {
+    console.log(kleur.red().bold(` [!] ${i18n.getTokenSync(`${Ki18nCommandName}.missingSpecVersion`, name)}\n`));
+    process.exit(1);
+  }
+
+  let packumentVersion;
+  try {
+    packumentVersion = await npmRegistrySDK.packumentVersion(
+      name,
+      semver,
+      {
+        token: process.env.NODE_SECURE_TOKEN
+      }
+    );
+  }
+  catch (error) {
+    if (error.statusCode === 404) {
+      console.log(kleur.yellow().bold(` [!] ${i18n.getTokenSync(`${Ki18nCommandName}.specNotFound`, npmPackageSpec)}\n`));
+      process.exit(1);
     }
-  );
+  }
+
   const remote = packageJSONIntegrityHash(
     packumentVersion,
     { isFromRemoteRegistry: true }

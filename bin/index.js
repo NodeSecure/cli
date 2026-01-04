@@ -9,16 +9,16 @@ catch {
 }
 
 // Import Node.js Dependencies
-import path from "node:path";
 import { createRequire } from "node:module";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 // Import Third-party Dependencies
+import * as i18n from "@nodesecure/i18n";
+import { loadRegistryURLFromLocalSystem } from "@nodesecure/npm-registry-sdk";
+import * as vulnera from "@nodesecure/vulnera";
 import sade from "sade";
 import semver from "semver";
-import * as i18n from "@nodesecure/i18n";
-import * as vulnera from "@nodesecure/vulnera";
-import { loadRegistryURLFromLocalSystem } from "@nodesecure/npm-registry-sdk";
 
 // Import Internal Dependencies
 import * as commands from "../src/commands/index.js";
@@ -135,8 +135,9 @@ prog
   .action(commands.cache.main);
 
 prog
-  .command("extract integrity [spec]")
+  .command("extract integrity <spec>")
   .describe(i18n.getTokenSync("cli.commands.extractIntegrity.desc"))
+  .example("nsecure extract integrity lodash@^4.1.2")
   .action(commands.extractIntegrity.main);
 
 prog.parse(process.argv);
