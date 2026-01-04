@@ -7,26 +7,26 @@ catch {
 }
 
 // Import Node.js Dependencies
-import fs from "node:fs";
-import path from "node:path";
-import url from "node:url";
 import assert from "node:assert";
 import childProcess from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 import { after, before, describe, it } from "node:test";
+import url from "node:url";
 
 // Import Third-party Dependencies
+import { DEFAULT_PAYLOAD_PATH } from "@nodesecure/cache";
 import * as i18n from "@nodesecure/i18n";
 import { cache } from "@nodesecure/server";
-import { DEFAULT_PAYLOAD_PATH } from "@nodesecure/cache";
 
 // Import Internal Dependencies
-import { arrayFromAsync } from "../helpers/utils.js";
 import { main } from "../../src/commands/cache.js";
+import { arrayFromAsync } from "../helpers/utils.js";
 
 // CONSTANTS
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-describe("Cache command", { concurrency: 1 }, () => {
+describe("CLI Commands: cache", { concurrency: 1 }, () => {
   let lang;
   let actualCache;
   let dummyPayload = null;
