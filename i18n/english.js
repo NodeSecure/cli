@@ -72,9 +72,7 @@ const cli = {
       missingAction: "No valid action specified. Use --help to see options.",
       option_list: "List cache files",
       option_clear: "Clear the cache",
-      option_full: "Clear or list the full cache, including payloads",
       cacheTitle: "NodeSecure Cache:",
-      scannedPayloadsTitle: "Scanned payloads available on disk:",
       cleared: "Cache cleared successfully!"
     },
     extractIntegrity: {

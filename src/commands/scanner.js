@@ -10,7 +10,6 @@ import { Spinner } from "@topcli/spinner";
 import ms from "ms";
 import * as i18n from "@nodesecure/i18n";
 import * as scanner from "@nodesecure/scanner";
-import { cache } from "@nodesecure/server";
 
 // Import Internal Dependencies
 import kleur from "../utils/styleText.js";
@@ -214,8 +213,6 @@ async function logAndWrite(
   console.log("");
   console.log(kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath))));
   console.log("");
-
-  await cache.setRootPayload(payload, { logging: false, local });
 
   return filePath;
 }
