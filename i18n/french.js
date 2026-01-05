@@ -78,7 +78,10 @@ const cli = {
       cleared: "Cache nettoyé avec succès !"
     },
     extractIntegrity: {
-      desc: "Extraire l'intégrité d'un paquet à partir de son manifeste et du tarball et comparer les deux intégrités si elles sont différentes."
+      desc: "Extraire l'intégrité d'un paquet à partir de son manifeste et du tarball et comparer les deux intégrités si elles sont différentes.",
+      missingSpecVersion: tS`Vous devez spécifier une version pour le package '${0}'.`,
+      invalidSpec: tS`La spécification '${0}' est invalide.`,
+      specNotFound: tS`La spécification '${0}' n'a pas pu être trouvée dans le registre npm.`
     }
   },
   startHttp: {
