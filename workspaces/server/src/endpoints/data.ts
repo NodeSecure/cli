@@ -1,6 +1,4 @@
 // Import Node.js Dependencies
-import fs from "node:fs";
-import path from "node:path";
 import type {
   IncomingMessage,
   ServerResponse
@@ -9,57 +7,35 @@ import type {
 // Import Internal Dependencies
 import { context } from "../ALS.ts";
 import { logger } from "../logger.ts";
-import { cache } from "../cache.ts";
 import { send } from "./util/send.ts";
-
-// CONSTANTS
-const kDefaultPayloadPath = path.join(process.cwd(), "nsecure-result.json");
 
 export async function get(
   _req: IncomingMessage,
   res: ServerResponse
 ) {
-  if (cache.startFromZero) {
+  const { cache } = context.getStore()!;
+
+  const currentSpec = cache.getCurrentSpec();
+  if (currentSpec === null) {
     logger.info("[data|get](no content)");
     res.statusCode = 204;
     res.end();
-
-    return;
   }
+  else {
+    logger.info("[data|get](fetching data for spec=%s)", currentSpec);
 
-  try {
-    const { current, mru } = await cache.payloadsList();
-    logger.info(`[data|get](current: ${current})`);
-    logger.debug(`[data|get](lru: ${mru})`);
+    const payload = await cache.findBySpec(currentSpec);
+    if (payload === null) {
+      logger.info("[data|get](spec=%s not found)", currentSpec);
+      res.statusCode = 404;
+      res.end();
 
-    send(res, cache.getPayload(current));
-  }
-  catch {
-    logger.error("[data|get](No cache yet. Creating one...)");
+      return;
+    }
 
-    const { dataFilePath } = context.getStore()!;
-
-    const payloadPath = dataFilePath || kDefaultPayloadPath;
-    const payload = JSON.parse(fs.readFileSync(payloadPath, "utf-8"));
-
-    const { name, version } = payload.rootDependency;
-    const formatted = `${name}@${version}${payload.local ? "#local" : ""}`;
-    const payloadsList = {
-      mru: [formatted],
-      current: formatted,
-      lru: [],
-      availables: cache.availablePayloads().filter((pkg) => pkg !== formatted),
-      lastUsed: {
-        [formatted]: Date.now()
-      },
-      root: formatted
-    };
-    logger.info(`[data|get](dep: ${formatted})`);
-
-    await cache.updatePayloadsList(payloadsList);
-    cache.updatePayload(formatted, payload);
-    logger.info(`[data|get](cache: created|payloadsList: ${payloadsList.lru})`);
-
-    send(res, payload);
+    send(
+      res,
+      payload
+    );
   }
 }

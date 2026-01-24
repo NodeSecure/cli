@@ -26,8 +26,7 @@ let searchview;
 let packageInfoOpened = false;
 
 document.addEventListener("DOMContentLoaded", async() => {
-  window.scannedPackageCache = [];
-  window.recentPackageCache = [];
+  window.cachedSpecs = [];
   window.locker = null;
   window.settings = await new Settings().fetchUserConfig();
   window.i18n = await new i18n().fetch();
@@ -74,25 +73,11 @@ async function onSocketInitOrReload(event) {
   const data = event.detail;
   const { cache } = data;
 
-  window.scannedPackageCache = cache.availables;
-  window.recentPackageCache = cache.lru;
+  window.cachedSpecs = cache.map((metadata) => metadata.spec);
   console.log(
-    "[INFO] Older packages are loaded!",
-    window.scannedPackageCache
+    "[INFO] Cached specs are loaded!",
+    window.cachedSpecs
   );
-  console.log(
-    "[INFO] Recent packages are loaded!",
-    window.recentPackageCache
-  );
-
-  initSearchNav(cache, {
-    searchOptions: {
-      nsn,
-      secureDataSet
-    }
-  });
-  searchview.mount();
-  searchview.initialize();
 
   const nsnActivePackage = secureDataSet.linker.get(0);
   const nsnRootPackage = nsnActivePackage ?
@@ -105,34 +90,26 @@ async function onSocketInitOrReload(event) {
   ) {
     // it means we removed the previous active package, which is still active in network, so we need to re-init
     await init();
-
-    // FIXME: initSearchNav is called twice, we need to fix this
-    initSearchNav(cache, {
-      searchOptions: {
-        nsn,
-        secureDataSet
-      }
-    });
   }
+  else if (window.cachedSpecs.length === 0) {
+    await loadDataSet();
+  }
+
+  initSearchNav(cache, {
+    searchOptions: {
+      nsn,
+      secureDataSet
+    }
+  });
+  searchview.mount();
+  searchview.initialize();
 }
 
 async function init(options = {}) {
   const { navigateToNetworkView = false } = options;
 
-  secureDataSet = new NodeSecureDataSet({
-    flagsToIgnore: window.settings.config.ignore.flags,
-    warningsToIgnore: window.settings.config.ignore.warnings,
-    theme: window.settings.config.theme
-  });
-  await secureDataSet.init();
-
-  if (secureDataSet.data === null) {
-    window.navigation.hideMenu("network--view");
-    window.navigation.hideMenu("home--view");
-    window.navigation.setNavByName("search--view");
-
-    searchview ??= new SearchView(null, null);
-
+  const datasetLoaded = await loadDataSet();
+  if (!datasetLoaded) {
     return;
   }
 
@@ -188,6 +165,29 @@ async function init(options = {}) {
   PackageInfo.close();
 
   console.log("[INFO] Node-Secure is ready!");
+}
+
+async function loadDataSet() {
+  const config = window.settings.config;
+
+  secureDataSet = new NodeSecureDataSet({
+    flagsToIgnore: config.ignore.flags,
+    warningsToIgnore: config.ignore.warnings,
+    theme: config.theme
+  });
+  await secureDataSet.init();
+
+  if (secureDataSet.data === null) {
+    window.navigation.hideMenu("network--view");
+    window.navigation.hideMenu("home--view");
+    window.navigation.setNavByName("search--view");
+
+    searchview ??= new SearchView(null, null);
+
+    return false;
+  }
+
+  return true;
 }
 
 async function updateShowInfoMenu(params) {

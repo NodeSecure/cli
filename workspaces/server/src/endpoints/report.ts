@@ -1,5 +1,4 @@
 // Import Node.js Dependencies
-import fs from "node:fs";
 import type {
   IncomingMessage,
   ServerResponse
@@ -11,7 +10,6 @@ import type { RC } from "@nodesecure/rc";
 
 // Import Internal Dependencies
 import { context } from "../ALS.ts";
-import { cache } from "../cache.ts";
 import { send } from "./util/send.ts";
 import { bodyParser } from "./util/bodyParser.ts";
 
@@ -62,20 +60,35 @@ export async function post(
   const body = await bodyParser<ReportRequestBody>(req);
   const { title, includesAllDeps, theme } = body;
 
-  const { dataFilePath } = context.getStore()!;
+  const { cache } = context.getStore()!;
 
-  const scannerPayload = dataFilePath ?
-    JSON.parse(fs.readFileSync(dataFilePath, "utf-8")) :
-    cache.getPayload((await cache.payloadsList()).current);
+  const currentSpec = cache.getCurrentSpec();
+  if (currentSpec === null) {
+    console.error("[report|post](no current spec set)");
+    res.statusCode = 400;
+
+    return res.end();
+  }
+
+  const scannerPayload = await cache.findBySpec(currentSpec);
+  if (scannerPayload === null) {
+    console.error(
+      "[report|post](no payload found for spec=%s)",
+      currentSpec
+    );
+    res.statusCode = 500;
+
+    return res.end();
+  }
 
   const name = scannerPayload.rootDependency.name;
-  const [organizationPrefixOrRepo, repo] = name.split("/");
+  const [organizationPrefix, repo] = name.split("/");
   const reportPayload = structuredClone({
     ...kReportPayload,
     title,
-    npm: {
-      organizationPrefix: repo === undefined ? null : organizationPrefixOrRepo,
-      packages: [repo === undefined ? organizationPrefixOrRepo : repo]
+    npm: repo === undefined ? undefined : {
+      organizationPrefix,
+      packages: [repo]
     },
     theme
   });

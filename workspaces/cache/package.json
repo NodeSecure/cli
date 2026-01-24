@@ -21,9 +21,8 @@
     "@types/cacache": "^20.0.0"
   },
   "dependencies": {
-    "@nodesecure/flags": "3.0.3",
-    "@nodesecure/js-x-ray": "11.1.0",
     "@nodesecure/scanner": "9.0.0",
-    "cacache": "20.0.3"
+    "cacache": "20.0.3",
+    "filenamify": "7.0.1"
   }
 }
