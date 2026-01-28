@@ -48,7 +48,7 @@ httpServer.listen(port, async() => {
 
 ## API
 
-### `buildServer(dataFilePath: string, options: BuildServerOptions): polka`
+### `buildServer(dataFilePath: string, options: BuildServerOptions): http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>`
 
 Creates and configures a Node.js HTTP server instance for the NodeSecure CLI.
 
