@@ -65,13 +65,16 @@ export async function cwd(options) {
     full,
     vulnerabilityStrategy,
     silent,
-    contacts
+    contacts,
+    verbose
   } = options;
 
-  const payload = await scanner.cwd(
+  const payload = await scanner.workingDir(
     process.cwd(),
-    { maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy, highlight:
-      { contacts: parseContacts(contacts) } },
+    {
+      maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy, highlight:
+        { contacts: parseContacts(contacts) }, isVerbose: verbose
+    },
     initLogger(void 0, !silent)
   );
 
@@ -79,7 +82,7 @@ export async function cwd(options) {
 }
 
 export async function from(spec, options) {
-  const { depth: maxDepth = Infinity, output, silent, contacts, vulnerabilityStrategy } = options;
+  const { depth: maxDepth = Infinity, output, silent, contacts, vulnerabilityStrategy, verbose } = options;
 
   const payload = await scanner.from(
     spec,
@@ -88,7 +91,8 @@ export async function from(spec, options) {
       vulnerabilityStrategy,
       highlight: {
         contacts: parseContacts(contacts)
-      }
+      },
+      isVerbose: verbose
     },
     initLogger(spec, !silent)
   );
@@ -96,12 +100,14 @@ export async function from(spec, options) {
   return await logAndWrite(payload, output);
 }
 
+const spinners = [];
+
 function initLogger(spec, verbose = true) {
   const spinner = {
-    walkTree: new Spinner({ verbose }),
-    tarball: new Spinner({ verbose }),
-    registry: new Spinner({ verbose }),
-    fetchManifest: new Spinner({ verbose }),
+    walkTree: buildSpinner(verbose),
+    tarball: buildSpinner(verbose),
+    registry: buildSpinner(verbose),
+    fetchManifest: buildSpinner(verbose),
     i18n: {
       start: {
         fetchManifest: "cli.commands.from.searching",
@@ -121,6 +127,13 @@ function initLogger(spec, verbose = true) {
       }
     }
   };
+
+  function buildSpinner(verbose) {
+    const spinner = new Spinner({ verbose });
+    spinners.push(spinner);
+
+    return spinner;
+  }
 
   const logger = new scanner.Logger();
   logger.on("start", (eventName) => {
@@ -154,25 +167,60 @@ function initLogger(spec, verbose = true) {
 
     const spin = spinner[eventName];
     const tokenName = spinner.i18n.end[eventName];
-    const execTime = kleur.cyan().bold(ms(Number(spin.elapsedTime.toFixed(2))));
+    const execTime = kleur.cyan().bold(formatMs(spin.elapsedTime));
 
     if (eventName === "walkTree") {
       spin.succeed(kleur.white().bold(
         i18n.getTokenSync(tokenName, kleur.yellow().bold(i18n.getTokenSync("depWalker.dep_tree")), execTime)));
+      spin.succeeded = true;
     }
     else if (eventName === "registry") {
       spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName)));
+      spin.succeeded = true;
     }
     else if (eventName === "tarball") {
       spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName, kleur.green().bold(logger.count("walkTree")), execTime)));
+      spin.succeeded = true;
     }
     else if (eventName === "fetchManifest") {
       spin.succeed(kleur.white().bold(i18n.getTokenSync(tokenName, kleur.green().bold(spec), execTime)));
+      spin.succeeded = true;
       console.log("");
     }
   });
 
+  logger.on("stat", (stat) => {
+    stopSpinners();
+    console.log(kleur.bold.white(
+      i18n.getTokenSync("cli.stat",
+        kleur.blue().bold("verbose"),
+        stat.name,
+        kleur.cyan().bold(formatMs(stat.executionTime))
+      )));
+    startSpinners();
+  });
+
   return logger;
+}
+
+function formatMs(time) {
+  return ms(Number(time.toFixed(2)));
+}
+
+function stopSpinners() {
+  spinners.forEach((spinner) => {
+    if (!spinner.succeeded) {
+      spinner.stop();
+    }
+  });
+}
+
+function startSpinners() {
+  spinners.forEach((spinner) => {
+    if (!spinner.succeeded) {
+      spinner.start();
+    }
+  });
 }
 
 async function logAndWrite(

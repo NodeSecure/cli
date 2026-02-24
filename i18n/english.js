@@ -10,11 +10,13 @@ const cli = {
   successfully_written_json: tS`Successfully written results file at: ${0}`,
   http_server_started: "HTTP Server started on:",
   missingEnv: tS`Environment variable ${0} is missing!`,
+  stat: tS`${0} ${1} in ${2}`,
   commands: {
     option_depth: "Maximum dependencies depth to fetch",
     option_output: "Json file output name",
     option_silent: "enable silent mode which disable CLI spinners",
     option_contacts: "List of contacts to hightlight",
+    option_verbose: "Sets cli log level to verbose, causing the CLI to output more detailed logs.",
     strategy: "Vulnerabilities source to use",
     cwd: {
       desc: "Run security analysis on the current working dir",
