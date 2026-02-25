@@ -10,11 +10,13 @@ const cli = {
   successfully_written_json: tS`Ecriture du fichier de résultats réalisée avec succès ici : ${0}`,
   http_server_started: "Serveur HTTP démarré sur :",
   missingEnv: tS`La variable d'environnement ${0} est manquante!`,
+  stat: tS`${0} ${1} en ${2}`,
   commands: {
     option_depth: "Niveau de profondeur de dépendances maximum à aller chercher",
     option_output: "Nom de sortie du fichier json",
     option_silent: "Activer le mode silencieux qui désactive les spinners du CLI",
     option_contacts: "Liste des contacts à mettre en évidence",
+    option_verbose: "Définir le niveau de log CLI à verbeux, ce qui amènera la CLI à générer des logs plus détaillés.",
     strategy: "Source de vulnérabilités à utiliser",
     cwd: {
       desc: "Démarre une analyse de sécurité sur le dossier courant",

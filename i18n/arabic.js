@@ -1,5 +1,3 @@
-/* eslint-disable @stylistic/max-len */
-
 // Import Third-party Dependencies
 import { taggedString as tS } from "@nodesecure/i18n";
 
@@ -10,11 +8,13 @@ const cli = {
   successfully_written_json: tS`تم كتابة ملف النتائج بنجاح في: ${0}`,
   http_server_started: "تم تشغيل خادم HTTP على:",
   missingEnv: tS`متغير البيئة ${0} مفقود!`,
+  stat: tS`${0} ${1} في ${2}`,
   commands: {
     option_depth: "أقصى عمق للتبعيات لجلبه",
     option_output: "اسم ملف JSON الناتج",
     option_silent: "تفعيل الوضع الصامت الذي يعطل مؤشرات CLI",
     option_contacts: "قائمة جهات الاتصال للتمييز",
+    option_verbose: "ضبط مستوى الـ log الخاص بالـ CLI على verbose، مما يجعل الـ CLI يولّد logs أكثر تفصيلاً.",
     strategy: "مصدر الثغرات للاستخدام",
     cwd: {
       desc: "تشغيل تحليل الأمان على دليل العمل الحالي",

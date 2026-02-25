@@ -10,11 +10,13 @@ const cli = {
   successfully_written_json: tS`Sonuç dosyası başarıyla yazıldı: ${0}`,
   http_server_started: "HTTP Sunucusu başlatıldı:",
   missingEnv: tS`${0} ortam değişkeni eksik!`,
+  stat: tS`${0} ${1} içinde ${2}`,
   commands: {
     option_depth: "Getirilecek maksimum bağımlılık derinliği",
     option_output: "JSON dosyası çıktı adı",
     option_silent: "CLI döndürücülerini devre dışı bırakan sessiz modu etkinleştir",
     option_contacts: "Vurgulanacak kişilerin listesi",
+    option_verbose: "CLI'nin log seviyesini verbose olarak ayarlar, bu da CLI'nin daha ayrıntılı loglar üretmesine neden olur.",
     strategy: "Kullanılacak güvenlik açığı kaynağı",
     cwd: {
       desc: "Geçerli çalışma dizininde güvenlik analizi çalıştır",

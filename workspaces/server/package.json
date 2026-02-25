@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@nodesecure/cache": "1.0.0",
+    "@nodesecure/scanner": "10.2.0",
     "cacache": "20.0.3",
     "chokidar": "5.0.0",
     "find-my-way": "9.3.0",
