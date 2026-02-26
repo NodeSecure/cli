@@ -78,13 +78,13 @@
     "c8": "^10.1.2",
     "cross-env": "^10.1.0",
     "esbuild": "^0.27.0",
-    "eslint-plugin-jsdoc": "^61.1.11",
+    "eslint-plugin-jsdoc": "^62.7.0",
     "http-server": "^14.1.1",
     "pkg-ok": "^3.0.0",
     "pretty-bytes": "^7.0.0",
     "rimraf": "^6.0.1",
-    "stylelint": "^16.20.0",
-    "stylelint-config-standard": "^39.0.1",
+    "stylelint": "^17.3.0",
+    "stylelint-config-standard": "^40.0.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {
