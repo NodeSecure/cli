@@ -11,6 +11,14 @@ const cli = {
   http_server_started: "Serveur HTTP démarré sur :",
   missingEnv: tS`La variable d'environnement ${0} est manquante!`,
   stat: tS`${0} ${1} en ${2}`,
+  error: {
+    name: tS`Nom ${0}: ${1}`,
+    message: tS`Message: ${0}`,
+    phase: tS`L'erreur s'est produite pendant la phase ${0}`,
+    statusCode: tS`Code statut HTTP: ${0}`,
+    executionTime: tS`L'erreur s'est produite à ${0} pendant l'exécution`,
+    stack: tS`Stack: ${0}`
+  },
   commands: {
     option_depth: "Niveau de profondeur de dépendances maximum à aller chercher",
     option_output: "Nom de sortie du fichier json",

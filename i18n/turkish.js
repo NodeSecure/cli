@@ -11,6 +11,14 @@ const cli = {
   http_server_started: "HTTP Sunucusu başlatıldı:",
   missingEnv: tS`${0} ortam değişkeni eksik!`,
   stat: tS`${0} ${1} içinde ${2}`,
+  error: {
+    name: tS`${0} adı: ${1}`,
+    message: tS`Mesaj: ${0}`,
+    phase: tS`Hata ${0} aşamasında meydana geldi`,
+    statusCode: tS`HTTP Durum Kodu: ${0}`,
+    executionTime: tS`Hata yürütme sırasında ${0} tarihinde meydana geldi`,
+    stack: tS`Yığın: ${0}`
+  },
   commands: {
     option_depth: "Getirilecek maksimum bağımlılık derinliği",
     option_output: "JSON dosyası çıktı adı",

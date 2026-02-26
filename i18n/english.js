@@ -11,6 +11,14 @@ const cli = {
   http_server_started: "HTTP Server started on:",
   missingEnv: tS`Environment variable ${0} is missing!`,
   stat: tS`${0} ${1} in ${2}`,
+  error: {
+    name: tS`${0} name: ${1}`,
+    message: tS`Message: ${0}`,
+    phase: tS`The error occured during the ${0} phase`,
+    statusCode: tS`HTTP Status Code: ${0}`,
+    executionTime: tS`The error occured at ${0} during the execution`,
+    stack: tS`Stack: ${0}`
+  },
   commands: {
     option_depth: "Maximum dependencies depth to fetch",
     option_output: "Json file output name",
