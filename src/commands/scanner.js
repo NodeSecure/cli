@@ -200,6 +200,46 @@ function initLogger(spec, verbose = true) {
     startSpinners();
   });
 
+  logger.on("error", (error, phase) => {
+    stopSpinners();
+
+    console.log(kleur.bold.white(
+      i18n.getTokenSync("cli.error.name",
+        kleur.red().bold("error"),
+        error.name
+      )));
+
+    if (error.message) {
+      console.log(i18n.getTokenSync("cli.error.message",
+        error.message
+      ));
+    }
+
+    if (phase) {
+      console.log(i18n.getTokenSync("cli.error.phase",
+        phase
+      ));
+    }
+
+    if (error.statusCode) {
+      console.log(i18n.getTokenSync("cli.error.statusCode",
+        error.statusCode
+      ));
+    }
+
+    console.log(i18n.getTokenSync("cli.error.executionTime",
+      kleur.cyan().bold(formatMs(error.executionTime))
+    ));
+
+    if (error.stack) {
+      console.log(i18n.getTokenSync("cli.error.stack",
+        error.stack
+      ));
+    }
+
+    startSpinners();
+  });
+
   return logger;
 }
 

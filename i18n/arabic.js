@@ -9,6 +9,14 @@ const cli = {
   http_server_started: "تم تشغيل خادم HTTP على:",
   missingEnv: tS`متغير البيئة ${0} مفقود!`,
   stat: tS`${0} ${1} في ${2}`,
+  error: {
+    name: tS`اسم ${0}: ${1}`,
+    message: tS`الرسالة: ${0}`,
+    phase: tS`حدث الخطأ أثناء مرحلة ${0}`,
+    statusCode: tS`رمز حالة HTTP: ${0}`,
+    executionTime: tS`حدث الخطأ في ${0} أثناء التنفيذ`,
+    stack: tS`المكدس: ${0}`
+  },
   commands: {
     option_depth: "أقصى عمق للتبعيات لجلبه",
     option_output: "اسم ملف JSON الناتج",
