@@ -27,7 +27,7 @@
     "@nodesecure/scanner": "10.2.0",
     "cacache": "20.0.3",
     "chokidar": "5.0.0",
-    "find-my-way": "9.4.0",
+    "find-my-way": "9.5.0",
     "glob": "13.0.6",
     "pino": "10.3.1",
     "pino-pretty": "13.1.3",
