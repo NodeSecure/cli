@@ -1,3 +1,6 @@
+// Import Node.js Dependencies
+import http from "node:http";
+
 // Import Third-party Dependencies
 import router from "find-my-way";
 
@@ -13,9 +16,12 @@ import * as scorecard from "./ossf-scorecard.ts";
 import * as locali18n from "./i18n.ts";
 import * as report from "./report.ts";
 
-export function getApiRouter() {
+type DefaultRoute = (req: http.IncomingMessage, res: http.ServerResponse) => void;
+
+export function getApiRouter(defaultRoute?: DefaultRoute) {
   const apiRouter = router({
-    ignoreTrailingSlash: true
+    ignoreTrailingSlash: true,
+    defaultRoute
   });
 
   apiRouter.get("/", root.get);

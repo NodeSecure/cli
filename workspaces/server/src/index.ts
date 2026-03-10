@@ -32,7 +32,6 @@ export function buildServer(
   options: BuildServerOptions
 ) {
   const {
-    hotReload = true,
     runFromPayload = true,
     projectRootDir,
     componentsDir,
@@ -40,7 +39,6 @@ export function buildServer(
   } = options;
 
   const viewBuilder = new ViewBuilder({
-    autoReload: hotReload,
     projectRootDir,
     componentsDir
   });
@@ -74,6 +72,7 @@ export function buildServer(
 export { WebSocketServerInstanciator } from "./websocket/index.ts";
 export { logger } from "./logger.ts";
 export * as config from "./config.ts";
+export { getApiRouter } from "./endpoints/index.ts";
 
 export {
   cache
