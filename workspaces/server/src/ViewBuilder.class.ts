@@ -5,7 +5,6 @@ import fs from "node:fs/promises";
 // Import Third-party Dependencies
 import zup from "zup";
 import * as i18n from "@nodesecure/i18n";
-import chokidar from "chokidar";
 import { globStream } from "glob";
 
 // Import Internal Dependencies
@@ -24,31 +23,15 @@ export class ViewBuilder {
 
   constructor(options: ViewBuilderOptions) {
     const {
-      autoReload = false,
       projectRootDir,
       componentsDir
     } = options;
 
     this.projectRootDir = projectRootDir;
     this.componentsDir = componentsDir;
-
-    if (autoReload) {
-      this.#enableWatcher();
-    }
   }
 
-  async #enableWatcher() {
-    logger.info("[ViewBuilder] autoReload is enabled");
-
-    const watcher = chokidar.watch(this.componentsDir, {
-      persistent: false,
-      awaitWriteFinish: true,
-      ignored: (path, stats) => (stats?.isFile() ?? false) && !path.endsWith(".html")
-    });
-    watcher.on("change", (filePath) => this.#freeCache(filePath));
-  }
-
-  async #freeCache(
+  freeCache(
     filePath: string
   ) {
     logger.info("[ViewBuilder] the cache has been released");

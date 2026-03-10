@@ -291,3 +291,6 @@ function onSettingsSaved(defaultConfig = null) {
     networkView.classList.remove("locked");
   });
 }
+
+new EventSource("/esbuild").addEventListener("change", () => location.reload());
+
