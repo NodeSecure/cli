@@ -10,15 +10,13 @@ catch {
 import assert from "node:assert";
 import path from "node:path";
 import { describe, test } from "node:test";
-import { fileURLToPath } from "node:url";
 
 // Import Internal Dependencies
 import { runProcess } from "../helpers/cliCommandRunner.js";
 import { arrayFromAsync } from "../helpers/utils.js";
 
 // CONSTANTS
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const kProcessDir = path.join(__dirname, "..", "process");
+const kProcessDir = path.join(import.meta.dirname, "..", "process");
 
 describe("CLI Commands: extract integrity", () => {
   test("should not find an integrity diff", async() => {

@@ -12,7 +12,6 @@ import childProcess from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { after, before, describe, it } from "node:test";
-import url from "node:url";
 
 // Import Third-party Dependencies
 import { DEFAULT_PAYLOAD_PATH } from "@nodesecure/cache";
@@ -22,9 +21,6 @@ import { cache } from "@nodesecure/server";
 // Import Internal Dependencies
 import { main } from "../../src/commands/cache.js";
 import { arrayFromAsync } from "../helpers/utils.js";
-
-// CONSTANTS
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 describe("CLI Commands: cache", { concurrency: 1 }, () => {
   let lang;
@@ -51,7 +47,7 @@ describe("CLI Commands: cache", { concurrency: 1 }, () => {
     }
     await i18n.setLocalLang("english");
     await i18n.extendFromSystemPath(
-      path.join(__dirname, "..", "..", "i18n")
+      path.join(import.meta.dirname, "..", "..", "i18n")
     );
     lang = await i18n.getLocalLang();
 

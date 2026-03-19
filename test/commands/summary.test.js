@@ -7,7 +7,6 @@ catch {
 }
 
 // Import Node.js Dependencies
-import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { describe, it } from "node:test";
 import { stripVTControlCharacters } from "node:util";
@@ -19,8 +18,7 @@ import * as i18n from "@nodesecure/i18n";
 import { runProcess } from "../helpers/cliCommandRunner.js";
 
 // CONSTANTS
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const kProcessDir = path.join(__dirname, "..", "process");
+const kProcessDir = path.join(import.meta.dirname, "..", "process");
 const kProcessPath = path.join(kProcessDir, "summary.js");
 
 describe("CLI Commands: summary", () => {
@@ -46,7 +44,7 @@ describe("CLI Commands: summary", () => {
 
     const processOptions = {
       path: kProcessPath,
-      cwd: path.join(__dirname, "..", "fixtures")
+      cwd: path.join(import.meta.dirname, "..", "fixtures")
     };
 
     for await (const line of runProcess(processOptions)) {
@@ -66,7 +64,7 @@ describe("CLI Commands: summary", () => {
     t.plan(expectedLines.length * 2);
     const processOptions = {
       path: kProcessPath.replace("summary.js", "summary-zero-dependencies.js"),
-      cwd: path.join(__dirname, "..", "fixtures")
+      cwd: path.join(import.meta.dirname, "..", "fixtures")
     };
 
     for await (const line of runProcess(processOptions)) {

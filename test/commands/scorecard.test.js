@@ -3,7 +3,6 @@ import assert from "node:assert";
 import fs from "node:fs";
 import path from "node:path";
 import { describe, test } from "node:test";
-import { fileURLToPath } from "node:url";
 
 // Import Third-party Dependencies
 import { API_URL } from "@nodesecure/ossf-scorecard-sdk";
@@ -15,8 +14,7 @@ import { runProcess } from "../helpers/cliCommandRunner.js";
 import { arrayFromAsync, getExpectedScorecardLines } from "../helpers/utils.js";
 
 // CONSTANTS
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const kProcessDir = path.join(__dirname, "..", "process");
+const kProcessDir = path.join(import.meta.dirname, "..", "process");
 const kProcessPath = path.join(kProcessDir, "scorecard.js");
 
 describe("CLI Commands: scorecard", () => {
