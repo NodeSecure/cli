@@ -1,5 +1,4 @@
 // Import Node.js Dependencies
-import { fileURLToPath } from "node:url";
 import { after, before, describe, test } from "node:test";
 import { once } from "node:events";
 import type { Server } from "node:http";
@@ -21,10 +20,7 @@ import * as flagsEndpoint from "../src/endpoints/flags.ts";
 // CONSTANTS
 const kHttpPort = 17049;
 const kHttpURL = new URL(`http://localhost:${kHttpPort}`);
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const JSON_PATH = path.join(__dirname, "fixtures", "httpServer.json");
-
+const kJsonPath = path.join(import.meta.dirname, "fixtures", "httpServer.json");
 const kGlobalDispatcher = getGlobalDispatcher();
 const kMockAgent = new MockAgent();
 const kBundlephobiaPool = kMockAgent.get("https://bundlephobia.com");
@@ -37,10 +33,10 @@ describe("httpServer", { concurrency: 1 }, () => {
   before(async() => {
     setGlobalDispatcher(kMockAgent);
     await i18n.extendFromSystemPath(
-      path.join(__dirname, "..", "..", "..", "i18n")
+      path.join(import.meta.dirname, "..", "..", "..", "i18n")
     );
 
-    httpServer = buildServer(JSON_PATH, {
+    httpServer = buildServer(kJsonPath, {
       projectRootDir: kProjectRootDir,
       componentsDir: kComponentsDir,
       i18n: {
@@ -314,7 +310,7 @@ describe("httpServer without options", () => {
   let httpServer: Server;
 
   before(async() => {
-    httpServer = buildServer(JSON_PATH, {
+    httpServer = buildServer(kJsonPath, {
       projectRootDir: kProjectRootDir,
       componentsDir: kComponentsDir,
       i18n: {

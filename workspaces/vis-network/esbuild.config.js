@@ -1,17 +1,14 @@
 // Import Node.js Dependencies
 import path from "node:path";
 import fs from "node:fs";
-import { fileURLToPath } from "node:url";
 
 // Import Third-party Dependencies
 import esbuild from "esbuild";
 import { getManifest } from "@nodesecure/flags";
 
 // CONSTANTS
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const kMainDir = path.join(__dirname, "example");
-const kOutDir = path.join(__dirname, "dist");
+const kMainDir = path.join(import.meta.dirname, "example");
+const kOutDir = path.join(import.meta.dirname, "dist");
 
 await esbuild.build({
   entryPoints: [

@@ -11,7 +11,6 @@ catch {
 // Import Node.js Dependencies
 import { createRequire } from "node:module";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 // Import Third-party Dependencies
 import * as i18n from "@nodesecure/i18n";
@@ -24,16 +23,13 @@ import semver from "semver";
 import * as commands from "../src/commands/index.js";
 import kleur from "../src/utils/styleText.js";
 
-// CONSTANTS
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 // TODO: replace with await import() when available
 const require = createRequire(import.meta.url);
 const manifest = require("../package.json");
 
 await i18n.getLocalLang();
 await i18n.extendFromSystemPath(
-  path.join(__dirname, "..", "i18n")
+  path.join(import.meta.dirname, "..", "i18n")
 );
 
 console.log(kleur.grey().bold(`\n > ${i18n.getTokenSync("cli.executing_at")}: ${kleur.yellow().bold(process.cwd())}\n`));

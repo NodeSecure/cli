@@ -1,19 +1,16 @@
 // Import Node.js Dependencies
 import path from "node:path";
 import fs from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 
 // Import Third-party Dependencies
 import esbuild from "esbuild";
 import { getBuildConfiguration } from "@nodesecure/documentation-ui/node";
 
 // CONSTANTS
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const kPublicDir = path.join(__dirname, "public");
-const kOutDir = path.join(__dirname, "dist");
+const kPublicDir = path.join(import.meta.dirname, "public");
+const kOutDir = path.join(import.meta.dirname, "dist");
 const kImagesDir = path.join(kPublicDir, "img");
-const kNodeModulesDir = path.join(__dirname, "node_modules");
+const kNodeModulesDir = path.join(import.meta.dirname, "node_modules");
 
 await esbuild.build({
   entryPoints: [
