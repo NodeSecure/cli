@@ -4,7 +4,6 @@
   "description": "Portable UI for NodeSecure tools (guides on flags, security docs etc..)",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "example": "npm run example:build && http-server ./dist",
     "example:build": "node esbuild.config.js"
   },
@@ -26,8 +25,8 @@
   "license": "MIT",
   "dependencies": {
     "@nodesecure/flags": "^3.0.3",
-    "@nodesecure/js-x-ray": "^13.0.0",
+    "@nodesecure/js-x-ray": "14.2.0",
     "highlight.js": "^11.10.0",
-    "markdown-it": "^14.1.0"
+    "markdown-it": "14.1.1"
   }
 }
