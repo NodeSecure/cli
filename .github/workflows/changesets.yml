@@ -1,0 +1,48 @@
+name: Changesets
+on:
+  push:
+    branches:
+      - master
+env:
+  CI: true
+
+jobs:
+  version:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for OIDC publishing
+      contents: write # Required for changesets to push version commit
+      pull-requests: write # Required for changesets to create PRs
+    steps:
+      - name: Checkout code repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install latest npm
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+
+      - name: Build monorepo
+        run: npm run build
+
+      - name: Update and publish versions
+        uses: changesets/action@6a0a831ff30acef54f2c6aa1cbbc1096b066edaf # v1.7.0
+        with:
+          version: npm run ci:version
+          commit: "chore: update versions"
+          title: "chore: update versions"
+          publish: npm run ci:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ""
+          NPM_CONFIG_PROVENANCE: true

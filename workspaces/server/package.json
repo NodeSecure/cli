@@ -15,6 +15,16 @@
     "test": "node --test ./test/**/*.test.ts",
     "test:c8": "c8 npm run test"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NodeSecure/cli",
+    "directory": "workspaces/server"
+  },
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "devDependencies": {
