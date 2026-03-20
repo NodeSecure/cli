@@ -12,6 +12,16 @@
     "start": "npm run build && http-server ./dist",
     "build": "rimraf ./dist && node esbuild.config.js"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NodeSecure/cli",
+    "directory": "workspaces/vis-network"
+  },
   "files": [
     "index.js",
     "src"

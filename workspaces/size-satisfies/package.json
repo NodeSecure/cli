@@ -9,9 +9,15 @@
     "test-only": "node --test test/test.js",
     "test": "npm run lint && npm run test-only"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "provenance": true
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NodeSecure/cli.git"
+    "url": "https://github.com/NodeSecure/cli",
+    "directory": "workspaces/size-satisfies"
   },
   "files": [
     "index.js",

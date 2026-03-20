@@ -7,6 +7,16 @@
     "example": "npm run example:build && http-server ./dist",
     "example:build": "node esbuild.config.js"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public",
+    "provenance": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NodeSecure/cli",
+    "directory": "workspaces/documentation-ui"
+  },
   "files": [
     "index.js",
     "src"

@@ -23,6 +23,8 @@
     "test:cli": "node --no-warnings --test test/**/*.test.js",
     "test:all": "npm run test --ws --if-present",
     "coverage": "c8 --reporter=lcov npm run test",
+    "ci:publish": "changeset publish",
+    "ci:version": "changeset version",
     "clean": "clear-ts-build"
   },
   "files": [
@@ -69,6 +71,8 @@
   },
   "homepage": "https://github.com/NodeSecure/cli#readme",
   "devDependencies": {
+    "@changesets/changelog-github": "0.6.0",
+    "@changesets/cli": "2.30.0",
     "@nodesecure/size-satisfies": "^1.1.0",
     "@nodesecure/vis-network": "^1.4.0",
     "@openally/config.eslint": "^2.4.2",
