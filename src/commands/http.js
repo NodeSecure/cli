@@ -8,9 +8,9 @@ import open from "open";
 import * as SemVer from "semver";
 import * as i18n from "@nodesecure/i18n";
 import {
+  buildServer,
   cache,
   logger,
-  buildServer,
   WebSocketServerInstanciator
 } from "@nodesecure/server";
 
@@ -51,9 +51,15 @@ export async function start(
     cache.prefix = crypto.randomBytes(4).toString("hex");
   }
 
+  if (enableDeveloperMode) {
+    const link = "http://127.0.0.1:8080";
+    console.log(kleur.magenta().bold(await i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
+    open(link);
+
+    return;
+  }
   const httpServer = buildServer(dataFilePath, {
     port: httpPort,
-    hotReload: enableDeveloperMode,
     runFromPayload,
     projectRootDir: kProjectRootDir,
     componentsDir: kComponentsDir,
