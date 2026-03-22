@@ -72,6 +72,8 @@ export class WebSocketServerInstanciator {
 
         this.#logger.error(`[ws|command.${commandName}](error: ${errorMessage})`);
         this.#logger.debug(error);
+
+        sendSocketResponse(socket, { status: "ERROR", error: errorMessage });
       }
     });
   }

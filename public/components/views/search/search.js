@@ -1,276 +1,311 @@
 // Import Third-party Dependencies
-import { getJSON, NodeSecureDataSet, NodeSecureNetwork } from "@nodesecure/vis-network";
+import { LitElement, html, nothing } from "lit";
+import { getJSON } from "@nodesecure/vis-network";
 
 // Import Internal Dependencies
-import { currentLang, debounce, createDOMElement, parseNpmSpec } from "../../../common/utils.js";
+import { currentLang, debounce, parseNpmSpec } from "../../../common/utils.js";
+import { searchViewStyles } from "./search-view-styles.js";
 
 // CONSTANTS
 const kMinPackageNameLength = 2;
 const kMaxPackageNameLength = 64;
 
-export class SearchView {
-  /**
-   * @type {NodeSecureDataSet}
-   */
-  secureDataSet;
-  /**
-   * @type {NodeSecureNetwork}
-   */
-  nsn;
+class SearchView extends LitElement {
+  #searchDebounced;
+  #selectedVersions = new Map();
+  #currentSearch = "";
 
-  /**
-   * @param {!NodeSecureDataSet} secureDataSet
-   * @param {!NodeSecureNetwork} nsn
-   */
-  constructor(
-    secureDataSet,
-    nsn
-  ) {
-    this.secureDataSet = secureDataSet;
-    this.nsn = nsn;
+  static styles = searchViewStyles;
 
-    this.mount();
-    this.initialize();
+  static properties = {
+    scanning: { type: Boolean },
+    scanSpec: { type: String },
+    loading: { type: Boolean },
+    hint: { type: String },
+    notFound: { type: Boolean },
+    results: { type: Array },
+    cachePackages: { type: Array },
+    recentPackages: { type: Array },
+    _versionsMap: { state: true }
+  };
+
+  constructor() {
+    super();
+    this.scanning = false;
+    this.scanSpec = "";
+    this.loading = false;
+    this.hint = "";
+    this.notFound = false;
+    this.results = [];
+    this.cachePackages = [];
+    this.recentPackages = [];
+    this._versionsMap = new Map();
+    this.#searchDebounced = debounce(() => this.#handleSearchInput(this.#currentSearch), 500);
   }
 
-  mount() {
-    const template = document.getElementById("search-view-template");
-    /** @type {HTMLTemplateElement} */
-    const clone = document.importNode(template.content, true);
-
-    const view = document.getElementById("search--view");
-    view.innerHTML = "";
-    view.appendChild(clone);
+  onScan(spec) {
+    this.scanning = true;
+    this.scanSpec = spec;
+    this.results = [];
+    this.hint = "";
+    this.notFound = false;
+    this.loading = false;
   }
 
-  initialize() {
-    this.searchForm = document.querySelector("#search--view form");
-    this.searchForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-    });
-
-    const input = this.searchForm.querySelector("input");
-    input.addEventListener("input", debounce(async() => {
-      await this.#handleSearchInput(input.value);
-    }, 500));
-
-    this.#initializePackages(
-      ".cache-packages",
-      window.scannedPackageCache
-    );
-    this.#initializePackages(
-      ".recent-packages",
-      window.recentPackageCache
-    );
+  onScanError(message) {
+    this.scanning = false;
+    this.scanSpec = "";
+    this.hint = message;
   }
 
-  #initializePackages(
-    selector,
-    specs
-  ) {
-    const packagesElement = document.querySelector(`#search--view .container ${selector}`);
-    if (!packagesElement) {
-      return;
+  reset() {
+    this.scanning = false;
+    this.scanSpec = "";
+    this.results = [];
+    this.hint = "";
+    this.notFound = false;
+    this.loading = false;
+    this._versionsMap = new Map();
+    this.#selectedVersions = new Map();
+    this.#currentSearch = "";
+
+    const input = this.renderRoot?.querySelector("input");
+    if (input) {
+      input.value = "";
     }
-
-    packagesElement.classList.toggle(
-      "hidden",
-      specs.length === 0
-    );
-    const fragment = document.createDocumentFragment();
-    for (const spec of specs) {
-      fragment.appendChild(this.#cachePackageElement(spec));
-    }
-    packagesElement.appendChild(fragment);
   }
 
-  async #handleSearchInput(
-    packageName
-  ) {
+  async #handleSearchInput(packageName) {
     const lang = currentLang();
-    const formGroup = this.searchForm.querySelector(".form-group");
-
-    document.querySelector(".result-container")?.remove();
-    this.searchForm.querySelector(".hint")?.remove();
+    this.hint = "";
+    this.notFound = false;
+    this.results = [];
 
     if (packageName.length === 0) {
       return;
     }
-    else if (
-      packageName.length < kMinPackageNameLength ||
-      packageName.length > kMaxPackageNameLength
-    ) {
-      const hintElement = document.createElement("div");
-      hintElement.classList.add("hint");
-      hintElement.textContent = window.i18n[lang].search.packageLengthErr;
-      this.searchForm.appendChild(hintElement);
+
+    if (packageName.length < kMinPackageNameLength || packageName.length > kMaxPackageNameLength) {
+      this.hint = window.i18n[lang].search.packageLengthErr;
 
       return;
     }
 
-    const loaderElement = createDOMElement("div", {
-      classList: ["spinner-small", "search-spinner"]
-    });
-    formGroup.appendChild(loaderElement);
+    this.loading = true;
 
-    const { result, count } = await getJSON(`/search/${encodeURIComponent(packageName)}`);
-
-    this.searchForm.querySelector(".spinner-small").remove();
-
-    this.#displaySearchResults({ results: result, count, packageName, lang });
+    try {
+      const { result, count } = await getJSON(`/search/${encodeURIComponent(packageName)}`);
+      if (count === 0) {
+        this.notFound = true;
+      }
+      else {
+        this.results = result;
+      }
+    }
+    finally {
+      this.loading = false;
+    }
   }
 
-  #displaySearchResults({ results, count, packageName, lang }) {
-    const divResultContainer = document.createElement("div");
-    divResultContainer.classList.add("result-container");
-
-    if (count === 0) {
-      const divResultElement = document.createElement("div");
-      divResultElement.classList.add("result-not-found");
-      divResultElement.textContent = window.i18n[lang].search.noPackageFound;
-      divResultContainer.appendChild(divResultElement);
-      this.searchForm.appendChild(divResultContainer);
-
+  async #loadVersions(name) {
+    if (this._versionsMap.has(name)) {
       return;
     }
 
-    for (const { name, version, description } of results) {
-      const divResultElement = this.#createSearchResultElement({
-        name,
-        version,
-        description,
-        packageName
-      });
-      divResultContainer.appendChild(divResultElement);
+    this._versionsMap = new Map(this._versionsMap);
+    this._versionsMap.set(name, "loading");
+
+    try {
+      const versions = await getJSON(`/search-versions/${encodeURIComponent(name)}`);
+      this._versionsMap = new Map(this._versionsMap);
+      this._versionsMap.set(name, versions.reverse());
     }
-
-    this.searchForm.parentNode.insertBefore(divResultContainer, this.searchForm.nextSibling);
-  }
-
-  #createSearchResultElement({ name, version, description, packageName }) {
-    const divResultElement = document.createElement("div");
-    divResultElement.classList.add("result");
-    if (packageName === name) {
-      divResultElement.classList.add("exact");
+    catch {
+      this._versionsMap = new Map(this._versionsMap);
+      this._versionsMap.delete(name);
     }
-
-    const pkgElement = document.createElement("div");
-    pkgElement.classList.add("package-result");
-    const pkgSpanElement = document.createElement("span");
-    pkgSpanElement.textContent = name;
-    pkgSpanElement.addEventListener("click", () => {
-      const packageVersion = divResultElement.querySelector("select option:checked");
-      this.fetchPackage(name, packageVersion.value);
-    }, { once: true });
-    pkgElement.appendChild(pkgSpanElement);
-
-    const pkgDescriptionElement = document.createElement("p");
-    pkgDescriptionElement.textContent = description;
-    pkgDescriptionElement.classList.add("description");
-    pkgElement.appendChild(pkgDescriptionElement);
-    divResultElement.appendChild(pkgElement);
-
-    const selectElement = this.#createVersionSelect(name, version);
-    divResultElement.appendChild(selectElement);
-
-    return divResultElement;
   }
 
-  #createVersionSelect(name, version) {
-    const selectElement = document.createElement("select");
-    const optionElement = document.createElement("option");
-    optionElement.value = version;
-    optionElement.textContent = version;
-    selectElement.appendChild(optionElement);
+  #renderScanOverlay() {
+    const { scanning } = window.i18n[currentLang()].search;
 
-    selectElement.addEventListener("click", async() => {
-      const spinnerOption = "<option value=\"\" disabled class=\"spinner-option\">.</option>";
-      selectElement.insertAdjacentHTML("beforeend", spinnerOption);
-
-      function spinnerOptionSpin() {
-        const spinnerOptionElement = selectElement.querySelector(".spinner-option");
-        spinnerOptionElement.textContent += ".";
-        if (spinnerOptionElement.textContent.length > 3) {
-          spinnerOptionElement.textContent = ".";
-        }
-      }
-
-      const spinIntervalId = setInterval(spinnerOptionSpin, 180);
-
-      try {
-        const versions = await this.fetchPackageVersions(name);
-
-        clearInterval(spinIntervalId);
-        selectElement.querySelector(".spinner-option").remove();
-
-        for (const pkgVersion of versions) {
-          if (pkgVersion === version) {
-            continue;
-          }
-          const optionElement = document.createElement("option");
-          optionElement.value = pkgVersion;
-          optionElement.textContent = pkgVersion;
-          selectElement.appendChild(optionElement);
-        }
-      }
-      catch {
-        clearInterval(spinIntervalId);
-        selectElement.querySelector(".spinner-option").remove();
-      }
-    }, { once: true });
-
-    return selectElement;
+    return html`
+      <div class="scan-overlay">
+        <div class="scan-card">
+          <div class="scan-rings">
+            <div class="scan-ring"></div>
+            <div class="scan-ring"></div>
+            <div class="scan-ring"></div>
+            <div class="scan-icon"><i class="icon-search"></i></div>
+          </div>
+          <div class="scan-spec">${this.scanSpec}</div>
+          <div class="scan-label">
+            ${scanning}
+            <span class="scan-dot">·</span>
+            <span class="scan-dot">·</span>
+            <span class="scan-dot">·</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
-  #cachePackageElement(pkg) {
-    const { name, version, local } = parseNpmSpec(pkg);
-    const pkgElement = document.createElement("div");
-    pkgElement.classList.add("package-cache-result");
-
-    const pkgSpanElement = document.createElement("span");
-    pkgSpanElement.innerHTML = `${name}@${version}${local ? " <b>local</b>" : ""}`;
-    pkgSpanElement.addEventListener("click", () => {
-      window.socket.commands.search(pkg);
-    }, { once: true });
-
-    const removeButton = createDOMElement("button", {
-      classList: ["remove"],
-      text: "x"
-    });
-    removeButton.addEventListener("click", (event) => {
-      event.stopPropagation();
-      window.socket.commands.remove(pkg);
-    }, { once: true });
-
-    pkgElement.append(pkgSpanElement, removeButton);
-
-    return pkgElement;
-  }
-
-  fetchPackage(packageName, version) {
-    const spec = `${packageName}@${version}`;
+  #handleScan() {
+    const spec = this.#currentSearch.trim();
+    if (spec.length === 0) {
+      return;
+    }
     window.socket.commands.search(spec);
   }
 
-  async fetchPackageVersions(packageName) {
-    const versions = await getJSON(`/search-versions/${encodeURIComponent(packageName)}`);
+  #renderHero() {
+    const { heroTitle, emptyHint } = window.i18n[currentLang()].search;
 
-    return versions.reverse();
+    return html`
+      <div class="hero">
+        <i class="icon-search hero-icon"></i>
+        <p class="hero-title">${heroTitle}</p>
+        <p class="hero-subtitle">${emptyHint}</p>
+      </div>
+    `;
   }
 
-  onScan(spec) {
-    const searchViewForm = document.querySelector("#search--view form");
-    searchViewForm?.remove();
-    const containerResult = document.querySelector("#search--view .result-container");
-    containerResult?.remove();
+  #renderVersionSelect(name, latestVersion) {
+    const versionState = this._versionsMap.get(name);
+    const selectedVersion = this.#selectedVersions.get(name) ?? latestVersion;
 
-    const searchViewContainer = document.querySelector("#search--view .container");
-    const scanInfo = document.createElement("div");
-    scanInfo.classList.add("scan-info");
-    scanInfo.textContent = `Scanning ${spec}`;
-    const spinner = document.createElement("div");
-    spinner.classList.add("spinner");
-    searchViewContainer.appendChild(scanInfo);
-    searchViewContainer.appendChild(spinner);
+    if (!versionState || versionState === "loading") {
+      return html`
+        <select
+          class="version-select"
+          ?disabled=${versionState === "loading"}
+          @change=${(event) => this.#selectedVersions.set(name, event.target.value)}
+        >
+          <option value=${latestVersion}>${latestVersion}</option>
+        </select>
+      `;
+    }
+
+    return html`
+      <select
+        class="version-select"
+        @change=${(event) => this.#selectedVersions.set(name, event.target.value)}
+      >
+        ${versionState.map((version) => html`
+          <option value=${version} ?selected=${version === selectedVersion}>${version}</option>
+        `)}
+      </select>
+    `;
+  }
+
+  #renderResult({ name, version, description }) {
+    const isExact = this.#currentSearch === name;
+
+    return html`
+      <div
+        class="result ${isExact ? "exact" : ""}"
+        @mouseenter=${() => this.#loadVersions(name)}
+      >
+        <div class="result-body">
+          <span class="result-name" @click=${() => {
+            const selectedVersion = this.#selectedVersions.get(name) ?? version;
+            window.socket.commands.search(`${name}@${selectedVersion}`);
+          }}>${name}</span>
+          ${description ? html`<span class="result-description">${description}</span>` : nothing}
+        </div>
+        ${this.#renderVersionSelect(name, version)}
+      </div>
+    `;
+  }
+
+  #renderCacheSection(title, packages) {
+    if (packages.length === 0) {
+      return nothing;
+    }
+
+    return html`
+      <div class="cache-section">
+        <h2 class="cache-title">${title}</h2>
+        ${packages.map((pkg) => {
+          const { name, version, local } = parseNpmSpec(pkg);
+
+          return html`
+            <div class="cache-item" @click=${() => window.socket.commands.search(pkg)}>
+              <span class="cache-item-name">
+                ${name}@${version}${local ? html` <b>local</b>` : nothing}
+              </span>
+              <button
+                class="cache-remove"
+                @click=${(event) => {
+                  event.stopPropagation();
+                  window.socket.commands.remove(pkg);
+                }}
+              >×</button>
+            </div>
+          `;
+        })}
+      </div>
+    `;
+  }
+
+  render() {
+    if (!window.i18n) {
+      return nothing;
+    }
+
+    if (this.scanning) {
+      return this.#renderScanOverlay();
+    }
+
+    const { search: i18n } = window.i18n[currentLang()];
+    const hasResults = this.results.length > 0;
+
+    return html`
+      <div class="container">
+        ${this.#renderHero()}
+
+        <form @submit=${(event) => event.preventDefault()}>
+          <div class="search-bar">
+            <input
+              type="text"
+              id="package"
+              name="package"
+              placeholder=${i18n.registryPlaceholder}
+              autocomplete="off"
+              @keydown=${(event) => {
+                event.stopPropagation();
+                if (event.key === "Enter") {
+                  this.#handleScan();
+                }
+              }}
+              @input=${(event) => {
+                this.#currentSearch = event.target.value;
+                this.#searchDebounced();
+              }}
+            >
+            ${this.loading ? html`<div class="spinner-small"></div>` : nothing}
+            <button class="scan-button" @click=${() => this.#handleScan()}>
+              ${i18n.scan}
+            </button>
+          </div>
+        </form>
+
+        ${this.hint ? html`<div class="hint">${this.hint}</div>` : nothing}
+        ${this.notFound ? html`<div class="not-found">${i18n.noPackageFound}</div>` : nothing}
+
+        ${hasResults ? html`
+          <div class="results">
+            ${this.results.map((result) => this.#renderResult(result))}
+          </div>
+        ` : nothing}
+
+        ${hasResults ? nothing : html`
+          ${this.#renderCacheSection(i18n.recentPackages, this.recentPackages)}
+          ${this.#renderCacheSection(i18n.packagesCache, this.cachePackages)}
+        `}
+      </div>
+    `;
   }
 }
+
+customElements.define("search-view", SearchView);
