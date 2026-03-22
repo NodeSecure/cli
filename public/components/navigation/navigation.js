@@ -35,7 +35,8 @@ export class ViewNavigation {
       const isTargetPopup = event.target.id === "popup--background";
       const isPopupOpened = document.querySelector("#popup--background.show");
       const isTargetInput = event.target.tagName === "INPUT";
-      if (isTargetPopup || isWikiOpen || isTargetInput || isPopupOpened) {
+      const isSearchCommandOpen = Boolean(document.querySelector("search-command")?.open);
+      if (isTargetPopup || isWikiOpen || isTargetInput || isPopupOpened || isSearchCommandOpen) {
         return;
       }
 
@@ -74,11 +75,6 @@ export class ViewNavigation {
     document.getElementById(menuName).classList.remove("hidden");
     selectedNav.classList.add("active");
     this.setAnchor(menuName);
-
-    const searchbar = document.getElementById("searchbar");
-    if (searchbar) {
-      searchbar.style.display = menuName === "network--view" ? "flex" : "none";
-    }
 
     this.activeMenu = selectedNav;
   }

@@ -159,7 +159,6 @@ const ui = {
       thirdPartyTools: "أدوات الطرف الثالث"
     }
   },
-  searchbar_placeholder: "بحث",
   loading_nodes: "... جاري تحميل العقد ...",
   please_wait: "(يرجى الانتظار)",
   popup: {

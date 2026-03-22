@@ -9,6 +9,7 @@ import "./components/popup/popup.js";
 import "./components/locker/locker.js";
 import "./components/legend/legend.js";
 import "./components/locked-navigation/locked-navigation.js";
+import "./components/search-command/search-command.js";
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import { SearchView } from "./components/views/search/search.js";
@@ -61,13 +62,8 @@ async function onSocketPayload(event) {
   window.activePackage = name + "@" + version;
 
   await init({ navigateToNetworkView: true });
-  initSearchNav(payload, {
-    initFromZero: false,
-    searchOptions: {
-      nsn,
-      secureDataSet
-    }
-  });
+  initSearchNav(payload, { initFromZero: false });
+  dispatchSearchCommandInit();
 }
 
 async function onSocketInitOrReload(event) {
@@ -85,12 +81,8 @@ async function onSocketInitOrReload(event) {
     window.recentPackageCache
   );
 
-  initSearchNav(cache, {
-    searchOptions: {
-      nsn,
-      secureDataSet
-    }
-  });
+  initSearchNav(cache, {});
+  dispatchSearchCommandInit();
   searchview.mount();
   searchview.initialize();
 
@@ -107,13 +99,23 @@ async function onSocketInitOrReload(event) {
     await init();
 
     // FIXME: initSearchNav is called twice, we need to fix this
-    initSearchNav(cache, {
-      searchOptions: {
-        nsn,
-        secureDataSet
-      }
-    });
+    initSearchNav(cache, {});
+    dispatchSearchCommandInit();
   }
+}
+
+function dispatchSearchCommandInit() {
+  if (!nsn || !secureDataSet) {
+    return;
+  }
+
+  window.dispatchEvent(new CustomEvent(EVENTS.SEARCH_COMMAND_INIT, {
+    detail: {
+      network: nsn,
+      linker: secureDataSet.linker,
+      packages: secureDataSet.packages
+    }
+  }));
 }
 
 async function init(options = {}) {

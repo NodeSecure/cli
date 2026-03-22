@@ -161,7 +161,6 @@ const ui = {
       thirdPartyTools: "Üçüncü taraf araçlar"
     }
   },
-  searchbar_placeholder: "Ara",
   loading_nodes: "... Düğümler yükleniyor ...",
   please_wait: "(Lütfen bekleyin)",
   popup: {

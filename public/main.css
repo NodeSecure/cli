@@ -92,3 +92,28 @@ main>section.content .view {
 .hidden {
   display: none !important;
 }
+
+#search-shortcut-hint {
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  z-index: 50;
+  pointer-events: none;
+}
+
+#search-shortcut-hint kbd {
+  background: rgb(0 0 0 / 8%);
+  border: 1px solid rgb(0 0 0 / 15%);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-family: mononoki, monospace;
+  color: rgb(0 0 0 / 45%);
+  letter-spacing: 0.5px;
+}
+
+body.dark #search-shortcut-hint kbd {
+  background: rgb(255 255 255 / 8%);
+  border-color: rgb(255 255 255 / 15%);
+  color: rgb(255 255 255 / 40%);
+}
