@@ -1,9 +1,11 @@
 // Import Internal Dependencies
 import { createDOMElement, parseNpmSpec } from "../common/utils";
-import { SearchBar } from "../components/searchbar/searchbar";
+
+// CONSTANTS
+const kSearchShortcut = navigator.userAgent.includes("Mac") ? "⌘K" : "Ctrl+K";
 
 export function initSearchNav(data, options) {
-  const { initFromZero = true, searchOptions = null } = options;
+  const { initFromZero = true } = options;
 
   const searchNavElement = document.getElementById("search-nav");
   if (!searchNavElement) {
@@ -17,28 +19,16 @@ export function initSearchNav(data, options) {
     );
   }
 
-  if (searchOptions !== null) {
-    const { nsn, secureDataSet } = searchOptions;
-
-    if (window.searchbar) {
-      console.log("[SEARCH-NAV] cleanup searchbar");
-      document.getElementById("searchbar")?.remove();
-    }
-
-    const searchElement = document.getElementById("searchbar-content");
-    searchNavElement.appendChild(
-      searchElement.content.cloneNode(true)
+  if (document.getElementById("search-shortcut-hint") === null) {
+    document.body.appendChild(
+      createDOMElement("div", {
+        classList: ["search-shortcut-hint"],
+        attributes: { id: "search-shortcut-hint" },
+        childs: [
+          createDOMElement("kbd", { text: kSearchShortcut })
+        ]
+      })
     );
-
-    const searchBarPackagesContainer = document.getElementById("package-list");
-    for (const info of secureDataSet.packages) {
-      const content = `<p>${info.flags} ${info.name}</p><b>${info.version}</b>`;
-      searchBarPackagesContainer.insertAdjacentHTML(
-        "beforeend",
-        `<div class="package hide" data-value="${info.id}">${content}</div>`
-      );
-    }
-    window.searchbar = new SearchBar(nsn, secureDataSet.linker);
   }
 }
 

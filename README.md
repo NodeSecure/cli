@@ -136,24 +136,20 @@ Our back-end scanner package is available [here](https://github.com/NodeSecure/s
 
 Flags and emojis legends are documented [here](https://github.com/NodeSecure/flags/blob/main/FLAGS.md).
 
-## Searchbar filters
+## Search command
 
-Since version **0.6.0**, the UI includes a brand new search bar that allows you to search anything within the tree (graph) using multiple criteria (filters). The currently available filters are:
+Press `Cmd+K` (macOS) or `Ctrl+K` (Windows/Linux) from the network view to open the search command. It lets you filter the dependency graph using one or more criteria simultaneously.
 
-- package (**the default filter if there is none**).
-- version (take a semver range as an argument).
-- flag (list of available flags in the current payload/tree).
-- license (list of available licenses in the current payload/tree).
-- author (author name/email/url).
-- ext (list of available file extensions in the current payload/tree).
-- builtin (available Node.js core module name).
-- size (see [here](https://github.com/NodeSecure/size-satisfies#usage-example)).
+Type a package name directly to search, or prefix with a filter name followed by `:` to use a specific filter:
 
-Exemple of query:
-
-```
-version: >=1.2 | 2, ext: .js, builtin: fs
-```
+- `package` — **default when no prefix is given**, matches by name.
+- `version` — semver range (e.g. `>=1.2.0`, `^2.0.0`).
+- `flag` — select from the list of flags present in the current tree.
+- `license` — SPDX identifier (e.g. `MIT`, `Apache-2.0`).
+- `author` — author name or email.
+- `ext` — file extension present in the package (e.g. `.js`, `.ts`).
+- `builtin` — Node.js core module used by the package (e.g. `fs`, `path`).
+- `size` — size range (see [size-satisfies](https://github.com/NodeSecure/size-satisfies#usage-example), e.g. `>50kb`, `10kb..200kb`).
 
 ## FAQ
 
