@@ -27,10 +27,16 @@ type CachedResponse = {
   cache: PayloadsList;
 };
 
+type ErrorResponse = {
+  status: "ERROR";
+  error: string;
+};
+
 export type WebSocketResponse =
   | PayloadResponse
   | CachedResponse
-  | ScanResponse;
+  | ScanResponse
+  | ErrorResponse;
 
 export type WebSocketMessage = {
   commandName: "SEARCH" | "REMOVE";

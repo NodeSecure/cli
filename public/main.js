@@ -12,7 +12,7 @@ import "./components/locked-navigation/locked-navigation.js";
 import "./components/search-command/search-command.js";
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
-import { SearchView } from "./components/views/search/search.js";
+import "./components/views/search/search.js";
 import { NetworkNavigation } from "./core/network-navigation.js";
 import { i18n } from "./core/i18n.js";
 import { initSearchNav } from "./core/search-nav.js";
@@ -27,6 +27,8 @@ let searchview;
 let packageInfoOpened = false;
 
 document.addEventListener("DOMContentLoaded", async() => {
+  searchview = document.querySelector("search-view");
+
   window.scannedPackageCache = [];
   window.recentPackageCache = [];
   window.locker = null;
@@ -34,6 +36,9 @@ document.addEventListener("DOMContentLoaded", async() => {
   window.i18n = await new i18n().fetch();
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
+
+  // update searchview after window.i18n is set
+  searchview.requestUpdate();
 
   await init();
   window.dispatchEvent(
@@ -51,6 +56,11 @@ document.addEventListener("DOMContentLoaded", async() => {
     const data = event.detail;
 
     searchview.onScan(data.spec);
+  });
+  socket.addEventListener("ERROR", (event) => {
+    const data = event.detail;
+
+    searchview.onScanError(data.error);
   });
 });
 
@@ -83,8 +93,9 @@ async function onSocketInitOrReload(event) {
 
   initSearchNav(cache, {});
   dispatchSearchCommandInit();
-  searchview.mount();
-  searchview.initialize();
+  searchview.cachePackages = window.scannedPackageCache;
+  searchview.recentPackages = window.recentPackageCache;
+  searchview.reset();
 
   const nsnActivePackage = secureDataSet.linker.get(0);
   const nsnRootPackage = nsnActivePackage ?
@@ -133,8 +144,6 @@ async function init(options = {}) {
     window.navigation.hideMenu("home--view");
     window.navigation.setNavByName("search--view");
 
-    searchview ??= new SearchView(null, null);
-
     return;
   }
 
@@ -160,7 +169,6 @@ async function init(options = {}) {
   legend.isVisible = window.settings.config.showFriendlyDependencies;
   window.legend = legend;
   homeView = new HomeView(secureDataSet, nsn);
-  searchview ??= new SearchView(secureDataSet, nsn);
 
   window.addEventListener(EVENTS.PACKAGE_INFO_CLOSED, () => {
     window.networkNav.currentNodeParams = null;

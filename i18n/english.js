@@ -223,16 +223,15 @@ const ui = {
     locked: "locked"
   },
   search: {
-    "File extensions": "File extensions",
-    "Node.js core modules": "Node.js core modules",
-    "Available licenses": "Available licenses",
-    "Available flags": "Available flags",
-    default: "Search options",
     recentPackages: "Recent packages",
     packagesCache: "Packages available in the cache",
     noPackageFound: "No package found",
     packageLengthErr: "Package name must be between 2 and 64 characters.",
-    registryPlaceholder: "Search packages"
+    registryPlaceholder: "Package name or spec (e.g. fastify@5.8.0)",
+    scanning: "Scanning",
+    heroTitle: "Scan a package",
+    emptyHint: "Search the npm registry or enter a spec directly to scan.",
+    scan: "Scan"
   },
   search_command: {
     placeholder: "Search packages...",
