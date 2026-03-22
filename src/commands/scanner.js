@@ -195,7 +195,7 @@ function initLogger(spec, verbose = true) {
       i18n.getTokenSync("cli.stat",
         kleur.blue().bold("verbose"),
         stat.name,
-        kleur.cyan().bold(formatMs(stat.executionTime))
+        colorExecutionTime(stat.executionTime)
       )));
     startSpinners();
   });
@@ -245,6 +245,20 @@ function initLogger(spec, verbose = true) {
 
 function formatMs(time) {
   return ms(Number(time.toFixed(2)));
+}
+
+function colorExecutionTime(timeMs) {
+  const formatted = formatMs(timeMs);
+  if (timeMs <= 1_000) {
+    return kleur.green().bold(formatted);
+  }
+  else if (timeMs <= 5_000) {
+    return kleur.cyan().bold(formatted);
+  }
+  else if (timeMs <= 30_000) {
+    return kleur.yellow().bold(formatted);
+  }
+  return kleur.red().bold(formatted);
 }
 
 function stopSpinners() {
