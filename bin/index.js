@@ -63,7 +63,7 @@ defaultScannerCommand("from <spec>")
 defaultScannerCommand("auto [spec]", { includeOutput: false, strategy: vulnera.strategies.GITHUB_ADVISORY })
   .describe(i18n.getTokenSync("cli.commands.auto.desc"))
   .option("-k, --keep", i18n.getTokenSync("cli.commands.auto.option_keep"), false)
-  .option("-d, --developer", i18n.getTokenSync("cli.commands.open.option_developer"), false)
+  .option("--developer", i18n.getTokenSync("cli.commands.open.option_developer"), false)
   .action(async(spec, options) => {
     checkNodeSecureToken();
     await commands.scanner.auto(spec, options);
