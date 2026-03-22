@@ -161,7 +161,6 @@ const ui = {
       thirdPartyTools: "Third-party tools"
     }
   },
-  searchbar_placeholder: "Search",
   loading_nodes: "... Loading nodes ...",
   please_wait: "(Please wait)",
   popup: {
@@ -234,6 +233,37 @@ const ui = {
     noPackageFound: "No package found",
     packageLengthErr: "Package name must be between 2 and 64 characters.",
     registryPlaceholder: "Search packages"
+  },
+  search_command: {
+    placeholder: "Search packages...",
+    placeholder_filter_hint: "or use",
+    placeholder_refine: "Add another filter...",
+    section_filters: "Filters",
+    section_flags: "Flags - click to toggle",
+    section_size: "Size - select a preset or type above",
+    section_version: "Version - select a preset or type above",
+    section_packages: "Packages",
+    section_licenses: "Available licenses",
+    section_extensions: "File extensions",
+    section_builtins: "Node.js core modules",
+    section_authors: "Authors",
+    hint_size: "e.g. >50kb, 10kb..200kb",
+    hint_version: "e.g. ^1.0.0, >=2.0.0",
+    empty: "No results found",
+    nav_navigate: "navigate",
+    nav_select: "select",
+    nav_remove: "remove filter",
+    nav_close: "close",
+    filter_hints: {
+      package: "name",
+      version: "semver range",
+      flag: "click to select",
+      license: "SPDX identifier",
+      author: "name or email",
+      ext: "file extension",
+      builtin: "node.js module",
+      size: "e.g. >50kb"
+    }
   },
   legend: {
     default: "The package is fine.",

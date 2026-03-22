@@ -9,5 +9,6 @@ export const EVENTS = {
   MODAL_CLOSED: "modal-closed",
   MODAL_OPENED: "modal-opened",
   NETWORK_VIEW_HID: "network-view-hid",
-  NETWORK_VIEW_SHOWED: "network-view-showed"
+  NETWORK_VIEW_SHOWED: "network-view-showed",
+  SEARCH_COMMAND_INIT: "search-command-init"
 };

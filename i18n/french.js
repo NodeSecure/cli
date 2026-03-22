@@ -161,7 +161,6 @@ const ui = {
       thirdPartyTools: "Outils tiers"
     }
   },
-  searchbar_placeholder: "Recherche",
   loading_nodes: "... Chargement des noeuds ...",
   please_wait: "(Merci de patienter)",
   popup: {
@@ -234,6 +233,37 @@ const ui = {
     noPackageFound: "Aucun package trouvé",
     packageLengthErr: "Le nom du package doit être compris entre 2 et 64 caractères.",
     registryPlaceholder: "Recherche de packages"
+  },
+  search_command: {
+    placeholder: "Rechercher des packages...",
+    placeholder_filter_hint: "ou utiliser",
+    placeholder_refine: "Ajouter un autre filtre...",
+    section_filters: "Filtres",
+    section_flags: "Flags - cliquer pour activer",
+    section_size: "Taille - choisir un préréglage ou saisir ci-dessus",
+    section_version: "Version - choisir un préréglage ou saisir ci-dessus",
+    section_packages: "Packages",
+    section_licenses: "Licences disponibles",
+    section_extensions: "Extensions de fichiers",
+    section_builtins: "Modules Node.js natifs",
+    section_authors: "Auteurs",
+    hint_size: "ex. >50kb, 10kb..200kb",
+    hint_version: "ex. ^1.0.0, >=2.0.0",
+    empty: "Aucun résultat trouvé",
+    nav_navigate: "naviguer",
+    nav_select: "sélectionner",
+    nav_remove: "supprimer le filtre",
+    nav_close: "fermer",
+    filter_hints: {
+      package: "nom",
+      version: "range semver",
+      flag: "cliquer pour sélectionner",
+      license: "identifiant SPDX",
+      author: "nom ou email",
+      ext: "extension de fichier",
+      builtin: "module node.js",
+      size: "ex. >50kb"
+    }
   },
   legend: {
     default: "Rien à signaler.",

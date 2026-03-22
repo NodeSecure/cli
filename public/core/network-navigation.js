@@ -131,7 +131,8 @@ export class NetworkNavigation {
       const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
       const isTargetPopup = event.target.id === "popup--background";
       const isTargetInput = event.target.tagName === "INPUT";
-      if (isNetworkViewHidden || isWikiOpen || isTargetPopup || isTargetInput) {
+      const isSearchCommandOpen = Boolean(document.querySelector("search-command")?.open);
+      if (isNetworkViewHidden || isWikiOpen || isTargetPopup || isTargetInput || isSearchCommandOpen) {
         return;
       }
 
