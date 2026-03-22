@@ -185,13 +185,13 @@ export class Icon extends LitElement {
       width: 1.2em;
       height: 1em;
       margin-right: 0.2em;
-      margin-right: 0.2em;
       display: inline-block;
     }
+  
     svg {
       width: 100%;
       height: 100%;
-      fill: currentColor;
+      fill: currentcolor;
     }
   `;
 

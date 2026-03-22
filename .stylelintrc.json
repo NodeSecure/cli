@@ -1,6 +1,10 @@
 {
+  "plugins": [
+    "@stylistic/stylelint-plugin"
+  ],
   "extends": "stylelint-config-standard",
   "rules": {
+    "@stylistic/block-opening-brace-space-before": "always",
     "selector-class-pattern": null,
     "selector-id-pattern": null,
     "font-family-no-missing-generic-family-keyword": null,
@@ -9,5 +13,13 @@
   "ignoreFiles": [
     "**/dist/**",
     "**/coverage/**"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "**/*.js"
+      ],
+      "customSyntax": "postcss-lit"
+    }
   ]
 }

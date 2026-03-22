@@ -10,7 +10,7 @@ import { scrollbarStyle } from "../../../../common/scrollbar-style.js";
 
 class Files extends LitElement {
   static styles = [scrollbarStyle, css`
-  :host{
+  :host {
     display: block;
     overflow: hidden auto;
     height: calc(100vh - 315px);

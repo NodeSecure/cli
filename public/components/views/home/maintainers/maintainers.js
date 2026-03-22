@@ -20,7 +20,7 @@ export class Maintainers extends LitElement {
   margin-bottom: 20px;
 }
 
-.title{
+.title {
   height: 34px;
   display: flex;
   background: rgb(55 34 175);
@@ -44,10 +44,10 @@ export class Maintainers extends LitElement {
   width: fit-content;
   transform: scale(2);
   display: flex;
-  padding: 0px;
+  padding: 0;
   justify-content: center;
   align-items: center;
-  margin: 0px;
+  margin: 0;
   margin-right: 6px;
   margin-left: 15px;
   margin-top: 18px;
@@ -60,10 +60,10 @@ export class Maintainers extends LitElement {
 }
 
 .link nsecure-icon {
-  color: rgb(25, 118, 210);
+  color: rgb(25 118 210);
 }
 
-.count{
+.count {
 width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -86,7 +86,7 @@ width: 16px;
 }
 
 .name {
-  margin: 0px;
+  margin: 0;
 }
 
 .home--maintainers>.person {
@@ -110,7 +110,7 @@ width: 16px;
   background: var(--dark-theme-primary-color);
 }
 
-.home--maintainers> .highlighted{
+.home--maintainers> .highlighted {
   background: linear-gradient(to bottom, rgb(230 240 250) 0%, rgb(220 235 245) 100%);
 }
 
@@ -380,7 +380,7 @@ export class PopupMaintainer extends LitElement {
   background-color: var(--primary);
 }
 
-.maintainers--popup>.header>.icons>a > nsecure-icon,.maintainers--popup>.header>.icons>button > nsecure-icon{
+.maintainers--popup>.header>.icons>a > nsecure-icon,.maintainers--popup>.header>.icons>button > nsecure-icon {
   margin: 0;
   transform: translateX(1px);
 }
@@ -444,24 +444,24 @@ export class PopupMaintainer extends LitElement {
   color: white !important;
 }
 
-.maintainers--popup>ul li>p{
+.maintainers--popup>ul li>p {
   color: #234c99;
 }
 
-.dark>ul li>p{
+.dark>ul li>p {
   color: #9ca6b7 !important;
 }
 
-.maintainers--popup>ul li>span{
+.maintainers--popup>ul li>span {
   color: #2470b3;
   margin-left: 10px;
 }
 
-.dark>ul li>span{
+.dark>ul li>span {
   color: var(--dark-theme-secondary-color) !important;
 }
 
-.maintainers--popup>ul li> button{
+.maintainers--popup>ul li> button {
   border: none;
   margin-left: auto;
   margin-right: 13px;
@@ -476,7 +476,7 @@ export class PopupMaintainer extends LitElement {
   box-shadow: 2px 2px 6px 0 #00000012;
 }
 
-.maintainers--popup>ul li> button nsecure-icon{
+.maintainers--popup>ul li> button nsecure-icon {
   margin: 0;
   transform: translateX(4px);
 }
