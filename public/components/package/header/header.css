@@ -42,7 +42,7 @@ div.package-header>.package-name>.info {
 
 div.package-header>.package-name>.info-menu {
   background: #f7f7f7;
-  padding: 16px;
+  padding: 14px;
   border: none;
   border-radius: 6px;
   position: absolute;
@@ -61,6 +61,11 @@ div.package-header>.package-name>.info-menu>.info-menu-title {
 div.package-header>.package-name>.info-menu>a {
   display: block;
   margin-bottom: 4px;
+  padding: 2px;
+}
+
+div.package-header>.package-name>.info-menu>a:hover {
+  background: rgb(0 0 0 / 4%);
 }
 
 /**
