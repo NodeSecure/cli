@@ -48,7 +48,7 @@
 }
 
 @media screen and (width <= 1600px) {
-  .documentation--warnings .documentation--navigation  {
+  .documentation--warnings .documentation--navigation {
     width: auto !important;
   }
 

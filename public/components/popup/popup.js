@@ -8,7 +8,7 @@ import { EVENTS } from "../../core/events";
 class Popup extends LitElement {
   static styles = css`
 
-:host{
+:host {
   z-index: 50;
 }
 
@@ -35,7 +35,7 @@ section#popup--background {
   transition: opacity 0.35s ease-in, visibility 0ms ease-in 0ms ;
 }
 
-.hidden{
+.hidden {
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.35s ease-in, visibility 0ms ease-in 0.35s;

@@ -72,7 +72,7 @@ div.package-header>.package-name>.info-menu>a:hover {
  * DESC
  */
 
-div.package-header>.package-description{
+div.package-header>.package-description {
   display: flex;
   justify-content: space-between;
 }

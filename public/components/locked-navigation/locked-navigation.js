@@ -16,7 +16,7 @@ export class LockedNavigation extends LitElement {
   gap: 10px;
 }
 
-.btn{
+.btn {
   width: 0;
   height: 0;
   background: none;
@@ -26,23 +26,23 @@ export class LockedNavigation extends LitElement {
   border-radius: 5px;
 }
 
-.next{
+.next {
   border-top: 12px solid transparent;
   border-bottom: 12px solid transparent;
   border-left: 16px solid #af2222;
 }
 
-.prev{
+.prev {
   border-top: 12px solid transparent;
   border-bottom: 12px solid transparent;
   border-right: 16px solid #af2222;
 }
 
-.next:hover{
+.next:hover {
   border-left-color: #cb3d3d;
 }
 
-.prev:hover{
+.prev:hover {
   border-right-color: #cb3d3d;
 }
 `;

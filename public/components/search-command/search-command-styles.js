@@ -8,7 +8,7 @@ export const searchCommandStyles = [
   scrollbarStyle,
   css`
 :host {
-  --sc-bg: #ffffff;
+  --sc-bg: #fff;
   --sc-bg-item: #f8fafc;
   --sc-bg-hover: #eff4ff;
   --sc-backdrop: rgb(0 0 0 / 40%);

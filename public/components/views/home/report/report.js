@@ -28,6 +28,7 @@ class PopupReport extends LitElement {
 .light >.title {
   background: #d3d3d387;
 }
+
 .dark >.title {
   background: var(--dark-theme-secondary-color);
 }

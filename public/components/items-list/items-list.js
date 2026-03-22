@@ -9,13 +9,12 @@ import "../expandable/expandable.js";
 
 class ItemsList extends LitElement {
   static styles = css`
-.list-item{
+.list-item {
   display: flex;
-  flex-wrap: wrap;
+  flex-flow: column wrap;
   margin-top: 5px;
   margin-bottom: 5px;
   margin-left: -5px;
-  flex-direction: column;
   padding: 0;
   list-style: none;
 }
@@ -39,7 +38,6 @@ justify-content: start;
   letter-spacing: 0.7px;
   display: flex;
   align-items: center;
-  justify-content: center;
   flex-grow: 1;
   color: #CFD8DC;
   margin-left: 5px;

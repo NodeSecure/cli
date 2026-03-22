@@ -51,7 +51,7 @@ p {
   letter-spacing: 1px;
 }
 
-.vuln-strategy .strategy> nsecure-icon{
+.vuln-strategy .strategy> nsecure-icon {
   margin-right: 4px;
   transform: translateY(2px);
 }
@@ -129,7 +129,7 @@ p {
 }
 
 .packages-vuln .vuln .links> nsecure-icon {
-  whith: 16px;
+  width: 16px;
   flex: 0 0 auto;
   margin-right: 5px;
   color: #00b8ead1;
