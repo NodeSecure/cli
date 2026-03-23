@@ -258,6 +258,7 @@ function colorExecutionTime(timeMs) {
   else if (timeMs <= 30_000) {
     return kleur.yellow().bold(formatted);
   }
+
   return kleur.red().bold(formatted);
 }
 
