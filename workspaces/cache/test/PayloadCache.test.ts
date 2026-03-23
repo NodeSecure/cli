@@ -16,6 +16,7 @@ import {
   type PayloadManifest,
   type BasePersistanceProvider
 } from "../src/index.ts";
+import type { DateProvider } from "../src/DateProvider.ts";
 
 // Types
 type MockedFs = {
@@ -28,7 +29,6 @@ interface MockedStorageProvider {
   remove: ReturnType<typeof mock.fn<() => Promise<void>>>;
 }
 
-// Helpers
 function createMockFs(): MockedFs {
   return {
     readFile: mock.fn<typeof fs.readFile>(),
@@ -70,7 +70,7 @@ function createMockMetadata(
     spec,
     scanType: "cwd",
     locationOnDisk: PayloadCache.getPathBySpec(spec),
-    lastUsedAt: Date.now(),
+    lastUsedAt: 0,
     integrity: null,
     ...options
   };
@@ -439,15 +439,21 @@ describe("PayloadCache", () => {
 
     it("should update lastUsedAt for existing spec", async() => {
       const payload = createMockPayload("express", "4.18.2");
+      let currentTime = 1000;
+      const dateProvider: DateProvider = {
+        now: () => currentTime,
+        oneYearAgo: () => new Date(currentTime - (365 * 24 * 60 * 60 * 1000))
+      };
 
       const cache = new PayloadCache({
         fsProvider: mockFs as unknown as typeof fs,
+        dateProvider,
         storageProvider: () => mockStorageProvider as unknown as BasePersistanceProvider<PayloadMetadata>
       });
 
       await cache.save(payload);
 
-      const beforeUpdate = Date.now();
+      currentTime = 2000;
       cache.updateLastUsedAt("express@4.18.2");
 
       // Wait for microtask
@@ -457,7 +463,7 @@ describe("PayloadCache", () => {
 
       const items = [...cache];
       assert.equal(items.length, 1);
-      assert.ok(items[0].lastUsedAt >= beforeUpdate);
+      assert.equal(items[0].lastUsedAt, 2000);
     });
 
     it("should do nothing for non-existing spec", () => {

@@ -33,6 +33,7 @@ export interface PayloadSaveOptions {
 
 export interface PayloadCacheOptions {
   fsProvider?: typeof fs;
+  dateProvider?: DateProvider;
   storageProvider?: (spec: string) => BasePersistanceProvider<PayloadMetadata>;
 }
 ```

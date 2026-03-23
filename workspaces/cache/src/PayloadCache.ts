@@ -12,6 +12,10 @@ import {
   type BasePersistanceProvider,
   FilePersistanceProvider
 } from "./FilePersistanceProvider.ts";
+import {
+  type DateProvider,
+  SystemDateProvider
+} from "./DateProvider.ts";
 
 // CONSTANTS
 export type PayloadStorageMap = Map<string, PayloadMetadata>;
@@ -42,6 +46,7 @@ export interface PayloadSaveOptions {
 
 export interface PayloadCacheOptions {
   fsProvider?: typeof fs;
+  dateProvider?: DateProvider;
   storageProvider?: (spec: string) => BasePersistanceProvider<PayloadMetadata>;
 }
 
@@ -66,13 +71,20 @@ export class PayloadCache {
   }
 
   #fsProvider: typeof fs;
+  #dateProvider: DateProvider;
   #manifest: PayloadManifestCache;
   #storage = new Map<string, PayloadMetadata>();
 
   constructor(
     options: PayloadCacheOptions = {}
   ) {
-    this.#fsProvider = options.fsProvider || fs;
+    const {
+      fsProvider = fs,
+      dateProvider = new SystemDateProvider()
+    } = options;
+
+    this.#fsProvider = fsProvider;
+    this.#dateProvider = dateProvider;
     this.#manifest = new PayloadManifestCache(options);
   }
 
@@ -167,7 +179,7 @@ export class PayloadCache {
         spec,
         scanType,
         locationOnDisk: filePath,
-        lastUsedAt: Date.now(),
+        lastUsedAt: this.#dateProvider.now(),
         integrity: payload.rootDependency.integrity
       }
     );
@@ -186,7 +198,7 @@ export class PayloadCache {
   ): void {
     const metadata = this.#storage.get(spec);
     if (metadata) {
-      metadata.lastUsedAt = Date.now();
+      metadata.lastUsedAt = this.#dateProvider.now();
       this.#manifest.lazyPersistOnDisk(
         this.#storage,
         { dirtySpecs: [spec] }
