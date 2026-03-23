@@ -98,8 +98,11 @@ async function onSocketInitOrReload(event) {
     await init();
   }
 
-  initSearchNav(cache);
-  searchview.cachedSpecs = cache.filter((metadata) => metadata.spec !== window.activePackage);
+  const navCache = cache.slice(0, 3);
+  const overflowCache = cache.slice(3);
+
+  initSearchNav(navCache);
+  searchview.cachedSpecs = overflowCache;
   searchview.reset();
   dispatchSearchCommandInit();
 }
