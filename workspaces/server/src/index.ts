@@ -27,14 +27,20 @@ export interface BuildServerOptions {
     english: NestedStringRecord;
     french: NestedStringRecord;
   };
+  middleware?: (
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    next: () => void
+  ) => void;
 }
 
 export async function buildServer(
-  dataFilePath: string,
+  dataFilePath: string | undefined,
   options: BuildServerOptions
 ): Promise<{
   httpServer: http.Server;
   cache: PayloadCache;
+  viewBuilder: ViewBuilder;
 }> {
   const {
     runFromPayload = true,
@@ -54,7 +60,7 @@ export async function buildServer(
     viewBuilder,
     cache
   };
-  if (runFromPayload) {
+  if (runFromPayload && dataFilePath !== undefined) {
     const payloadStr = await fs.readFile(dataFilePath, "utf-8");
     const payload = JSON.parse(payloadStr) as Payload;
 
@@ -75,13 +81,22 @@ export async function buildServer(
   );
   const httpServer = http.createServer((req, res) => {
     context.run(store, () => {
-      serving(req, res, () => apiRouter.lookup(req, res));
+      function serve() {
+        serving(req, res, () => apiRouter.lookup(req, res));
+      }
+      if (options.middleware) {
+        options.middleware(req, res, serve);
+      }
+      else {
+        serve();
+      }
     });
   });
 
   return {
     httpServer,
-    cache
+    cache,
+    viewBuilder
   };
 }
 

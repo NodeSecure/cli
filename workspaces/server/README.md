@@ -34,7 +34,7 @@ import {
 
 const kDataFilePath = path.join(process.cwd(), "nsecure-result.json");
 
-const { httpServer, cache } = await buildServer(kDataFilePath, {
+const { httpServer, cache, viewBuilder } = await buildServer(kDataFilePath, {
   projectRootDir: path.join(import.meta.dirname, "..", ".."),
   componentsDir: path.join(kProjectRootDir, "public", "components")
 });
@@ -51,13 +51,14 @@ httpServer.listen(3000, () => {
 ### `buildServer(dataFilePath, options)`
 
 ```ts
-buildServer(dataFilePath: string, options: BuildServerOptions): Promise<{
+buildServer(dataFilePath: string | undefined, options: BuildServerOptions): Promise<{
   httpServer: http.Server;
   cache: PayloadCache;
+  viewBuilder: ViewBuilder;
 }>
 ```
 
-Creates and configures the HTTP server and cache for the NodeSecure CLI UI.
+Creates and configures the HTTP server, cache, and view builder for the NodeSecure CLI UI. When `dataFilePath` is `undefined`, the server starts with an empty cache (equivalent to setting `runFromPayload: false`).
 
 ```ts
 type NestedStringRecord = {
@@ -67,13 +68,39 @@ type NestedStringRecord = {
 interface BuildServerOptions {
   hotReload?: boolean;
   runFromPayload?: boolean;
+  scanType?: "cwd" | "from";
   projectRootDir: string;
   componentsDir: string;
   i18n: {
     english: NestedStringRecord;
     french: NestedStringRecord;
   };
+  /**
+   * Optional connect-style middleware executed before static file serving and
+   * the API router. Call `next()` to continue to the normal request pipeline,
+   * or handle the request directly without calling `next()` to short-circuit it.
+   */
+  middleware?: (
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    next: () => void
+  ) => void;
 }
+```
+
+The `middleware` option is useful when an additional layer needs to intercept specific requests before they reach the static file server or the API router. For example, the dev build uses it to proxy `/esbuild` SSE requests to the esbuild serve process:
+
+```js
+const { httpServer, cache } = await buildServer(dataFilePath, {
+  // ...
+  middleware: (req, res, next) => {
+    if (req.url === "/esbuild") {
+      // proxy to esbuild dev server
+      return;
+    }
+    next();
+  }
+});
 ```
 
 ### `WebSocketServerInstanciator`
