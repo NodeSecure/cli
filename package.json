@@ -107,7 +107,7 @@
     "@nodesecure/npm-registry-sdk": "4.5.1",
     "@nodesecure/ossf-scorecard-sdk": "^3.2.1",
     "@nodesecure/rc": "^5.0.0",
-    "@nodesecure/report": "4.1.1",
+    "@nodesecure/report": "4.2.1",
     "@nodesecure/scanner": "10.5.1",
     "@nodesecure/server": "1.0.0",
     "@nodesecure/utils": "^2.2.0",

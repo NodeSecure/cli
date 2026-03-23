@@ -6,6 +6,7 @@ import type {
 
 // Import Third-party Dependencies
 import { report } from "@nodesecure/report";
+import type { Dependencies } from "@nodesecure/scanner";
 import type { RC } from "@nodesecure/rc";
 
 // Import Internal Dependencies
@@ -94,14 +95,14 @@ export async function post(
   });
 
   try {
-    const dependencies = includesAllDeps ?
+    const dependencies: Dependencies = includesAllDeps ?
       scannerPayload.dependencies :
       {
         [name]: scannerPayload.dependencies[name]
-      };
+      } satisfies Dependencies;
 
     const data = await report(
-      dependencies as any,
+      dependencies,
       reportPayload
     );
 
