@@ -1,7 +1,6 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
 import path from "node:path";
-import crypto from "node:crypto";
 
 // Import Third-party Dependencies
 import open from "open";
@@ -9,7 +8,6 @@ import * as SemVer from "semver";
 import * as i18n from "@nodesecure/i18n";
 import {
   buildServer,
-  cache,
   logger,
   WebSocketServerInstanciator
 } from "@nodesecure/server";
@@ -47,9 +45,6 @@ export async function start(
   if (runFromPayload) {
     assertScannerVersion(dataFilePath);
   }
-  else {
-    cache.prefix = crypto.randomBytes(4).toString("hex");
-  }
 
   if (enableDeveloperMode) {
     const link = "http://127.0.0.1:8080";
@@ -58,9 +53,10 @@ export async function start(
 
     return;
   }
-  const httpServer = buildServer(dataFilePath, {
+  const { httpServer, cache } = await buildServer(dataFilePath, {
     port: httpPort,
     runFromPayload,
+    scanType: options.scanType,
     projectRootDir: kProjectRootDir,
     componentsDir: kComponentsDir,
     i18n: {

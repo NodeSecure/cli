@@ -4,16 +4,15 @@
 [![OpenSSF
 Scorecard](https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli/badge?style=for-the-badge)](https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli)
 [![mit](https://img.shields.io/github/license/NodeSecure/Cli?style=for-the-badge)](https://github.com/NodeSecure/cli/blob/master/LICENSE)
-![size](https://img.shields.io/github/languages/code-size/NodeSecure/cache?style=for-the-badge)
 [![build](https://img.shields.io/github/actions/workflow/status/NodeSecure/cli/cache.yml?style=for-the-badge)](https://github.com/NodeSecure/cli/actions?query=workflow%3A%cache+CI%22)
 
-Caching layer for NodeSecure CLI and server, handling configuration, analysis payloads, and cache state management.
+Disk-based caching layer for NodeSecure analysis payloads, with manifest tracking, MRU ordering, and integrity verification.
 
-## Requirements
+## 🚧 Requirements
 
 - [Node.js](https://nodejs.org/en/) v24 or higher
 
-## Getting Started
+## 💃 Getting Started
 
 This package is available in the Node Package Repository and can be easily installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or [yarn](https://yarnpkg.com).
 
@@ -23,25 +22,40 @@ $ npm i @nodesecure/cache
 $ yarn add @nodesecure/cache
 ```
 
-## Features
+## 💡 Features
 
-- Stores and retrieves configuration and analysis payloads.
-- Manages a Most Recently Used (MRU) and Least Recently Used (LRU) list for payloads.
-- Supports cache initialization, reset, and removal of old payloads.
-- Handles payloads for multiple packages, including local and remote analysis results.
+- 💾 Persists analysis payloads to disk with integrity tracking and a manifest of available specs.
+- 🔍 Looks up cached payloads by package spec (`name@version`) or integrity hash.
+- 🕐 Iterates payloads in Most Recently Used (MRU) order, tracking the currently active payload.
 
-## Usage example
+## 👀 Usage example
 
 ```js
-import { AppCache } from "@nodesecure/cache";
+import { PayloadCache } from "@nodesecure/cache";
 
-const cache = new AppCache();
+const cache = new PayloadCache();
+await cache.load();
 
-await cache.initPayloadsList();
-await cache.setRootPayload(payload);
+// Save a payload (returned from @nodesecure/scanner)
+await cache.save(
+  payload,
+  { useAsCurrent: true, scanType: "from" }
+);
+
+const found = await cache.findBySpec("express@4.18.2");
+
+// Iterate all cached payloads in MRU order
+for (const metadata of cache) {
+  console.log(metadata.spec, metadata.lastUsedAt);
+}
+
+await cache.remove("express@4.18.2");
+
+// Clear the entire cache
+await cache.clear();
 ```
 
-## API
+## 📚 API
 
-- [AppCache](./docs/AppCache.md)
 - [FilePersistanceProvider](./docs/FilePersistanceProvider.md)
+- [PayloadCache](./docs/PayloadCache.md)

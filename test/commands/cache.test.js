@@ -8,117 +8,96 @@ catch {
 
 // Import Node.js Dependencies
 import assert from "node:assert";
-import childProcess from "node:child_process";
-import fs from "node:fs";
 import path from "node:path";
-import { after, before, describe, it } from "node:test";
+import { after, before, describe, it, mock } from "node:test";
 
 // Import Third-party Dependencies
-import { DEFAULT_PAYLOAD_PATH } from "@nodesecure/cache";
+import { PayloadCache } from "@nodesecure/cache";
 import * as i18n from "@nodesecure/i18n";
-import { cache } from "@nodesecure/server";
 
 // Import Internal Dependencies
 import { main } from "../../src/commands/cache.js";
-import { arrayFromAsync } from "../helpers/utils.js";
 
 describe("CLI Commands: cache", { concurrency: 1 }, () => {
   let lang;
-  let actualCache;
-  let dummyPayload = null;
 
   before(async() => {
-    if (fs.existsSync(DEFAULT_PAYLOAD_PATH) === false) {
-      dummyPayload = {
-        rootDependency: {
-          name: "test_runner",
-          version: "1.0.0",
-          integrity: null
-        },
-        dependencies: {
-          test_runner: {
-            versions: {
-              "1.0.0": {}
-            }
-          }
-        }
-      };
-      fs.writeFileSync(DEFAULT_PAYLOAD_PATH, JSON.stringify(dummyPayload));
-    }
     await i18n.setLocalLang("english");
     await i18n.extendFromSystemPath(
       path.join(import.meta.dirname, "..", "..", "i18n")
     );
     lang = await i18n.getLocalLang();
-
-    try {
-      actualCache = await cache.payloadsList();
-    }
-    catch {
-      await cache.initPayloadsList({ logging: false });
-      actualCache = await cache.payloadsList();
-    }
-
-    cache.updatePayload("test-package", { foo: "bar" });
   });
 
   after(async() => {
     await i18n.setLocalLang(lang);
     await i18n.getLocalLang();
-
-    await cache.updatePayloadsList(actualCache, { logging: false });
-    cache.removePayload("test-package");
-
-    if (dummyPayload !== null) {
-      fs.rmSync(DEFAULT_PAYLOAD_PATH);
-    }
+    mock.restoreAll();
   });
 
-  it("should list the cache", async() => {
-    const cp = childProcess.spawn("node", [
-      ".",
-      "cache",
-      "-l"
-    ]);
-    const stdout = await arrayFromAsync(cp.stdout);
-    const inlinedStdout = stdout.join("");
-    assert.ok(inlinedStdout.includes(i18n.getTokenSync("cli.commands.cache.cacheTitle")));
-    assert.strictEqual(inlinedStdout.includes(i18n.getTokenSync("cli.commands.cache.scannedPayloadsTitle")), false);
-  });
+  it("should list the cache", async(ctx) => {
+    const logs = [];
+    ctx.mock.method(console, "log", (msg) => logs.push(msg));
 
-  it("should list the cache and scanned payloads on disk", async() => {
-    const cp = childProcess.spawn("node", [
-      ".",
-      "cache",
-      "-lf"
-    ]);
-    const stdout = await arrayFromAsync(cp.stdout);
-    const inlinedStdout = stdout.join("");
-    assert.ok(inlinedStdout.includes(i18n.getTokenSync("cli.commands.cache.cacheTitle")));
-    assert.ok(inlinedStdout.includes(i18n.getTokenSync("cli.commands.cache.scannedPayloadsTitle")));
+    const fakeCache = {
+      load: async() => fakeCache,
+      * [Symbol.iterator]() {
+        yield { name: "test-pkg", version: "1.0.0" };
+      }
+    };
+    ctx.mock.method(PayloadCache.prototype, "load", async function load() {
+      Object.assign(this, { [Symbol.iterator]: fakeCache[Symbol.iterator] });
+
+      return this;
+    });
+
+    await main({ list: true, clear: false });
+
+    const allOutput = logs.join(" ");
+    assert.ok(
+      allOutput.includes(i18n.getTokenSync("cli.commands.cache.cacheTitle")),
+      "should print cache title"
+    );
   });
 
   it("should clear the cache", async(ctx) => {
-    let rmSyncCalled = false;
-    ctx.mock.method(fs, "rmSync", () => {
-      rmSyncCalled = true;
+    const logs = [];
+    ctx.mock.method(console, "log", (msg) => logs.push(msg));
+
+    let cacheClearCalled = false;
+    ctx.mock.method(PayloadCache.prototype, "clear", async function clear() {
+      cacheClearCalled = true;
+
+      return this;
     });
-    await main({
-      clear: true,
-      full: false
-    });
-    assert.strictEqual(rmSyncCalled, false, "should not have removed payloads on disk without --full option");
+
+    await main({ list: false, clear: true });
+
+    assert.ok(cacheClearCalled, "should call PayloadCache.clear()");
+
+    const allOutput = logs.join(" ");
+    assert.ok(
+      allOutput.includes(i18n.getTokenSync("cli.commands.cache.cleared")),
+      "should print cleared message"
+    );
   });
 
-  it("should clear the cache and payloads on disk", async(ctx) => {
-    let rmSyncCalled = false;
-    ctx.mock.method(fs, "rmSync", () => {
-      rmSyncCalled = true;
+  it("should exit with error when no action is specified", async(ctx) => {
+    const logs = [];
+    ctx.mock.method(console, "log", (msg) => logs.push(msg));
+
+    let exitCode;
+    ctx.mock.method(process, "exit", (code) => {
+      exitCode = code;
     });
-    await main({
-      clear: true,
-      full: true
-    });
-    assert.ok(rmSyncCalled, "should have removed payloads on disk with --full option");
+
+    await main({ list: false, clear: false });
+
+    assert.strictEqual(exitCode, 1, "should exit with code 1");
+    const allOutput = logs.join(" ");
+    assert.ok(
+      allOutput.includes(i18n.getTokenSync("cli.commands.cache.missingAction")),
+      "should print missing action error"
+    );
   });
 });

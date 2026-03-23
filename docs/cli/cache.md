@@ -14,4 +14,3 @@ $ nsecure cache [options]
 |---|---|---|---|
 | `--list` | `-l` | `false` | Display the cache contents in JSON format. Use with `--full` to include scanned payloads stored on disk. |
 | `--clear` | `-c` | `false` | Remove cached entries. Use with `--full` to also delete scanned payloads stored on disk. |
-| `--full` | `-f` | `false` | Extend the scope of `--list` or `--clear` to include scanned payloads stored on disk.|

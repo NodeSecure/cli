@@ -72,11 +72,11 @@ export function createLink(href, text = null) {
 
 export function parseNpmSpec(spec) {
   const parts = spec.split("@");
-  const [version, local] = parts[parts.length - 1].split("#");
+  const version = parts.at(-1);
 
   return spec.startsWith("@") ?
-    { name: `@${parts[1]}`, version, local: Boolean(local) } :
-    { name: parts[0], version, local: Boolean(local) };
+    { name: `@${parts[1]}`, version } :
+    { name: parts[0], version };
 }
 
 export function parseRepositoryUrl(repository = {}, defaultValue = null) {

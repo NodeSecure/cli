@@ -20,14 +20,16 @@ import * as flagsEndpoint from "../src/endpoints/flags.ts";
 // CONSTANTS
 const kHttpPort = 17049;
 const kHttpURL = new URL(`http://localhost:${kHttpPort}`);
-const kJsonPath = path.join(import.meta.dirname, "fixtures", "httpServer.json");
+
+const JSON_PATH = path.join(import.meta.dirname, "fixtures", "httpServer.json");
+
 const kGlobalDispatcher = getGlobalDispatcher();
 const kMockAgent = new MockAgent();
 const kBundlephobiaPool = kMockAgent.get("https://bundlephobia.com");
 const kProjectRootDir = path.join(import.meta.dirname, "..", "..", "..");
 const kComponentsDir = path.join(kProjectRootDir, "public", "components");
 
-describe("httpServer", { concurrency: 1 }, () => {
+describe("httpServer", () => {
   let httpServer: Server;
 
   before(async() => {
@@ -36,7 +38,7 @@ describe("httpServer", { concurrency: 1 }, () => {
       path.join(import.meta.dirname, "..", "..", "..", "i18n")
     );
 
-    httpServer = buildServer(kJsonPath, {
+    ({ httpServer } = await buildServer(JSON_PATH, {
       projectRootDir: kProjectRootDir,
       componentsDir: kComponentsDir,
       i18n: {
@@ -47,13 +49,13 @@ describe("httpServer", { concurrency: 1 }, () => {
           ui: {}
         }
       }
-    });
+    }));
     httpServer.listen(kHttpPort);
     await once(httpServer, "listening");
     enableDestroy(httpServer);
   }, { timeout: 5000 });
 
-  after(() => {
+  after(async() => {
     httpServer.destroy();
     kBundlephobiaPool.close();
     setGlobalDispatcher(kGlobalDispatcher);
@@ -310,7 +312,7 @@ describe("httpServer without options", () => {
   let httpServer: Server;
 
   before(async() => {
-    httpServer = buildServer(kJsonPath, {
+    ({ httpServer } = await buildServer(JSON_PATH, {
       projectRootDir: kProjectRootDir,
       componentsDir: kComponentsDir,
       i18n: {
@@ -321,7 +323,7 @@ describe("httpServer without options", () => {
           ui: {}
         }
       }
-    });
+    }));
     httpServer.listen();
     await once(httpServer, "listening");
     enableDestroy(httpServer);

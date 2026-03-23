@@ -82,9 +82,7 @@ const cli = {
       missingAction: "No valid action specified. Use --help to see options.",
       option_list: "List cache files",
       option_clear: "Clear the cache",
-      option_full: "Clear or list the full cache, including payloads",
       cacheTitle: "NodeSecure Cache:",
-      scannedPayloadsTitle: "Scanned payloads available on disk:",
       cleared: "Cache cleared successfully!"
     },
     extractIntegrity: {
@@ -223,7 +221,6 @@ const ui = {
     locked: "locked"
   },
   search: {
-    recentPackages: "Recent packages",
     packagesCache: "Packages available in the cache",
     noPackageFound: "No package found",
     packageLengthErr: "Package name must be between 2 and 64 characters.",
