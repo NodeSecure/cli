@@ -1,11 +1,17 @@
 // Import Internal Dependencies
-import { createDOMElement, parseNpmSpec } from "../common/utils";
+import { createDOMElement } from "../common/utils.js";
+import "../components/package-navigation/package-navigation.js";
 
 // CONSTANTS
 const kSearchShortcut = navigator.userAgent.includes("Mac") ? "⌘K" : "Ctrl+K";
 
-export function initSearchNav(data, options) {
-  const { initFromZero = true } = options;
+export function initSearchNav(
+  data,
+  options = {}
+) {
+  const {
+    initFromZero = true
+  } = options;
 
   const searchNavElement = document.getElementById("search-nav");
   if (!searchNavElement) {
@@ -14,9 +20,12 @@ export function initSearchNav(data, options) {
 
   if (initFromZero) {
     searchNavElement.innerHTML = "";
+    const element = document.createElement("package-navigation");
     searchNavElement.appendChild(
-      initPackagesNavigation(data)
+      element
     );
+    element.metadata = data;
+    element.activePackage = data.length > 0 ? data[0].spec : "";
   }
 
   if (document.getElementById("search-shortcut-hint") === null) {
@@ -30,93 +39,4 @@ export function initSearchNav(data, options) {
       })
     );
   }
-}
-
-function initPackagesNavigation(data) {
-  const fragment = document.createDocumentFragment();
-  const packages = data.mru;
-
-  const hasAtLeast2Packages = packages.length > 1;
-  const hasExactly2Packages = packages.length === 2;
-  const container = createDOMElement("div", {
-    classList: ["packages"]
-  });
-
-  if (packages.length === 0) {
-    return fragment;
-  }
-
-  for (const pkg of packages) {
-    const { name, version, local } = parseNpmSpec(pkg);
-
-    const childs = [
-      createDOMElement("p", { text: name }),
-      createDOMElement("b", { text: `v${version}` })
-    ];
-    if (local) {
-      childs.push(createDOMElement("b", { text: "local" }));
-    }
-    const pkgElement = createDOMElement("div", {
-      classList: ["package"],
-      childs
-    });
-    pkgElement.dataset.name = pkg;
-    if (pkg === data.current) {
-      window.activePackage = pkg;
-      pkgElement.classList.add("active");
-    }
-    pkgElement.addEventListener("click", () => {
-      if (window.activePackage !== pkg) {
-        window.socket.commands.search(pkg);
-      }
-    });
-
-    if (hasAtLeast2Packages && pkg !== data.root) {
-      pkgElement.appendChild(
-        renderPackageRemoveButton(pkgElement.dataset.name, { hasExactly2Packages })
-      );
-    }
-
-    container.appendChild(pkgElement);
-  }
-
-  const plusButtonElement = createDOMElement("button", {
-    classList: ["add"],
-    childs: [
-      createDOMElement("p", { text: "+" })
-    ]
-  });
-  plusButtonElement.addEventListener("click", () => {
-    window.navigation.setNavByName("search--view");
-  });
-
-  fragment.append(container, plusButtonElement);
-
-  return fragment;
-}
-
-function renderPackageRemoveButton(packageName, options) {
-  const {
-    hasExactly2Packages
-  } = options;
-
-  // we allow to remove a package when at least 2 packages are present
-  const removeButton = createDOMElement("button", {
-    classList: ["remove"],
-    text: "x"
-  });
-
-  removeButton.addEventListener("click", (event) => {
-    event.stopPropagation();
-    window.socket.commands.remove(packageName);
-
-    if (hasExactly2Packages) {
-      document
-        .getElementById("search-nav")
-        .querySelectorAll(".package")
-        .forEach((element) => element.querySelector(".remove")?.remove());
-    }
-  }, { once: true });
-
-  return removeButton;
 }

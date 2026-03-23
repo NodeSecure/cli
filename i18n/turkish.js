@@ -82,9 +82,7 @@ const cli = {
       missingAction: "Geçerli bir işlem belirtilmedi. Seçenekleri görmek için --help kullanın.",
       option_list: "Önbellek dosyalarını listele",
       option_clear: "Önbelleği temizle",
-      option_full: "Yükler dahil tam önbelleği temizle veya listele",
       cacheTitle: "NodeSecure Önbelleği:",
-      scannedPayloadsTitle: "Diskte mevcut taranan yükler:",
       cleared: "Önbellek başarıyla temizlendi!"
     },
     extractIntegrity: {
@@ -228,7 +226,6 @@ const ui = {
     "Available licenses": "Mevcut lisanslar",
     "Available flags": "Mevcut bayraklar",
     default: "Arama seçenekleri",
-    recentPackages: "Son paketler",
     packagesCache: "Önbellekte mevcut paketler",
     noPackageFound: "Paket bulunamadı",
     packageLengthErr: "Paket adı 2 ile 64 karakter arasında olmalıdır.",

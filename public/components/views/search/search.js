@@ -24,8 +24,7 @@ class SearchView extends LitElement {
     hint: { type: String },
     notFound: { type: Boolean },
     results: { type: Array },
-    cachePackages: { type: Array },
-    recentPackages: { type: Array },
+    cachedSpecs: { type: Array },
     _versionsMap: { state: true }
   };
 
@@ -37,8 +36,7 @@ class SearchView extends LitElement {
     this.hint = "";
     this.notFound = false;
     this.results = [];
-    this.cachePackages = [];
-    this.recentPackages = [];
+    this.cachedSpecs = [];
     this._versionsMap = new Map();
     this.#searchDebounced = debounce(() => this.#handleSearchInput(this.#currentSearch), 500);
   }
@@ -300,8 +298,7 @@ class SearchView extends LitElement {
         ` : nothing}
 
         ${hasResults ? nothing : html`
-          ${this.#renderCacheSection(i18n.recentPackages, this.recentPackages)}
-          ${this.#renderCacheSection(i18n.packagesCache, this.cachePackages)}
+          ${this.#renderCacheSection(i18n.packagesCache, this.cachedSpecs)}
         `}
       </div>
     `;

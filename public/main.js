@@ -29,8 +29,7 @@ let packageInfoOpened = false;
 document.addEventListener("DOMContentLoaded", async() => {
   searchview = document.querySelector("search-view");
 
-  window.scannedPackageCache = [];
-  window.recentPackageCache = [];
+  window.cachedSpecs = [];
   window.locker = null;
   window.settings = await new Settings().fetchUserConfig();
   window.i18n = await new i18n().fetch();
@@ -80,24 +79,13 @@ async function onSocketInitOrReload(event) {
   const data = event.detail;
   const { cache } = data;
 
-  window.scannedPackageCache = cache.availables;
-  window.recentPackageCache = cache.lru;
+  window.cachedSpecs = cache.map((metadata) => metadata.spec);
   console.log(
-    "[INFO] Older packages are loaded!",
-    window.scannedPackageCache
-  );
-  console.log(
-    "[INFO] Recent packages are loaded!",
-    window.recentPackageCache
+    "[INFO] Cached specs are loaded!",
+    window.cachedSpecs
   );
 
-  initSearchNav(cache, {});
-  dispatchSearchCommandInit();
-  searchview.cachePackages = window.scannedPackageCache;
-  searchview.recentPackages = window.recentPackageCache;
-  searchview.reset();
-
-  const nsnActivePackage = secureDataSet.linker.get(0);
+  const nsnActivePackage = secureDataSet?.linker.get(0);
   const nsnRootPackage = nsnActivePackage ?
     `${nsnActivePackage.name}@${nsnActivePackage.version}` :
     null;
@@ -108,11 +96,12 @@ async function onSocketInitOrReload(event) {
   ) {
     // it means we removed the previous active package, which is still active in network, so we need to re-init
     await init();
-
-    // FIXME: initSearchNav is called twice, we need to fix this
-    initSearchNav(cache, {});
-    dispatchSearchCommandInit();
   }
+
+  initSearchNav(cache);
+  searchview.cachedSpecs = window.cachedSpecs;
+  searchview.reset();
+  dispatchSearchCommandInit();
 }
 
 function dispatchSearchCommandInit() {
@@ -120,30 +109,21 @@ function dispatchSearchCommandInit() {
     return;
   }
 
-  window.dispatchEvent(new CustomEvent(EVENTS.SEARCH_COMMAND_INIT, {
+  const event = new CustomEvent(EVENTS.SEARCH_COMMAND_INIT, {
     detail: {
       network: nsn,
       linker: secureDataSet.linker,
       packages: secureDataSet.packages
     }
-  }));
+  });
+  window.dispatchEvent(event);
 }
 
 async function init(options = {}) {
   const { navigateToNetworkView = false } = options;
 
-  secureDataSet = new NodeSecureDataSet({
-    flagsToIgnore: window.settings.config.ignore.flags,
-    warningsToIgnore: window.settings.config.ignore.warnings,
-    theme: window.settings.config.theme
-  });
-  await secureDataSet.init();
-
-  if (secureDataSet.data === null) {
-    window.navigation.hideMenu("network--view");
-    window.navigation.hideMenu("home--view");
-    window.navigation.setNavByName("search--view");
-
+  const datasetLoaded = await loadDataSet();
+  if (!datasetLoaded) {
     return;
   }
 
@@ -198,6 +178,27 @@ async function init(options = {}) {
   PackageInfo.close();
 
   console.log("[INFO] Node-Secure is ready!");
+}
+
+async function loadDataSet() {
+  const config = window.settings.config;
+
+  secureDataSet = new NodeSecureDataSet({
+    flagsToIgnore: config.ignore.flags,
+    warningsToIgnore: config.ignore.warnings,
+    theme: config.theme
+  });
+  await secureDataSet.init();
+
+  if (secureDataSet.data === null) {
+    window.navigation.hideMenu("network--view");
+    window.navigation.hideMenu("home--view");
+    window.navigation.setNavByName("search--view");
+
+    return false;
+  }
+
+  return true;
 }
 
 async function updateShowInfoMenu(params) {

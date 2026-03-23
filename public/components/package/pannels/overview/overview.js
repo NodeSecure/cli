@@ -106,9 +106,15 @@ export class Overview {
     } = await fetch(`https://api.github.com/repos/${repoName}`)
       .then((value) => value.json());
 
-    document.querySelector(".github-stars").innerHTML = `<i class='icon-star'></i> ${stargazers_count}`;
-    document.querySelector(".github-issues").textContent = open_issues_count;
-    document.querySelector(".github-forks").textContent = forks_count;
+    const starsEl = document.querySelector(".github-stars");
+    const issuesEl = document.querySelector(".github-issues");
+    const forksEl = document.querySelector(".github-forks");
+    if (starsEl === null || issuesEl === null || forksEl === null) {
+      return;
+    }
+    starsEl.innerHTML = `<i class='icon-star'></i> ${stargazers_count}`;
+    issuesEl.textContent = open_issues_count;
+    forksEl.textContent = forks_count;
   }
 
   async fetchGitlabStats(gitlabLink) {
@@ -186,8 +192,13 @@ export class Overview {
 
     const numberFormat = new Intl.NumberFormat();
 
-    document.querySelector("#npm-stats .weekly-downloads").textContent = downloads ? numberFormat.format(downloads) : "N/A";
-    document.querySelector("#npm-stats .weekly-traffic").textContent = downloads ? prettyBytes(downloads * size) : "N/A";
+    const weeklyDownloadsEl = document.querySelector("#npm-stats .weekly-downloads");
+    const weeklyTrafficEl = document.querySelector("#npm-stats .weekly-traffic");
+    if (weeklyDownloadsEl === null || weeklyTrafficEl === null) {
+      return;
+    }
+    weeklyDownloadsEl.textContent = downloads ? numberFormat.format(downloads) : "N/A";
+    weeklyTrafficEl.textContent = downloads ? prettyBytes(downloads * size) : "N/A";
   }
 
   renderReleases() {

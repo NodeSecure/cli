@@ -133,6 +133,11 @@ export class Warnings {
         .map((loc) => locationToString(loc)).join(" // ");
     }
 
-    return locationToString(warning.location);
+    const loc = warning.location;
+    if (!Array.isArray(loc) || !Array.isArray(loc[0]) || !Array.isArray(loc[1])) {
+      return Array.isArray(loc) && Array.isArray(loc[0]) ? `${loc[0][0]}:${loc[0][1]}` : "N/A";
+    }
+
+    return locationToString(loc);
   }
 }

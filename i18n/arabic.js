@@ -80,9 +80,7 @@ const cli = {
       missingAction: "لم يتم تحديد إجراء صالح. استخدم --help لرؤية الخيارات.",
       option_list: "عرض ملفات ذاكرة التخزين المؤقت",
       option_clear: "مسح ذاكرة التخزين المؤقت",
-      option_full: "مسح أو عرض ذاكرة التخزين المؤقت الكاملة، بما في ذلك الحمولات",
       cacheTitle: "ذاكرة التخزين المؤقت لـ NodeSecure:",
-      scannedPayloadsTitle: "الحمولات الممسوحة المتاحة على القرص:",
       cleared: "تم مسح ذاكرة التخزين المؤقت بنجاح!"
     },
     extractIntegrity: {
@@ -226,7 +224,6 @@ const ui = {
     "Available licenses": "التراخيص المتاحة",
     "Available flags": "الأعلام المتاحة",
     default: "خيارات البحث",
-    recentPackages: "الحزم الأخيرة",
     packagesCache: "الحزم المتاحة في ذاكرة التخزين المؤقت",
     noPackageFound: "لم يتم العثور على حزمة",
     packageLengthErr: "يجب أن يكون اسم الحزمة بين 2 و 64 حرفاً.",

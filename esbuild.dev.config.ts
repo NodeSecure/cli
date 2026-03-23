@@ -4,22 +4,26 @@ import http from "node:http";
 import path from "node:path";
 
 // Import Third-party Dependencies
-import { getBuildConfiguration } from "@nodesecure/documentation-ui/node";
+import {
+  getBuildConfiguration
+} from "@nodesecure/documentation-ui/node";
 import * as i18n from "@nodesecure/i18n";
 import chokidar from "chokidar";
 import esbuild from "esbuild";
 import open from "open";
 import sirv from "sirv";
+import { PayloadCache } from "@nodesecure/cache";
+import {
+  WebSocketServerInstanciator,
+  logger,
+  ViewBuilder,
+  getApiRouter,
+  context as als, type AsyncStoreContext
+} from "@nodesecure/server";
 
 // Import Internal Dependencies
 import english from "./i18n/english.js";
 import french from "./i18n/french.js";
-import { context as als, type AsyncStoreContext } from "./workspaces/server/src/ALS.ts";
-import { ViewBuilder } from "./workspaces/server/src/ViewBuilder.class.ts";
-import { cache } from "./workspaces/server/src/cache.ts";
-import { getApiRouter } from "./workspaces/server/src/endpoints/index.ts";
-import { logger } from "./workspaces/server/src/logger.ts";
-import { WebSocketServerInstanciator } from "./workspaces/server/src/websocket/index.ts";
 
 // CONSTANTS
 const kPublicDir = path.join(import.meta.dirname, "public");
@@ -73,19 +77,30 @@ const { hosts: esbuildHosts, port: esbuildPort } = await buildContext.serve({
   servedir: kOutDir
 });
 
-const dataFilePath = await fsAsync.access(kDefaultPayloadPath).then(() => kDefaultPayloadPath, () => undefined);
+const dataFilePath = await fsAsync.access(
+  kDefaultPayloadPath
+).then(() => kDefaultPayloadPath, () => undefined);
+const cache = await new PayloadCache().load();
 
 if (dataFilePath === undefined) {
-  cache.startFromZero = true;
+  cache.setCurrentSpec(null);
+}
+else {
+  const payloadStr = await fsAsync.readFile(dataFilePath, "utf-8");
+  const payload = JSON.parse(payloadStr);
+  await cache.save(payload, { useAsCurrent: true });
 }
 
 const store: AsyncStoreContext = {
-  i18n: { english: { ui: english.ui }, french: { ui: french.ui } },
+  i18n: {
+    english: { ui: english.ui },
+    french: { ui: french.ui }
+  },
   viewBuilder: new ViewBuilder({
     projectRootDir: import.meta.dirname,
     componentsDir: kComponentsDir
   }),
-  dataFilePath
+  cache
 };
 const htmlWatcher = chokidar.watch(kComponentsDir, {
   persistent: false,
@@ -129,7 +144,7 @@ function defaultRoute(req: http.IncomingMessage, res: http.ServerResponse) {
 
 const apiRouter = getApiRouter(defaultRoute);
 
-const httpServer = http.createServer((req, res) => als.run(store, () => apiRouter.lookup(req, res)))
+http.createServer((req, res) => als.run(store, () => apiRouter.lookup(req, res)))
   .listen(kDevPort, () => {
     console.log(`Dev server: http://localhost:${kDevPort}`);
     open(`http://localhost:${kDevPort}`);

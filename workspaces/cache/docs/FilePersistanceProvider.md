@@ -2,8 +2,6 @@
 
 A generic file-based cache provider using [cacache](https://www.npmjs.com/package/cacache) for persistent storage.
 
-## Usage Example
-
 ```ts
 import { FilePersistanceProvider } from "@nodesecure/cache";
 
