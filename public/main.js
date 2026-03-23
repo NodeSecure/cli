@@ -79,7 +79,7 @@ async function onSocketInitOrReload(event) {
   const data = event.detail;
   const { cache } = data;
 
-  window.cachedSpecs = cache.map((metadata) => metadata.spec);
+  window.cachedSpecs = cache;
   console.log(
     "[INFO] Cached specs are loaded!",
     window.cachedSpecs
@@ -99,7 +99,7 @@ async function onSocketInitOrReload(event) {
   }
 
   initSearchNav(cache);
-  searchview.cachedSpecs = window.cachedSpecs;
+  searchview.cachedSpecs = cache.filter((metadata) => metadata.spec !== window.activePackage);
   searchview.reset();
   dispatchSearchCommandInit();
 }

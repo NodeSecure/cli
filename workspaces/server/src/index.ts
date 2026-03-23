@@ -20,6 +20,7 @@ import {
 export interface BuildServerOptions {
   hotReload?: boolean;
   runFromPayload?: boolean;
+  scanType?: "cwd" | "from";
   projectRootDir: string;
   componentsDir: string;
   i18n: {
@@ -37,6 +38,7 @@ export async function buildServer(
 }> {
   const {
     runFromPayload = true,
+    scanType = "from",
     projectRootDir,
     componentsDir,
     i18n
@@ -57,7 +59,8 @@ export async function buildServer(
     const payload = JSON.parse(payloadStr) as Payload;
 
     await cache.save(payload, {
-      useAsCurrent: true
+      useAsCurrent: true,
+      scanType
     });
   }
   else {

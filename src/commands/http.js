@@ -56,6 +56,7 @@ export async function start(
   const { httpServer, cache } = await buildServer(dataFilePath, {
     port: httpPort,
     runFromPayload,
+    scanType: options.scanType,
     projectRootDir: kProjectRootDir,
     componentsDir: kComponentsDir,
     i18n: {

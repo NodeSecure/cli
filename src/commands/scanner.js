@@ -34,9 +34,11 @@ export async function auto(spec, options) {
   try {
     if (payloadFile !== null) {
       const developer = Boolean(commandOptions.developer);
+      const scanType = typeof spec === "string" ? "from" : "cwd";
 
       await http.start(void 0, {
-        developer
+        developer,
+        scanType
       });
       await events.once(process, "SIGINT");
     }

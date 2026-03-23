@@ -224,19 +224,20 @@ class SearchView extends LitElement {
     return html`
       <div class="cache-section">
         <h2 class="cache-title">${title}</h2>
-        ${packages.map((pkg) => {
-          const { name, version, local } = parseNpmSpec(pkg);
+        ${packages.map((metadata) => {
+          const { name, version } = parseNpmSpec(metadata.spec);
+          const isLocal = metadata.scanType === "cwd";
 
           return html`
-            <div class="cache-item" @click=${() => window.socket.commands.search(pkg)}>
+            <div class="cache-item" @click=${() => window.socket.commands.search(metadata.spec)}>
               <span class="cache-item-name">
-                ${name}@${version}${local ? html` <b>local</b>` : nothing}
+                ${name}@${version}${isLocal ? html` <b>local</b>` : nothing}
               </span>
               <button
                 class="cache-remove"
                 @click=${(event) => {
                   event.stopPropagation();
-                  window.socket.commands.remove(pkg);
+                  window.socket.commands.remove(metadata.spec);
                 }}
               >×</button>
             </div>
