@@ -17,7 +17,7 @@
     "lint-fix": "npm run lint -- --fix",
     "prepublishOnly": "rimraf ./dist && npm run build && pkg-ok",
     "dev": "npm run build:workspaces && node ./esbuild.dev.config.ts",
-    "build": "npm run build:front && npm run build:workspaces",
+    "build": "npm run build:workspaces && npm run build:front",
     "build:front": "node ./esbuild.config.ts",
     "build:workspaces": "npm run build --ws --if-present",
     "test": "npm run test:cli && npm run lint && npm run lint:css",
