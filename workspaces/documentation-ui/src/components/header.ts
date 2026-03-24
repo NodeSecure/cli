@@ -55,7 +55,7 @@ export class Header {
         this.active === null &&
         (this.defaultName === null || this.defaultName === name)
       ) {
-        this.setNewActiveView(name);
+        setTimeout(() => this.setNewActiveView(name), 1);
       }
 
       liElement.addEventListener(

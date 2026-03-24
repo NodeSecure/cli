@@ -13,17 +13,17 @@ export class Wiki {
       ".open-button"
     );
 
-    const { container, header, navigation } = documentationUI.render(
-      { preCacheAllFlags: true }
-    );
-
     const documentationRenderContainer = this.documentationRootElement.querySelector(
       ".documentation-render-container"
     );
     for (const node of documentationRenderContainer.childNodes) {
       node.remove();
     }
-    documentationRenderContainer.appendChild(container);
+
+    const { header, navigation } = documentationUI.render(
+      documentationRenderContainer,
+      { prefetch: true }
+    );
 
     /** @type {documentationUI.Header} */
     this.header = header;
