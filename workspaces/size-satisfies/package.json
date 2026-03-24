@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
-    "lint": "eslint index.ts test",
+    "lint": "eslint src/index.ts test",
     "test-only": "node --test test/test.ts",
     "test": "npm run lint && npm run test-only"
   },
