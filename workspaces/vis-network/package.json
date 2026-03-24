@@ -3,14 +3,18 @@
   "version": "1.4.0",
   "description": "NodeSecure vis.js network front module",
   "type": "module",
-  "exports": "./index.js",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
+  },
   "scripts": {
+    "build": "rimraf ./dist && tsc",
+    "prepublishOnly": "npm run build",
     "lint": "eslint src test",
     "lint:fix": "eslint --fix src test",
-    "test": "node --test test/*.test.js",
-    "test:c8": "c8 npm run test",
-    "start": "npm run build && http-server ./dist",
-    "build": "rimraf ./dist && node esbuild.config.js"
+    "test-only": "node --test test/*.test.ts",
+    "test": "c8 npm run test",
+    "example": "vite"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -23,7 +27,6 @@
     "directory": "workspaces/vis-network"
   },
   "files": [
-    "index.js",
     "src"
   ],
   "keywords": [
@@ -34,12 +37,12 @@
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "pretty-bytes": "^7.0.0",
-    "vis-data": "^8.0.3",
-    "vis-network": "^10.0.2"
+    "pretty-bytes": "7.1.0",
+    "vis-data": "8.0.3",
+    "vis-network": "10.0.2"
   },
   "devDependencies": {
-    "@nodesecure/flags": "^3.0.3",
+    "@nodesecure/flags": "3.0.3",
     "@nodesecure/scanner": "10.5.1"
   }
 }

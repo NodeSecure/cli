@@ -85,7 +85,6 @@
     "cross-env": "^10.1.0",
     "esbuild": "0.27.4",
     "eslint-plugin-jsdoc": "62.8.0",
-    "http-server": "^14.1.1",
     "pkg-ok": "^3.0.0",
     "postcss-lit": "1.4.1",
     "pretty-bytes": "^7.0.0",

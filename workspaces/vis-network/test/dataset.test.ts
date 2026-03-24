@@ -3,12 +3,12 @@ import assert from "node:assert";
 import { test } from "node:test";
 
 // Import Internal Dependencies
-import NodeSecureDataSet from "../src/dataset.js";
-import { getDataSetPayload } from "./dataset.fixture.js";
+import NodeSecureDataSet from "../src/dataset.ts";
+import { getDataSetPayload } from "./dataset.fixture.ts";
 
 const dataSetPayload = await getDataSetPayload();
 
-global.window = {
+globalThis.window = {
   settings: {
     config: {
       showFriendlyDependencies: true
@@ -23,7 +23,9 @@ test("NodeSecureDataSet.init with given payload", async() => {
 });
 
 test("NodeSecureDataSet.init should fetch data & flags from the network", async() => {
-  global.fetch = (path) => Promise.resolve({ json: () => (path === "/data" ? dataSetPayload : "FLAG_01") });
+  globalThis.fetch = ((path: string) => Promise.resolve({
+    json: () => (path === "/data" ? dataSetPayload : "FLAG_01")
+  })) as unknown as typeof fetch;
 
   const nsDataSet = new NodeSecureDataSet();
   await nsDataSet.init();
@@ -73,24 +75,60 @@ test("NodeSecureDataSet.isHighlighted", async() => {
 test("NodeSecureDataSet.computeAuthors", () => {
   const nsDataSet = new NodeSecureDataSet();
   nsDataSet.computeAuthor({ name: "John Doe" }, "pkg@1.1");
-  assert.equal(nsDataSet.authors.get("John Doe").packages.size, 1, "should have 1 author: John Doe");
+  assert.equal(
+    nsDataSet.authors.get("John Doe")?.packages.size,
+    1,
+    "should have 1 author: John Doe"
+  );
 
   nsDataSet.computeAuthor({ name: "John Doe" }, "pkg@1.2");
 
   assert.equal(nsDataSet.authors.size, 1, "should have 1 author: John Doe (after the 2nd contribution");
-  assert.equal(nsDataSet.authors.get("John Doe").packages.size, 2, "should have 1 author: John Doe (2nd time)");
+  assert.equal(
+    nsDataSet.authors.get("John Doe")?.packages.size,
+    2,
+    "should have 1 author: John Doe (2nd time)"
+  );
 });
 
 test("NodeSecureDataSet.build", () => {
   const nsDataSet = new NodeSecureDataSet();
   nsDataSet.rawEdgesData = [
-    { id: 1, text: "item 1" },
-    { id: 2, text: "item 2" },
-    { id: 3, text: "item 3" }
+    {
+      id: 1, label: "item 1",
+      from: 0,
+      to: 0
+    },
+    {
+      id: 2, label: "item 2",
+      from: 0,
+      to: 0
+    },
+    {
+      id: 3, label: "item 3",
+      from: 0,
+      to: 0
+    }
   ];
   nsDataSet.rawNodesData = [
-    { from: 1, to: 2, id: "A" },
-    { from: 2, to: 3, id: "B" }
+    {
+      id: 0, label: "node 0",
+      color: "",
+      font: {
+        color: "",
+        background: undefined,
+        multi: ""
+      }
+    },
+    {
+      id: 1, label: "node 1",
+      color: "",
+      font: {
+        color: "",
+        background: undefined,
+        multi: ""
+      }
+    }
   ];
   const builtData = nsDataSet.build();
 

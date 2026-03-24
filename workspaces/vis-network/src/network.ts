@@ -1,9 +1,18 @@
 // Import Third-party Dependencies
-import { Network } from "vis-network/standalone";
+import type { DataSet } from "vis-data";
+// @ts-ignore
+import { Network, type IdType, type DataInterfaceNodes, type DataInterfaceEdges } from "vis-network/standalone";
 
 // Import Internal Dependencies
-import * as CONSTANTS from "./constants.js";
-import * as utils from "./utils.js";
+import * as CONSTANTS from "./constants.ts";
+import * as utils from "./utils.ts";
+import type NodeSecureDataSet from "./dataset.ts";
+import type {
+  LinkerEntry,
+  VisNode,
+  VisEdge
+} from "./dataset.ts";
+import type { I18n } from "./constants.ts";
 
 // CONSTANTS
 export const NETWORK_OPTIONS = {
@@ -49,28 +58,50 @@ export const NETWORK_OPTIONS = {
     }
   }
 };
-const kDefaultI18n = {
+
+const kDefaultI18n: I18n = {
   network: {
     childOf: "child of",
     parentOf: "parent of"
   }
 };
 
+interface NetworkOptions {
+  theme?: string;
+  colors?: Partial<(typeof CONSTANTS.COLORS)[keyof typeof CONSTANTS.COLORS]>;
+  i18n?: I18n;
+}
+
+interface NetworkClickParams {
+  nodes: IdType[];
+  edges: IdType[];
+}
+
+type ColorPalette = (typeof CONSTANTS.COLORS)[keyof typeof CONSTANTS.COLORS];
+
 export default class NodeSecureNetwork {
   // DOM Elements
   static networkElementId = "network-graph";
   static networkLoaderElementId = "network-loader";
 
-  /**
-   * @param {!NodeSecureDataSet} secureDataSet
-   * @param {object} [options]
-   * @param {"LIGHT" | "DARK"} [options.theme="LIGHT"]
-   * @param {*} [options.colors]
-   * @param {*} [options.i18n]
-   */
-  constructor(secureDataSet, options = {}) {
+  secureDataSet: NodeSecureDataSet;
+  highlightEnabled: boolean;
+  isLoaded: boolean;
+  lastHighlightedIds: Set<IdType> | null;
+  theme: string;
+  colors: ColorPalette;
+  nodes: DataSet<VisNode>;
+  edges: DataSet<VisEdge>;
+  linker: Map<number, LinkerEntry>;
+  network: Network;
+  i18n: I18n;
+
+  constructor(
+    secureDataSet: NodeSecureDataSet,
+    options: NetworkOptions = {}
+  ) {
     console.log("[Network] created");
-    const networkElement = document.getElementById(NodeSecureNetwork.networkElementId);
+    const networkElement = document.getElementById(NodeSecureNetwork.networkElementId)!;
     networkElement.click();
 
     this.secureDataSet = secureDataSet;
@@ -78,7 +109,7 @@ export default class NodeSecureNetwork {
     this.isLoaded = false;
 
     this.lastHighlightedIds = null;
-    const networkLoaderElement = document.getElementById(NodeSecureNetwork.networkLoaderElementId);
+    const networkLoaderElement = document.getElementById(NodeSecureNetwork.networkLoaderElementId)!;
     networkLoaderElement.classList.remove("hidden");
     const { nodes, edges } = secureDataSet.build();
 
@@ -89,12 +120,22 @@ export default class NodeSecureNetwork {
     }
 
     this.theme = theme;
-    this.colors = { ...CONSTANTS.COLORS[this.theme], ...(options.colors ?? {}) };
+    this.colors = {
+      ...CONSTANTS.COLORS[theme as keyof typeof CONSTANTS.COLORS],
+      ...(options.colors ?? {})
+    };
 
     this.nodes = nodes;
     this.edges = edges;
     this.linker = secureDataSet.linker;
-    this.network = new Network(networkElement, { nodes, edges }, NETWORK_OPTIONS);
+    this.network = new Network(
+      networkElement,
+      {
+        nodes: nodes as unknown as DataInterfaceNodes,
+        edges: edges as unknown as DataInterfaceEdges
+      },
+      NETWORK_OPTIONS
+    );
     this.i18n = options.i18n ?? kDefaultI18n;
 
     this.network.on("stabilizationIterationsDone", () => {
@@ -115,11 +156,9 @@ export default class NodeSecureNetwork {
     this.network.stabilize(500);
   }
 
-  /**
-   * @param {!Set<string>} packages
-   * @returns {IterableIterator<number>}
-   */
-  * findNodeIds(packages) {
+  * findNodeIds(
+    packages: Set<string>
+  ): IterableIterator<number> {
     for (const [id, opt] of this.linker) {
       const spec = `${opt.name}@${opt.version}`;
 
@@ -129,21 +168,16 @@ export default class NodeSecureNetwork {
     }
   }
 
-  /**
-   * @description Focus/move to a Node by id
-   * @param {number} [id=0]
-   */
-  focusNodeById(id = 0) {
+  focusNodeById(
+    id = 0
+  ): void {
     this.network.emit("click", { nodes: [id] });
   }
 
-  /**
-   * @description Focus/move to a Node by package name
-   * @param {!string} packageName
-   * @returns {boolean}
-   */
-  focusNodeByName(packageName) {
-    let wantedId = null;
+  focusNodeByName(
+    packageName: string
+  ): boolean {
+    let wantedId: number | null = null;
     for (const [id, opt] of this.linker) {
       if (opt.name === packageName) {
         wantedId = id;
@@ -160,18 +194,15 @@ export default class NodeSecureNetwork {
     return false;
   }
 
-  /**
-   * @description Focus/move to a Node by package name and version
-   * @param {!string} packageName
-   * @param {!string} version
-   * @returns {boolean}
-   */
-  focusNodeByNameAndVersion(packageName, version) {
+  focusNodeByNameAndVersion(
+    packageName: string,
+    version: string
+  ): boolean {
     if (!version || !version.trim()) {
       return this.focusNodeByName(packageName);
     }
 
-    let wantedId = null;
+    let wantedId: number | null = null;
     for (const [id, opt] of this.linker) {
       if (opt.name === packageName && opt.version === version) {
         wantedId = id;
@@ -188,11 +219,10 @@ export default class NodeSecureNetwork {
     return false;
   }
 
-  /**
-   * @param {!number} node
-   * @param {boolean} hidden
-   */
-  highlightNodeNeighbour(node, hidden = false) {
+  highlightNodeNeighbour(
+    node: number,
+    hidden = false
+  ): void {
     this.network.startSimulation();
 
     const updatedNodes = [...this.searchForNeighbourIds(node)]
@@ -203,7 +233,9 @@ export default class NodeSecureNetwork {
     this.nodes.update(updatedNodes);
   }
 
-  highlightMultipleNodes(nodeIds) {
+  highlightMultipleNodes(
+    nodeIds: number[]
+  ): void {
     if (this.lastHighlightedIds !== null) {
       this.resetHighlight();
     }
@@ -215,7 +247,7 @@ export default class NodeSecureNetwork {
     // mark all nodes as hard to read.
     const nodeIdsToHighlight = new Set(nodeIds);
     for (const node of Object.values(allNodes)) {
-      const color = nodeIdsToHighlight.has(node.id) ?
+      const color = nodeIdsToHighlight.has(Number(node.id)) ?
         this.colors.SELECTED_GROUP :
         this.colors.HARDTOREAD;
 
@@ -223,16 +255,16 @@ export default class NodeSecureNetwork {
     }
 
     for (const nodeId of nodeIdsToHighlight) {
-      const connectedNodes = this.network.getConnectedNodes(nodeId);
-      const allConnectedNodes = [];
-      for (let id = 0; id < connectedNodes.length; id++) {
-        allConnectedNodes.push(...this.network.getConnectedNodes(connectedNodes[id]));
+      const connectedNodes = this.network.getConnectedNodes(nodeId) as IdType[];
+      const allConnectedNodes: IdType[] = [];
+      for (let i = 0; i < connectedNodes.length; i++) {
+        allConnectedNodes.push(...this.network.getConnectedNodes(connectedNodes[i]) as IdType[]);
       }
 
       // all second degree nodes get a different color and their label back
-      for (let id = 0; id < allConnectedNodes.length; id++) {
-        const node = allNodes[allConnectedNodes[id]];
-        if (nodeIdsToHighlight.has(node.id)) {
+      for (let i = 0; i < allConnectedNodes.length; i++) {
+        const node = allNodes[allConnectedNodes[i]];
+        if (nodeIdsToHighlight.has(Number(node.id))) {
           continue;
         }
 
@@ -241,8 +273,8 @@ export default class NodeSecureNetwork {
     }
 
     // reset all edge labels - even if user clicks on empty space
-    for (let id = 0; id < allEdges.length; id++) {
-      Object.assign(allEdges[id], {
+    for (let i = 0; i < allEdges.length; i++) {
+      Object.assign(allEdges[i], {
         label: " ",
         font: {
           background: "Transparent"
@@ -256,18 +288,18 @@ export default class NodeSecureNetwork {
     this.network.stopSimulation();
   }
 
-  resetHighlight() {
+  resetHighlight(): void {
     const allNodes = this.nodes.get();
     const allEdges = this.edges.get();
 
     // reset all edge labels - even if user clicks on empty space
-    for (let id = 0; id < allEdges.length; id++) {
-      Object.assign(allEdges[id], CONSTANTS.LABELS.NONE);
+    for (let i = 0; i < allEdges.length; i++) {
+      Object.assign(allEdges[i], CONSTANTS.LABELS.NONE);
     }
 
     this.highlightEnabled = false;
     for (const node of allNodes) {
-      const { id, hasWarnings, isFriendly } = this.linker.get(Number(node.id));
+      const { id, hasWarnings, isFriendly } = this.linker.get(Number(node.id))!;
 
       Object.assign(node, utils.getNodeColor({ id, hasWarnings, theme: this.theme, isFriendly }));
     }
@@ -279,8 +311,10 @@ export default class NodeSecureNetwork {
     this.network.stopSimulation();
   }
 
-  getNodeLevel(node) {
-    const rootNode = this.secureDataSet.linker.get(0);
+  getNodeLevel(
+    node: LinkerEntry
+  ): number {
+    const rootNode = this.secureDataSet.linker.get(0)!;
     if (node.id === rootNode.id) {
       return 0;
     }
@@ -289,8 +323,8 @@ export default class NodeSecureNetwork {
     let currentNode = node;
     while (currentNode.usedBy[rootNode.name] === undefined) {
       currentNode = this.secureDataSet.linker.get(
-        [...this.secureDataSet.linker].find(([_, { name }]) => Object.keys(currentNode.usedBy)[0] === name)[0]
-      );
+        [...this.secureDataSet.linker].find(([_, { name }]) => Object.keys(currentNode.usedBy)[0] === name)![0]
+      )!;
       level++;
     }
 
@@ -301,13 +335,14 @@ export default class NodeSecureNetwork {
    * Search for neighbours nodes of a given node
    *
    * @generator
-   * @param {number} selectedNode
-   * @yields {number} The next neighbour node
+   * @yields The next neighbour node
    */
-  * searchForNeighbourIds(selectedNode) {
-    const { name, version } = this.linker.get(Number(selectedNode));
+  * searchForNeighbourIds(
+    selectedNode: number
+  ): Generator<number> {
+    const { name, version } = this.linker.get(Number(selectedNode))!;
 
-    for (const descriptor of Object.values(this.secureDataSet.data.dependencies)) {
+    for (const descriptor of Object.values(this.secureDataSet.data!.dependencies)) {
       for (const { id, usedBy } of Object.values(descriptor.versions)) {
         if (Reflect.has(usedBy, name) && usedBy[name] === version) {
           yield* this.searchForNeighbourIds(id);
@@ -317,7 +352,9 @@ export default class NodeSecureNetwork {
     }
   }
 
-  lockedNeighbourHighlight(params) {
+  lockedNeighbourHighlight(
+    params: NetworkClickParams | undefined
+  ): boolean {
     if (this.lastHighlightedIds === null) {
       return false;
     }
@@ -345,15 +382,15 @@ export default class NodeSecureNetwork {
     }
 
     // get the second degree nodes
-    const connectedNodes = this.network.getConnectedNodes(selectedNode);
-    const allConnectedNodes = [];
-    for (let id = 0; id < connectedNodes.length; id++) {
-      allConnectedNodes.push(...this.network.getConnectedNodes(connectedNodes[id]));
+    const connectedNodes = this.network.getConnectedNodes(selectedNode) as IdType[];
+    const allConnectedNodes: IdType[] = [];
+    for (let i = 0; i < connectedNodes.length; i++) {
+      allConnectedNodes.push(...this.network.getConnectedNodes(connectedNodes[i]) as IdType[]);
     }
 
     // all second degree nodes get a different color and their label back
-    for (let id = 0; id < allConnectedNodes.length; id++) {
-      const node = allNodes[allConnectedNodes[id]];
+    for (let i = 0; i < allConnectedNodes.length; i++) {
+      const node = allNodes[allConnectedNodes[i]];
       if (this.lastHighlightedIds.has(node.id)) {
         continue;
       }
@@ -373,7 +410,10 @@ export default class NodeSecureNetwork {
     return true;
   }
 
-  neighbourHighlight(params, i18n = this.i18n) {
+  neighbourHighlight(
+    params: NetworkClickParams | undefined,
+    i18n: I18n = this.i18n
+  ): void {
     if (this.lockedNeighbourHighlight(params)) {
       console.log("[NETWORK] locked, stop neighbour highlight");
 
@@ -385,8 +425,8 @@ export default class NodeSecureNetwork {
     const allEdges = this.edges.get();
 
     // reset all edge labels - even if user clicks on empty space
-    for (let id = 0; id < allEdges.length; id++) {
-      Object.assign(allEdges[id], CONSTANTS.LABELS.NONE);
+    for (let i = 0; i < allEdges.length; i++) {
+      Object.assign(allEdges[i], CONSTANTS.LABELS.NONE);
     }
 
     // if something is selected:
@@ -400,23 +440,23 @@ export default class NodeSecureNetwork {
       }
 
       // get the second degree nodes
-      const connectedNodes = this.network.getConnectedNodes(selectedNode);
-      const allConnectedNodes = [];
-      for (let id = 0; id < connectedNodes.length; id++) {
-        allConnectedNodes.push(...this.network.getConnectedNodes(connectedNodes[id]));
+      const connectedNodes = this.network.getConnectedNodes(selectedNode) as IdType[];
+      const allConnectedNodes: IdType[] = [];
+      for (let i = 0; i < connectedNodes.length; i++) {
+        allConnectedNodes.push(...this.network.getConnectedNodes(connectedNodes[i]) as IdType[]);
       }
 
       // all second degree nodes get a different color and their label back
-      for (let id = 0; id < allConnectedNodes.length; id++) {
-        Object.assign(allNodes[allConnectedNodes[id]], this.colors.DEFAULT);
+      for (let i = 0; i < allConnectedNodes.length; i++) {
+        Object.assign(allNodes[allConnectedNodes[i]], this.colors.DEFAULT);
       }
 
       // all first degree nodes get their own color and their label back
-      for (let id = 0; id < connectedNodes.length; id++) {
-        const isNodeConnectedIn = allEdges.some((edge) => edge.from === selectedNode && edge.to === connectedNodes[id]);
+      for (let i = 0; i < connectedNodes.length; i++) {
+        const isNodeConnectedIn = allEdges.some((edge) => edge.from === selectedNode && edge.to === connectedNodes[i]);
         const color = this.colors[isNodeConnectedIn ? "CONNECTED_IN" : "CONNECTED_OUT"];
 
-        Object.assign(allNodes[connectedNodes[id]], color);
+        Object.assign(allNodes[connectedNodes[i]], color);
       }
 
       // the main node gets its own color and its label back.
@@ -425,8 +465,8 @@ export default class NodeSecureNetwork {
       // select and label edges connected to the selected node
       const connectedEdges = this.network.getConnectedEdges(selectedNode);
       this.network.selectEdges(connectedEdges);
-      for (let id = 0; id < connectedEdges.length; id++) {
-        const edgeIndex = allEdges.findIndex((edge) => edge.id === connectedEdges[id]);
+      for (let i = 0; i < connectedEdges.length; i++) {
+        const edgeIndex = allEdges.findIndex((edge) => edge.id === connectedEdges[i]);
         // the arrow on the edge is set to point into the 'from' node
         if (allEdges[edgeIndex].from === selectedNode) {
           Object.assign(allEdges[edgeIndex], CONSTANTS.LABELS.INCOMING(i18n));
@@ -445,7 +485,7 @@ export default class NodeSecureNetwork {
     else if (this.highlightEnabled) {
       this.highlightEnabled = false;
       for (const node of Object.values(allNodes)) {
-        const { id, hasWarnings, isFriendly } = this.linker.get(Number(node.id));
+        const { id, hasWarnings, isFriendly } = this.linker.get(Number(node.id))!;
 
         Object.assign(node, utils.getNodeColor({ id, hasWarnings, theme: this.theme, isFriendly }));
       }

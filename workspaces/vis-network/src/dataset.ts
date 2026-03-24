@@ -2,23 +2,111 @@
 import { Extractors } from "@nodesecure/scanner/extractors";
 import prettyBytes from "pretty-bytes";
 import { DataSet } from "vis-data";
+import type {
+  DependencyVersion,
+  Maintainer,
+  Publisher,
+  DependencyLinks,
+  GlobalWarning,
+  Payload
+} from "@nodesecure/scanner";
 
 // Import Internal Dependencies
-import * as utils from "./utils.js";
+import * as utils from "./utils.ts";
+
+declare global {
+  interface Window {
+    settings: {
+      config: {
+        showFriendlyDependencies: boolean;
+      };
+    };
+  }
+}
+
+interface DataSetOptions {
+  flagsToIgnore?: string[];
+  warningsToIgnore?: string[];
+  theme?: string;
+}
+
+interface HighlightedContacts {
+  names: Set<string>;
+  emails: Set<string>;
+}
+
+export type Contributor = Maintainer | Publisher | null;
+
+export type LinkerEntry = DependencyVersion & {
+  name: string;
+  version: string;
+  hidden: boolean;
+  hasWarnings: boolean;
+  isFriendly: boolean;
+};
+
+export interface PackageInfo {
+  id: number | undefined;
+  name: string;
+  version: string;
+  hasWarnings: boolean;
+  flags: string;
+  links: DependencyLinks | undefined;
+  isFriendly: boolean;
+}
+
+export type AuthorInfo = Maintainer & {
+  packages: Set<string>;
+};
+
+export interface VisNode {
+  id: number;
+  label: string;
+  color: string;
+  font: {
+    color: string;
+    background?: string;
+    multi: string;
+  };
+  hidden?: boolean;
+}
+
+export interface VisEdge {
+  id?: string | number;
+  from: number;
+  to: number;
+  label?: string;
+  font?: {
+    background: string;
+  };
+}
 
 export default class NodeSecureDataSet extends EventTarget {
-  /**
-   *
-   * @param {object} [options]
-   * @param {string[]} [options.flagsToIgnore=[]]
-   * @param {string[]} [options.warningsToIgnore=[]]
-   * @param {"light"|"dark"} [options.theme]
-   */
+  #highligthedContacts!: HighlightedContacts;
 
-  #highligthedContacts;
+  flagsToIgnore: Set<string>;
+  warningsToIgnore: Set<string>;
+  theme: string;
+  warnings: string[];
+  packages: PackageInfo[];
+  linker: Map<number, LinkerEntry>;
+  authors: Map<string, AuthorInfo>;
+  extensions: Record<string, number>;
+  licenses: Record<string, number>;
+  rawNodesData: VisNode[];
+  rawEdgesData: VisEdge[];
+  data: Payload | null;
+  dependenciesCount: number;
+  size: number;
+  indirectDependencies: number;
+  FLAGS: unknown;
+  rootContributors: Contributor[];
 
-  constructor(options = {}) {
+  constructor(
+    options: DataSetOptions = {}
+  ) {
     super();
+
     const {
       flagsToIgnore = [],
       warningsToIgnore = [],
@@ -30,11 +118,11 @@ export default class NodeSecureDataSet extends EventTarget {
     this.reset();
   }
 
-  get prettySize() {
+  get prettySize(): string {
     return prettyBytes(this.size);
   }
 
-  reset() {
+  reset(): void {
     this.warnings = [];
     this.packages = [];
     this.linker = new Map();
@@ -45,20 +133,20 @@ export default class NodeSecureDataSet extends EventTarget {
     this.rawNodesData = [];
     this.rawEdgesData = [];
 
-    this.data = {};
+    this.data = null;
     this.dependenciesCount = 0;
     this.size = 0;
     this.indirectDependencies = 0;
+    this.rootContributors = [];
   }
 
   async init(
-    initialPayload = null,
-    initialFlags = {}
-  ) {
+    initialPayload: Payload | null = null,
+    initialFlags: unknown = {}
+  ): Promise<void> {
     console.log("[NodeSecureDataSet] Initialization started...");
-    let FLAGS;
-    /** @type {import("@nodesecure/scanner").Payload | null} */
-    let data;
+    let FLAGS: unknown;
+    let data: Payload | null;
     this.reset();
 
     if (initialPayload) {
@@ -67,8 +155,9 @@ export default class NodeSecureDataSet extends EventTarget {
     }
     else {
       ([data, FLAGS] = await Promise.all([
-        utils.getJSON("/data"), utils.getJSON("/flags")
-      ]));
+        utils.getJSON("/data"),
+        utils.getJSON("/flags")
+      ]) as [Payload | null, unknown]);
     }
 
     this.FLAGS = FLAGS;
@@ -79,7 +168,7 @@ export default class NodeSecureDataSet extends EventTarget {
     }
 
     this.warnings = data.warnings.map(
-      (warning) => (typeof warning === "string" ? warning : warning.message)
+      (warning: GlobalWarning) => (typeof warning === "string" ? warning : warning.message)
     );
 
     this.#highligthedContacts = data.highlighted.contacts
@@ -92,7 +181,7 @@ export default class NodeSecureDataSet extends EventTarget {
         }
 
         return acc;
-      }, { names: new Set(), emails: new Set() });
+      }, { names: new Set<string>(), emails: new Set<string>() });
 
     const dependencies = Object.entries(data.dependencies);
     this.dependenciesCount = dependencies.length;
@@ -100,7 +189,7 @@ export default class NodeSecureDataSet extends EventTarget {
     this.rawEdgesData = [];
     this.rawNodesData = [];
 
-    const rootDependency = dependencies.find(([name]) => name === data.rootDependency.name);
+    const rootDependency = dependencies.find(([name]) => name === data!.rootDependency.name)!;
     this.rootContributors = [
       rootDependency[1].metadata.author,
       ...rootDependency[1].metadata.maintainers,
@@ -112,18 +201,21 @@ export default class NodeSecureDataSet extends EventTarget {
       new Extractors.Probes.Extensions()
     ]);
 
+    extractor.on("error", (err) => {
+      console.error("[NodeSecureDataSet] Error during extraction:", err);
+    });
+
     extractor.on("manifest", (currVersion, opt, { name, dependency }) => {
-      const contributors = [dependency.metadata.author, ...dependency.metadata.maintainers, ...dependency.metadata.publishers];
+      const contributors: Contributor[] = [
+        dependency.metadata.author,
+        ...dependency.metadata.maintainers,
+        ...dependency.metadata.publishers
+      ];
       const packageName = name;
       const { id, usedBy, flags, size, author, warnings, links } = opt;
       const filteredWarnings = warnings
         .filter((row) => !this.warningsToIgnore.has(row.kind));
       const hasWarnings = filteredWarnings.length > 0;
-
-      opt.name = packageName;
-      opt.version = currVersion;
-      opt.hidden = false;
-      opt.hasWarnings = hasWarnings;
 
       this.computeAuthor(author, `${packageName}@${currVersion}`, contributors);
 
@@ -136,7 +228,7 @@ export default class NodeSecureDataSet extends EventTarget {
         flags,
         hasWarnings ? this.flagsToIgnore : new Set([...this.flagsToIgnore, "hasWarnings"])
       );
-      const isFriendly = window.settings.config.showFriendlyDependencies & this.rootContributors.some(
+      const isFriendly = window.settings?.config?.showFriendlyDependencies && this.rootContributors.some(
         (rootContributor) => contributors.some((contributor) => {
           if (contributor === null || rootContributor === null) {
             return false;
@@ -151,7 +243,6 @@ export default class NodeSecureDataSet extends EventTarget {
           return false;
         })
       );
-      opt.isFriendly = isFriendly;
 
       this.packages.push({
         id,
@@ -170,13 +261,28 @@ export default class NodeSecureDataSet extends EventTarget {
         isFriendly,
         theme: this.theme.toUpperCase()
       });
-      color.font.multi = "html";
 
-      this.linker.set(Number(id), opt);
-      this.rawNodesData.push(Object.assign({ id, label }, color));
+      const linkerEntry: LinkerEntry = {
+        ...opt,
+        name: packageName,
+        version: currVersion,
+        hidden: false,
+        hasWarnings,
+        isFriendly
+      };
+      this.linker.set(Number(id), linkerEntry);
+      this.rawNodesData.push({
+        id,
+        label,
+        color: color.color,
+        font: { ...color.font, multi: "html" }
+      });
 
-      for (const [name, version] of Object.entries(usedBy)) {
-        this.rawEdgesData.push({ from: id, to: this.data.dependencies[name].versions[version].id });
+      for (const [depName, depVersion] of Object.entries(usedBy)) {
+        this.rawEdgesData.push({
+          from: id,
+          to: data!.dependencies[depName].versions[depVersion].id
+        });
       }
     });
 
@@ -188,7 +294,9 @@ export default class NodeSecureDataSet extends EventTarget {
     console.log("[NodeSecureDataSet] Initialization done!");
   }
 
-  getAuthorByEmail(emailToMatch) {
+  getAuthorByEmail(
+    emailToMatch: string
+  ): [string, AuthorInfo] | null {
     for (const [name, data] of this.authors.entries()) {
       if (data.email === emailToMatch) {
         return [name, data];
@@ -198,14 +306,20 @@ export default class NodeSecureDataSet extends EventTarget {
     return null;
   }
 
-  computeAuthor(author, spec, contributors = []) {
+  computeAuthor(
+    author: Maintainer | null,
+    spec: string,
+    contributors: Contributor[] = []
+  ): void {
     if (author === null) {
       return;
     }
-    const contributor = contributors.find((contributor) => contributor.email === author.email && contributor.npmAvatar !== null);
+    const contributor = contributors.find(
+      (c) => c !== null && c.email === author.email && c.npmAvatar !== undefined
+    );
 
     if (this.authors.has(author.name)) {
-      this.authors.get(author.name).packages.add(spec);
+      this.authors.get(author.name)!.packages.add(spec);
     }
     else {
       this.authors.set(
@@ -214,22 +328,27 @@ export default class NodeSecureDataSet extends EventTarget {
       );
     }
     if (contributor && contributor.npmAvatar) {
-      this.authors.get(author.name).npmAvatar = contributor.npmAvatar;
+      this.authors.get(author.name)!.npmAvatar = contributor.npmAvatar;
     }
   }
 
-  build() {
+  build(): { nodes: DataSet<VisNode>; edges: DataSet<VisEdge>; } {
     const nodes = new DataSet(this.rawNodesData);
     const edges = new DataSet(this.rawEdgesData);
 
     return { nodes, edges };
   }
 
-  isHighlighted(contact) {
-    return this.#highligthedContacts.names.has(contact.name) || this.#highligthedContacts.emails.has(contact.email);
+  isHighlighted(
+    contact: { name?: string; email?: string; }
+  ): boolean {
+    return this.#highligthedContacts.names.has(contact.name ?? "") ||
+      this.#highligthedContacts.emails.has(contact.email ?? "");
   }
 
-  findPackagesByName(name) {
+  findPackagesByName(
+    name: string
+  ): PackageInfo[] {
     return this.packages.filter((pkg) => pkg.name === name);
   }
 }

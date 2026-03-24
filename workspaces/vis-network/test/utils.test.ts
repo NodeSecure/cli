@@ -2,11 +2,17 @@
 import assert from "node:assert";
 
 // Import Internal Dependencies
-import { getFlagsEmojisInlined, getJSON, getNodeColor } from "../src/utils.js";
-import * as CONSTANTS from "../src/constants.js";
+import {
+  getFlagsEmojisInlined,
+  getJSON,
+  getNodeColor
+} from "../src/utils.ts";
+import * as CONSTANTS from "../src/constants.ts";
 
 const response = { message: "test should works" };
-global.fetch = () => Promise.resolve({ json: () => response });
+globalThis.fetch = (() => Promise.resolve({
+  json: () => response
+})) as unknown as typeof fetch;
 const json = await getJSON("random");
 
 assert.equal(json, response, "getJSON should works");
