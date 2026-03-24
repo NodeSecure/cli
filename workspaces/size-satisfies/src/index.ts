@@ -8,23 +8,29 @@ const kOperators = {
   ">": (lh, rh) => lh > rh,
   "<": (lh, rh) => lh < rh,
   "=": (lh, rh) => lh === rh
-};
+} satisfies Record<string, (lh: number, rh: number) => boolean>;
 
-/**
- * @function sizeSatisfies
- * @param {!string} pattern
- * @param {!(number | string)} size
- * @returns {boolean}
- */
-function sizeSatisfies(pattern, size) {
-  const localSize = typeof size === "number" ? size : bytes(size);
+export function sizeSatisfies(
+  pattern: string,
+  size: number | string
+): boolean {
+  const localSize = typeof size === "number" ?
+    size :
+    bytes(size) ?? 0;
+
   const regexResult = /^(?<operator>[><=]{1,2})\s*(?<patternSize>.*)/g.exec(pattern);
-  if (regexResult === null) {
+  if (
+    regexResult === null ||
+    regexResult.groups === undefined
+  ) {
     return false;
   }
   const { operator, patternSize } = regexResult.groups;
 
-  return kOperators[operator](localSize, bytes(patternSize));
+  return kOperators[operator as keyof typeof kOperators](
+    localSize,
+    bytes(patternSize) ?? 0
+  );
 }
 
 export default sizeSatisfies;

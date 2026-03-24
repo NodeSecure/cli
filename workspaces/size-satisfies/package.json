@@ -3,10 +3,13 @@
   "version": "1.1.0",
   "description": "Same as SemVer.satisfies but for file size!",
   "type": "module",
-  "exports": "./index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "lint": "eslint index.js",
-    "test-only": "node --test test/test.js",
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint src/index.ts test",
+    "test-only": "node --test test/test.ts",
     "test": "npm run lint && npm run test-only"
   },
   "publishConfig": {
@@ -20,8 +23,7 @@
     "directory": "workspaces/size-satisfies"
   },
   "files": [
-    "index.js",
-    "index.d.ts"
+    "src"
   ],
   "keywords": [
     "size",
@@ -42,6 +44,9 @@
   },
   "homepage": "https://github.com/NodeSecure/cli/master/workspaces/size-satisfies#readme",
   "dependencies": {
-    "bytes": "^3.1.2"
+    "bytes": "3.1.2"
+  },
+  "devDependencies": {
+    "@types/bytes": "3.1.5"
   }
 }

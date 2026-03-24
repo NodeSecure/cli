@@ -7,11 +7,11 @@ Scorecard](https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli
 ![size](https://img.shields.io/github/languages/code-size/NodeSecure/size-satisfies?style=for-the-badge)
 [![build](https://img.shields.io/github/actions/workflow/status/NodeSecure/cli/size-satisfies.yml?style=for-the-badge)](https://github.com/NodeSecure/cli/actions?query=workflow%3A%22Size+Satisfies+CI%22)
 
-Same as SemVer.satisfies but for file size!
+Check whether a file size satisfies a given constraint — like `semver.satisfies` but for bytes.
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/en/) v20 or higher
+- [Node.js](https://nodejs.org/en/) v18 or higher
 
 ## Getting Started
 
@@ -26,25 +26,68 @@ $ yarn add @nodesecure/size-satisfies
 ## Usage example
 
 ```js
-import { strict } from "assert";
-import sizeSatisfies from "size-satisfies";
+import sizeSatisfies from "@nodesecure/size-satisfies";
 
-const { strictEqual } = strict;
+// String sizes are parsed using the `bytes` package (B, KB, MB, GB, …)
+console.log(sizeSatisfies(">= 45KB", "20MB")); // true  — 20 MB is >= 45 KB
+console.log(sizeSatisfies("<= 45KB", "10B"));  // true  — 10 B is <= 45 KB
+console.log(sizeSatisfies("= 1MB", "1MB"));    // true  — exact match
+console.log(sizeSatisfies("> 45KB", "45KB"));  // false — not strictly greater
 
-strictEqual(sizeSatisfies(">= 45KB", "20MB"), true);
-strictEqual(sizeSatisfies("= 1MB", "1MB"), true);
-strictEqual(sizeSatisfies("= 1MB", 2000), false);
+// Numeric sizes are treated as bytes
+console.log(sizeSatisfies(">= 45KB", 46080));  // true  — 46 080 B == 45 KB
+console.log(sizeSatisfies("= 45KB", 2000));    // false — 2 000 B != 45 KB
+console.log(sizeSatisfies("< 45KB", 0));       // true  — 0 B < 45 KB
+
+// Invalid patterns always return false
+console.log(sizeSatisfies("", "45KB"));        // false — empty pattern
+console.log(sizeSatisfies("45KB", "45KB"));    // false — missing operator
+console.log(sizeSatisfies("!! 45KB", "45KB")); // false — unknown operator
+
+// Unparseable sizes fall back to 0
+console.log(sizeSatisfies("> 0KB", "not_a_size"));   // false — 0 > 0 is false
+console.log(sizeSatisfies("= 0KB", "not_a_size"));   // true  — 0 == 0
+console.log(sizeSatisfies(">= not_a_size", "10KB")); // true  — 10 KB >= 0
 ```
-
-The first argument of the `sizeSatisfies` method is the pattern with the operator + size. Available operators are `>=`, `<=`, `>`, `<`, `=`.
 
 ## API
 
-### sizeSatisfies(pattern: string, size: number | string): boolean
+### `sizeSatisfies(pattern, size)`
 
-When the size is a string we convert it to a bytes number. When the argument is a number we consider the value as bytes.
+```ts
+function sizeSatisfies(pattern: string, size: number | string): boolean
+```
 
-Invalid pattern will always return **false**.
+Returns `true` when `size` satisfies the constraint expressed by `pattern`, `false` otherwise.
+
+#### `pattern`
+
+A string composed of an **operator** followed by a **size value** (with an optional space between them):
+
+```
+">= 45KB"
+"<  1MB"
+"=  512B"
+```
+
+| Operator | Meaning                  |
+|----------|--------------------------|
+| `>=`     | greater than or equal to |
+| `<=`     | less than or equal to    |
+| `>`      | strictly greater than    |
+| `<`      | strictly less than       |
+| `=`      | exactly equal to         |
+
+The size value in the pattern is parsed by the [`bytes`](https://www.npmjs.com/package/bytes) package and therefore supports the same units: `B`, `KB`, `MB`, `GB`, `TB`, `PB` (case-insensitive). An unparseable size value falls back to `0`.
+
+A pattern that is empty, has no operator, or uses an unrecognised operator causes the function to return `false` immediately.
+
+#### `size`
+
+The actual size to test against the pattern.
+
+- **`number`** — interpreted as a raw byte count.
+- **`string`** — parsed by the [`bytes`](https://www.npmjs.com/package/bytes) package (e.g. `"45KB"`, `"1.5MB"`). An unparseable string falls back to `0`.
 
 ## License
 
