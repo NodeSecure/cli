@@ -5,7 +5,7 @@ import javascript from "highlight.js/lib/languages/javascript";
 import json from "highlight.js/lib/languages/json";
 
 // Import Internal Dependencies
-import * as CONSTANTS from "./constants.js";
+import * as CONSTANTS from "./constants.ts";
 
 hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("json", json);
@@ -17,23 +17,21 @@ const kMarkdownConvertor = new MarkdownIt({
   html: true
 });
 
-/** @type {Map<string, string>} */
-export const cache = new Map();
+export interface FetchOptions {
+  cacheReponse?: boolean;
+}
 
-/**
- * Fetch NodeSecure flags on Github
- *
- * @param {!string} title flag title
- * @param {object} [options]
- * @param {boolean} [options.cacheReponse=true] Set the HTML Response in cache and memoize the response for next call.
- * @returns {Promise<string>}
- */
-export async function fetchNodeSecureFlagByTitle(title, options = {}) {
+export const cache: Map<string, string> = new Map<string, string>();
+
+export async function fetchNodeSecureFlagByTitle(
+  title: string,
+  options: FetchOptions = {}
+): Promise<string> {
   const { cacheReponse = true } = options;
 
   const cacheTitle = `flags-${title}`;
   if (cacheReponse && cache.has(cacheTitle)) {
-    return cache.get(cacheTitle);
+    return cache.get(cacheTitle)!;
   }
 
   const httpResponse = await fetch(`${kRawGithubFlagsURL}/${title}.html`);
@@ -45,20 +43,15 @@ export async function fetchNodeSecureFlagByTitle(title, options = {}) {
   return htmlResponse;
 }
 
-/**
- * Fetch NodeSecure warnings on Github
- *
- * @param {!string} title flag title
- * @param {object} [options]
- * @param {boolean} [options.cacheReponse=true] Set the HTML Response in cache and memoize the response for next call.
- * @returns {Promise<string>}
- */
-export async function fetchNodeSecureWarningsByTitle(title, options = {}) {
+export async function fetchNodeSecureWarningsByTitle(
+  title: string,
+  options: FetchOptions = {}
+): Promise<string> {
   const { cacheReponse = true } = options;
 
   const cacheTitle = `warnings-${title}`;
   if (cacheReponse && cache.has(cacheTitle)) {
-    return cache.get(cacheTitle);
+    return cache.get(cacheTitle)!;
   }
 
   const httpResponse = await fetch(`${kRawGithubWarningsURL}/${title}.md`);
@@ -79,20 +72,21 @@ export async function fetchNodeSecureWarningsByTitle(title, options = {}) {
   return htmlResponse;
 }
 
-/**
- *
- * @param {!HTMLElement} menuElement
- * @param {"flags" | "warnings"} kind
- * @returns {void}
- */
-export async function fetchAndRenderByMenu(menuElement, kind = "flags") {
-  const fn = kind === "flags" ? fetchNodeSecureFlagByTitle : fetchNodeSecureWarningsByTitle;
+export async function fetchAndRenderByMenu(
+  menuElement: HTMLElement,
+  kind: "flags" | "warnings" = "flags"
+): Promise<void> {
+  const fn = kind === "flags" ?
+    fetchNodeSecureFlagByTitle : fetchNodeSecureWarningsByTitle;
   const htmlResponse = await fn(
-    menuElement.getAttribute("data-title")
+    menuElement.getAttribute("data-title")!
   );
 
-  const documentContentElement = document.querySelector(`.documentation--${kind} .${CONSTANTS.DIV_CONTENT}`);
-  documentContentElement.innerHTML = kind === "flags" ? htmlResponse : `<div>${htmlResponse}</div>`;
+  const documentContentElement = document.querySelector<HTMLElement>(
+    `.documentation--${kind} .${CONSTANTS.DIV_CONTENT}`
+  )!;
+  documentContentElement.innerHTML = kind === "flags" ?
+    htmlResponse : `<div>${htmlResponse}</div>`;
   documentContentElement.querySelectorAll("a").forEach((anchor) => {
     anchor.setAttribute("target", "_blank");
   });

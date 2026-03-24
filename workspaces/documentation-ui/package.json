@@ -4,8 +4,10 @@
   "description": "Portable UI for NodeSecure tools (guides on flags, security docs etc..)",
   "type": "module",
   "scripts": {
-    "example": "npm run example:build && http-server ./dist",
-    "example:build": "node esbuild.config.js"
+    "build": "tsc && cp -r src/css dist/css",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint src example",
+    "example": "vite"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -18,14 +20,18 @@
     "directory": "workspaces/documentation-ui"
   },
   "files": [
-    "index.js",
-    "src"
+    "dist"
   ],
   "exports": {
-    ".": "./index.js",
-    "./node": "./src/nodejs/esm.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/nodejs/esm.d.ts",
+      "default": "./dist/nodejs/esm.js"
+    }
   },
-  "types": "./index.d.ts",
   "keywords": [
     "nodesecure",
     "documentation",
@@ -34,9 +40,12 @@
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@nodesecure/flags": "^3.0.3",
+    "@nodesecure/flags": "3.0.3",
     "@nodesecure/js-x-ray": "14.2.0",
-    "highlight.js": "^11.10.0",
+    "highlight.js": "11.11.1",
     "markdown-it": "14.1.1"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "14.1.2"
   }
 }

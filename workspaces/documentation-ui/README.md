@@ -32,7 +32,6 @@ Portable documentation/wiki UI for NodeSecure tools like [CLI](https://github.co
 
 - Render [NodeSecure flags](https://github.com/NodeSecure/flags/blob/main/FLAGS.md) using the package `@nodesecure/flags`.
 - Render [NodeSecure JS-X-RAY SAST Warnings](https://github.com/NodeSecure/js-x-ray).
-- Written in vanilla.js for maximum performance.
 
 > [!NOTE]
 > The content is retrieved from the github API (and sometimes it transform raw markdown response to HTML, that's why we use [markdown-it](https://github.com/markdown-it/markdown-it#readme) as dependency).
@@ -83,18 +82,22 @@ export interface RenderDocumentationUIOptions {
 
 ### Fetch assets required for the bundler
 
-An incomplete example for esbuild.
+An incomplete example for Vite.
 
-```js
+```ts
 // Import Third-party Dependencies
 import { getBuildConfiguration } from "@nodesecure/documentation-ui/node";
-import esbuild from "esbuild";
+import { defineConfig } from "vite";
 
 // Note: all entry points for assets (css etc..).
 const { entryPoints } = getBuildConfiguration();
 
-await esbuild.build({
-  entryPoints: [...entryPoints],
+export default defineConfig({
+  build: {
+    rollupOptions: {
+      input: [...entryPoints],
+    },
+  },
 });
 ```
 
@@ -149,10 +152,11 @@ $ npm run example
 
 ```json
 "scripts": {
-  "example": "npm run example:build && http-server ./dist",
-  "example:build": "node esbuild.config.js"
+  "example": "vite"
 }
 ```
+
+This starts a [Vite](https://vite.dev/) dev server with HMR, opening `example/demo.html` automatically in your browser.
 
 ## License
 

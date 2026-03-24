@@ -9,6 +9,9 @@
     },
     {
       "path": "./workspaces/size-satisfies"
+    },
+    {
+      "path": "./workspaces/documentation-ui"
     }
   ]
 }
