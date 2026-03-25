@@ -12,6 +12,9 @@
     },
     {
       "path": "./workspaces/documentation-ui"
+    },
+    {
+      "path": "./workspaces/vis-network"
     }
   ]
 }
