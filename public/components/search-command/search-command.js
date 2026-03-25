@@ -9,6 +9,7 @@ import {
   FILTERS_NAME,
   FILTER_HAS_HELPERS,
   FILTER_MULTI_SELECT,
+  FILTER_INSTANT_CONFIRM,
   computeMatches,
   getHelperValues
 } from "./filters.js";
@@ -59,12 +60,13 @@ class SearchCommand extends LitElement {
   #init = ({ detail: { linker, packages, network } }) => {
     this.#linker = linker;
     this.#network = network;
-    this.#packages = packages.map(({ id, name, version, flags }) => {
+    this.#packages = packages.map(({ id, name, version, flags, isHighlighted }) => {
       return {
         id: String(id),
         name,
         version,
-        flags
+        flags,
+        isHighlighted
       };
     });
   };
@@ -280,10 +282,15 @@ class SearchCommand extends LitElement {
 
   #selectHelper(helper) {
     if (helper.type === "filter") {
-      this.inputValue = `${helper.value}:`;
-      this.activeFilter = helper.value;
-      this.selectedIndex = -1;
-      this.results = [];
+      if (FILTER_INSTANT_CONFIRM.has(helper.value)) {
+        this.#addQuery(helper.value, "true");
+      }
+      else {
+        this.inputValue = `${helper.value}:`;
+        this.activeFilter = helper.value;
+        this.selectedIndex = -1;
+        this.results = [];
+      }
     }
     else {
       this.#addQuery(this.activeFilter, helper.value);

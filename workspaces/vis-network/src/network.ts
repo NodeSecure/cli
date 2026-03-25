@@ -8,11 +8,10 @@ import * as CONSTANTS from "./constants.ts";
 import * as utils from "./utils.ts";
 import type NodeSecureDataSet from "./dataset.ts";
 import type {
-  LinkerEntry,
-  VisNode,
-  VisEdge
+  LinkerEntry
 } from "./dataset.ts";
 import type { I18n } from "./constants.ts";
+import type { VisEdge, VisNode } from "./types.ts";
 
 // CONSTANTS
 export const NETWORK_OPTIONS = {
@@ -263,6 +262,12 @@ export default class NodeSecureNetwork {
         this.colors.HARDTOREAD;
 
       Object.assign(node, color);
+
+      const entry = this.linker.get(Number(node.id));
+      if (entry?.isHighlighted) {
+        node.shadow = { enabled: false };
+        node.borderWidth = 1;
+      }
     }
 
     for (const nodeId of nodeIdsToHighlight) {
@@ -310,9 +315,9 @@ export default class NodeSecureNetwork {
 
     this.highlightEnabled = false;
     for (const node of allNodes) {
-      const { id, hasWarnings, isFriendly } = this.linker.get(Number(node.id))!;
+      const { id, hasWarnings, isFriendly, isHighlighted } = this.linker.get(Number(node.id))!;
 
-      Object.assign(node, utils.getNodeColor({ id, hasWarnings, theme: this.theme, isFriendly }));
+      Object.assign(node, utils.getNodeColor({ id, hasWarnings, theme: this.theme, isFriendly, isHighlighted }));
     }
 
     this.lastHighlightedIds = null;
@@ -363,6 +368,38 @@ export default class NodeSecureNetwork {
     }
   }
 
+  /**
+   * Returns the selected color for a node, preserving highlighted border+shadow if applicable.
+   * @param {number} nodeId
+   * @param {"SELECTED" | "SELECTED_LOCK"} colorKey
+   */
+  #selectedColor(nodeId, colorKey) {
+    const entry = this.linker.get(Number(nodeId));
+    const base = this.colors[colorKey];
+
+    if (!entry?.isHighlighted) {
+      return base;
+    }
+
+    const borderColor = CONSTANTS.COLORS[this.theme].HIGHLIGHTED.border;
+
+    return {
+      color: {
+        background: base.color,
+        border: borderColor
+      },
+      font: base.font,
+      borderWidth: 2,
+      shadow: {
+        enabled: true,
+        color: borderColor,
+        size: 12,
+        x: 0,
+        y: 0
+      }
+    };
+  }
+
   lockedNeighbourHighlight(
     params: NetworkClickParams | undefined
   ): boolean {
@@ -386,7 +423,7 @@ export default class NodeSecureNetwork {
       }
 
       const color = node.id === selectedNode ?
-        this.colors.SELECTED_LOCK :
+        this.#selectedColor(node.id, "SELECTED_LOCK") :
         this.colors.SELECTED_GROUP;
 
       Object.assign(node, color);
@@ -448,6 +485,13 @@ export default class NodeSecureNetwork {
       // mark all nodes as hard to read.
       for (const node of Object.values(allNodes)) {
         Object.assign(node, this.colors.HARDTOREAD);
+
+        const entry = this.linker.get(Number(node.id));
+
+        if (entry?.isHighlighted) {
+          node.shadow = { enabled: false };
+          node.borderWidth = 1;
+        }
       }
 
       // get the second degree nodes
@@ -471,7 +515,7 @@ export default class NodeSecureNetwork {
       }
 
       // the main node gets its own color and its label back.
-      Object.assign(allNodes[selectedNode], this.colors.SELECTED);
+      Object.assign(allNodes[selectedNode], this.#selectedColor(selectedNode, "SELECTED"));
 
       // select and label edges connected to the selected node
       const connectedEdges = this.network.getConnectedEdges(selectedNode);
@@ -496,9 +540,9 @@ export default class NodeSecureNetwork {
     else if (this.highlightEnabled) {
       this.highlightEnabled = false;
       for (const node of Object.values(allNodes)) {
-        const { id, hasWarnings, isFriendly } = this.linker.get(Number(node.id))!;
+        const { id, hasWarnings, isFriendly, isHighlighted } = this.linker.get(Number(node.id))!;
 
-        Object.assign(node, utils.getNodeColor({ id, hasWarnings, theme: this.theme, isFriendly }));
+        Object.assign(node, utils.getNodeColor({ id, hasWarnings, theme: this.theme, isFriendly, isHighlighted }));
       }
     }
 

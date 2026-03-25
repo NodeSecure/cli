@@ -24,6 +24,7 @@ const cli = {
     option_output: "Json file output name",
     option_silent: "enable silent mode which disable CLI spinners",
     option_contacts: "List of contacts to hightlight",
+    option_packages: "List of packages to highlight",
     option_verbose: "Sets cli log level to verbose, causing the CLI to output more detailed logs.",
     strategy: "Vulnerabilities source to use",
     cwd: {
@@ -260,13 +261,15 @@ const ui = {
       author: "name or email",
       ext: "file extension",
       builtin: "node.js module",
-      size: "e.g. >50kb"
+      size: "e.g. >50kb",
+      highlighted: "all"
     }
   },
   legend: {
     default: "The package is fine.",
     warn: "The package has warnings.",
-    friendly: "The package is maintained by the same authors as the root package."
+    friendly: "The package is maintained by the same authors as the root package.",
+    highlighted: "The package is part of highlighted packages"
   },
   lockedNavigation: {
     next: "Next",

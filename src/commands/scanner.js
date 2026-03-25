@@ -15,6 +15,7 @@ import * as scanner from "@nodesecure/scanner";
 import kleur from "../utils/styleText.js";
 import * as http from "./http.js";
 import { parseContacts } from "./parsers/contacts.js";
+import { parsePackages } from "./parsers/packages.js";
 
 export async function auto(spec, options) {
   const { keep, ...commandOptions } = options;
@@ -22,7 +23,8 @@ export async function auto(spec, options) {
   const optionsWithContacts = {
     ...commandOptions,
     highlight: {
-      contacts: parseContacts(options.contacts)
+      contacts: parseContacts(options.contacts),
+      packages: parsePackages(options.packages ?? [])
     }
   };
 
@@ -67,6 +69,7 @@ export async function cwd(options) {
     vulnerabilityStrategy,
     silent,
     contacts,
+    packages: highlightPackages = [],
     verbose
   } = options;
 
@@ -74,7 +77,7 @@ export async function cwd(options) {
     process.cwd(),
     {
       maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy, highlight:
-        { contacts: parseContacts(contacts) }, isVerbose: verbose
+        { contacts: parseContacts(contacts), packages: parsePackages(highlightPackages) }, isVerbose: verbose
     },
     initLogger(void 0, !silent)
   );
@@ -83,7 +86,15 @@ export async function cwd(options) {
 }
 
 export async function from(spec, options) {
-  const { depth: maxDepth = Infinity, output, silent, contacts, vulnerabilityStrategy, verbose } = options;
+  const {
+    depth: maxDepth = Infinity,
+    output,
+    silent,
+    contacts,
+    packages: highlightPackages = [],
+    vulnerabilityStrategy,
+    verbose
+  } = options;
 
   const payload = await scanner.from(
     spec,
@@ -91,7 +102,8 @@ export async function from(spec, options) {
       maxDepth,
       vulnerabilityStrategy,
       highlight: {
-        contacts: parseContacts(contacts)
+        contacts: parseContacts(contacts),
+        packages: parsePackages(highlightPackages)
       },
       isVerbose: verbose
     },

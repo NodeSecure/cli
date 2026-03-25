@@ -12,10 +12,14 @@ export type {
   LinkerEntry,
   PackageInfo,
   AuthorInfo,
-  VisNode,
-  VisEdge,
+
   Contributor
 } from "./dataset.ts";
+
+export type {
+  VisNode,
+  VisEdge
+} from "./types.ts";
 
 export {
   getJSON,

@@ -9,6 +9,7 @@
 
 export type Color = {
   color: string;
+  border?: string;
   font: {
     color: string;
     background?: string;
@@ -18,9 +19,9 @@ export type Color = {
 export const COLORS = Object.freeze({
   LIGHT: {
     SELECTED: {
-      color: "#4527A0",
+      color: "#BFC5E0",
       font: {
-        color: "#FFF"
+        color: "#443730"
       }
     },
     SELECTED_GROUP: {
@@ -36,22 +37,27 @@ export const COLORS = Object.freeze({
       }
     },
     DEFAULT: {
-      color: "#E3F2FD",
+      color: "#BEE7E8",
       font: {
         color: "#121533"
       }
     },
     WARN: {
-      color: "#EF5350",
+      color: "#FFBFA0",
       font: {
-        color: "#FFF"
+        color: "#6B2737"
       }
     },
     FRIENDLY: {
-      color: "#e3fde3",
+      color: "#EDEEC0",
       font: {
         color: "#0e4522"
       }
+    },
+    HIGHLIGHTED: {
+      border: "#EA9010",
+      color: "",
+      font: { color: "" }
     },
     CONNECTED_IN: {
       color: "#C8E6C9",
@@ -108,6 +114,11 @@ export const COLORS = Object.freeze({
       font: {
         color: "#FFF"
       }
+    },
+    HIGHLIGHTED: {
+      border: "#dec42c",
+      color: "",
+      font: { color: "" }
     },
     CONNECTED_IN: {
       color: "rgb(89, 44, 109)",

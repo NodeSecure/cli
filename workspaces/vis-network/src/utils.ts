@@ -3,6 +3,7 @@ import { getManifestEmoji } from "@nodesecure/flags/web";
 
 // Import Internal Dependencies
 import * as CONSTANTS from "./constants.ts";
+import type { Color } from "./constants.ts";
 
 declare global {
   interface Window {
@@ -47,6 +48,7 @@ export interface NodeColorOptions {
   hasWarnings?: boolean;
   theme?: string;
   isFriendly?: boolean;
+  isHighlighted?: boolean;
 }
 
 export function getNodeColor(
@@ -56,23 +58,48 @@ export function getNodeColor(
     id,
     hasWarnings = false,
     theme = "LIGHT",
-    isFriendly = false
+    isFriendly = false,
+    isHighlighted = false
   } = options;
 
   const palette = CONSTANTS.COLORS[theme as keyof typeof CONSTANTS.COLORS];
+  let nodeColor: Color | undefined;
 
   // id 0 is the root package (so by default he is highlighted as selected).
   if (id === 0) {
     return palette.SELECTED;
   }
   else if (hasWarnings) {
-    return palette.WARN;
+    nodeColor = palette.WARN;
   }
   else if (isFriendly) {
-    return palette.FRIENDLY;
+    nodeColor = palette.FRIENDLY;
+  }
+  else {
+    nodeColor = palette.DEFAULT;
   }
 
-  return palette.DEFAULT;
+  if (isHighlighted) {
+    const borderColor = palette.HIGHLIGHTED.border;
+
+    return {
+      color: {
+        background: nodeColor.color,
+        border: borderColor
+      },
+      font: nodeColor.font ?? palette.DEFAULT.font,
+      borderWidth: 2,
+      shadow: {
+        enabled: true,
+        color: borderColor,
+        size: 12,
+        x: 0,
+        y: 0
+      }
+    };
+  }
+
+  return nodeColor;
 }
 
 export function getFlagsEmojisInlined(
