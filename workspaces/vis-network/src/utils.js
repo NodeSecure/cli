@@ -39,27 +39,54 @@ export async function getJSON(path, customHeaders = Object.create(null)) {
  * @param {string} options.hasWarnings
  * @param {string} options.theme
  * @param {string} options.isFriendly
+ * @param {boolean} [options.isHighlighted]
  */
 export function getNodeColor(options) {
   const {
     id,
     hasWarnings = false,
     theme = "LIGHT",
-    isFriendly = false
+    isFriendly = false,
+    isHighlighted = false
   } = options;
 
   // id 0 is the root package (so by default he is highlighted as selected).
   if (id === 0) {
     return CONSTANTS.COLORS[theme].SELECTED;
   }
-  else if (hasWarnings) {
-    return CONSTANTS.COLORS[theme].WARN;
+
+  let nodeColor;
+  if (hasWarnings) {
+    nodeColor = CONSTANTS.COLORS[theme].WARN;
   }
   else if (isFriendly) {
-    return CONSTANTS.COLORS[theme].FRIENDLY;
+    nodeColor = CONSTANTS.COLORS[theme].FRIENDLY;
+  }
+  else {
+    nodeColor = CONSTANTS.COLORS[theme].DEFAULT;
   }
 
-  return CONSTANTS.COLORS[theme].DEFAULT;
+  if (isHighlighted) {
+    const borderColor = CONSTANTS.COLORS[theme].HIGHLIGHTED_BORDER;
+
+    return {
+      color: {
+        background: nodeColor.color,
+        border: borderColor
+      },
+      font: nodeColor.font,
+      borderWidth: 2,
+      shadow: {
+        enabled: true,
+        color: borderColor,
+        size: 12,
+        x: 0,
+        y: 0
+      }
+    };
+  }
+
+  return nodeColor;
 }
 
 export function getFlagsEmojisInlined(

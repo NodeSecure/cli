@@ -24,6 +24,7 @@ const cli = {
     option_output: "JSON dosyası çıktı adı",
     option_silent: "CLI döndürücülerini devre dışı bırakan sessiz modu etkinleştir",
     option_contacts: "Vurgulanacak kişilerin listesi",
+    option_packages: "Vurgulanacak paketlerin listesi",
     option_verbose: "CLI'nin log seviyesini verbose olarak ayarlar, bu da CLI'nin daha ayrıntılı loglar üretmesine neden olur.",
     strategy: "Kullanılacak güvenlik açığı kaynağı",
     cwd: {
@@ -234,7 +235,8 @@ const ui = {
   legend: {
     default: "Paket sorunsuz.",
     warn: "Pakette uyarılar var.",
-    friendly: "Paket, kök paketin yazarlarıyla aynı kişiler tarafından bakılmaktadır."
+    friendly: "Paket, kök paketin yazarlarıyla aynı kişiler tarafından bakılmaktadır.",
+    highlighted: "Paket, vurgulanan paketlerin bir parçasıdır"
   },
   lockedNavigation: {
     next: "Sonraki",

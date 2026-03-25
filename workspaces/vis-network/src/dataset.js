@@ -16,6 +16,7 @@ export default class NodeSecureDataSet extends EventTarget {
    */
 
   #highligthedContacts;
+  #highlightedPackages;
 
   constructor(options = {}) {
     super();
@@ -94,6 +95,8 @@ export default class NodeSecureDataSet extends EventTarget {
         return acc;
       }, { names: new Set(), emails: new Set() });
 
+    this.#highlightedPackages = new Set(data.highlighted.packages);
+
     const dependencies = Object.entries(data.dependencies);
     this.dependenciesCount = dependencies.length;
 
@@ -124,6 +127,7 @@ export default class NodeSecureDataSet extends EventTarget {
       opt.version = currVersion;
       opt.hidden = false;
       opt.hasWarnings = hasWarnings;
+      opt.isHighlighted = this.#isHighlightedPackage(packageName, currVersion);
 
       this.computeAuthor(author, `${packageName}@${currVersion}`, contributors);
 
@@ -160,7 +164,8 @@ export default class NodeSecureDataSet extends EventTarget {
         hasWarnings,
         flags: flagStr.replace(/\s/g, ""),
         links,
-        isFriendly
+        isFriendly,
+        isHighlighted: opt.isHighlighted
       });
 
       const label = `<b>${packageName}@${currVersion}</b>${flagStr}\n<b>[${prettyBytes(size)}]</b>`;
@@ -168,6 +173,7 @@ export default class NodeSecureDataSet extends EventTarget {
         id,
         hasWarnings,
         isFriendly,
+        isHighlighted: opt.isHighlighted,
         theme: this.theme.toUpperCase()
       });
       color.font.multi = "html";
@@ -227,6 +233,10 @@ export default class NodeSecureDataSet extends EventTarget {
 
   isHighlighted(contact) {
     return this.#highligthedContacts.names.has(contact.name) || this.#highligthedContacts.emails.has(contact.email);
+  }
+
+  #isHighlightedPackage(name, version) {
+    return this.#highlightedPackages.has(name) || this.#highlightedPackages.has(`${name}@${version}`);
   }
 
   findPackagesByName(name) {

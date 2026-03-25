@@ -24,6 +24,7 @@ const cli = {
     option_output: "Nom de sortie du fichier json",
     option_silent: "Activer le mode silencieux qui désactive les spinners du CLI",
     option_contacts: "Liste des contacts à mettre en évidence",
+    option_packages: "Liste des packages à mettre en évidence",
     option_verbose: "Définir le niveau de log CLI à verbeux, ce qui amènera la CLI à générer des logs plus détaillés.",
     strategy: "Source de vulnérabilités à utiliser",
     cwd: {
@@ -258,13 +259,15 @@ const ui = {
       author: "nom ou email",
       ext: "extension de fichier",
       builtin: "module node.js",
-      size: "ex. >50kb"
+      size: "ex. >50kb",
+      highlighted: "all"
     }
   },
   legend: {
     default: "Rien à signaler.",
     warn: "La dépendance contient des menaces.",
-    friendly: "La dépendance est maintenu par des auteurs du package principal."
+    friendly: "La dépendance est maintenu par des auteurs du package principal.",
+    highlighted: "Le package fait partie des packages mis en évidence"
   },
   lockedNavigation: {
     next: "Suivant",
