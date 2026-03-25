@@ -7,6 +7,14 @@
  * HARDTOREAD -> A color to make a node hard to read (useful in selection mode).
  */
 
+export type Color = {
+  color: string;
+  font: {
+    color: string;
+    background?: string;
+  };
+};
+
 export const COLORS = Object.freeze({
   LIGHT: {
     SELECTED: {
@@ -120,10 +128,17 @@ export const COLORS = Object.freeze({
       }
     }
   }
-});
+}) satisfies Record<string, Record<string, Color>>;
+
+export interface I18n {
+  network: {
+    childOf: string;
+    parentOf: string;
+  };
+}
 
 export const LABELS = Object.freeze({
-  INCOMING: (i18n) => {
+  INCOMING: (i18n: I18n) => {
     return {
       label: i18n.network.childOf,
       font: {
@@ -131,7 +146,7 @@ export const LABELS = Object.freeze({
       }
     };
   },
-  OUTGOING: (i18n) => {
+  OUTGOING: (i18n: I18n) => {
     return {
       label: i18n.network.parentOf,
       font: {
@@ -140,7 +155,7 @@ export const LABELS = Object.freeze({
     };
   },
   NONE: {
-    // A space is used to simulate resetting the edge laebl
+    // A space is used to simulate resetting the edge label
     label: " ",
     font: {
       background: "Transparent"

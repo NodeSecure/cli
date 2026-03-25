@@ -2,12 +2,21 @@
 import { getManifestEmoji } from "@nodesecure/flags/web";
 
 // Import Internal Dependencies
-import * as CONSTANTS from "./constants.js";
+import * as CONSTANTS from "./constants.ts";
+
+declare global {
+  interface Window {
+    i18n: Record<string, unknown>;
+  }
+}
 
 // CONSTANTS
 export const FLAGS_EMOJIS = Object.fromEntries(getManifestEmoji());
 
-export async function getJSON(path, customHeaders = Object.create(null)) {
+export async function getJSON(
+  path: string,
+  customHeaders: Record<string, string> = Object.create(null)
+): Promise<unknown> {
   const headers = {
     Accept: "application/json"
   };
@@ -33,14 +42,16 @@ export async function getJSON(path, customHeaders = Object.create(null)) {
   return raw.json();
 }
 
-/**
- * @params {object} options
- * @param {string} options.id
- * @param {string} options.hasWarnings
- * @param {string} options.theme
- * @param {string} options.isFriendly
- */
-export function getNodeColor(options) {
+export interface NodeColorOptions {
+  id: number;
+  hasWarnings?: boolean;
+  theme?: string;
+  isFriendly?: boolean;
+}
+
+export function getNodeColor(
+  options: NodeColorOptions
+) {
   const {
     id,
     hasWarnings = false,
@@ -48,32 +59,33 @@ export function getNodeColor(options) {
     isFriendly = false
   } = options;
 
+  const palette = CONSTANTS.COLORS[theme as keyof typeof CONSTANTS.COLORS];
+
   // id 0 is the root package (so by default he is highlighted as selected).
   if (id === 0) {
-    return CONSTANTS.COLORS[theme].SELECTED;
+    return palette.SELECTED;
   }
   else if (hasWarnings) {
-    return CONSTANTS.COLORS[theme].WARN;
+    return palette.WARN;
   }
   else if (isFriendly) {
-    return CONSTANTS.COLORS[theme].FRIENDLY;
+    return palette.FRIENDLY;
   }
 
-  return CONSTANTS.COLORS[theme].DEFAULT;
+  return palette.DEFAULT;
 }
 
 export function getFlagsEmojisInlined(
-  flags,
-  flagsToIgnore = new Set()
-) {
+  flags: Iterable<string>,
+  flagsToIgnore: Set<string> = new Set()
+): string {
   return [...flags]
     .flatMap((title) => {
       if (flagsToIgnore.has(title)) {
         return [];
       }
 
-      // FIX: when scanner resolve to flags ^3.x
-      const emoji = FLAGS_EMOJIS[title === "hasDuplicate" ? "isDuplicated" : title];
+      const emoji = FLAGS_EMOJIS[title];
 
       return emoji ? [emoji] : [];
     })
@@ -82,8 +94,8 @@ export function getFlagsEmojisInlined(
 }
 
 // Note: this works only if vis-network is used within CLI UI, not as a standalone.
-export function currentLang() {
-  const detectedLang = document.getElementById("lang").dataset.lang;
+export function currentLang(): string {
+  const detectedLang = (document.getElementById("lang") as HTMLElement).dataset.lang!;
 
   return detectedLang in window.i18n ? detectedLang : "english";
 }
