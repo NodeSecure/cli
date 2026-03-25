@@ -8,7 +8,7 @@
     "default": "./dist/index.js"
   },
   "scripts": {
-    "build": "rimraf ./dist && tsc",
+    "build": "rimraf ./dist ./tsconfig.tsbuildinfo && tsc",
     "prepublishOnly": "npm run build",
     "lint": "eslint src test",
     "lint:fix": "eslint --fix src test",

@@ -4,7 +4,7 @@
   "description": "Portable UI for NodeSecure tools (guides on flags, security docs etc..)",
   "type": "module",
   "scripts": {
-    "build": "rimraf ./dist && tsc && cp -r src/css dist/css",
+    "build": "rimraf ./dist ./tsconfig.tsbuildinfo && tsc && cp -r src/css dist/css",
     "prepublishOnly": "npm run build",
     "lint": "eslint src example",
     "example": "vite"
