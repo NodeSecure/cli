@@ -75,6 +75,10 @@ interface NetworkOptions {
 interface NetworkClickParams {
   nodes: IdType[];
   edges: IdType[];
+  // see http://hammerjs.github.io/api/#event-object
+  event?: {
+    srcEvent?: MouseEvent;
+  };
 }
 
 type ColorPalette = (typeof CONSTANTS.COLORS)[keyof typeof CONSTANTS.COLORS];
@@ -149,7 +153,14 @@ export default class NodeSecureNetwork {
 
       this.isLoaded = true;
       this.network.stopSimulation();
-      this.network.on("click", this.neighbourHighlight.bind(this));
+      this.network.on("click", (params: NetworkClickParams) => {
+        const srcEvent = params.event?.srcEvent;
+        if (srcEvent?.ctrlKey || srcEvent?.metaKey) {
+          return;
+        }
+
+        this.neighbourHighlight(params);
+      });
       this.network.setOptions({ physics: false });
     });
 

@@ -13,6 +13,7 @@ import "./components/search-command/search-command.js";
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import "./components/views/search/search.js";
+import "./components/drill-breadcrumb/drill-breadcrumb.js";
 import { NetworkNavigation } from "./core/network-navigation.js";
 import { i18n } from "./core/i18n.js";
 import { initSearchNav } from "./core/search-nav.js";
@@ -24,7 +25,9 @@ let secureDataSet;
 let nsn;
 let homeView;
 let searchview;
+let drillBreadcrumb;
 let packageInfoOpened = false;
+const drillStack = [];
 
 document.addEventListener("DOMContentLoaded", async() => {
   searchview = document.querySelector("search-view");
@@ -38,6 +41,17 @@ document.addEventListener("DOMContentLoaded", async() => {
 
   // update searchview after window.i18n is set
   searchview.requestUpdate();
+
+  drillBreadcrumb = document.querySelector("drill-breadcrumb");
+  drillBreadcrumb.addEventListener(EVENTS.DRILL_RESET, resetDrill);
+  drillBreadcrumb.addEventListener(EVENTS.DRILL_BACK, function handleDrillBack(event) {
+    drillBackTo(event.detail.index);
+  });
+  drillBreadcrumb.addEventListener(EVENTS.DRILL_SWITCH, function handleDrillSwitch(event) {
+    const { stackIndex, nodeId } = event.detail;
+    drillStack.length = stackIndex;
+    drillInto(nodeId);
+  });
 
   await init();
   window.dispatchEvent(
@@ -122,6 +136,107 @@ function dispatchSearchCommandInit() {
   window.dispatchEvent(event);
 }
 
+function computeSiblings(parentId, excludeId) {
+  const seen = new Set();
+  const result = [];
+
+  for (const edge of secureDataSet.rawEdgesData) {
+    if (edge.to === parentId && edge.from !== excludeId && !seen.has(edge.from)) {
+      seen.add(edge.from);
+
+      const entry = secureDataSet.linker.get(edge.from);
+      result.push({
+        nodeId: edge.from,
+        name: entry.name,
+        version: entry.version
+      });
+    }
+  }
+
+  return result.sort((nodeA, nodeB) => nodeA.name.localeCompare(nodeB.name));
+}
+
+function computeDrillSubtree(rootNodeId) {
+  const subtreeIds = new Set([rootNodeId]);
+  const queue = [rootNodeId];
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+    for (const edge of secureDataSet.rawEdgesData) {
+      if (edge.to === current && !subtreeIds.has(edge.from)) {
+        subtreeIds.add(edge.from);
+        queue.push(edge.from);
+      }
+    }
+  }
+
+  return subtreeIds;
+}
+
+function applyDrill(nodeId) {
+  const subtreeIds = computeDrillSubtree(nodeId);
+  const updates = [...secureDataSet.linker.keys()].map((id) => {
+    return {
+      id,
+      hidden: !subtreeIds.has(id)
+    };
+  });
+  nsn.nodes.update(updates);
+  nsn.network.unselectAll();
+  updateDrillBreadcrumb();
+  PackageInfo.close();
+  nsn.neighbourHighlight({ nodes: [nodeId], edges: [] });
+}
+
+function drillInto(nodeId) {
+  const currentRoot = drillStack.length === 0 ? 0 : drillStack.at(-1);
+  if (nodeId === currentRoot) {
+    return;
+  }
+
+  drillStack.push(nodeId);
+  applyDrill(nodeId);
+}
+
+function drillBackTo(stackIndex) {
+  drillStack.length = stackIndex + 1;
+  applyDrill(drillStack[stackIndex]);
+}
+
+function resetDrill() {
+  drillStack.length = 0;
+  const updates = [...secureDataSet.linker.keys()].map((id) => {
+    return {
+      id,
+      hidden: false
+    };
+  });
+  nsn.nodes.update(updates);
+  updateDrillBreadcrumb();
+  PackageInfo.close();
+}
+
+function updateDrillBreadcrumb() {
+  const rootEntry = secureDataSet.linker.get(0);
+  drillBreadcrumb.root = {
+    name: rootEntry.name,
+    version: rootEntry.version
+  };
+  drillBreadcrumb.stack = drillStack.map((nodeId) => {
+    const entry = secureDataSet.linker.get(nodeId);
+
+    return {
+      name: entry.name,
+      version: entry.version
+    };
+  });
+  drillBreadcrumb.siblings = drillStack.map((nodeId, index) => {
+    const parentId = index === 0 ? 0 : drillStack[index - 1];
+
+    return computeSiblings(parentId, nodeId);
+  });
+}
+
 async function init(options = {}) {
   const { navigateToNetworkView = false } = options;
 
@@ -158,7 +273,22 @@ async function init(options = {}) {
     packageInfoOpened = false;
   });
 
-  nsn.network.on("click", updateShowInfoMenu);
+  nsn.network.on("click", (params) => {
+    const srcEvent = params.event?.srcEvent;
+    const isDrillClick = srcEvent?.ctrlKey || srcEvent?.metaKey;
+
+    if (isDrillClick && params.nodes.length > 0) {
+      const nodeId = Number(params.nodes[0]);
+      drillInto(nodeId);
+
+      return;
+    }
+
+    updateShowInfoMenu(params);
+  });
+
+  drillStack.length = 0;
+  updateDrillBreadcrumb();
 
   const networkNavigation = new NetworkNavigation(secureDataSet, nsn);
   window.networkNav = networkNavigation;
