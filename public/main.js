@@ -13,6 +13,8 @@ import "./components/search-command/search-command.js";
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import "./components/views/search/search.js";
+import "./components/views/warnings/warnings.js";
+import "./components/root-selector/root-selector.js";
 import "./components/network-breadcrumb/network-breadcrumb.js";
 import { NetworkNavigation } from "./core/network-navigation.js";
 import { i18n } from "./core/i18n.js";
@@ -27,12 +29,15 @@ let secureDataSet;
 let nsn;
 let homeView;
 let searchview;
+let warningsView;
+let viewAfterSwitch = null;
 let drillBreadcrumb;
 let packageInfoOpened = false;
 const drillStack = [];
 
 document.addEventListener("DOMContentLoaded", async() => {
   searchview = document.querySelector("search-view");
+  warningsView = document.querySelector("warnings-view");
 
   window.cachedSpecs = [];
   window.locker = null;
@@ -44,15 +49,24 @@ document.addEventListener("DOMContentLoaded", async() => {
   // update searchview after window.i18n is set
   searchview.requestUpdate();
 
-  document.body.appendChild(
-    utils.createDOMElement("div", {
-      classList: ["search-shortcut-hint"],
-      attributes: { id: "search-shortcut-hint" },
-      childs: [
-        utils.createDOMElement("kbd", { text: kSearchShortcut })
-      ]
-    })
-  );
+  const isNetworkViewActive = document.getElementById("network--view").classList.contains("hidden") === false;
+  const searchShortcutHint = utils.createDOMElement("div", {
+    classList: isNetworkViewActive ? ["search-shortcut-hint"] : ["search-shortcut-hint", "hidden"],
+    attributes: { id: "search-shortcut-hint" },
+    childs: [
+      utils.createDOMElement("kbd", { text: kSearchShortcut })
+    ]
+  });
+  document.body.appendChild(searchShortcutHint);
+
+  window.addEventListener(EVENTS.NETWORK_VIEW_HID, () => {
+    searchShortcutHint.classList.add("hidden");
+  });
+  window.addEventListener(EVENTS.NETWORK_VIEW_SHOWED, () => {
+    if (!document.getElementById("network--view").classList.contains("hidden")) {
+      searchShortcutHint.classList.remove("hidden");
+    }
+  });
 
   drillBreadcrumb = document.querySelector("network-breadcrumb");
   drillBreadcrumb.addEventListener(EVENTS.DRILL_RESET, resetDrill);
@@ -67,6 +81,11 @@ document.addEventListener("DOMContentLoaded", async() => {
   drillBreadcrumb.addEventListener(EVENTS.ROOT_SWITCH, function handleRootSwitch(event) {
     window.socket.commands.search(event.detail.spec);
   });
+
+  window.addEventListener(EVENTS.ROOT_SWITCH, function handleGlobalRootSwitch(event) {
+    viewAfterSwitch = window.navigation.activeMenu?.getAttribute("data-menu") ?? null;
+    window.socket.commands.search(event.detail.spec);
+  });
   drillBreadcrumb.addEventListener(EVENTS.ROOT_REMOVE, function handleRootRemove() {
     const specToRemove = window.activePackage;
     const nextPackage = drillBreadcrumb.packages[0];
@@ -76,9 +95,19 @@ document.addEventListener("DOMContentLoaded", async() => {
     else {
       window.navigation.hideMenu("network--view");
       window.navigation.hideMenu("home--view");
+      window.navigation.hideMenu("warnings--view");
       window.navigation.setNavByName("search--view");
     }
     window.socket.commands.remove(specToRemove);
+  });
+
+  warningsView.addEventListener("click", (event) => {
+    const clickedRow = event.composedPath().find(
+      (el) => el instanceof Element && el.classList.contains("pkg-row")
+    );
+    if (!clickedRow) {
+      PackageInfo.close();
+    }
   });
 
   await init();
@@ -112,7 +141,15 @@ async function onSocketPayload(event) {
   const { name, version } = payload.rootDependency;
   window.activePackage = name + "@" + version;
 
-  await init({ navigateToNetworkView: true });
+  const targetView = viewAfterSwitch;
+  viewAfterSwitch = null;
+
+  await init({ navigateToNetworkView: targetView === null });
+
+  if (targetView !== null && targetView !== "network--view") {
+    window.navigation.setNavByName(targetView);
+  }
+
   dispatchSearchCommandInit();
 }
 
@@ -274,6 +311,8 @@ async function init(options = {}) {
 
   window.navigation.showMenu("network--view");
   window.navigation.showMenu("home--view");
+  window.navigation.showMenu("warnings--view");
+  warningsView.secureDataSet = secureDataSet;
 
   window.vulnerabilityStrategy = secureDataSet.data.vulnerabilityStrategy;
 
@@ -342,6 +381,7 @@ async function loadDataSet() {
   if (secureDataSet.data === null) {
     window.navigation.hideMenu("network--view");
     window.navigation.hideMenu("home--view");
+    window.navigation.hideMenu("warnings--view");
     window.navigation.setNavByName("search--view");
 
     return false;

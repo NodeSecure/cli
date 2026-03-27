@@ -7,7 +7,8 @@ const kAvailableView = new Set([
   "network--view",
   "home--view",
   "search--view",
-  "settings--view"
+  "settings--view",
+  "warnings--view"
 ]);
 
 export class ViewNavigation {
@@ -58,6 +59,10 @@ export class ViewNavigation {
           this.onNavigationSelected(this.menus.get("search--view"));
           break;
         }
+        case hotkeys.warnings: {
+          this.onNavigationSelected(this.menus.get("warnings--view"));
+          break;
+        }
       }
     });
   }
@@ -77,6 +82,10 @@ export class ViewNavigation {
     this.setAnchor(menuName);
 
     this.activeMenu = selectedNav;
+
+    if (menuName === "network--view") {
+      window.dispatchEvent(new CustomEvent(EVENTS.NETWORK_VIEW_SHOWED, { composed: true }));
+    }
   }
 
   disableActiveMenu() {
@@ -85,6 +94,10 @@ export class ViewNavigation {
 
     this.activeMenu.classList.remove("active");
     view.classList.add("hidden");
+
+    if (menuName === "network--view") {
+      window.dispatchEvent(new CustomEvent(EVENTS.NETWORK_VIEW_HID, { composed: true }));
+    }
   }
 
   getAnchor() {
