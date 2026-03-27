@@ -252,12 +252,8 @@ class PopupReport extends LitElement {
         "Content-Type": "application/json"
       }
     }).then(async(response) => {
-      const { data: json } = await response.json();
-      const url = window.URL.createObjectURL(
-        new Blob(
-          [new Uint8Array(json.data).buffer], { type: "application/pdf" }
-        )
-      );
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.target = "_blank";
