@@ -218,7 +218,9 @@ const ui = {
     childOf: "child of",
     parentOf: "parent of",
     unlocked: "unlocked",
-    locked: "locked"
+    locked: "locked",
+    switchPayload: "Switch payload",
+    removeFromCache: "Remove from cache"
   },
   search: {
     packagesCache: "Packages available in the cache",

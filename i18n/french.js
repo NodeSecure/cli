@@ -218,7 +218,9 @@ const ui = {
     childOf: "enfant de",
     parentOf: "parent de",
     unlocked: "Déverrouillé",
-    locked: "Verrouillé"
+    locked: "Verrouillé",
+    switchPayload: "Changer de payload",
+    removeFromCache: "Retirer du cache"
   },
   search: {
     packagesCache: "Packages disponibles dans le cache",

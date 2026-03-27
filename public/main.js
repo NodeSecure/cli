@@ -13,13 +13,15 @@ import "./components/search-command/search-command.js";
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import "./components/views/search/search.js";
-import "./components/drill-breadcrumb/drill-breadcrumb.js";
+import "./components/network-breadcrumb/network-breadcrumb.js";
 import { NetworkNavigation } from "./core/network-navigation.js";
 import { i18n } from "./core/i18n.js";
-import { initSearchNav } from "./core/search-nav.js";
 import * as utils from "./common/utils.js";
 import { EVENTS } from "./core/events.js";
 import { WebSocketClient } from "./websocket.js";
+
+// CONSTANTS
+const kSearchShortcut = navigator.userAgent.includes("Mac") ? "⌘K" : "Ctrl+K";
 
 let secureDataSet;
 let nsn;
@@ -42,7 +44,17 @@ document.addEventListener("DOMContentLoaded", async() => {
   // update searchview after window.i18n is set
   searchview.requestUpdate();
 
-  drillBreadcrumb = document.querySelector("drill-breadcrumb");
+  document.body.appendChild(
+    utils.createDOMElement("div", {
+      classList: ["search-shortcut-hint"],
+      attributes: { id: "search-shortcut-hint" },
+      childs: [
+        utils.createDOMElement("kbd", { text: kSearchShortcut })
+      ]
+    })
+  );
+
+  drillBreadcrumb = document.querySelector("network-breadcrumb");
   drillBreadcrumb.addEventListener(EVENTS.DRILL_RESET, resetDrill);
   drillBreadcrumb.addEventListener(EVENTS.DRILL_BACK, function handleDrillBack(event) {
     drillBackTo(event.detail.index);
@@ -51,6 +63,22 @@ document.addEventListener("DOMContentLoaded", async() => {
     const { stackIndex, nodeId } = event.detail;
     drillStack.length = stackIndex;
     drillInto(nodeId);
+  });
+  drillBreadcrumb.addEventListener(EVENTS.ROOT_SWITCH, function handleRootSwitch(event) {
+    window.socket.commands.search(event.detail.spec);
+  });
+  drillBreadcrumb.addEventListener(EVENTS.ROOT_REMOVE, function handleRootRemove() {
+    const specToRemove = window.activePackage;
+    const nextPackage = drillBreadcrumb.packages[0];
+    if (nextPackage) {
+      window.socket.commands.search(nextPackage.spec);
+    }
+    else {
+      window.navigation.hideMenu("network--view");
+      window.navigation.hideMenu("home--view");
+      window.navigation.setNavByName("search--view");
+    }
+    window.socket.commands.remove(specToRemove);
   });
 
   await init();
@@ -85,7 +113,6 @@ async function onSocketPayload(event) {
   window.activePackage = name + "@" + version;
 
   await init({ navigateToNetworkView: true });
-  initSearchNav(payload, { initFromZero: false });
   dispatchSearchCommandInit();
 }
 
@@ -112,11 +139,8 @@ async function onSocketInitOrReload(event) {
     await init();
   }
 
-  const navCache = cache.slice(0, 3);
-  const overflowCache = cache.slice(3);
-
-  initSearchNav(navCache);
-  searchview.cachedSpecs = overflowCache;
+  drillBreadcrumb.packages = cache.filter((pkg) => pkg.spec !== window.activePackage);
+  searchview.cachedSpecs = cache;
   searchview.reset();
   dispatchSearchCommandInit();
 }
@@ -222,6 +246,9 @@ function updateDrillBreadcrumb() {
     name: rootEntry.name,
     version: rootEntry.version
   };
+  drillBreadcrumb.packages = window.cachedSpecs.filter(
+    (pkg) => pkg.spec !== window.activePackage
+  );
   drillBreadcrumb.stack = drillStack.map((nodeId) => {
     const entry = secureDataSet.linker.get(nodeId);
 
@@ -295,17 +322,6 @@ async function init(options = {}) {
 
   if (navigateToNetworkView) {
     window.navigation.setNavByName("network--view");
-  }
-
-  // update search nav
-  const pkgs = document.querySelectorAll("#search-nav .packages > .package");
-  for (const pkg of pkgs) {
-    if (pkg.dataset.name.startsWith(window.activePackage)) {
-      pkg.classList.add("active");
-    }
-    else {
-      pkg.classList.remove("active");
-    }
   }
 
   PackageInfo.close();
