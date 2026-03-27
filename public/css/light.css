@@ -15,6 +15,7 @@
   --dark-theme-accent-darker: #261c66;
   --dark-theme-accent-color: #8d7afc;
   --dark-theme-gray: #191a38;
+
 }
 
 body {
@@ -28,4 +29,5 @@ body {
 body.dark {
   color: white;
   background: var(--dark-theme-gray);
+
 }

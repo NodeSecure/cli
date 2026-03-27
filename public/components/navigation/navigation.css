@@ -76,23 +76,3 @@ nav#aside>ul li.bottom-nav {
   margin-top: auto;
 }
 
-#search-nav {
-  z-index: 30;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  height: 30px;
-  left: 50px;
-  padding-left: 20px;
-  max-width: calc(100vw - 70px);
-  box-sizing: border-box;
-  background: var(--primary);
-  transform: skewX(-20deg);
-  box-shadow: 2px 1px 10px #26107f7a;
-}
-
-body.dark #search-nav {
-  background: var(--dark-theme-primary-color);
-}
-

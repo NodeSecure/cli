@@ -13,5 +13,7 @@ export const EVENTS = {
   SEARCH_COMMAND_INIT: "search-command-init",
   DRILL_RESET: "drill-reset",
   DRILL_BACK: "drill-back",
-  DRILL_SWITCH: "drill-switch"
+  DRILL_SWITCH: "drill-switch",
+  ROOT_SWITCH: "root-switch",
+  ROOT_REMOVE: "root-remove"
 };
