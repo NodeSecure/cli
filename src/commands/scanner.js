@@ -7,13 +7,13 @@ import events from "node:events";
 import semver from "semver";
 import filenamify from "filenamify";
 import { Spinner } from "@topcli/spinner";
-import ms from "ms";
 import * as i18n from "@nodesecure/i18n";
 import * as scanner from "@nodesecure/scanner";
 
 // Import Internal Dependencies
 import kleur from "../utils/styleText.js";
 import * as http from "./http.js";
+import { logScannerStat, logScannerError, formatMs } from "./loggers/logger.js";
 import { parseContacts } from "./parsers/contacts.js";
 
 export async function auto(spec, options) {
@@ -192,75 +192,17 @@ function initLogger(spec, verbose = true) {
 
   logger.on("stat", (stat) => {
     stopSpinners();
-    console.log(kleur.bold.white(
-      i18n.getTokenSync("cli.stat",
-        kleur.blue().bold("verbose"),
-        stat.name,
-        colorExecutionTime(stat.executionTime)
-      )));
+    logScannerStat(stat);
     startSpinners();
   });
 
   logger.on("error", (error, phase) => {
     stopSpinners();
-
-    console.log(kleur.bold.white(
-      i18n.getTokenSync("cli.error.name",
-        kleur.red().bold("error"),
-        error.name
-      )));
-
-    if (error.message) {
-      console.log(i18n.getTokenSync("cli.error.message",
-        error.message
-      ));
-    }
-
-    if (phase) {
-      console.log(i18n.getTokenSync("cli.error.phase",
-        phase
-      ));
-    }
-
-    if (error.statusCode) {
-      console.log(i18n.getTokenSync("cli.error.statusCode",
-        error.statusCode
-      ));
-    }
-
-    console.log(i18n.getTokenSync("cli.error.executionTime",
-      kleur.cyan().bold(formatMs(error.executionTime))
-    ));
-
-    if (error.stack) {
-      console.log(i18n.getTokenSync("cli.error.stack",
-        error.stack
-      ));
-    }
-
+    logScannerError(error, phase);
     startSpinners();
   });
 
   return logger;
-}
-
-function formatMs(time) {
-  return ms(Number(time.toFixed(2)));
-}
-
-function colorExecutionTime(timeMs) {
-  const formatted = formatMs(timeMs);
-  if (timeMs <= 1_000) {
-    return kleur.green().bold(formatted);
-  }
-  else if (timeMs <= 5_000) {
-    return kleur.cyan().bold(formatted);
-  }
-  else if (timeMs <= 30_000) {
-    return kleur.yellow().bold(formatted);
-  }
-
-  return kleur.red().bold(formatted);
 }
 
 function stopSpinners() {

@@ -8,3 +8,4 @@ export * as scorecard from "./scorecard.js";
 export * as report from "./report.js";
 export * as cache from "./cache.js";
 export * as extractIntegrity from "./extract-integrity.js";
+export * as stats from "./stats.js";

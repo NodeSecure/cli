@@ -1,0 +1,1020 @@
+{
+  "id": "CBuXRl",
+  "rootDependency": {
+    "name": "react",
+    "version": "19.2.4",
+    "integrity": "sha512-Lfi0RfVh0gdrtD6yI6AInys+HY8Ki8E/SlIpUYm3gXzlKOXW7zvRMMC6sMQ3+3ww+ZSF5cTnOafW2T5HjtwQmg=="
+  },
+  "scannerVersion": "10.7.0",
+  "vulnerabilityStrategy": "github-advisory",
+  "warnings": [],
+  "highlighted": {
+    "contacts": [],
+    "packages": [],
+    "identifiers": []
+  },
+  "dependencies": {
+    "react": {
+      "versions": {
+        "19.2.4": {
+          "id": 0,
+          "type": "cjs",
+          "usedBy": {},
+          "isDevDependency": false,
+          "existOnRemoteRegistry": true,
+          "flags": [
+            "hasMissingOrUnusedDependency",
+            "hasWarnings"
+          ],
+          "warnings": [
+            {
+              "kind": "log-usage",
+              "location": [
+                [
+                  [
+                    310,
+                    10
+                  ],
+                  [
+                    310,
+                    30
+                  ]
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.log_usage",
+              "severity": "Information",
+              "experimental": false,
+              "value": "console.error",
+              "file": "cjs/react.production.js"
+            },
+            {
+              "kind": "insecure-random",
+              "location": [
+                [
+                  529,
+                  43
+                ],
+                [
+                  529,
+                  56
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.insecure_random",
+              "severity": "Information",
+              "experimental": false,
+              "value": null,
+              "file": "cjs/react.development.js"
+            },
+            {
+              "kind": "log-usage",
+              "location": [
+                [
+                  [
+                    17,
+                    10
+                  ],
+                  [
+                    21,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    413,
+                    14
+                  ],
+                  [
+                    415,
+                    15
+                  ]
+                ],
+                [
+                  [
+                    1014,
+                    10
+                  ],
+                  [
+                    1016,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    1176,
+                    12
+                  ],
+                  [
+                    1178,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    1222,
+                    8
+                  ],
+                  [
+                    1224,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    1238,
+                    8
+                  ],
+                  [
+                    1240,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    1245,
+                    8
+                  ],
+                  [
+                    1247,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    40,
+                    9
+                  ],
+                  [
+                    44,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    112,
+                    12
+                  ],
+                  [
+                    114,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    179,
+                    10
+                  ],
+                  [
+                    182,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    194,
+                    8
+                  ],
+                  [
+                    196,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    502,
+                    12
+                  ],
+                  [
+                    505,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    507,
+                    12
+                  ],
+                  [
+                    510,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    518,
+                    8
+                  ],
+                  [
+                    520,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    539,
+                    16
+                  ],
+                  [
+                    541,
+                    17
+                  ]
+                ],
+                [
+                  [
+                    556,
+                    8
+                  ],
+                  [
+                    558,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    741,
+                    14
+                  ],
+                  [
+                    741,
+                    34
+                  ]
+                ],
+                [
+                  [
+                    835,
+                    12
+                  ],
+                  [
+                    837,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    890,
+                    14
+                  ],
+                  [
+                    892,
+                    15
+                  ]
+                ],
+                [
+                  [
+                    1064,
+                    10
+                  ],
+                  [
+                    1066,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    1068,
+                    12
+                  ],
+                  [
+                    1071,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    1074,
+                    12
+                  ],
+                  [
+                    1079,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    1082,
+                    8
+                  ],
+                  [
+                    1084,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    1126,
+                    8
+                  ],
+                  [
+                    1129,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    1183,
+                    14
+                  ],
+                  [
+                    1185,
+                    15
+                  ]
+                ],
+                [
+                  [
+                    1209,
+                    8
+                  ],
+                  [
+                    1211,
+                    9
+                  ]
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.log_usage",
+              "severity": "Information",
+              "experimental": false,
+              "value": "console.warn, console.error",
+              "file": "cjs/react.development.js"
+            },
+            {
+              "kind": "log-usage",
+              "location": [
+                [
+                  [
+                    74,
+                    12
+                  ],
+                  [
+                    76,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    141,
+                    10
+                  ],
+                  [
+                    144,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    156,
+                    8
+                  ],
+                  [
+                    158,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    425,
+                    8
+                  ],
+                  [
+                    427,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    472,
+                    12
+                  ],
+                  [
+                    475,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    477,
+                    12
+                  ],
+                  [
+                    480,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    744,
+                    10
+                  ],
+                  [
+                    746,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    748,
+                    12
+                  ],
+                  [
+                    751,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    754,
+                    12
+                  ],
+                  [
+                    759,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    762,
+                    8
+                  ],
+                  [
+                    764,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    806,
+                    8
+                  ],
+                  [
+                    809,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    375,
+                    14
+                  ],
+                  [
+                    377,
+                    15
+                  ]
+                ],
+                [
+                  [
+                    694,
+                    10
+                  ],
+                  [
+                    696,
+                    11
+                  ]
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.log_usage",
+              "severity": "Information",
+              "experimental": false,
+              "value": "console.error, console.warn",
+              "file": "cjs/react.react-server.development.js"
+            },
+            {
+              "kind": "log-usage",
+              "location": [
+                [
+                  [
+                    38,
+                    12
+                  ],
+                  [
+                    40,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    132,
+                    10
+                  ],
+                  [
+                    135,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    147,
+                    8
+                  ],
+                  [
+                    149,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    216,
+                    12
+                  ],
+                  [
+                    218,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    232,
+                    10
+                  ],
+                  [
+                    238,
+                    11
+                  ]
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.log_usage",
+              "severity": "Information",
+              "experimental": false,
+              "value": "console.error",
+              "file": "cjs/react-jsx-runtime.react-server.development.js"
+            },
+            {
+              "kind": "log-usage",
+              "location": [
+                [
+                  [
+                    38,
+                    12
+                  ],
+                  [
+                    40,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    132,
+                    10
+                  ],
+                  [
+                    135,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    147,
+                    8
+                  ],
+                  [
+                    149,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    216,
+                    12
+                  ],
+                  [
+                    218,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    232,
+                    10
+                  ],
+                  [
+                    238,
+                    11
+                  ]
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.log_usage",
+              "severity": "Information",
+              "experimental": false,
+              "value": "console.error",
+              "file": "cjs/react-jsx-runtime.development.js"
+            },
+            {
+              "kind": "log-usage",
+              "location": [
+                [
+                  [
+                    38,
+                    12
+                  ],
+                  [
+                    40,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    132,
+                    10
+                  ],
+                  [
+                    135,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    147,
+                    8
+                  ],
+                  [
+                    149,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    216,
+                    12
+                  ],
+                  [
+                    218,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    232,
+                    10
+                  ],
+                  [
+                    238,
+                    11
+                  ]
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.log_usage",
+              "severity": "Information",
+              "experimental": false,
+              "value": "console.error",
+              "file": "cjs/react-jsx-dev-runtime.react-server.development.js"
+            },
+            {
+              "kind": "log-usage",
+              "location": [
+                [
+                  [
+                    38,
+                    12
+                  ],
+                  [
+                    40,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    132,
+                    10
+                  ],
+                  [
+                    135,
+                    11
+                  ]
+                ],
+                [
+                  [
+                    147,
+                    8
+                  ],
+                  [
+                    149,
+                    9
+                  ]
+                ],
+                [
+                  [
+                    216,
+                    12
+                  ],
+                  [
+                    218,
+                    13
+                  ]
+                ],
+                [
+                  [
+                    232,
+                    10
+                  ],
+                  [
+                    238,
+                    11
+                  ]
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.log_usage",
+              "severity": "Information",
+              "experimental": false,
+              "value": "console.error",
+              "file": "cjs/react-jsx-dev-runtime.development.js"
+            },
+            {
+              "kind": "log-usage",
+              "location": [
+                [
+                  [
+                    19,
+                    8
+                  ],
+                  [
+                    21,
+                    9
+                  ]
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.log_usage",
+              "severity": "Information",
+              "experimental": false,
+              "value": "console.error",
+              "file": "cjs/react-compiler-runtime.development.js"
+            }
+          ],
+          "dependencyCount": 0,
+          "gitUrl": null,
+          "alias": {},
+          "description": "React is a JavaScript library for building user interfaces.",
+          "size": 172628,
+          "author": null,
+          "engines": {
+            "node": ">=0.10.0"
+          },
+          "scripts": {},
+          "licenses": [
+            {
+              "licenses": {
+                "MIT": "https://spdx.org/licenses/MIT.html#licenseText"
+              },
+              "spdx": {
+                "osi": true,
+                "fsf": true,
+                "fsfAndOsi": true,
+                "includesDeprecated": false
+              },
+              "fileName": "package.json"
+            },
+            {
+              "licenses": {
+                "MIT": "https://spdx.org/licenses/MIT.html#licenseText"
+              },
+              "spdx": {
+                "osi": true,
+                "fsf": true,
+                "fsfAndOsi": true,
+                "includesDeprecated": false
+              },
+              "fileName": "LICENSE"
+            }
+          ],
+          "uniqueLicenseIds": [
+            "MIT"
+          ],
+          "composition": {
+            "extensions": [
+              ".js",
+              "",
+              ".md",
+              ".json"
+            ],
+            "files": [
+              "LICENSE",
+              "README.md",
+              "cjs/react-compiler-runtime.development.js",
+              "cjs/react-compiler-runtime.production.js",
+              "cjs/react-compiler-runtime.profiling.js",
+              "cjs/react-jsx-dev-runtime.development.js",
+              "cjs/react-jsx-dev-runtime.production.js",
+              "cjs/react-jsx-dev-runtime.profiling.js",
+              "cjs/react-jsx-dev-runtime.react-server.development.js",
+              "cjs/react-jsx-dev-runtime.react-server.production.js",
+              "cjs/react-jsx-runtime.development.js",
+              "cjs/react-jsx-runtime.production.js",
+              "cjs/react-jsx-runtime.profiling.js",
+              "cjs/react-jsx-runtime.react-server.development.js",
+              "cjs/react-jsx-runtime.react-server.production.js",
+              "cjs/react.development.js",
+              "cjs/react.production.js",
+              "cjs/react.react-server.development.js",
+              "cjs/react.react-server.production.js",
+              "compiler-runtime.js",
+              "index.js",
+              "jsx-dev-runtime.js",
+              "jsx-dev-runtime.react-server.js",
+              "jsx-runtime.js",
+              "jsx-runtime.react-server.js",
+              "package.json",
+              "react.react-server.js"
+            ],
+            "minified": [],
+            "unused": [],
+            "missing": [
+              "react"
+            ],
+            "required_files": [
+              "cjs/react.production.js",
+              "cjs/react.development.js",
+              "cjs/react.react-server.production.js",
+              "cjs/react.react-server.development.js",
+              "cjs/react-jsx-runtime.react-server.production.js",
+              "cjs/react-jsx-runtime.react-server.development.js",
+              "cjs/react-jsx-runtime.production.js",
+              "cjs/react-jsx-runtime.development.js",
+              "cjs/react-jsx-dev-runtime.react-server.production.js",
+              "cjs/react-jsx-dev-runtime.react-server.development.js",
+              "cjs/react-jsx-dev-runtime.production.js",
+              "cjs/react-jsx-dev-runtime.development.js",
+              "cjs/react-compiler-runtime.production.js",
+              "cjs/react-compiler-runtime.development.js"
+            ],
+            "required_nodejs": [],
+            "required_thirdparty": [
+              "react"
+            ],
+            "required_subpath": {}
+          },
+          "repository": {
+            "type": "git",
+            "url": "https://github.com/facebook/react.git",
+            "directory": "packages/react"
+          },
+          "integrity": "834bff9884ee976c5d7bf1045232be43f2c64c36",
+          "links": {
+            "npm": "https://www.npmjs.com/package/react/v/19.2.4",
+            "homepage": "https://react.dev/",
+            "repository": "https://github.com/facebook/react"
+          }
+        }
+      },
+      "vulnerabilities": [],
+      "metadata": {
+        "homepage": "https://react.dev/",
+        "publishedCount": 2760,
+        "lastVersion": "19.2.4",
+        "lastUpdateAt": "2026-01-26T18:23:10.244Z",
+        "hasReceivedUpdateInOneYear": true,
+        "hasChangedAuthor": false,
+        "integrity": {
+          "19.2.4": "834bff9884ee976c5d7bf1045232be43f2c64c36"
+        },
+        "author": {
+          "name": "jeffbski",
+          "email": "jeff.barczewski@gmail.com"
+        },
+        "publishers": [
+          {
+            "name": "react-bot",
+            "email": "react-core@meta.com",
+            "version": "0.0.0-experimental-3cb2c420-20260324",
+            "at": "2026-03-25T16:40:02.078Z"
+          },
+          {
+            "name": "acdlite",
+            "email": "npm@andrewclark.io",
+            "version": "0.0.0-experimental-594093496-20230209",
+            "at": "2023-02-09T16:56:14.956Z"
+          },
+          {
+            "name": "gnoff",
+            "email": "jcs.gnoff@gmail.com",
+            "version": "18.2.0",
+            "at": "2022-06-14T19:46:38.369Z"
+          },
+          {
+            "name": "gaearon",
+            "email": "dan.abramov@gmail.com",
+            "version": "17.0.2",
+            "at": "2021-03-22T21:56:19.536Z"
+          },
+          {
+            "name": "brianvaughn",
+            "email": "briandavidvaughn@gmail.com",
+            "version": "0.0.0-experimental-27659559e",
+            "at": "2021-01-11T16:19:28.958Z"
+          },
+          {
+            "name": "lunaruan",
+            "email": "lunaris.ruan@gmail.com",
+            "version": "0.0.0-experimental-aae83a4b9",
+            "at": "2020-03-18T01:10:41.870Z"
+          },
+          {
+            "name": "threepointone",
+            "email": "threepointone@gmail.com",
+            "version": "16.13.0",
+            "at": "2020-02-26T20:19:52.312Z"
+          },
+          {
+            "name": "clemmy",
+            "email": "clement.hoang24@gmail.com",
+            "version": "16.2.0",
+            "at": "2017-11-28T21:32:28.829Z"
+          },
+          {
+            "name": "sophiebits",
+            "email": "npm@sophiebits.com",
+            "version": "15.6.2",
+            "at": "2017-09-26T00:10:25.817Z"
+          },
+          {
+            "name": "flarnie",
+            "email": "flarnie.npm@gmail.com",
+            "version": "16.0.0-rc.1",
+            "at": "2017-09-06T23:11:31.405Z"
+          },
+          {
+            "name": "spicyj",
+            "email": "ben@benalpert.com",
+            "version": "16.0.0-alpha.4",
+            "at": "2017-03-13T15:57:45.616Z"
+          },
+          {
+            "name": "tomocchino",
+            "email": "tomocchino@gmail.com",
+            "version": "15.4.0",
+            "at": "2016-11-16T14:33:05.693Z"
+          },
+          {
+            "name": "sebmarkbage",
+            "email": "sebastian@calyptus.eu",
+            "version": "15.4.0-rc.4",
+            "at": "2016-10-14T22:00:00.474Z"
+          },
+          {
+            "name": "zpao",
+            "email": "paul@oshannessy.com",
+            "version": "15.4.0-rc.2",
+            "at": "2016-10-05T22:51:07.111Z"
+          },
+          {
+            "name": "graue",
+            "email": "scott@oceanbase.org",
+            "version": "0.14.7",
+            "at": "2016-01-28T19:59:29.509Z"
+          },
+          {
+            "name": "jeffmo",
+            "email": "jeff@anafx.com",
+            "version": "0.12.1",
+            "at": "2014-11-18T06:56:11.863Z"
+          },
+          {
+            "name": "jeffbski",
+            "email": "jeff.barczewski@gmail.com",
+            "version": "0.7.1",
+            "at": "2013-05-23T19:48:26.316Z"
+          }
+        ],
+        "maintainers": [
+          {
+            "name": "fb",
+            "email": "opensource+npm@fb.com"
+          },
+          {
+            "name": "react-bot",
+            "email": "react-core@meta.com"
+          }
+        ],
+        "hasManyPublishers": false
+      }
+    }
+  },
+  "metadata": {
+    "startedAt": 1774601089503,
+    "executionTime": 771,
+    "apiCalls": [
+      {
+        "name": "pacote.manifest react@19.2.4",
+        "startedAt": 1774601089504,
+        "executionTime": 20
+      },
+      {
+        "name": "pacote.extract react@19.2.4",
+        "startedAt": 1774601089529,
+        "executionTime": 83
+      },
+      {
+        "name": "tarball.scanDirOrArchive react@19.2.4",
+        "startedAt": 1774601089612,
+        "executionTime": 247
+      }
+    ],
+    "apiCallsCount": 3,
+    "errorCount": 0,
+    "errors": []
+  }
+}

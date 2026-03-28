@@ -10,7 +10,7 @@ const cli = {
   successfully_written_json: tS`Sonuç dosyası başarıyla yazıldı: ${0}`,
   http_server_started: "HTTP Sunucusu başlatıldı:",
   missingEnv: tS`${0} ortam değişkeni eksik!`,
-  stat: tS`${0} ${1} içinde ${2}`,
+  stat: tS`${0}${1} içinde ${2}`,
   error: {
     name: tS`${0} adı: ${1}`,
     message: tS`Mesaj: ${0}`,
@@ -90,6 +90,13 @@ const cli = {
       missingSpecVersion: tS`'${0}' paketi için bir sürüm belirtmelisiniz.`,
       invalidSpec: tS`'${0}' paket özelliği geçersiz.`,
       specNotFound: tS`'${0}' paket özelliği npm kayıt defterinde bulunamadı.`
+    },
+    stats: {
+      desc: "Bir taramanın istatistiklerini görüntüle.",
+      elapsed: tS`Tarama süresi: ${0}`,
+      stats: tS`API çağrı sayısı: ${0}`,
+      error: "İstatistikleri görüntülemeden önce bir tarama yapılmalıdır.",
+      errors: tS`Hata sayısı: ${0}`
     }
   },
   startHttp: {

@@ -135,6 +135,12 @@ prog
   .example("nsecure extract integrity lodash@^4.1.2")
   .action(commands.extractIntegrity.main);
 
+prog
+  .command("stats")
+  .describe(i18n.getTokenSync("cli.commands.stats.desc"))
+  .example("nsecure stats")
+  .action(commands.stats.main);
+
 prog.parse(process.argv);
 
 function defaultScannerCommand(name, options = {}) {
