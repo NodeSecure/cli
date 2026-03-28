@@ -124,7 +124,7 @@ export class WarningsView extends LitElement {
 
     :host-context(body.dark) {
       --bg: var(--dark-theme-gray);
-  
+
       color: rgb(255 255 255 / 87%);
     }
 
@@ -160,7 +160,7 @@ export class WarningsView extends LitElement {
     }
 
     .warnings-subtitle {
-      font-size: 13px;
+      font-size: 16px;
       color: #7a7595;
       margin: 0 0 16px;
     }
@@ -179,7 +179,7 @@ export class WarningsView extends LitElement {
       display: flex;
       align-items: center;
       gap: 5px;
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 600;
       padding: 3px 10px;
       border-radius: 20px;
@@ -207,7 +207,7 @@ export class WarningsView extends LitElement {
     }
 
     .severity-section h2 {
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -250,14 +250,14 @@ export class WarningsView extends LitElement {
     }
 
     .kind-name {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
       flex: 1;
       font-family: mononoki, monospace;
     }
 
     .severity-badge {
-      font-size: 10px;
+      font-size: 13px;
       font-weight: 700;
       padding: 2px 7px;
       border-radius: 4px;
@@ -267,7 +267,7 @@ export class WarningsView extends LitElement {
     }
 
     .docs-link {
-      font-size: 11px;
+      font-size: 14px;
       color: #7c6fff;
       text-decoration: none;
       opacity: 0.8;
@@ -282,7 +282,7 @@ export class WarningsView extends LitElement {
     :host-context(body.dark) .docs-link { color: #a394ff; }
 
     .kind-card--meta {
-      font-size: 11px;
+      font-size: 14px;
       color: #7a7595;
       padding: 0 16px 10px;
     }
@@ -318,7 +318,7 @@ export class WarningsView extends LitElement {
     }
 
     .pkg-name {
-      font-size: 12px;
+      font-size: 16px;
       font-family: mononoki, monospace;
       flex: 1;
     }
@@ -332,7 +332,7 @@ export class WarningsView extends LitElement {
     }
 
     .pkg-count {
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 600;
       color: #7a7595;
       background: rgb(0 0 0 / 5%);
@@ -373,7 +373,7 @@ export class WarningsView extends LitElement {
       return;
     }
 
-    window.dispatchEvent(new CustomEvent(EVENTS.TREE_NODE_CLICK, {
+    window.dispatchEvent(new CustomEvent(EVENTS.WARNINGS_PACKAGE_CLICK, {
       detail: { nodeId }
     }));
   }
