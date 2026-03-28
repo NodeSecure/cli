@@ -271,6 +271,18 @@ const ui = {
   lockedNavigation: {
     next: "Suivant",
     prev: "Précédent"
+  },
+  warnings: {
+    title: "Avertissements",
+    totalWarnings: "avertissements",
+    totalPackages: "packages concernés",
+    noWarnings: "Aucun avertissement trouvé",
+    docs: "docs",
+    packages: "packages",
+    occurrences: "occurrences",
+    critical: "Critique",
+    warning: "Avertissement",
+    information: "Information"
   }
 };
 

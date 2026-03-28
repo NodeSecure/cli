@@ -15,5 +15,6 @@ export const EVENTS = {
   DRILL_BACK: "drill-back",
   DRILL_SWITCH: "drill-switch",
   ROOT_SWITCH: "root-switch",
-  ROOT_REMOVE: "root-remove"
+  ROOT_REMOVE: "root-remove",
+  WARNINGS_PACKAGE_CLICK: "warnings-package-click"
 };
