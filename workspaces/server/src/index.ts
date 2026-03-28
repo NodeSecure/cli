@@ -7,6 +7,7 @@ import http from "node:http";
 import sirv from "sirv";
 import { PayloadCache } from "@nodesecure/cache";
 import type { Payload } from "@nodesecure/scanner";
+import type { report } from "@nodesecure/report";
 
 // Import Internal Dependencies
 import { getApiRouter } from "./endpoints/index.ts";
@@ -32,6 +33,7 @@ export interface BuildServerOptions {
     res: http.ServerResponse,
     next: () => void
   ) => void;
+  reporter?: typeof report;
 }
 
 export async function buildServer(
@@ -47,7 +49,8 @@ export async function buildServer(
     scanType = "from",
     projectRootDir,
     componentsDir,
-    i18n
+    i18n,
+    reporter
   } = options;
   const cache = await new PayloadCache().load();
 
@@ -58,7 +61,8 @@ export async function buildServer(
   const store: AsyncStoreContext = {
     i18n,
     viewBuilder,
-    cache
+    cache,
+    reporter
   };
   if (runFromPayload && dataFilePath !== undefined) {
     const payloadStr = await fs.readFile(dataFilePath, "utf-8");

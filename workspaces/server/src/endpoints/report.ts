@@ -61,7 +61,7 @@ export async function post(
   const body = await bodyParser<ReportRequestBody>(req);
   const { title, includesAllDeps, theme } = body;
 
-  const { cache } = context.getStore()!;
+  const { cache, reporter: reportFn = report } = context.getStore()!;
 
   const currentSpec = cache.getCurrentSpec();
   if (currentSpec === null) {
@@ -87,10 +87,12 @@ export async function post(
   const reportPayload = structuredClone({
     ...kReportPayload,
     title,
-    npm: repo === undefined ? undefined : {
-      organizationPrefix,
-      packages: [repo]
-    },
+    npm: repo === undefined ?
+      undefined :
+      {
+        organizationPrefix,
+        packages: [repo]
+      },
     theme
   });
 
@@ -101,14 +103,12 @@ export async function post(
         [name]: scannerPayload.dependencies[name]
       } satisfies Dependencies;
 
-    const data = await report(
+    const data = await reportFn(
       dependencies,
       reportPayload
     );
 
-    return send(res, {
-      data
-    }, {
+    return send(res, data, {
       headers: {
         "content-type": "application/pdf"
       }

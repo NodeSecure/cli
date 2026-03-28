@@ -3,6 +3,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 
 // Import Third-party Dependencies
 import type { PayloadCache } from "@nodesecure/cache";
+import type { report } from "@nodesecure/report";
 
 // Import Internal Dependencies
 import type { ViewBuilder } from "./ViewBuilder.class.ts";
@@ -18,6 +19,7 @@ export interface AsyncStoreContext {
     french: NestedStringRecord;
   };
   viewBuilder: ViewBuilder;
+  reporter?: typeof report;
 }
 
 export const context = new AsyncLocalStorage<AsyncStoreContext>();

@@ -10,7 +10,7 @@ export interface SendOptions {
   headers?: OutgoingHttpHeaders;
 }
 
-type SendData = string | object;
+type SendData = string | object | Buffer;
 
 export function send(
   res: ServerResponse,
@@ -21,9 +21,12 @@ export function send(
 
   let contentType = headers["content-type"] as string | undefined
     ?? res.getHeader("content-type") as string | undefined;
-
-  let body: string;
-  if (typeof data === "object") {
+  let body: string | Buffer;
+  if (Buffer.isBuffer(data)) {
+    body = data;
+    contentType ??= "application/octet-stream";
+  }
+  else if (typeof data === "object") {
     body = JSON.stringify(data);
     contentType ??= "application/json;charset=utf-8";
   }

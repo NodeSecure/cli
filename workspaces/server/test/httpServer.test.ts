@@ -41,6 +41,7 @@ describe("httpServer", () => {
     ({ httpServer } = await buildServer(JSON_PATH, {
       projectRootDir: kProjectRootDir,
       componentsDir: kComponentsDir,
+      reporter: async() => Buffer.from("fake-pdf-data"),
       i18n: {
         english: {
           ui: {}
@@ -282,7 +283,7 @@ describe("httpServer", () => {
     });
   });
 
-  test.skip("'/report' should return a Buffer", async() => {
+  test("'/report' should return a Buffer", async() => {
     const result = await post<Buffer>(
       new URL("/report", kHttpURL),
       {
