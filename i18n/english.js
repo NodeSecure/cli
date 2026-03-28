@@ -232,6 +232,14 @@ const ui = {
     emptyHint: "Search the npm registry or enter a spec directly to scan.",
     scan: "Scan"
   },
+  tree: {
+    root: "Root",
+    depth: "Depth",
+    deps: "deps",
+    direct: "direct",
+    modeDepth: "Depth",
+    modeTree: "Tree"
+  },
   search_command: {
     placeholder: "Search packages...",
     placeholder_filter_hint: "or use",

@@ -8,6 +8,7 @@ const kAvailableView = new Set([
   "home--view",
   "search--view",
   "settings--view",
+  "tree--view",
   "warnings--view"
 ]);
 
@@ -57,6 +58,10 @@ export class ViewNavigation {
         }
         case hotkeys.search: {
           this.onNavigationSelected(this.menus.get("search--view"));
+          break;
+        }
+        case hotkeys.tree: {
+          this.onNavigationSelected(this.menus.get("tree--view"));
           break;
         }
         case hotkeys.warnings: {

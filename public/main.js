@@ -13,6 +13,7 @@ import "./components/search-command/search-command.js";
 import { Settings } from "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import "./components/views/search/search.js";
+import "./components/views/tree/tree.js";
 import "./components/views/warnings/warnings.js";
 import "./components/root-selector/root-selector.js";
 import "./components/network-breadcrumb/network-breadcrumb.js";
@@ -29,6 +30,7 @@ let secureDataSet;
 let nsn;
 let homeView;
 let searchview;
+let treeView;
 let warningsView;
 let viewAfterSwitch = null;
 let drillBreadcrumb;
@@ -37,6 +39,7 @@ const drillStack = [];
 
 document.addEventListener("DOMContentLoaded", async() => {
   searchview = document.querySelector("search-view");
+  treeView = document.querySelector("tree-view");
   warningsView = document.querySelector("warnings-view");
 
   window.cachedSpecs = [];
@@ -95,10 +98,20 @@ document.addEventListener("DOMContentLoaded", async() => {
     else {
       window.navigation.hideMenu("network--view");
       window.navigation.hideMenu("home--view");
+      window.navigation.hideMenu("tree--view");
       window.navigation.hideMenu("warnings--view");
       window.navigation.setNavByName("search--view");
     }
     window.socket.commands.remove(specToRemove);
+  });
+
+  treeView.addEventListener("click", (event) => {
+    const clickedCard = event.composedPath().find(
+      (el) => el instanceof Element && el.classList.contains("tree-card")
+    );
+    if (!clickedCard) {
+      PackageInfo.close();
+    }
   });
 
   warningsView.addEventListener("click", (event) => {
@@ -122,6 +135,21 @@ document.addEventListener("DOMContentLoaded", async() => {
       PackageInfo.ForcedPackageMenu = "warnings";
       nsn.focusNodeByNameAndVersion(node.name, node.version);
     }, 25);
+  });
+
+  window.addEventListener(EVENTS.TREE_NODE_CLICK, (event) => {
+    console.log(event);
+    if (!secureDataSet) {
+      return;
+    }
+
+    const { nodeId } = event.detail;
+    const selectedNode = secureDataSet.linker.get(nodeId);
+    if (!selectedNode) {
+      return;
+    }
+
+    new PackageInfo(selectedNode, nodeId, secureDataSet.data.dependencies[selectedNode.name], nsn);
   });
 
   await init();
@@ -333,7 +361,9 @@ async function init(options = {}) {
 
   window.navigation.showMenu("network--view");
   window.navigation.showMenu("home--view");
+  window.navigation.showMenu("tree--view");
   window.navigation.showMenu("warnings--view");
+  treeView.secureDataSet = secureDataSet;
   warningsView.secureDataSet = secureDataSet;
 
   window.vulnerabilityStrategy = secureDataSet.data.vulnerabilityStrategy;
@@ -403,6 +433,7 @@ async function loadDataSet() {
   if (secureDataSet.data === null) {
     window.navigation.hideMenu("network--view");
     window.navigation.hideMenu("home--view");
+    window.navigation.hideMenu("tree--view");
     window.navigation.hideMenu("warnings--view");
     window.navigation.setNavByName("search--view");
 
