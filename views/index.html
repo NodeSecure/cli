@@ -58,6 +58,10 @@
         <i class="icon-search"></i>
         <span></span>
       </li>
+      <li data-menu="tree--view">
+        <i class="icon-sitemap"></i>
+        <span></span>
+      </li>
       <li data-menu="warnings--view">
         <i class="icon-warning"></i>
         <span></span>
@@ -93,6 +97,7 @@
       </div>
     </div>
     <search-view id="search--view" class="view hidden"></search-view>
+    <tree-view id="tree--view" class="view hidden"></tree-view>
     <warnings-view id="warnings--view" class="view hidden"></warnings-view>
     <div id="settings--view" class="view hidden">
       <h1><i class="icon-cog"></i>[[=z.token('settings.general.title')]]</h1>
@@ -174,6 +179,10 @@
           <div>
             <input readonly id="settings" class="hotkey">
             <label for="settings">[[=z.token('settings.shortcuts.goto')]] Settings view</label>
+          </div>
+          <div>
+            <input readonly id="tree" class="hotkey">
+            <label for="tree">[[=z.token('settings.shortcuts.goto')]] Tree view</label>
           </div>
           <div>
             <input readonly id="warnings" class="hotkey">

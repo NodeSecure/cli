@@ -239,6 +239,14 @@ const ui = {
     emptyHint: "Recherchez dans le registre npm ou saisissez une spec directement.",
     scan: "Scanner"
   },
+  tree: {
+    root: "Racine",
+    depth: "Profondeur",
+    deps: "dépendances",
+    direct: "directes",
+    modeDepth: "Profondeur",
+    modeTree: "Arbre"
+  },
   search_command: {
     placeholder: "Rechercher des packages...",
     placeholder_filter_hint: "ou utiliser",
