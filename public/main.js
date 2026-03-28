@@ -179,6 +179,14 @@ async function onSocketInitOrReload(event) {
   drillBreadcrumb.packages = cache.filter((pkg) => pkg.spec !== window.activePackage);
   searchview.cachedSpecs = cache;
   searchview.reset();
+
+  if (data.status === "RELOAD" && cache.length === 0) {
+    window.navigation.hideMenu("network--view");
+    window.navigation.hideMenu("home--view");
+    window.navigation.hideMenu("warnings--view");
+    window.navigation.setNavByName("search--view");
+  }
+
   dispatchSearchCommandInit();
 }
 
