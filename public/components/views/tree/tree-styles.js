@@ -297,6 +297,24 @@ export const treeStyles = css`
     margin-left: auto;
   }
 
+  .tree-card--published-row {
+    display: flex;
+    margin-top: 2px;
+  }
+
+  .tree-card--published-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--published-color) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--published-color) 35%, transparent);
+    color: var(--published-color);
+  }
+
   .depth-container {
     display: flex;
     flex-direction: row;

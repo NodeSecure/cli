@@ -3,6 +3,23 @@ export const CARD_WIDTH = 250;
 export const CONNECTOR_GAP = 16;
 export const GAP_ROW_HEIGHT = 16;
 
+const kEpochFallback = kEpochFallback;
+const kOneDay = 1_000 * 60 * 60 * 24;
+const kOneWeek = kOneDay * 7;
+const kOneMonth = kOneDay * 30;
+const kSixMonths = kOneDay * 30 * 6;
+const kOneYear = kOneDay * 365;
+const kTwoYears = kOneDay * 365 * 2;
+
+export const ACTIVITY_GROUPS = [
+  { key: "fresh", color: "#10b981", threshold: kOneWeek },
+  { key: "recent", color: "#84cc16", threshold: kOneMonth },
+  { key: "active", color: "#eab308", threshold: kSixMonths },
+  { key: "stable", color: "#f97316", threshold: kOneYear },
+  { key: "slow", color: "#ef4444", threshold: kTwoYears },
+  { key: "stale", color: "#6b7280", threshold: Infinity }
+];
+
 export function getSortedChildren(nodeId, childrenByParent, linker) {
   return (childrenByParent.get(nodeId) ?? [])
     .sort((idA, idB) => linker.get(idA).name.localeCompare(linker.get(idB).name));
@@ -17,6 +34,37 @@ export function buildChildrenMap(rawEdgesData) {
   }
 
   return childrenByParent;
+}
+
+export function computeActivityGroups(linker, dependencies) {
+  const now = Date.now();
+  const groups = new Map(ACTIVITY_GROUPS.map(({ key }) => [key, []]));
+  const seen = new Set();
+
+  for (const [nodeId, entry] of linker) {
+    const spec = `${entry.name}@${entry.version}`;
+    if (seen.has(spec)) {
+      continue;
+    }
+    seen.add(spec);
+
+    const lastUpdateAt = dependencies[entry.name]?.metadata?.lastUpdateAt;
+    const ageMs = lastUpdateAt ? now - new Date(lastUpdateAt).getTime() : Infinity;
+
+    const bucket = ACTIVITY_GROUPS.find(({ threshold }) => ageMs < threshold) ?? ACTIVITY_GROUPS.at(-1);
+    groups.get(bucket.key).push(nodeId);
+  }
+
+  for (const [, nodeIds] of groups) {
+    nodeIds.sort((idA, idB) => {
+      const dateA = dependencies[linker.get(idA).name]?.metadata?.lastUpdateAt ?? kEpochFallback;
+      const dateB = dependencies[linker.get(idB).name]?.metadata?.lastUpdateAt ?? kEpochFallback;
+
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    });
+  }
+
+  return groups;
 }
 
 export function computeDepthGroups(rawEdgesData) {

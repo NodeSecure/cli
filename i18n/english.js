@@ -245,7 +245,14 @@ const ui = {
     deps: "deps",
     direct: "direct",
     modeDepth: "Depth",
-    modeTree: "Tree"
+    modeTree: "Tree",
+    modeActivity: "Activity",
+    activityFresh: "< 1 week",
+    activityRecent: "< 1 month",
+    activityActive: "< 6 months",
+    activityStable: "< 1 year",
+    activitySlow: "< 2 years",
+    activityStale: "Stale"
   },
   search_command: {
     placeholder: "Search packages...",
