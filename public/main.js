@@ -110,6 +110,20 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
   });
 
+  window.addEventListener(EVENTS.WARNINGS_PACKAGE_CLICK, (event) => {
+    const { nodeId } = event.detail;
+    const node = secureDataSet.linker.get(nodeId);
+    if (!node) {
+      return;
+    }
+
+    window.navigation.setNavByName("network--view");
+    setTimeout(() => {
+      PackageInfo.ForcedPackageMenu = "warnings";
+      nsn.focusNodeByNameAndVersion(node.name, node.version);
+    }, 25);
+  });
+
   await init();
   window.dispatchEvent(
     new CustomEvent(EVENTS.SETTINGS_SAVED, {
