@@ -520,6 +520,7 @@ input::placeholder {
   text-align: center;
   max-width: 80vw;
   overflow-wrap: break-word;
+  margin-top: 45px;
 }
 
 :host-context(body.dark) .scan-spec {
