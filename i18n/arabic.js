@@ -8,7 +8,7 @@ const cli = {
   successfully_written_json: tS`تم كتابة ملف النتائج بنجاح في: ${0}`,
   http_server_started: "تم تشغيل خادم HTTP على:",
   missingEnv: tS`متغير البيئة ${0} مفقود!`,
-  stat: tS`${0} ${1} في ${2}`,
+  stat: tS`${0}${1} في ${2}`,
   error: {
     name: tS`اسم ${0}: ${1}`,
     message: tS`الرسالة: ${0}`,
@@ -88,6 +88,13 @@ const cli = {
       missingSpecVersion: tS`يجب تحديد إصدار لحزمة '${0}'.`,
       invalidSpec: tS`مواصفات الحزمة '${0}' غير صالحة.`,
       specNotFound: tS`لم يتم العثور على مواصفات الحزمة '${0}' في سجل npm.`
+    },
+    stats: {
+      desc: "عرض إحصائيات المسح.",
+      elapsed: tS`مدة المسح: ${0}`,
+      stats: tS`عدد استدعاءات API: ${0}`,
+      error: "يجب إجراء مسح قبل عرض الإحصائيات.",
+      errors: tS`عدد الأخطاء: ${0}`
     }
   },
   startHttp: {

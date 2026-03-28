@@ -10,7 +10,7 @@ const cli = {
   successfully_written_json: tS`Successfully written results file at: ${0}`,
   http_server_started: "HTTP Server started on:",
   missingEnv: tS`Environment variable ${0} is missing!`,
-  stat: tS`${0} ${1} in ${2}`,
+  stat: tS`${0}${1} in ${2}`,
   error: {
     name: tS`${0} name: ${1}`,
     message: tS`Message: ${0}`,
@@ -90,6 +90,13 @@ const cli = {
       missingSpecVersion: tS`You must specify a version for '${0}' package.`,
       invalidSpec: tS`The package spec '${0}' is invalid.`,
       specNotFound: tS`The package spec '${0}' could not be found from the npm registry.`
+    },
+    stats: {
+      desc: "Display the stats of a scan.",
+      elapsed: tS`Scan duration: ${0}`,
+      stats: tS`API calls count: ${0}`,
+      error: "A scan must be performed before displaying stats.",
+      errors: tS`Error count: ${0}`
     }
   },
   startHttp: {
