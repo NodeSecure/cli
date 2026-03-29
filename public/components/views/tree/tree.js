@@ -5,7 +5,15 @@ import { LitElement, html, nothing } from "lit";
 import { currentLang } from "../../../common/utils.js";
 import { EVENTS } from "../../../core/events.js";
 import { treeStyles } from "./tree-styles.js";
-import { CARD_WIDTH, CONNECTOR_GAP, GAP_ROW_HEIGHT, computeDepthGroups, computeTreeLayout } from "./tree-layout.js";
+import {
+  CARD_WIDTH,
+  CONNECTOR_GAP,
+  GAP_ROW_HEIGHT,
+  ACTIVITY_GROUPS,
+  computeDepthGroups,
+  computeTreeLayout,
+  computeActivityGroups
+} from "./tree-layout.js";
 import { renderCardContent } from "./tree-card.js";
 import { drawConnectors } from "./tree-connectors.js";
 import "../../../components/root-selector/root-selector.js";
@@ -138,6 +146,41 @@ class TreeView extends LitElement {
     `;
   }
 
+  #renderActivityColumn(bucket, nodeIds) {
+    const i18n = window.i18n[currentLang()];
+    const labelKey = `activity${bucket.key.charAt(0).toUpperCase()}${bucket.key.slice(1)}`;
+
+    return html`
+      <div class="depth-column">
+        <div class="depth-column--header" style="border-bottom-color: ${bucket.color}">
+          <span class="depth-column--label" style="color: ${bucket.color}">${i18n.tree[labelKey]}</span>
+          <span class="depth-column--count" style="background: ${bucket.color}">${nodeIds.length}</span>
+        </div>
+        <div class="depth-column--cards">
+          ${nodeIds.map((nodeId) => {
+            const entry = this.secureDataSet.linker.get(nodeId);
+            const publishedAt = this.secureDataSet.data.dependencies[entry.name]?.metadata?.lastUpdateAt ?? null;
+
+            return renderCardContent(this.secureDataSet, { nodeId, publishedAt, publishedColor: bucket.color });
+          })}
+        </div>
+      </div>
+    `;
+  }
+
+  #renderActivityMode() {
+    const activityGroups = computeActivityGroups(
+      this.secureDataSet.linker,
+      this.secureDataSet.data.dependencies
+    );
+
+    return html`
+      <div class="depth-container">
+        ${ACTIVITY_GROUPS.map((bucket) => this.#renderActivityColumn(bucket, activityGroups.get(bucket.key)))}
+      </div>
+    `;
+  }
+
   #renderHeader(depthGroups) {
     const totalDeps = Object.keys(this.secureDataSet.data.dependencies).length;
     const directDeps = (depthGroups.get(1) ?? []).length;
@@ -165,9 +208,26 @@ class TreeView extends LitElement {
               this._mode = "tree";
             }}
           >${i18n.tree.modeTree}</button>
+          <button
+            class="mode-btn ${this._mode === "activity" ? "active" : ""}"
+            @click=${() => {
+              this._mode = "activity";
+            }}
+          >${i18n.tree.modeActivity}</button>
         </div>
       </div>
     `;
+  }
+
+  #renderBody(depthGroups, maxDepth) {
+    if (this._mode === "tree") {
+      return this.#renderTreeMode(maxDepth);
+    }
+    else if (this._mode === "activity") {
+      return this.#renderActivityMode();
+    }
+
+    return this.#renderDepthMode(depthGroups);
   }
 
   render() {
@@ -183,10 +243,7 @@ class TreeView extends LitElement {
 
     return html`
       ${this.#renderHeader(depthGroups)}
-      ${this._mode === "tree"
-          ? this.#renderTreeMode(maxDepth)
-          : this.#renderDepthMode(depthGroups)
-      }
+      ${this.#renderBody(depthGroups, maxDepth)}
     `;
   }
 }

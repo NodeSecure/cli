@@ -245,7 +245,14 @@ const ui = {
     deps: "dépendances",
     direct: "directes",
     modeDepth: "Profondeur",
-    modeTree: "Arbre"
+    modeTree: "Arbre",
+    modeActivity: "Activité",
+    activityFresh: "< 1 semaine",
+    activityRecent: "< 1 mois",
+    activityActive: "< 6 mois",
+    activityStable: "< 1 an",
+    activitySlow: "< 2 ans",
+    activityStale: "Abandonné"
   },
   search_command: {
     placeholder: "Rechercher des packages...",

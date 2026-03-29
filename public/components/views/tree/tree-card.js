@@ -5,9 +5,18 @@ import prettyBytes from "pretty-bytes";
 
 // Import Internal Dependencies
 import { EVENTS } from "../../../core/events.js";
+import { currentLang } from "../../../common/utils.js";
 
 // CONSTANTS
 const kWarningCriticalThreshold = 10;
+const kLangToLocale = {
+  english: "en",
+  french: "fr"
+};
+const kOneDay = 1_000 * 60 * 60 * 24;
+const kOneWeek = kOneDay * 7;
+const kOneMonth = kOneDay * 30;
+const kOneYear = kOneDay * 365;
 const kModuleTypeColors = {
   esm: "#10b981",
   dual: "#06b6d4",
@@ -15,6 +24,25 @@ const kModuleTypeColors = {
   dts: "#6366f1",
   faux: "#6b7280"
 };
+
+function formatTimeAgo(isoDate) {
+  const ageMs = Date.now() - new Date(isoDate).getTime();
+  const rtf = new Intl.RelativeTimeFormat(kLangToLocale[currentLang()] ?? "en", {
+    numeric: "auto"
+  });
+
+  if (ageMs < kOneWeek) {
+    return rtf.format(-Math.floor(ageMs / kOneDay), "day");
+  }
+  if (ageMs < kOneMonth) {
+    return rtf.format(-Math.floor(ageMs / kOneWeek), "week");
+  }
+  if (ageMs < kOneYear) {
+    return rtf.format(-Math.floor(ageMs / kOneMonth), "month");
+  }
+
+  return rtf.format(-Math.floor(ageMs / kOneYear), "year");
+}
 
 function renderFlag(flag) {
   const ignoredFlags = window.settings.config.ignore.flags ?? [];
@@ -35,7 +63,14 @@ function getVersionData(secureDataSet, name, version) {
   return secureDataSet.data.dependencies[name]?.versions[version];
 }
 
-export function renderCardContent(secureDataSet, { nodeId, parentId = null, isRoot = false }) {
+export function renderCardContent(secureDataSet, options) {
+  const {
+    nodeId,
+    parentId = null,
+    isRoot = false,
+    publishedAt = null,
+    publishedColor = null
+  } = options;
   const entry = secureDataSet.linker.get(nodeId);
   const versionData = getVersionData(secureDataSet, entry.name, entry.version);
   if (!versionData) {
@@ -106,6 +141,17 @@ export function renderCardContent(secureDataSet, { nodeId, parentId = null, isRo
       ${parentName === null
           ? nothing
           : html`<div class="tree-card--stats"><span class="tree-card--separator">↳ ${parentName}</span></div>`
+      }
+      ${publishedAt === null
+          ? nothing
+          : html`
+            <div class="tree-card--published-row">
+              <span
+                class="tree-card--published-badge"
+                style="--published-color: ${publishedColor ?? "#6b7280"}"
+              >↻ ${formatTimeAgo(publishedAt)}</span>
+            </div>
+          `
       }
     </div>
   `;
