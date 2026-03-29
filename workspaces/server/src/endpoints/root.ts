@@ -13,9 +13,9 @@ export async function get(
   res: ServerResponse
 ) {
   try {
-    const { viewBuilder } = context.getStore()!;
+    const { viewBuilder, wsPort } = context.getStore()!;
 
-    const templateStr = await viewBuilder.render();
+    const templateStr = await viewBuilder.render(wsPort);
 
     res.writeHead(200, {
       "Content-Type": "text/html"

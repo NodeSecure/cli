@@ -28,6 +28,7 @@ export async function start(
 ) {
   const port = Number(options.port);
   const httpPort = Number.isNaN(port) ? 0 : port;
+  const wsPort = Number(options["ws-port"]) || void 0;
   const freshStart = Boolean(options.f);
   const enableDeveloperMode = Boolean(options.developer);
 
@@ -59,6 +60,7 @@ export async function start(
     scanType: options.scanType,
     projectRootDir: kProjectRootDir,
     componentsDir: kComponentsDir,
+    wsPort,
     i18n: {
       english,
       french
@@ -74,7 +76,8 @@ export async function start(
 
   new WebSocketServerInstanciator({
     cache,
-    logger
+    logger,
+    port: wsPort
   });
 
   for (const eventName of ["SIGINT", "SIGTERM"]) {

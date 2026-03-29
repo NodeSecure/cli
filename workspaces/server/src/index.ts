@@ -18,12 +18,16 @@ import {
   type NestedStringRecord
 } from "./ALS.ts";
 
+// CONSTANTS
+export const DEFAULT_WS_PORT = 1338;
+
 export interface BuildServerOptions {
   hotReload?: boolean;
   runFromPayload?: boolean;
   scanType?: "cwd" | "from";
   projectRootDir: string;
   componentsDir: string;
+  wsPort?: number;
   i18n: {
     english: NestedStringRecord;
     french: NestedStringRecord;
@@ -49,6 +53,7 @@ export async function buildServer(
     scanType = "from",
     projectRootDir,
     componentsDir,
+    wsPort = DEFAULT_WS_PORT,
     i18n,
     reporter
   } = options;
@@ -61,6 +66,7 @@ export async function buildServer(
   const store: AsyncStoreContext = {
     i18n,
     viewBuilder,
+    wsPort,
     cache,
     reporter
   };

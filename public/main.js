@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", async() => {
   );
   onSettingsSaved(window.settings.config);
 
-  const socket = new WebSocketClient(`ws://${window.location.hostname}:1338`);
+  const socket = new WebSocketClient(`ws://${window.location.hostname}:${window.__WS_PORT__}`);
   socket.addEventListener("PAYLOAD", onSocketPayload);
   socket.addEventListener("INIT", onSocketInitOrReload);
   socket.addEventListener("RELOAD", onSocketInitOrReload);

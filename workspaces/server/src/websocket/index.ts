@@ -13,10 +13,12 @@ import type {
   WebSocketContext,
   WebSocketMessage
 } from "./websocket.types.ts";
+import { DEFAULT_WS_PORT } from "../index.ts";
 
 export interface WebSocketServerInstanciatorOptions {
   logger: Logger<never, boolean>;
   cache: PayloadCache;
+  port?: number;
 }
 
 export class WebSocketServerInstanciator {
@@ -29,7 +31,7 @@ export class WebSocketServerInstanciator {
     this.#logger = options.logger;
     this.#cache = options.cache;
     const websocket = new WebSocketServer({
-      port: 1338
+      port: Number(options.port) || DEFAULT_WS_PORT
     });
     websocket.on("connection", this.onConnectionHandler.bind(this));
   }

@@ -72,13 +72,14 @@ export class ViewBuilder {
     return HTMLStr;
   }
 
-  async render(): Promise<string> {
+  async render(wsPort: number): Promise<string> {
     const i18nLangName = await i18n.getLocalLang();
 
     const HTMLStr = await this.#build();
     const templateStr = zup(HTMLStr)({
       lang: i18n.getTokenSync("lang"),
       i18nLangName,
+      wsPort,
       token: (tokenName: string) => i18n.getTokenSync(`ui.${tokenName}`)
     });
 
