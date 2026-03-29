@@ -1,0 +1,225 @@
+{
+  "id": "j6vlz7",
+  "rootDependency": {
+    "name": "ms",
+    "version": "2.1.3",
+    "integrity": "sha512-EY5JVSmS/ZEMr9kLaphuJfQMLLbK87KibiJPcp3GB4YQHlFK6Ynk9mr3WRVyYqKw8akoxIoZfzLWnBTREgvbmw=="
+  },
+  "scannerVersion": "10.8.0",
+  "vulnerabilityStrategy": "none",
+  "warnings": [],
+  "highlighted": {
+    "contacts": [],
+    "packages": [],
+    "identifiers": []
+  },
+  "dependencies": {
+    "ms": {
+      "versions": {
+        "2.1.3": {
+          "id": 0,
+          "type": "cjs",
+          "usedBy": {},
+          "isDevDependency": false,
+          "existOnRemoteRegistry": true,
+          "flags": [
+            "hasWarnings"
+          ],
+          "warnings": [
+            {
+              "kind": "unsafe-regex",
+              "location": [
+                [
+                  53,
+                  14
+                ],
+                [
+                  53,
+                  144
+                ]
+              ],
+              "source": "JS-X-Ray",
+              "i18n": "sast_warnings.unsafe_regex",
+              "severity": "Warning",
+              "experimental": false,
+              "value": "^(-?(?:\\d+)?\\.?\\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$",
+              "file": "index.js"
+            }
+          ],
+          "dependencyCount": 0,
+          "gitUrl": null,
+          "alias": {},
+          "description": "Tiny millisecond conversion utility",
+          "size": 6913,
+          "author": null,
+          "scripts": {
+            "precommit": "lint-staged",
+            "lint": "eslint lib/* bin/*",
+            "test": "mocha tests.js"
+          },
+          "licenses": [
+            {
+              "licenses": {
+                "MIT": "https://spdx.org/licenses/MIT.html#licenseText"
+              },
+              "spdx": {
+                "osi": true,
+                "fsf": true,
+                "fsfAndOsi": true,
+                "includesDeprecated": false
+              },
+              "fileName": "package.json"
+            },
+            {
+              "licenses": {
+                "MIT": "https://spdx.org/licenses/MIT.html#licenseText"
+              },
+              "spdx": {
+                "osi": true,
+                "fsf": true,
+                "fsfAndOsi": true,
+                "includesDeprecated": false
+              },
+              "fileName": "license.md"
+            }
+          ],
+          "uniqueLicenseIds": [
+            "MIT"
+          ],
+          "composition": {
+            "extensions": [
+              ".md",
+              ".js",
+              ".json"
+            ],
+            "files": [
+              "index.js",
+              "license.md",
+              "package.json",
+              "readme.md"
+            ],
+            "minified": [],
+            "unused": [],
+            "missing": [],
+            "required_files": [],
+            "required_nodejs": [],
+            "required_thirdparty": [],
+            "required_subpath": {}
+          },
+          "repository": "vercel/ms",
+          "integrity": "1f743a8b72bd7a02b88d452246f50ff14164f32e",
+          "links": {
+            "npm": "https://www.npmjs.com/package/ms/v/2.1.3",
+            "homepage": "https://github.com/vercel/ms#readme",
+            "repository": "https://github.com/vercel/ms"
+          }
+        }
+      },
+      "vulnerabilities": [],
+      "metadata": {
+        "homepage": "https://github.com/vercel/ms#readme",
+        "publishedCount": 32,
+        "lastVersion": "2.1.3",
+        "lastUpdateAt": "2020-12-08T13:54:35.223Z",
+        "hasReceivedUpdateInOneYear": false,
+        "hasChangedAuthor": false,
+        "integrity": {
+          "2.1.3": "1f743a8b72bd7a02b88d452246f50ff14164f32e"
+        },
+        "author": {
+          "name": "rauchg",
+          "email": "rauchg@gmail.com"
+        },
+        "publishers": [
+          {
+            "name": "vercel-release-bot",
+            "email": "infra+release@vercel.com",
+            "version": "4.0.0-nightly.202508271359",
+            "at": "2025-08-27T14:00:01.232Z"
+          },
+          {
+            "name": "leerobinson",
+            "email": "lrobinson2011@gmail.com",
+            "version": "3.0.0-canary.1",
+            "at": "2021-09-15T15:40:43.956Z"
+          },
+          {
+            "name": "mrmckeb",
+            "email": "mrmckeb.npm@outlook.com",
+            "version": "3.0.0-beta.2",
+            "at": "2021-08-25T16:55:32.842Z"
+          },
+          {
+            "name": "styfle",
+            "email": "steven@ceriously.com",
+            "version": "2.1.3",
+            "at": "2020-12-08T13:54:35.223Z"
+          },
+          {
+            "name": "leo",
+            "email": "leo@zeit.co",
+            "version": "2.1.1",
+            "at": "2017-11-30T18:30:16.876Z"
+          },
+          {
+            "name": "rauchg",
+            "email": "rauchg@gmail.com",
+            "version": "0.7.1",
+            "at": "2015-04-20T23:38:57.957Z"
+          }
+        ],
+        "maintainers": [
+          {
+            "email": "matheus.frndes@gmail.com",
+            "name": "matheuss"
+          },
+          {
+            "email": "rauchg@gmail.com",
+            "name": "rauchg"
+          },
+          {
+            "email": "nick.tracey@vercel.com",
+            "name": "nick.tracey"
+          },
+          {
+            "email": "infra+release@vercel.com",
+            "name": "vercel-release-bot"
+          },
+          {
+            "email": "team@zeit.co",
+            "name": "zeit-bot"
+          },
+          {
+            "email": "matt.j.straka@gmail.com",
+            "name": "matt.straka"
+          }
+        ],
+        "hasManyPublishers": false
+      }
+    }
+  },
+  "metadata": {
+    "startedAt": 1774800760807,
+    "executionTime": 1250,
+    "apiCalls": [
+      {
+        "name": "pacote.manifest ms@2.1.3",
+        "startedAt": 1774800760809,
+        "executionTime": 7
+      },
+      {
+        "name": "pacote.extract ms@2.1.3",
+        "startedAt": 1774800760821,
+        "executionTime": 114
+      },
+      {
+        "name": "tarball.scanDirOrArchive ms@2.1.3",
+        "startedAt": 1774800760938,
+        "executionTime": 330
+      }
+    ],
+    "apiCallsCount": 3,
+    "errorCount": 0,
+    "errors": []
+  }
+}

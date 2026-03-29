@@ -30,8 +30,14 @@ jobs:
       - name: Install dependencies
         run: npm install --ignore-scripts
       - name: Build
-        run: npm run build --ws --if-present
+        run: npm run build
+      - name: Install Playwright browsers
+        if: matrix.os == 'ubuntu-latest'
+        run: npx playwright install --with-deps
       - name: Run tests
         run: npm run coverage
+      - name: Run e2e tests
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run test:e2e
       - name: Send coverage report to Codecov
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
