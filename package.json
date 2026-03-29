@@ -21,7 +21,7 @@
     "build:front": "node ./esbuild.config.ts",
     "build:workspaces": "npm run build --ws --if-present",
     "test": "npm run test:cli && npm run lint && npm run lint:css",
-    "test:cli": "node --no-warnings --test test/**/*.test.js",
+    "test:cli": "node --no-warnings --test \"test/**/*.test.js\"",
     "test:all": "npm run test --ws --if-present",
     "coverage": "c8 --reporter=lcov npm run test",
     "ci:publish": "changeset publish",
@@ -92,6 +92,7 @@
     "stylelint": "17.5.0",
     "stylelint-config-standard": "40.0.0",
     "typescript": "^5.8.3",
+    "undici": "7.24.6",
     "vite": "8.0.2"
   },
   "dependencies": {
@@ -107,7 +108,7 @@
     "@nodesecure/ossf-scorecard-sdk": "4.0.1",
     "@nodesecure/rc": "5.5.0",
     "@nodesecure/report": "4.2.2",
-    "@nodesecure/scanner": "10.7.0",
+    "@nodesecure/scanner": "10.8.0",
     "@nodesecure/server": "1.0.0",
     "@nodesecure/utils": "^2.2.0",
     "@nodesecure/vulnera": "3.1.0",

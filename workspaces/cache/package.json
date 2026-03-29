@@ -12,7 +12,7 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "lint": "eslint src test",
-    "test": "node --test test/**.test.ts",
+    "test": "node --test \"test/**.test.ts\"",
     "test:c8": "c8 npm run test"
   },
   "publishConfig": {
@@ -28,7 +28,7 @@
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@nodesecure/scanner": "10.7.0",
+    "@nodesecure/scanner": "10.8.0",
     "cacache": "20.0.4"
   },
   "devDependencies": {

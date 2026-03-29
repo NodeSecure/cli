@@ -12,7 +12,7 @@
     "prepublishOnly": "npm run build",
     "lint": "eslint src test",
     "lint:fix": "eslint --fix src test",
-    "test-only": "node --test test/*.test.ts",
+    "test-only": "node --test \"test/*.test.ts\"",
     "test": "c8 npm run test",
     "example": "vite"
   },
