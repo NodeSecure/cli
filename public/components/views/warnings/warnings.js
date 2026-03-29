@@ -117,14 +117,11 @@ export class WarningsView extends LitElement {
       display: block;
       height: 100%;
       overflow-y: auto;
-      background: var(--bg, #f8f7ff);
       font-family: Roboto, sans-serif;
       color: #1a1a2e;
     }
 
     :host-context(body.dark) {
-      --bg: var(--dark-theme-gray);
-
       color: rgb(255 255 255 / 87%);
     }
 
