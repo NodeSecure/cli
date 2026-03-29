@@ -75,8 +75,8 @@ export async function main(
       { text: white().bold("source location"), width: 30, align: "right" }
     );
     for (const [depName, infos] of Object.entries(deps)) {
-      const { start, end } = infos.location;
-      const position = `[${start.line}:${start.column}] - [${end.line}:${end.column}]`;
+      const [start, end] = infos.location;
+      const position = `[${start[0]}:${start[1]}] - [${end[0]}:${end[1]}]`;
 
       ui.div(
         { text: depName, width: 30 },
