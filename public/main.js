@@ -524,6 +524,9 @@ function onSettingsSaved(defaultConfig = null) {
     if (config.disableExternalRequests === false) {
       homeView.generateDownloads();
     }
+
+    warningsView.requestUpdate();
+    treeView.requestUpdate();
   }
 
   if (defaultConfig) {
