@@ -340,6 +340,47 @@ describe("httpServer without options", () => {
   });
 });
 
+describe("httpServer wsPort option", () => {
+  const wsPort = 1335;
+  let httpServer: Server;
+
+  before(async() => {
+    await i18n.extendFromSystemPath(
+      path.join(import.meta.dirname, "..", "..", "..", "i18n")
+    );
+
+    ({ httpServer } = await buildServer(JSON_PATH, {
+      projectRootDir: kProjectRootDir,
+      componentsDir: kComponentsDir,
+      reporter: async() => Buffer.from("fake-pdf-data"),
+      i18n: {
+        english: {
+          ui: {}
+        },
+        french: {
+          ui: {}
+        }
+      },
+      wsPort
+    }));
+    httpServer.listen(kHttpPort);
+    await once(httpServer, "listening");
+    enableDestroy(httpServer);
+  }, { timeout: 5000 });
+
+  after(async() => {
+    httpServer.destroy();
+  });
+
+  test("'/' should return index.html content", async() => {
+    const result = await get<string>(kHttpURL);
+
+    assert.equal(result.statusCode, 200);
+    assert.equal(result.headers["content-type"], "text/html");
+    assert.ok(result.data.includes(`window.__WS_PORT__ = Number("${wsPort}")`));
+  });
+});
+
 /**
  * HELPERS
  */

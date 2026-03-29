@@ -73,7 +73,8 @@ prog
   .command("open [json]")
   .describe(i18n.getTokenSync("cli.commands.open.desc"))
   .option("-p, --port", i18n.getTokenSync("cli.commands.open.option_port"), process.env.PORT)
-  .option("-f, --fresh-start", i18n.getTokenSync("cli.commands.open.option_fresh_start"), process.env.PORT)
+  .option("--ws-port", i18n.getTokenSync("cli.commands.open.option_ws_port"), process.env.WS_PORT)
+  .option("-f, --fresh-start", i18n.getTokenSync("cli.commands.open.option_fresh_start"), false)
   .option("-d, --developer", i18n.getTokenSync("cli.commands.open.option_developer"), false)
   .action(commands.http.start);
 

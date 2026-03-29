@@ -19,6 +19,7 @@ export interface AsyncStoreContext {
     french: NestedStringRecord;
   };
   viewBuilder: ViewBuilder;
+  wsPort: number;
   reporter?: typeof report;
 }
 

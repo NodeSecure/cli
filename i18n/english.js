@@ -43,6 +43,7 @@ const cli = {
     open: {
       desc: "Run an HTTP Server with a given nsecure JSON file",
       option_port: "Define the running port",
+      option_ws_port: "Define the WebSocket server port",
       option_fresh_start: "Launch the server from scratch, ignoring any existing payload file",
       option_developer: "Launch the server in developer mode, enabling automatic HTML component refresh"
     },
