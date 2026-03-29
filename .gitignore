@@ -64,6 +64,7 @@ typings/
 .next
 
 nsecure-result.json
+!**/fixtures/nsecure-result.json
 vuln.json
 tmp/
 dist/
@@ -73,3 +74,6 @@ reports
 .DS_Store
 
 .claude
+
+# playwright test results
+test-results

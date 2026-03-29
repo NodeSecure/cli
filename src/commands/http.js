@@ -71,7 +71,9 @@ export async function start(
     const link = `http://localhost:${httpServer.address().port}`;
     console.log(kleur.magenta().bold(await i18n.getToken("cli.http_server_started")), kleur.cyan().bold(link));
 
-    open(link);
+    if (Boolean(process.env.NODESECURE_NO_OPEN) === false) {
+      open(link);
+    }
   });
 
   new WebSocketServerInstanciator({
