@@ -12,7 +12,7 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "lint": "eslint src test",
-    "test": "node --test ./test/**/*.test.ts",
+    "test": "node --test \"./test/**/*.test.ts\"",
     "test:c8": "c8 npm run test"
   },
   "publishConfig": {
@@ -37,7 +37,7 @@
     "@nodesecure/i18n": "4.1.0",
     "@nodesecure/npm-registry-sdk": "4.5.2",
     "@nodesecure/ossf-scorecard-sdk": "4.0.1",
-    "@nodesecure/scanner": "10.7.0",
+    "@nodesecure/scanner": "10.8.0",
     "cacache": "20.0.4",
     "chokidar": "5.0.0",
     "find-my-way": "9.5.0",

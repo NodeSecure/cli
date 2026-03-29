@@ -13,7 +13,11 @@ import * as scanner from "@nodesecure/scanner";
 // Import Internal Dependencies
 import kleur from "../utils/styleText.js";
 import * as http from "./http.js";
-import { logScannerStat, logScannerError, formatMs } from "./loggers/logger.js";
+import {
+  logScannerStat,
+  logScannerError,
+  formatMs
+} from "./loggers/logger.js";
 import { parseContacts } from "./parsers/contacts.js";
 
 export async function auto(spec, options) {
@@ -73,8 +77,15 @@ export async function cwd(options) {
   const payload = await scanner.workingDir(
     process.cwd(),
     {
-      maxDepth, usePackageLock: !nolock, fullLockMode: full, vulnerabilityStrategy, highlight:
-        { contacts: parseContacts(contacts) }, isVerbose: verbose
+      maxDepth,
+      usePackageLock: !nolock,
+      fullLockMode: full,
+      vulnerabilityStrategy,
+      highlight: {
+        contacts: parseContacts(contacts)
+      },
+      isVerbose: verbose,
+      workers: true
     },
     initLogger(void 0, !silent)
   );
@@ -83,7 +94,14 @@ export async function cwd(options) {
 }
 
 export async function from(spec, options) {
-  const { depth: maxDepth = Infinity, output, silent, contacts, vulnerabilityStrategy, verbose } = options;
+  const {
+    depth: maxDepth = Infinity,
+    output,
+    silent,
+    contacts,
+    vulnerabilityStrategy,
+    verbose
+  } = options;
 
   const payload = await scanner.from(
     spec,
@@ -93,7 +111,8 @@ export async function from(spec, options) {
       highlight: {
         contacts: parseContacts(contacts)
       },
-      isVerbose: verbose
+      isVerbose: verbose,
+      workers: true
     },
     initLogger(spec, !silent)
   );
@@ -258,7 +277,9 @@ async function logAndWrite(
   fs.writeFileSync(filePath, ret);
 
   console.log("");
-  console.log(kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath))));
+  console.log(
+    kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath)))
+  );
   console.log("");
 
   return filePath;
