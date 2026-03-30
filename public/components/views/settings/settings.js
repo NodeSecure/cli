@@ -1,10 +1,12 @@
 // Import Third-party Dependencies
+import { LitElement, html, css, nothing } from "lit";
 import { getJSON } from "@nodesecure/vis-network";
 import { warnings } from "@nodesecure/js-x-ray/warnings";
+import { getManifest } from "@nodesecure/flags/web";
 
 // Import Internal Dependencies
-import * as utils from "../../../common/utils.js";
 import { EVENTS } from "../../../core/events.js";
+import { currentLang } from "../../../common/utils.js";
 
 // CONSTANTS
 const kAllowedHotKeys = new Set([
@@ -23,236 +25,561 @@ const kDefaultHotKeys = {
   warnings: "A"
 };
 const kShortcutInputTargetIds = new Set(Object.keys(kDefaultHotKeys));
+const kIgnorableFlags = new Set([
+  "hasManyPublishers",
+  "hasIndirectDependencies",
+  "hasMissingOrUnusedDependency",
+  "isDead",
+  "isOutdated",
+  "hasDuplicate"
+]);
+const kFlags = Object.values(getManifest())
+  .filter(({ title }) => kIgnorableFlags.has(title))
+  .map(({ title, emoji }) => {
+    return { value: title, emoji };
+  });
+const kShortcuts = [
+  { id: "home", labelKey: "goto", viewKey: "home" },
+  { id: "network", labelKey: "goto", viewKey: "network" },
+  { id: "search", labelKey: "goto", viewKey: "search" },
+  { id: "settings", labelKey: "goto", viewKey: "settings" },
+  { id: "tree", labelKey: "goto", viewKey: "tree" },
+  { id: "warnings", labelKey: "goto", viewKey: "warnings" },
+  { id: "wiki", labelKey: "openCloseWiki", viewKey: null },
+  { id: "lock", labelKey: "lock", viewKey: null }
+];
 
-export class Settings {
+export class SettingsView extends LitElement {
   static defaultMenuName = "info";
 
+  static properties = {
+    config: { attribute: false },
+    _saveEnabled: { state: true },
+    _hotkeys: { state: true }
+  };
+
+  static styles = css`
+    :host {
+      flex-direction: column;
+      z-index: 10;
+      padding: 60px;
+      box-sizing: border-box;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    :host > h1,
+    :host h2 {
+      height: 40px;
+      border-bottom: 2px solid var(--primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      color: var(--primary);
+      font-size: 24px;
+      font-family: mononoki;
+    }
+
+    :host-context(body.dark) h1,
+    :host-context(body.dark) h2 {
+      color: var(--dark-theme-secondary-color);
+      border-bottom: 2px solid var(--dark-theme-secondary-color);
+    }
+
+    :host h2 {
+      margin-top: 30px;
+    }
+
+    :host .icon-keyboard {
+      background: url("../../../img/keyboard-solid.svg");
+      background-position: 10% center;
+      background-repeat: no-repeat;
+      width: 34px;
+      height: 20px;
+      margin-right: 2px;
+      filter: invert(14%) sepia(80%) saturate(5663%) hue-rotate(252deg) brightness(69%) contrast(98%);
+    }
+
+    :host-context(body.dark) .icon-keyboard {
+      filter: invert(75%) sepia(81%) saturate(3055%) hue-rotate(178deg) brightness(86%) contrast(88%);
+    }
+
+    :host > h1 i {
+      margin-right: 5px;
+    }
+
+    :host > form {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    :host > form .line {
+      display: flex;
+      flex-basis: 340px;
+      flex-direction: column;
+      min-height: 30px;
+      margin-bottom: 30px;
+      padding-right: 30px;
+      box-sizing: border-box;
+    }
+
+    :host > form .line p,
+    :host > form .line label {
+      font-size: 15px;
+      color: #4a5e68;
+      letter-spacing: 0.5px;
+    }
+
+    :host-context(body.dark) form .line p,
+    :host-context(body.dark) form .line label {
+      color: var(--dark-theme-secondary-lighter);
+    }
+
+    :host > form .line > p,
+    :host > form .line > label {
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    :host .shortcuts div:nth-child(n+1) {
+      margin-top: 10px;
+    }
+
+    :host .shortcuts .note {
+      border-left: 3px solid #01579B;
+      padding: 10px 15px;
+      background: #81d4fa59;
+      color: #283593;
+      font-weight: 400;
+      border-radius: 2px;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+    }
+
+    :host-context(body.dark) .shortcuts .note {
+      background: var(--dark-theme-accent-darker);
+      color: white;
+    }
+
+    :host .shortcuts label {
+      color: #4a5e68;
+      margin-left: 10px;
+      font-weight: 500;
+    }
+
+    :host-context(body.dark) .shortcuts label {
+      color: var(--dark-theme-secondary-lighter);
+    }
+
+    :host .shortcuts input:read-only {
+      background: transparent;
+      border-color: rgb(168 168 168);
+      color: rgb(141 140 140);
+      border-style: solid;
+    }
+
+    :host-context(body.dark) .shortcuts input:read-only {
+      border-color: var(--dark-theme-secondary-lighter);
+      color: var(--dark-theme-secondary-lighter);
+    }
+
+    :host .shortcuts input {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      text-align: center;
+      font-family: system-ui;
+      font-size: 20px;
+      font-weight: 500;
+      border-bottom-width: 4px;
+    }
+
+    :host > form .line > div {
+      display: flex;
+      height: 22px;
+      color: #334148;
+      align-items: center;
+      margin-left: 10px;
+    }
+
+    :host-context(body.dark) form .line > div {
+      color: var(--dark-theme-secondary-lighter);
+    }
+
+    :host > form .line select {
+      margin-left: 10px;
+    }
+
+    :host > form .line input[type="checkbox"] {
+      margin-left: 0;
+    }
+
+    :host > form .line > div + div {
+      margin-top: 5px;
+    }
+
+    :host > form .line > div > p {
+      margin-left: 5px;
+    }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    label {
+      color: #4a5e68;
+    }
+
+    button.save {
+      height: 30px;
+      width: 100px;
+      background: #27a845;
+      color: #FFF;
+      border-radius: 4px;
+      margin-top: 30px;
+      border: none;
+      outline: none;
+      font-family: mononoki;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      text-shadow: 2px 2px 5px #00000061;
+    }
+
+    button.save.disabled {
+      background: #334148;
+      opacity: 0.35;
+    }
+
+    button.save:not(.disabled):hover {
+      background-color: var(--secondary-darker);
+      cursor: pointer;
+    }
+
+    select {
+      max-width: 200px;
+      border: 1px solid #B0BEC5;
+      height: 30px;
+      border-radius: 4px;
+      font-family: mononoki;
+      color: #0c5a9b;
+    }
+
+    :host-context(body.dark) select {
+      color: var(--dark-theme-secondary-lighter);
+      border: var(--dark-theme-secondary-darker) 1px solid;
+      background: var(--dark-theme-primary-darker);
+    }
+
+    .settings-line-title {
+      font-size: 15px;
+      color: #4a5e68;
+      letter-spacing: 0.5px;
+      margin: 30px 0 6px;
+      font-weight: bold;
+    }
+
+    :host-context(body.dark) .settings-line-title {
+      color: var(--dark-theme-secondary-color);
+    }
+
+    .mt-10 {
+      margin-top: 10px;
+    }
+  `;
+
   constructor() {
-    this.#generateWarningCheckboxes();
-    this.saveEnabled = false;
-    this.dom = {
-      /** @type {HTMLSelectElement} */
-      defaultPackageMenu: document.getElementById("default_package_menu"),
-      /** @type {HTMLInputElement[]} */
-      warningsCheckbox: document.querySelectorAll("input[name='warnings']"),
-      /** @type {HTMLInputElement[]} */
-      flagsCheckbox: document.querySelectorAll("input[name='flags']"),
-      /** @type {HTMLInputElement} */
-      shortcutsSection: document.querySelector(".shortcuts"),
-      /** @type {HTMLInputElement} */
-      showFriendlyDependenciesCheckbox: document.querySelector("#show-friendly"),
-      themeSelector: document.querySelector("#theme_selector"),
-      disableExternalRequestsCheckbox: document.querySelector("#disable-external")
-    };
+    super();
+    this.config = null;
+    this._saveEnabled = false;
 
-    this.saveButton = document.querySelector(".save");
-    this.saveButton.addEventListener("click", () => this.saveSettings().catch(console.error));
-    this.saveButton.classList.add("disabled");
-
-    this.dom.defaultPackageMenu.addEventListener("change", () => this.enableSaveButton());
-    const formFields = [
-      ...this.dom.warningsCheckbox,
-      ...this.dom.flagsCheckbox,
-      this.dom.showFriendlyDependenciesCheckbox,
-      this.dom.themeSelector,
-      this.dom.disableExternalRequestsCheckbox
-    ];
-    for (const formField of formFields) {
-      formField.addEventListener("change", () => this.enableSaveButton());
-    }
-
-    const self = this;
-    this.dom.shortcutsSection.querySelectorAll(".hotkey").forEach((input) => {
-      input.addEventListener("click", () => {
-        if (!input.readOnly) {
-          return;
-        }
-
-        const currentValue = input.value;
-        input.readOnly = false;
-        input.value = "";
-
-        const onKeyDown = (event) => {
-          if (kShortcutInputTargetIds.has(event.target.id) === false) {
-            return;
-          }
-
-          // Prevent the app to change view if key is equal to view's hotkey
-          event.preventDefault();
-          event.stopPropagation();
-
-          function setValue(value) {
-            input.value = value;
-            input.readOnly = true;
-            input.blur();
-            input.removeEventListener("keydown", onKeyDown);
-            self.updateHotKeys();
-          }
-          if (event.key === currentValue) {
-            setValue(currentValue);
-          }
-
-          if (kAllowedHotKeys.has(event.key.toLowerCase())) {
-            const isHotKeyAlreadyUsed = [...this.dom.shortcutsSection.querySelectorAll(".hotkey")]
-              .find((input) => input.value === event.key.toUpperCase());
-
-            setValue(isHotKeyAlreadyUsed ? currentValue : event.key.toUpperCase());
-          }
-        };
-        input.addEventListener("keydown", onKeyDown);
-      });
-    });
-
-    if (localStorage.getItem("hotkeys") === null) {
+    const storedHotkeys = localStorage.getItem("hotkeys");
+    if (storedHotkeys === null) {
       localStorage.setItem("hotkeys", JSON.stringify(kDefaultHotKeys));
+      this._hotkeys = { ...kDefaultHotKeys };
     }
-
-    const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
-    this.updateNavigationHotKey(hotkeys);
-    this.updateFormHotKeys(hotkeys);
-  }
-
-  #generateWarningCheckboxes() {
-    const warningsSettings = document.getElementById("warnings-settings");
-    const checkboxes = Object.keys(warnings).map((id) => utils.createDOMElement("div", {
-      childs: [
-        utils.createDOMElement("input", {
-          attributes: {
-            id,
-            value: id,
-            type: "checkbox",
-            checked: true,
-            name: "warnings"
-          }
-        }),
-        utils.createDOMElement("label", {
-          attributes: {
-            for: id
-          },
-          text: id.replaceAll("-", " ")
-        })
-      ]
-    })
-    );
-    warningsSettings.append(...checkboxes);
-  }
-
-  updateNavigationHotKey(hotkeys) {
-    const navigationElement = document.getElementById("view-navigation");
-    navigationElement.querySelectorAll("span").forEach((span) => {
-      // network--view -> network
-      const viewName = span.parentElement.getAttribute("data-menu").split("--")[0];
-      const hotkey = hotkeys[viewName];
-      span.textContent = hotkey;
-    });
-  }
-
-  updateFormHotKeys(hotkeys) {
-    const hotkeysInputs = [...this.dom.shortcutsSection.querySelectorAll(".hotkey")];
-
-    for (const input of hotkeysInputs) {
-      const viewName = input.getAttribute("id");
-      const hotkey = hotkeys[viewName];
-      input.value = hotkey;
+    else {
+      this._hotkeys = JSON.parse(storedHotkeys);
     }
   }
 
-  updateHotKeys() {
-    const hotkeys = {};
-    const hotkeysInputs = this.dom.shortcutsSection.querySelectorAll(".hotkey");
-
-    for (const input of hotkeysInputs) {
-      const hotkeyName = input.getAttribute("id");
-      hotkeys[hotkeyName] = input.value;
-    }
-
-    this.updateNavigationHotKey(hotkeys);
-    localStorage.setItem("hotkeys", JSON.stringify(hotkeys));
-  }
-
-  enableSaveButton() {
-    if (this.saveButton.classList.contains("disabled")) {
-      this.saveButton.classList.remove("disabled");
-    }
-  }
-
-  setNewConfig(config) {
-    this.config = config;
-    this.warnings = new Set(this.config.ignore.warnings);
-    this.flags = new Set(this.config.ignore.flags);
-    this.config.ignore.warnings = this.warnings;
-    this.config.ignore.flags = this.flags;
-    // this.config.theme = config.theme ?? window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    if (this.config.theme === void 0) {
-      this.config.theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    }
+  firstUpdated() {
+    this.updateNavigationHotKey(this._hotkeys);
   }
 
   async fetchUserConfig() {
     const config = await getJSON("/config");
     this.setNewConfig(config);
-    this.updateSettings();
 
     return this;
   }
 
-  async saveSettings() {
-    if (this.saveButton.classList.contains("disabled")) {
+  setNewConfig(config) {
+    this.config = {
+      ...config,
+      ignore: {
+        warnings: new Set(config.ignore.warnings),
+        flags: new Set(config.ignore.flags)
+      },
+      theme: config.theme ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    };
+  }
+
+  updateNavigationHotKey(hotkeys) {
+    const navigationElement = document.getElementById("view-navigation");
+    if (navigationElement === null) {
       return;
     }
 
+    for (const span of navigationElement.querySelectorAll("span")) {
+      // network--view -> network
+      const viewName = span.parentElement.getAttribute("data-menu").split("--")[0];
+      span.textContent = hotkeys[viewName];
+    }
+  }
+
+  #enableSaveButton() {
+    this._saveEnabled = true;
+  }
+
+  #updateHotKeys() {
+    const hotkeys = {};
+    for (const input of this.renderRoot.querySelectorAll(".hotkey")) {
+      hotkeys[input.id] = input.value;
+    }
+
+    this._hotkeys = hotkeys;
+    this.updateNavigationHotKey(hotkeys);
+    localStorage.setItem("hotkeys", JSON.stringify(hotkeys));
+  }
+
+  #onHotkeyClick(event) {
+    const input = event.currentTarget;
+    if (!input.readOnly) {
+      return;
+    }
+
+    const currentValue = input.value;
+    input.readOnly = false;
+    input.value = "";
+
+    const onKeyDown = (keyEvent) => {
+      if (!kShortcutInputTargetIds.has(keyEvent.target.id)) {
+        return;
+      }
+
+      // Prevent the app to change view if key is equal to view's hotkey
+      keyEvent.preventDefault();
+      keyEvent.stopPropagation();
+
+      const setValue = (value) => {
+        input.value = value;
+        input.readOnly = true;
+        input.blur();
+        input.removeEventListener("keydown", onKeyDown);
+        this.#updateHotKeys();
+      };
+
+      if (keyEvent.key === currentValue) {
+        setValue(currentValue);
+
+        return;
+      }
+
+      if (kAllowedHotKeys.has(keyEvent.key.toLowerCase())) {
+        const isHotKeyAlreadyUsed = [...this.renderRoot.querySelectorAll(".hotkey")]
+          .find((existingInput) => existingInput.value === keyEvent.key.toUpperCase());
+
+        setValue(isHotKeyAlreadyUsed ? currentValue : keyEvent.key.toUpperCase());
+      }
+    };
+    input.addEventListener("keydown", onKeyDown);
+  }
+
+  async #saveSettings() {
+    if (!this._saveEnabled) {
+      return;
+    }
+
+    const defaultPackageMenu = this.renderRoot.querySelector("#default_package_menu");
+    const themeSelector = this.renderRoot.querySelector("#theme_selector");
+    const showFriendly = this.renderRoot.querySelector("#show-friendly");
+    const disableExternal = this.renderRoot.querySelector("#disable-external");
+
     const newConfig = {
-      defaultPackageMenu: this.dom.defaultPackageMenu.value || Settings.defaultMenuName,
+      defaultPackageMenu: defaultPackageMenu.value || SettingsView.defaultMenuName,
       ignore: { flags: new Set(), warnings: new Set() },
-      showFriendlyDependencies: this.dom.showFriendlyDependenciesCheckbox.checked,
-      theme: this.dom.themeSelector.value,
-      disableExternalRequests: this.dom.disableExternalRequestsCheckbox.checked
+      showFriendlyDependencies: showFriendly.checked,
+      theme: themeSelector.value,
+      disableExternalRequests: disableExternal.checked
     };
 
-    for (const checkbox of this.dom.warningsCheckbox) {
+    for (const checkbox of this.renderRoot.querySelectorAll("input[name='warnings']")) {
       if (checkbox.checked) {
-        newConfig.ignore.warnings.add(checkbox.getAttribute("value"));
+        newConfig.ignore.warnings.add(checkbox.value);
       }
     }
 
-    for (const checkbox of this.dom.flagsCheckbox) {
+    for (const checkbox of this.renderRoot.querySelectorAll("input[name='flags']")) {
       if (checkbox.checked) {
-        newConfig.ignore.flags.add(checkbox.getAttribute("value"));
+        newConfig.ignore.flags.add(checkbox.value);
       }
     }
-
-    newConfig.ignore.warnings = [...newConfig.ignore.warnings];
-    newConfig.ignore.flags = [...newConfig.ignore.flags];
 
     await fetch("/config", {
       method: "put",
-      body: JSON.stringify(newConfig),
+      body: JSON.stringify({
+        ...newConfig,
+        ignore: {
+          warnings: [...newConfig.ignore.warnings],
+          flags: [...newConfig.ignore.flags]
+        }
+      }),
       headers: {
         "content-type": "application/json"
       }
     });
+
     this.config = newConfig;
-    this.saveButton.classList.add("disabled");
+    this._saveEnabled = false;
 
     window.dispatchEvent(new CustomEvent(EVENTS.SETTINGS_SAVED, { detail: this.config }));
   }
 
-  updateSettings() {
-    this.dom.defaultPackageMenu.value = this.config.defaultPackageMenu;
-    this.dom.themeSelector.value = this.config.theme;
+  #renderWarningCheckboxes() {
+    return Object.keys(warnings).map((id) => html`
+      <div>
+        <input
+          type="checkbox"
+          id=${id}
+          name="warnings"
+          value=${id}
+          ?checked=${this.config.ignore.warnings.has(id)}
+          @change=${() => this.#enableSaveButton()}
+        />
+        <label for=${id}>${id.replaceAll("-", " ")}</label>
+      </div>
+    `);
+  }
 
-    const warnings = new Set(this.config.ignore.warnings);
-    const flags = new Set(this.config.ignore.flags);
+  #renderFlagCheckboxes() {
+    return kFlags.map(({ value, emoji }) => html`
+      <div>
+        <input
+          type="checkbox"
+          id=${value}
+          name="flags"
+          value=${value}
+          ?checked=${this.config.ignore.flags.has(value)}
+          @change=${() => this.#enableSaveButton()}
+        />
+        <label for=${value}>${emoji} ${value}</label>
+      </div>
+    `);
+  }
 
-    for (const checkbox of this.dom.warningsCheckbox) {
-      checkbox.checked = warnings.has(checkbox.getAttribute("value"));
+  #renderShortcuts(shortcuts) {
+    return kShortcuts.map(({ id, labelKey, viewKey }) => html`
+      <div>
+        <input
+          readonly
+          id=${id}
+          class="hotkey"
+          .value=${this._hotkeys[id] ?? ""}
+          @click=${(event) => this.#onHotkeyClick(event)}
+        />
+        <label for=${id}>${shortcuts[labelKey]}${viewKey ? ` ${shortcuts.views[viewKey]}` : ""}</label>
+      </div>
+    `);
+  }
+
+  render() {
+    if (this.config === null) {
+      return nothing;
     }
 
-    for (const checkbox of this.dom.flagsCheckbox) {
-      checkbox.checked = flags.has(checkbox.getAttribute("value"));
-    }
+    const i18n = window.i18n[currentLang()];
+    const general = i18n.settings.general;
+    const shortcuts = i18n.settings.shortcuts;
+    const packageNav = i18n.package_info.navigation;
 
-    this.dom.showFriendlyDependenciesCheckbox.checked = this.config.showFriendlyDependencies;
-    this.dom.disableExternalRequestsCheckbox.checked = this.config.disableExternalRequests;
+    return html`
+      <h1><i class="icon-cog"></i>${general.title}</h1>
+      <form>
+        <div class="line">
+          <label for="default_package_menu">${general.defaultPannel}:</label>
+          <select
+            name="defaultPackageMenu"
+            id="default_package_menu"
+            @change=${() => this.#enableSaveButton()}
+          >
+            <option value="info" ?selected=${this.config.defaultPackageMenu === "info"}>${packageNav.overview}</option>
+            <option value="files" ?selected=${this.config.defaultPackageMenu === "files"}>${packageNav.files}</option>
+            <option value="dependencies"
+              ?selected=${this.config.defaultPackageMenu === "dependencies"}>${packageNav.dependencies}</option>
+            <option value="warnings"
+              ?selected=${this.config.defaultPackageMenu === "warnings"}>${packageNav.warnings}</option>
+            <option value="vulnerabilities"
+              ?selected=${this.config.defaultPackageMenu === "vulnerabilities"}>${packageNav.vulnerabilities}</option>
+            <option value="licenses" ?selected=${this.config.defaultPackageMenu === "licenses"}>${packageNav.licenses}</option>
+          </select>
+          <label for="theme_selector" class="mt-10">${general.themePannel}:</label>
+          <select
+            name="themeSelector"
+            id="theme_selector"
+            @change=${() => this.#enableSaveButton()}
+          >
+            <option value="dark" ?selected=${this.config.theme === "dark"}>${packageNav.dark}</option>
+            <option value="light" ?selected=${this.config.theme === "light"}>${packageNav.light}</option>
+          </select>
+          <p class="settings-line-title">${general.network}:</p>
+          <div>
+            <input
+              type="checkbox"
+              id="show-friendly"
+              name="show-friendly"
+              ?checked=${this.config.showFriendlyDependencies}
+              @change=${() => this.#enableSaveButton()}
+            />
+            <label for="show-friendly">${general.showFriendly}</label>
+          </div>
+          <p class="settings-line-title">${general.security}:</p>
+          <div>
+            <input
+              type="checkbox"
+              id="disable-external"
+              name="disable-external"
+              ?checked=${this.config.disableExternalRequests}
+              @change=${() => this.#enableSaveButton()}
+            />
+            <label for="disable-external">${general.disableExternalRequests}</label>
+          </div>
+        </div>
+        <div class="line">
+          <p>${general.warnings}:</p>
+          ${this.#renderWarningCheckboxes()}
+        </div>
+        <div class="line">
+          <p>${general.flags}:</p>
+          ${this.#renderFlagCheckboxes()}
+        </div>
+      </form>
+      <button
+        class="save ${this._saveEnabled ? "" : "disabled"}"
+        @click=${() => this.#saveSettings().catch(console.error)}
+      >
+        ${general.save}
+      </button>
+      <div class="line">
+        <h2><i class="icon-keyboard"></i>${shortcuts.title}</h2>
+        <div class="shortcuts">
+          <div class="note">💡 ${shortcuts.blockquote}</div>
+          ${this.#renderShortcuts(shortcuts)}
+        </div>
+      </div>
+    `;
   }
 }
+
+customElements.define("settings-view", SettingsView);

@@ -219,7 +219,15 @@ const ui = {
       blockquote: "Click on hotkey to update",
       goto: "Goto",
       openCloseWiki: "Open/Close wiki",
-      lock: "Lock/Unlock network"
+      lock: "Lock/Unlock network",
+      views: {
+        home: "Home view",
+        network: "Network view",
+        search: "Search view",
+        settings: "Settings view",
+        tree: "Tree view",
+        warnings: "Warnings view"
+      }
     }
   },
   network: {
