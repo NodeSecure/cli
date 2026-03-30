@@ -219,7 +219,15 @@ const ui = {
       blockquote: "Cliquer sur le raccourci clavier pour mettre à jour",
       goto: "Ouvrir",
       openCloseWiki: "Ouverture/Fermeture du wiki",
-      lock: "Verrouiller/Déverrouiller le réseau"
+      lock: "Verrouiller/Déverrouiller le réseau",
+      views: {
+        home: "vue Home",
+        network: "vue Réseau",
+        search: "vue Recherche",
+        settings: "vue Paramètres",
+        tree: "vue Arbre",
+        warnings: "vue Avertissements"
+      }
     }
   },
   network: {

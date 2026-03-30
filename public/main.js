@@ -10,7 +10,7 @@ import "./components/locker/locker.js";
 import "./components/legend/legend.js";
 import "./components/locked-navigation/locked-navigation.js";
 import "./components/search-command/search-command.js";
-import { Settings } from "./components/views/settings/settings.js";
+import "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import "./components/views/search/search.js";
 import "./components/views/tree/tree.js";
@@ -44,8 +44,10 @@ document.addEventListener("DOMContentLoaded", async() => {
 
   window.cachedSpecs = [];
   window.locker = null;
-  window.settings = await new Settings().fetchUserConfig();
   window.i18n = await new i18n().fetch();
+  const settingsView = document.querySelector("settings-view");
+  window.settings = settingsView;
+  await settingsView.fetchUserConfig();
   window.navigation = new ViewNavigation();
   window.wiki = new Wiki();
 
