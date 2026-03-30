@@ -117,7 +117,7 @@
     "@openally/result": "^2.0.0",
     "@topcli/cliui": "^1.1.0",
     "@topcli/pretty-json": "^1.0.0",
-    "@topcli/prompts": "^2.0.0",
+    "@topcli/prompts": "^3.0.0",
     "@topcli/spinner": "4.2.1",
     "filenamify": "^7.0.0",
     "highlightjs-line-numbers.js": "^2.8.0",
