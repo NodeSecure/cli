@@ -9,6 +9,7 @@ import filenamify from "filenamify";
 import { Spinner } from "@topcli/spinner";
 import * as i18n from "@nodesecure/i18n";
 import * as scanner from "@nodesecure/scanner";
+import { PayloadCache } from "@nodesecure/cache";
 
 // Import Internal Dependencies
 import kleur from "../utils/styleText.js";
@@ -30,10 +31,13 @@ export async function auto(spec, options) {
     }
   };
 
+  const cache = new PayloadCache();
+  await cache.load();
+
   const payloadFile = await (
     typeof spec === "string" ?
-      from(spec, optionsWithContacts) :
-      cwd(optionsWithContacts)
+      from(spec, optionsWithContacts, cache) :
+      cwd(optionsWithContacts, cache)
   );
   try {
     if (payloadFile !== null) {
@@ -62,7 +66,7 @@ export async function auto(spec, options) {
   }
 }
 
-export async function cwd(options) {
+export async function cwd(options, cache) {
   const {
     depth: maxDepth = Infinity,
     output,
@@ -85,7 +89,22 @@ export async function cwd(options) {
         contacts: parseContacts(contacts)
       },
       isVerbose: verbose,
-      workers: true
+      workers: true,
+      async cacheLookup(packageJSON, integrity) {
+        if (integrity === null) {
+          return null;
+        }
+
+        const spec = `${packageJSON.name}@${packageJSON.version}`;
+        const cachedPayload = await cache.findByIntegrity(integrity);
+        if (cachedPayload !== null) {
+          console.log(
+            kleur.gray().bold(i18n.getTokenSync("cli.cache.found", kleur.green().bold(spec)))
+          );
+        }
+
+        return cachedPayload;
+      }
     },
     initLogger(void 0, !silent)
   );
@@ -93,7 +112,7 @@ export async function cwd(options) {
   return await logAndWrite(payload, output, { local: true });
 }
 
-export async function from(spec, options) {
+export async function from(spec, options, cache) {
   const {
     depth: maxDepth = Infinity,
     output,
@@ -112,7 +131,18 @@ export async function from(spec, options) {
         contacts: parseContacts(contacts)
       },
       isVerbose: verbose,
-      workers: true
+      workers: true,
+      async cacheLookup(manifest) {
+        const spec = `${manifest.name}@${manifest.version}`;
+        const cachedPayload = await cache.findBySpec(spec);
+        if (cachedPayload !== null) {
+          console.log(
+            kleur.gray().bold(i18n.getTokenSync("cli.cache.found", kleur.green().bold(spec)))
+          );
+        }
+
+        return cachedPayload;
+      }
     },
     initLogger(spec, !silent)
   );
