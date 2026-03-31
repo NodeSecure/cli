@@ -19,6 +19,9 @@ const cli = {
     executionTime: tS`The error occured at ${0} during the execution`,
     stack: tS`Stack: ${0}`
   },
+  cache: {
+    found: tS`${0} found in the cache`
+  },
   commands: {
     option_depth: "Maximum dependencies depth to fetch",
     option_output: "Json file output name",

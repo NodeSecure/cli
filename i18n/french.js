@@ -19,6 +19,9 @@ const cli = {
     executionTime: tS`L'erreur s'est produite à ${0} pendant l'exécution`,
     stack: tS`Stack: ${0}`
   },
+  cache: {
+    found: tS`${0} trouvé dans le cache`
+  },
   commands: {
     option_depth: "Niveau de profondeur de dépendances maximum à aller chercher",
     option_output: "Nom de sortie du fichier json",
