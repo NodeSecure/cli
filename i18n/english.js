@@ -97,7 +97,10 @@ const cli = {
       elapsed: tS`Scan duration: ${0}`,
       stats: tS`API calls count: ${0}`,
       error: "A scan must be performed before displaying stats.",
-      errors: tS`Error count: ${0}`
+      errors: tS`Error count: ${0}`,
+      option_min: "Filter API calls with execution time above the specified ceiling (in ms)",
+      minNotANumber: "Error: --min must be a number.",
+      statsCeiling: tS`API calls count above ${0}: ${1}`
     }
   },
   startHttp: {

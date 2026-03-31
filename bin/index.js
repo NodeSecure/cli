@@ -139,6 +139,7 @@ prog
 prog
   .command("stats")
   .describe(i18n.getTokenSync("cli.commands.stats.desc"))
+  .option("-m, --min", i18n.getTokenSync("cli.commands.stats.option_min"), undefined)
   .example("nsecure stats")
   .action(commands.stats.main);
 

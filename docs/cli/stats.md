@@ -17,3 +17,9 @@ The `stats` displays the statistics of the last performed scan such as :
 ```bash
 $ nsecure stats
 ```
+
+## ⚙️ Available Options
+
+| Name  | Shortcut | Default Value | Description                                              |
+| ----- | -------- | ------------- | -------------------------------------------------------- |
+| `--min` | `-m`     | `undefined`    | Filter API calls with execution time above ceiling (ms)  |

@@ -6,21 +6,36 @@ import path from "node:path";
 import { logScannerStat, logScannerError, log, logError, formatMs } from "./loggers/logger.js";
 
 export async function main(options) {
-  const { getScanResult = getScanFromFile, logger = {
+  const { getScanResult = getScanFromFile, min, logger = {
     logScannerStat,
     logScannerError,
     log,
     logError
   } } = options;
+
+  if (min !== undefined && typeof min !== "number") {
+    logger.logError("cli.commands.stats.minNotANumber");
+
+    return;
+  }
+
   try {
     const scanResult = await getScanResult();
     const { metadata } = scanResult;
 
     logger.log("cli.commands.stats.elapsed", formatMs(metadata.executionTime));
     logger.log("cli.commands.stats.stats", metadata.apiCallsCount);
-    metadata.apiCalls.forEach((call) => {
+    const apiCallsToLog = min === undefined ?
+      metadata.apiCalls : metadata.apiCalls.filter(({ executionTime }) => executionTime > min);
+
+    if (typeof min === "number" && apiCallsToLog.length !== metadata.apiCallsCount) {
+      logger.log("cli.commands.stats.statsCeiling", formatMs(min), apiCallsToLog.length);
+    }
+
+    apiCallsToLog.forEach((call) => {
       logger.logScannerStat(call, false);
     });
+
     if (metadata.errorCount === 0) {
       return;
     }
