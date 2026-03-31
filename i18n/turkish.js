@@ -96,7 +96,10 @@ const cli = {
       elapsed: tS`Tarama süresi: ${0}`,
       stats: tS`API çağrı sayısı: ${0}`,
       error: "İstatistikleri görüntülemeden önce bir tarama yapılmalıdır.",
-      errors: tS`Hata sayısı: ${0}`
+      errors: tS`Hata sayısı: ${0}`,
+      option_min: "Belirtilen tavan değerinin (ms cinsinden) üzerinde yürütme süresine sahip API çağrılarını filtrele",
+      minNotANumber: "Hata: --min bir sayı olmalıdır.",
+      statsCeiling: tS`${0} üzerindeki API çağrıları sayısı: ${1}`
     }
   },
   startHttp: {
