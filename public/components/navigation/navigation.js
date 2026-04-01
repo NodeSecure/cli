@@ -37,7 +37,7 @@ export class ViewNavigation {
       const isTargetPopup = event.target.id === "popup--background";
       const isPopupOpened = document.querySelector("#popup--background.show");
       const isTargetInput = event.target.tagName === "INPUT";
-      const isSearchCommandOpen = Boolean(document.querySelector("search-command")?.open);
+      const isSearchCommandOpen = Boolean(document.querySelector("command-palette")?.open);
       if (isTargetPopup || isWikiOpen || isTargetInput || isPopupOpened || isSearchCommandOpen) {
         return;
       }

@@ -9,7 +9,7 @@ import "./components/popup/popup.js";
 import "./components/locker/locker.js";
 import "./components/legend/legend.js";
 import "./components/locked-navigation/locked-navigation.js";
-import "./components/search-command/search-command.js";
+import "./components/command-palette/command-palette.js";
 import "./components/views/settings/settings.js";
 import { HomeView } from "./components/views/home/home.js";
 import "./components/views/search/search.js";
@@ -194,7 +194,7 @@ async function onSocketPayload(event) {
     window.navigation.setNavByName(targetView);
   }
 
-  dispatchSearchCommandInit();
+  dispatchCommandPaletteInit();
 }
 
 async function onSocketInitOrReload(event) {
@@ -231,15 +231,15 @@ async function onSocketInitOrReload(event) {
     window.navigation.setNavByName("search--view");
   }
 
-  dispatchSearchCommandInit();
+  dispatchCommandPaletteInit();
 }
 
-function dispatchSearchCommandInit() {
+function dispatchCommandPaletteInit() {
   if (!nsn || !secureDataSet) {
     return;
   }
 
-  const event = new CustomEvent(EVENTS.SEARCH_COMMAND_INIT, {
+  const event = new CustomEvent(EVENTS.COMMAND_PALETTE_INIT, {
     detail: {
       network: nsn,
       linker: secureDataSet.linker,

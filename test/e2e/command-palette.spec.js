@@ -1,7 +1,7 @@
 // Import Third-party Dependencies
 import { test, expect } from "@playwright/test";
 
-test.describe("[search-command] presets", () => {
+test.describe("[command-palette] presets and actions", () => {
   let i18n;
 
   test.beforeEach(async({ page }) => {
@@ -26,7 +26,13 @@ test.describe("[search-command] presets", () => {
   });
 
   test("renders all five preset buttons", async({ page }) => {
-    await expect(page.locator(".range-preset")).toHaveCount(5);
+    const presetsSection = page.locator(".section").filter({ hasText: i18n.section_presets });
+    await expect(presetsSection.locator(".range-preset")).toHaveCount(5);
+  });
+
+  test("renders the theme toggle action button", async({ page }) => {
+    const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
+    await expect(actionsSection.locator(".range-preset")).toHaveCount(1);
   });
 
   test("clicking a preset adds a chip and hides the presets section", async({ page }) => {
@@ -53,6 +59,29 @@ test.describe("[search-command] presets", () => {
     await page.keyboard.press("Enter");
 
     await expect(page.locator(".empty-state")).toHaveText(i18n.empty_after_filter);
+  });
+
+  test("clicking the theme action closes the palette and toggles the theme", async({ page }) => {
+    const initialTheme = await page.evaluate(() => window.settings.config.theme);
+    const expectedTheme = initialTheme === "dark" ? "light" : "dark";
+
+    const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
+    await actionsSection.locator(".range-preset").click();
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+    const newTheme = await page.evaluate(() => window.settings.config.theme);
+    expect(newTheme).toBe(expectedTheme);
+  });
+
+  test("Alt+T triggers the theme toggle and closes the palette", async({ page }) => {
+    const initialTheme = await page.evaluate(() => window.settings.config.theme);
+    const expectedTheme = initialTheme === "dark" ? "light" : "dark";
+
+    await page.keyboard.press("Alt+t");
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+    const newTheme = await page.evaluate(() => window.settings.config.theme);
+    expect(newTheme).toBe(expectedTheme);
   });
 
   test("pressing Escape closes the palette", async({ page }) => {

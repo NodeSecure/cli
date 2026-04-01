@@ -58,7 +58,7 @@ export class Wiki {
   #keydownHotkeys(event) {
     const isTargetInput = event.target.tagName === "INPUT";
     const isTargetPopup = event.target.id === "popup--background";
-    const isSearchCommandOpen = Boolean(document.querySelector("search-command")?.open);
+    const isSearchCommandOpen = Boolean(document.querySelector("command-palette")?.open);
     if (isTargetInput || isTargetPopup || isSearchCommandOpen) {
       return;
     }

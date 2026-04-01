@@ -13,23 +13,39 @@ import {
   computeMatches,
   getHelperValues
 } from "./filters.js";
-import { searchCommandStyles } from "./search-command-styles.js";
+import { commandPaletteStyles } from "./command-palette-styles.js";
 import {
   renderFlagPanel,
   renderRangePanel,
   renderListPanel,
   renderFilterList,
   renderPresets,
+  renderActions,
   renderResults
-} from "./search-command-panels.js";
+} from "./command-palette-panels.js";
 import "./search-chip.js";
 
-class SearchCommand extends LitElement {
+// CONSTANTS
+const kActions = [
+  { id: "toggle_theme", shortcut: "t" }
+];
+
+function resolveKbd(shortcut) {
+  if (!shortcut) {
+    return null;
+  }
+
+  const key = shortcut.toUpperCase();
+
+  return navigator.userAgent.includes("Mac") ? `⌥${key}` : `Alt+${key}`;
+}
+
+class CommandPalette extends LitElement {
   #linker = null;
   #network = null;
   #packages = [];
 
-  static styles = searchCommandStyles;
+  static styles = commandPaletteStyles;
 
   static properties = {
     open: { type: Boolean },
@@ -55,6 +71,16 @@ class SearchCommand extends LitElement {
 
     if (event.key === "Escape" && this.open) {
       this.#close();
+
+      return;
+    }
+
+    if (this.open && event.altKey) {
+      const action = kActions.find((a) => a.shortcut && `Key${a.shortcut.toUpperCase()}` === event.code);
+      if (action) {
+        event.preventDefault();
+        this.#executeAction(action);
+      }
     }
   };
 
@@ -84,12 +110,12 @@ class SearchCommand extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     document.addEventListener("keydown", this.#handleKeydown);
-    window.addEventListener(EVENTS.SEARCH_COMMAND_INIT, this.#init);
+    window.addEventListener(EVENTS.COMMAND_PALETTE_INIT, this.#init);
   }
 
   disconnectedCallback() {
     document.removeEventListener("keydown", this.#handleKeydown);
-    window.removeEventListener(EVENTS.SEARCH_COMMAND_INIT, this.#init);
+    window.removeEventListener(EVENTS.COMMAND_PALETTE_INIT, this.#init);
     super.disconnectedCallback();
   }
 
@@ -323,6 +349,17 @@ class SearchCommand extends LitElement {
     this.#close();
   }
 
+  #executeAction(action) {
+    if (action.id === "toggle_theme") {
+      const nextTheme = window.settings.config.theme === "dark" ? "light" : "dark";
+      window.dispatchEvent(new CustomEvent(EVENTS.SETTINGS_SAVED, {
+        detail: { ...window.settings.config, theme: nextTheme }
+      }));
+    }
+
+    this.#close();
+  }
+
   #getEmptyQueryMessage() {
     const i18n = window.i18n[currentLang()].search_command;
     if (this.queries.length === 1) {
@@ -407,6 +444,20 @@ class SearchCommand extends LitElement {
     }
   }
 
+  #resolveActions() {
+    const i18n = window.i18n[currentLang()].search_command;
+    const currentTheme = window.settings?.config?.theme ?? "light";
+    const targetTheme = currentTheme === "dark" ? "light" : "dark";
+
+    return kActions.map((action) => {
+      return {
+        ...action,
+        label: i18n[`action_${action.id}_to_${targetTheme}`],
+        kbd: resolveKbd(action.shortcut)
+      };
+    });
+  }
+
   render() {
     if (!this.open) {
       return nothing;
@@ -483,6 +534,10 @@ class SearchCommand extends LitElement {
               presets: PRESETS,
               onApply: (preset) => this.#addQuery(preset.filter, preset.value)
             }) : nothing}
+            ${showRichPlaceholder ? renderActions({
+              actions: this.#resolveActions(),
+              onExecute: (action) => this.#executeAction(action)
+            }) : nothing}
             ${renderResults({
               results: this.results,
               selectedIndex: this.selectedIndex,
@@ -505,4 +560,4 @@ class SearchCommand extends LitElement {
   }
 }
 
-customElements.define("search-command", SearchCommand);
+customElements.define("command-palette", CommandPalette);

@@ -160,6 +160,32 @@ export function renderPresets({ presets, onApply }) {
 }
 
 /**
+ * @param {{ actions: Array<{ id: string, label: string, kbd: string|null }>, onExecute: Function }} props
+ */
+export function renderActions({ actions, onExecute }) {
+  const i18n = window.i18n[currentLang()].search_command;
+
+  return html`
+    <div class="section">
+      <div class="section-title">${i18n.section_actions}</div>
+      <div class="range-panel">
+        <div class="range-presets">
+          ${actions.map((action) => html`
+            <button
+              class="range-preset"
+              @click=${() => onExecute(action)}
+            >
+              ${action.label}
+              ${action.kbd ? html`<kbd class="action-kbd">${action.kbd}</kbd>` : nothing}
+            </button>
+          `)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
  * @param {{ results: Array, selectedIndex: number, helperCount: number, onFocus: Function }} props
  */
 export function renderResults({ results, selectedIndex, helperCount, onFocus }) {
