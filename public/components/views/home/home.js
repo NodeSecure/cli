@@ -220,13 +220,18 @@ export class HomeView {
     const fragment = document.createDocumentFragment();
 
     const deps = [];
-    for (const dependency of Object.values(this.secureDataSet.data.dependencies)) {
-      for (const dependencyVer of Object.values(dependency.versions)) {
+    for (const [name, dependency] of Object.entries(this.secureDataSet.data.dependencies)) {
+      for (const [version, dependencyVer] of Object.entries(dependency.versions)) {
         const { flags } = dependencyVer;
 
         const hasFlag = flags.some((name) => kFlagsToWatch.has(name));
         if (hasFlag) {
-          deps.push(dependencyVer);
+          deps.push({
+            name,
+            version,
+            flags,
+            deprecated: dependencyVer.deprecated
+          });
         }
       }
     }
