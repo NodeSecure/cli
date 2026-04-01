@@ -10,7 +10,7 @@ export const EVENTS = {
   MODAL_OPENED: "modal-opened",
   NETWORK_VIEW_HID: "network-view-hid",
   NETWORK_VIEW_SHOWED: "network-view-showed",
-  SEARCH_COMMAND_INIT: "search-command-init",
+  COMMAND_PALETTE_INIT: "command-palette-init",
   DRILL_RESET: "drill-reset",
   DRILL_BACK: "drill-back",
   DRILL_SWITCH: "drill-switch",

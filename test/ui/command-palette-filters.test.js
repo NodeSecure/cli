@@ -8,7 +8,7 @@ import {
   getFlagCounts,
   getFilterValueCounts,
   getHelperValues
-} from "../../public/components/search-command/filters.js";
+} from "../../public/components/command-palette/filters.js";
 
 const kLinker = new Map([
   [0, {

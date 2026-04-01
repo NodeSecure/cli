@@ -4,7 +4,7 @@ import { css } from "lit";
 // Import Internal Dependencies
 import { scrollbarStyle } from "../../common/scrollbar-style.js";
 
-export const searchCommandStyles = [
+export const commandPaletteStyles = [
   scrollbarStyle,
   css`
 :host {
@@ -379,6 +379,12 @@ kbd {
   font-family: inherit;
   font-size: 11px;
   color: var(--sc-kbd-text);
+}
+
+.action-kbd {
+  margin-left: 6px;
+  opacity: 0.7;
+  border: 1px solid var(--sc-border);
 }
 `
 ];
