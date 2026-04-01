@@ -137,6 +137,29 @@ export function renderFilterList({ helpers, selectedIndex, onSelect }) {
 }
 
 /**
+ * @param {{ presets: Array, onApply: Function }} props
+ */
+export function renderPresets({ presets, onApply }) {
+  const i18n = window.i18n[currentLang()].search_command;
+
+  return html`
+    <div class="section">
+      <div class="section-title">${i18n.section_presets}</div>
+      <div class="range-panel">
+        <div class="range-presets">
+          ${presets.map((preset) => html`
+            <button
+              class="range-preset"
+              @click=${() => onApply(preset)}
+            >${i18n[`preset_${preset.id}`]}</button>
+          `)}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
  * @param {{ results: Array, selectedIndex: number, helperCount: number, onFocus: Function }} props
  */
 export function renderResults({ results, selectedIndex, helperCount, onFocus }) {

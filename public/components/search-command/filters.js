@@ -21,6 +21,13 @@ export const VERSION_PRESETS = [
   { label: "< 1.0", value: "<1.0.0" }
 ];
 export const FILTERS_NAME = new Set(["package", "version", "flag", "license", "author", "ext", "builtin", "size"]);
+export const PRESETS = [
+  { id: "has_vulnerabilities", filter: "flag", value: "hasVulnerabilities" },
+  { id: "has_scripts", filter: "flag", value: "hasScript" },
+  { id: "no_license", filter: "flag", value: "hasNoLicense" },
+  { id: "deprecated", filter: "flag", value: "isDeprecated" },
+  { id: "large", filter: "size", value: ">100kb" }
+];
 // Filters that use a searchable text-based list (not a rich visual panel)
 export const FILTER_HAS_HELPERS = new Set(["license", "ext", "builtin", "author"]);
 // Filters where the mode persists after selection (multi-select)

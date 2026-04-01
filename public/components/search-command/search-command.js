@@ -9,6 +9,7 @@ import {
   FILTERS_NAME,
   FILTER_HAS_HELPERS,
   FILTER_MULTI_SELECT,
+  PRESETS,
   computeMatches,
   getHelperValues
 } from "./filters.js";
@@ -18,6 +19,7 @@ import {
   renderRangePanel,
   renderListPanel,
   renderFilterList,
+  renderPresets,
   renderResults
 } from "./search-command-panels.js";
 import "./search-chip.js";
@@ -321,6 +323,19 @@ class SearchCommand extends LitElement {
     this.#close();
   }
 
+  #getEmptyQueryMessage() {
+    const i18n = window.i18n[currentLang()].search_command;
+    if (this.queries.length === 1) {
+      const { filter, value } = this.queries[0];
+      const preset = PRESETS.find((preset) => preset.filter === filter && preset.value === value);
+      if (preset) {
+        return i18n[`preset_empty_${preset.id}`] ?? i18n.empty_after_filter;
+      }
+    }
+
+    return i18n.empty_after_filter;
+  }
+
   #focusMultiplePackages(nodeIds) {
     window.navigation.setNavByName("network--view");
     this.#network.highlightMultipleNodes(nodeIds);
@@ -401,6 +416,7 @@ class SearchCommand extends LitElement {
     const helpers = this.#visibleHelpers;
     const isPanelMode = this.activeFilter !== null;
     const isEmpty = helpers.length === 0 && this.results.length === 0 && this.inputValue.length > 0;
+    const isEmptyAfterQuery = this.queries.length > 0 && this.results.length === 0 && this.inputValue === "";
     const showRichPlaceholder = this.inputValue === "" && this.queries.length === 0;
     const showRefinePlaceholder = this.inputValue === "" && this.queries.length > 0;
     const helperPanel = helpers.length > 0
@@ -463,6 +479,10 @@ class SearchCommand extends LitElement {
 
           <div class="panel">
             ${isPanelMode ? this.#renderActiveFilterPanel(helpers) : helperPanel}
+            ${showRichPlaceholder ? renderPresets({
+              presets: PRESETS,
+              onApply: (preset) => this.#addQuery(preset.filter, preset.value)
+            }) : nothing}
             ${renderResults({
               results: this.results,
               selectedIndex: this.selectedIndex,
@@ -470,6 +490,7 @@ class SearchCommand extends LitElement {
               onFocus: (id) => this.#focusPackage(id)
             })}
             ${isEmpty ? html`<div class="empty-state">${i18n.empty}</div>` : nothing}
+            ${isEmptyAfterQuery ? html`<div class="empty-state">${this.#getEmptyQueryMessage()}</div>` : nothing}
           </div>
 
           <div class="search-footer">
