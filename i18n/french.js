@@ -300,6 +300,8 @@ const ui = {
     preset_empty_no_license: "Tous les packages ont une licence",
     preset_empty_deprecated: "Aucun package déprécié",
     preset_empty_large: "Aucun package ne dépasse 100ko",
+    section_ignore_flags: "Ignorer les flags",
+    section_ignore_warnings: "Ignorer les avertissements",
     nav_navigate: "naviguer",
     nav_select: "sélectionner",
     nav_remove: "supprimer le filtre",
