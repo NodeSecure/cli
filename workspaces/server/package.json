@@ -1,6 +1,6 @@
 {
   "name": "@nodesecure/server",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "NodeSecure server module",
   "type": "module",
   "main": "./dist/index.js",
@@ -33,7 +33,7 @@
     "server-destroy": "1.0.1"
   },
   "dependencies": {
-    "@nodesecure/cache": "1.0.0",
+    "@nodesecure/cache": "2.0.0",
     "@nodesecure/i18n": "4.1.0",
     "@nodesecure/npm-registry-sdk": "4.5.2",
     "@nodesecure/ossf-scorecard-sdk": "4.0.1",
