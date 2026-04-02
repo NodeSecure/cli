@@ -186,6 +186,33 @@ export function renderActions({ actions, onExecute }) {
 }
 
 /**
+ * @param {{ title: string, items: Array<{value: string, label: string, emoji?: string}>, ignored: Set<string>, onToggle: Function }} props
+ */
+export function renderIgnorePanel({ title, items, ignored, onToggle }) {
+  return html`
+    <div class="section">
+      <div class="section-title">${title}</div>
+      <div class="flag-grid">
+        ${repeat(items, (item) => item.value, (item) => {
+          const isIgnored = ignored.has(item.value);
+
+          return html`
+            <div
+              class=${classMap({ "flag-chip": true, "flag-active": isIgnored })}
+              title=${item.value}
+              @click=${() => onToggle(item.value)}
+            >
+              ${item.emoji ? html`<span class="flag-emoji">${item.emoji}</span>` : nothing}
+              <span class="flag-name">${item.label}</span>
+            </div>
+          `;
+        })}
+      </div>
+    </div>
+  `;
+}
+
+/**
  * @param {{ results: Array, selectedIndex: number, helperCount: number, onFocus: Function }} props
  */
 export function renderResults({ results, selectedIndex, helperCount, onFocus }) {

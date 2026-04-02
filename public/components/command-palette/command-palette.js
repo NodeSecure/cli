@@ -1,6 +1,7 @@
 // Import Third-party Dependencies
 import { LitElement, html, nothing } from "lit";
 import { repeat } from "lit/directives/repeat.js";
+import { warnings } from "@nodesecure/js-x-ray/warnings";
 
 // Import Internal Dependencies
 import { currentLang, vec2Distance } from "../../common/utils.js";
@@ -13,6 +14,7 @@ import {
   computeMatches,
   getHelperValues
 } from "./filters.js";
+import { FLAG_IGNORE_ITEMS } from "../../common/flags.js";
 import { commandPaletteStyles } from "./command-palette-styles.js";
 import {
   renderFlagPanel,
@@ -21,6 +23,7 @@ import {
   renderFilterList,
   renderPresets,
   renderActions,
+  renderIgnorePanel,
   renderResults
 } from "./command-palette-panels.js";
 import "./search-chip.js";
@@ -29,6 +32,10 @@ import "./search-chip.js";
 const kActions = [
   { id: "toggle_theme", shortcut: "t" }
 ];
+const kWarningItems = Object.keys(warnings)
+  .map((id) => {
+    return { value: id, label: id.replaceAll("-", " ") };
+  });
 
 function resolveKbd(shortcut) {
   if (!shortcut) {
@@ -107,15 +114,23 @@ class CommandPalette extends LitElement {
     this.results = [];
   }
 
+  #onSettingsSaved = () => {
+    if (this.open) {
+      this.requestUpdate();
+    }
+  };
+
   connectedCallback() {
     super.connectedCallback();
     document.addEventListener("keydown", this.#handleKeydown);
     window.addEventListener(EVENTS.COMMAND_PALETTE_INIT, this.#init);
+    window.addEventListener(EVENTS.SETTINGS_SAVED, this.#onSettingsSaved);
   }
 
   disconnectedCallback() {
     document.removeEventListener("keydown", this.#handleKeydown);
     window.removeEventListener(EVENTS.COMMAND_PALETTE_INIT, this.#init);
+    window.removeEventListener(EVENTS.SETTINGS_SAVED, this.#onSettingsSaved);
     super.disconnectedCallback();
   }
 
@@ -360,6 +375,41 @@ class CommandPalette extends LitElement {
     this.#close();
   }
 
+  #toggleIgnore(type, value) {
+    const ignoreSet = window.settings.config.ignore[type];
+    if (ignoreSet.has(value)) {
+      ignoreSet.delete(value);
+    }
+    else {
+      ignoreSet.add(value);
+    }
+
+    const config = window.settings.config;
+    fetch("/config", {
+      method: "put",
+      body: JSON.stringify({
+        ...config,
+        ignore: {
+          warnings: [...config.ignore.warnings],
+          flags: [...config.ignore.flags]
+        }
+      }),
+      headers: { "content-type": "application/json" }
+    }).catch(console.error);
+
+    window.dispatchEvent(new CustomEvent(EVENTS.SETTINGS_SAVED, {
+      detail: {
+        ...config,
+        ignore: {
+          warnings: config.ignore.warnings,
+          flags: config.ignore.flags
+        }
+      }
+    }));
+
+    this.requestUpdate();
+  }
+
   #getEmptyQueryMessage() {
     const i18n = window.i18n[currentLang()].search_command;
     if (this.queries.length === 1) {
@@ -537,6 +587,18 @@ class CommandPalette extends LitElement {
             ${showRichPlaceholder ? renderActions({
               actions: this.#resolveActions(),
               onExecute: (action) => this.#executeAction(action)
+            }) : nothing}
+            ${showRichPlaceholder ? renderIgnorePanel({
+              title: i18n.section_ignore_flags,
+              items: FLAG_IGNORE_ITEMS,
+              ignored: window.settings?.config?.ignore?.flags ?? new Set(),
+              onToggle: (value) => this.#toggleIgnore("flags", value)
+            }) : nothing}
+            ${showRichPlaceholder ? renderIgnorePanel({
+              title: i18n.section_ignore_warnings,
+              items: kWarningItems,
+              ignored: window.settings?.config?.ignore?.warnings ?? new Set(),
+              onToggle: (value) => this.#toggleIgnore("warnings", value)
             }) : nothing}
             ${renderResults({
               results: this.results,

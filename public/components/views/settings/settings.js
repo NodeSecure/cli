@@ -2,11 +2,11 @@
 import { LitElement, html, css, nothing } from "lit";
 import { getJSON } from "@nodesecure/vis-network";
 import { warnings } from "@nodesecure/js-x-ray/warnings";
-import { getManifest } from "@nodesecure/flags/web";
 
 // Import Internal Dependencies
 import { EVENTS } from "../../../core/events.js";
 import { currentLang } from "../../../common/utils.js";
+import { FLAG_IGNORE_ITEMS } from "../../../common/flags.js";
 
 // CONSTANTS
 const kAllowedHotKeys = new Set([
@@ -25,19 +25,6 @@ const kDefaultHotKeys = {
   warnings: "A"
 };
 const kShortcutInputTargetIds = new Set(Object.keys(kDefaultHotKeys));
-const kIgnorableFlags = new Set([
-  "hasManyPublishers",
-  "hasIndirectDependencies",
-  "hasMissingOrUnusedDependency",
-  "isDead",
-  "isOutdated",
-  "hasDuplicate"
-]);
-const kFlags = Object.values(getManifest())
-  .filter(({ title }) => kIgnorableFlags.has(title))
-  .map(({ title, emoji }) => {
-    return { value: title, emoji };
-  });
 const kShortcuts = [
   { id: "home", labelKey: "goto", viewKey: "home" },
   { id: "network", labelKey: "goto", viewKey: "network" },
@@ -304,6 +291,21 @@ export class SettingsView extends LitElement {
     }
   }
 
+  #onSettingsSaved = (event) => {
+    this.setNewConfig(event.detail);
+    this._saveEnabled = false;
+  };
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener(EVENTS.SETTINGS_SAVED, this.#onSettingsSaved);
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener(EVENTS.SETTINGS_SAVED, this.#onSettingsSaved);
+    super.disconnectedCallback();
+  }
+
   firstUpdated() {
     this.updateNavigationHotKey(this._hotkeys);
   }
@@ -464,7 +466,7 @@ export class SettingsView extends LitElement {
   }
 
   #renderFlagCheckboxes() {
-    return kFlags.map(({ value, emoji }) => html`
+    return FLAG_IGNORE_ITEMS.map(({ value, emoji }) => html`
       <div>
         <input
           type="checkbox"
