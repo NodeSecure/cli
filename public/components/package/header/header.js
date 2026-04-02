@@ -6,8 +6,7 @@ import * as utils from "../../../common/utils.js";
 
 export class PackageHeader {
   static ExternalLinks = {
-    socket: "https://socket.dev/npm/package/",
-    snykAdvisor: "https://snyk.io/advisor/npm-package/"
+    socket: "https://socket.dev/npm/package/"
   };
 
   constructor(pkg) {
@@ -173,7 +172,7 @@ export class PackageHeader {
    * @returns {HTMLElement[]}
    */
   renderMenu(packageName) {
-    const { snykAdvisor, socket } = PackageHeader.ExternalLinks;
+    const { socket } = PackageHeader.ExternalLinks;
     const i18n = window.i18n[utils.currentLang()];
 
     return utils.createDOMElement("div", {
@@ -182,13 +181,6 @@ export class PackageHeader {
         utils.createDOMElement("div", {
           text: i18n.package_info.helpers.thirdPartyTools,
           classList: ["info-menu-title"]
-        }),
-        utils.createDOMElement("a", {
-          text: "Snyk",
-          attributes: {
-            href: snykAdvisor + packageName,
-            target: "_blank"
-          }
         }),
         utils.createDOMElement("a", {
           text: "Socket.dev",
