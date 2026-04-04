@@ -20,14 +20,16 @@ import {
   formatMs
 } from "./loggers/logger.js";
 import { parseContacts } from "./parsers/contacts.js";
+import { parsePackages } from "./parsers/packages.js";
 
 export async function auto(spec, options) {
   const { keep, ...commandOptions } = options;
 
-  const optionsWithContacts = {
+  const optionsWithHighlight = {
     ...commandOptions,
     highlight: {
-      contacts: parseContacts(options.contacts)
+      contacts: parseContacts(options.contacts),
+      packages: parsePackages(options.packages ?? [])
     }
   };
 
@@ -36,8 +38,8 @@ export async function auto(spec, options) {
 
   const payloadFile = await (
     typeof spec === "string" ?
-      from(spec, optionsWithContacts, cache) :
-      cwd(optionsWithContacts, cache)
+      from(spec, optionsWithHighlight, cache) :
+      cwd(optionsWithHighlight, cache)
   );
   try {
     if (payloadFile !== null) {
@@ -75,6 +77,7 @@ export async function cwd(options, cache) {
     vulnerabilityStrategy,
     silent,
     contacts,
+    packages,
     verbose
   } = options;
 
@@ -86,7 +89,8 @@ export async function cwd(options, cache) {
       fullLockMode: full,
       vulnerabilityStrategy,
       highlight: {
-        contacts: parseContacts(contacts)
+        contacts: parseContacts(contacts),
+        packages: parsePackages(packages)
       },
       isVerbose: verbose,
       workers: true,
@@ -118,6 +122,7 @@ export async function from(spec, options, cache) {
     output,
     silent,
     contacts,
+    packages,
     vulnerabilityStrategy,
     verbose
   } = options;
@@ -128,7 +133,8 @@ export async function from(spec, options, cache) {
       maxDepth,
       vulnerabilityStrategy,
       highlight: {
-        contacts: parseContacts(contacts)
+        contacts: parseContacts(contacts),
+        packages: parsePackages(packages)
       },
       isVerbose: verbose,
       workers: true,
