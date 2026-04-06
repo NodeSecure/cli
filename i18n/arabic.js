@@ -22,6 +22,7 @@ const cli = {
     option_output: "اسم ملف JSON الناتج",
     option_silent: "تفعيل الوضع الصامت الذي يعطل مؤشرات CLI",
     option_contacts: "قائمة جهات الاتصال للتمييز",
+    option_packages: "قائمة الحزم للتمييز",
     option_verbose: "ضبط مستوى الـ log الخاص بالـ CLI على verbose، مما يجعل الـ CLI يولّد logs أكثر تفصيلاً.",
     strategy: "مصدر الثغرات للاستخدام",
     cwd: {

@@ -152,6 +152,7 @@ function defaultScannerCommand(name, options = {}) {
     .option("-d, --depth", i18n.getTokenSync("cli.commands.option_depth"), Infinity)
     .option("--silent", i18n.getTokenSync("cli.commands.option_silent"), false)
     .option("-c, --contacts", i18n.getTokenSync("cli.commands.option_contacts"), [])
+    .option("-p, --packages", i18n.getTokenSync("cli.commands.option_packages"), [])
     .option("--verbose", i18n.getTokenSync("cli.commands.option_verbose"), false);
 
   if (includeOutput) {
