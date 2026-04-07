@@ -18,8 +18,10 @@ export class WebSocketClient extends EventTarget {
      * @type {{ search: (spec: Spec) => void, remove: (spec: Spec) => void }}
      */
     this.commands = {
-      search: (spec) => this.send({ commandName: "SEARCH", spec }),
-      remove: (spec) => this.send({ commandName: "REMOVE", spec })
+      search: /** @param {Spec} spec */ (spec) =>
+        this.send({ commandName: "SEARCH", spec }),
+      remove: /** @param {Spec} spec */ (spec) =>
+        this.send({ commandName: "REMOVE", spec }),
     };
 
     window.socket = this;
@@ -40,18 +42,13 @@ export class WebSocketClient extends EventTarget {
     /** @type {{ status: string, [key: string]: any }} */
     const data = JSON.parse(event.data);
     if (!data.status) {
-      console.warn(
-        "[WEBSOCKET] Received data without status:",
-        data
-      );
+      console.warn("[WEBSOCKET] Received data without status:", data);
 
       return;
     }
 
     console.log(`[WEBSOCKET] data status = '${data.status}'`);
-    this.dispatchEvent(
-      new CustomEvent(data.status, { detail: data })
-    );
+    this.dispatchEvent(new CustomEvent(data.status, { detail: data }));
   }
 
   close() {
