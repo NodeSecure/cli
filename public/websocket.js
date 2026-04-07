@@ -13,11 +13,13 @@ export class WebSocketClient extends EventTarget {
     super();
     this.client = new WebSocket(url);
     this.client.addEventListener("message", this.#messageHandler.bind(this));
+
+    /**
+     * @type {{ search: (spec: Spec) => void, remove: (spec: Spec) => void }}
+     */
     this.commands = {
-      search: /** @param {Spec} spec */ (spec) =>
-        this.send({ commandName: "SEARCH", spec }),
-      remove: /** @param {Spec} spec */ (spec) =>
-        this.send({ commandName: "REMOVE", spec }),
+      search: (spec) => this.send({ commandName: "SEARCH", spec }),
+      remove: (spec) => this.send({ commandName: "REMOVE", spec })
     };
 
     window.socket = this;
