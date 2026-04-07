@@ -20,6 +20,11 @@ export async function fetchScorecardData(repoName, platform = "github.com") {
   }
 }
 
+/**
+ * @param {string} repoName
+ * @param {string} platform
+ * @returns {string}
+ */
 export function getScorecardLink(
   repoName,
   platform
