@@ -238,7 +238,7 @@ width: 16px;
           const { packages, email, url = null, npmAvatar } = data;
           const personClasses = {
             person: true,
-            highlighted: this.secureDataSet.isHighlighted(data)
+            highlighted: this.secureDataSet.isHighlightedContact(data)
           };
 
           return html`
@@ -289,9 +289,9 @@ width: 16px;
 
   #highlightContacts(authors) {
     const highlightedAuthors = authors
-      .filter(([_, contact]) => this.secureDataSet.isHighlighted(contact));
+      .filter(([_, contact]) => this.secureDataSet.isHighlightedContact(contact));
 
-    const authorsRest = authors.filter(([_, contact]) => !this.secureDataSet.isHighlighted(contact));
+    const authorsRest = authors.filter(([_, contact]) => !this.secureDataSet.isHighlightedContact(contact));
 
     return [...highlightedAuthors, ...authorsRest];
   }

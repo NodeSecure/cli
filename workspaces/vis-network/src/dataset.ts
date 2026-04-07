@@ -13,6 +13,7 @@ import type {
 
 // Import Internal Dependencies
 import * as utils from "./utils.ts";
+import type { VisEdge, VisNode } from "./network.ts";
 
 declare global {
   interface Window {
@@ -43,6 +44,7 @@ export type LinkerEntry = DependencyVersion & {
   hidden: boolean;
   hasWarnings: boolean;
   isFriendly: boolean;
+  isHighlighted: boolean;
 };
 
 export interface PackageInfo {
@@ -53,36 +55,16 @@ export interface PackageInfo {
   flags: string;
   links: DependencyLinks | undefined;
   isFriendly: boolean;
+  isHighlighted: boolean;
 }
 
 export type AuthorInfo = Maintainer & {
   packages: Set<string>;
 };
 
-export interface VisNode {
-  id: number;
-  label: string;
-  color: string;
-  font: {
-    color: string;
-    background?: string;
-    multi: string;
-  };
-  hidden?: boolean;
-}
-
-export interface VisEdge {
-  id?: string | number;
-  from: number;
-  to: number;
-  label?: string;
-  font?: {
-    background: string;
-  };
-}
-
 export default class NodeSecureDataSet extends EventTarget {
   #highligthedContacts!: HighlightedContacts;
+  #highlightedPackages;
 
   flagsToIgnore: Set<string>;
   warningsToIgnore: Set<string>;
@@ -183,6 +165,8 @@ export default class NodeSecureDataSet extends EventTarget {
         return acc;
       }, { names: new Set<string>(), emails: new Set<string>() });
 
+    this.#highlightedPackages = new Set(data.highlighted.packages);
+
     const dependencies = Object.entries(data.dependencies);
     this.dependenciesCount = dependencies.length;
 
@@ -244,6 +228,8 @@ export default class NodeSecureDataSet extends EventTarget {
         })
       );
 
+      const isHighlighted = this.#isHighlightedPackage(packageName, currVersion);
+
       this.packages.push({
         id,
         name: packageName,
@@ -251,7 +237,8 @@ export default class NodeSecureDataSet extends EventTarget {
         hasWarnings,
         flags: flagStr.replace(/\s/g, ""),
         links,
-        isFriendly
+        isFriendly,
+        isHighlighted
       });
 
       const label = `<b>${packageName}@${currVersion}</b>${flagStr}\n<b>[${prettyBytes(size)}]</b>`;
@@ -259,6 +246,7 @@ export default class NodeSecureDataSet extends EventTarget {
         id,
         hasWarnings,
         isFriendly,
+        isHighlighted,
         theme: this.theme.toUpperCase()
       });
 
@@ -268,14 +256,17 @@ export default class NodeSecureDataSet extends EventTarget {
         version: currVersion,
         hidden: false,
         hasWarnings,
-        isFriendly
+        isFriendly,
+        isHighlighted
       };
       this.linker.set(Number(id), linkerEntry);
+      const { color: nodeColor, font: nodeFont, ...colorRest } = color;
       this.rawNodesData.push({
         id,
         label,
-        color: color.color,
-        font: { ...color.font, multi: "html" }
+        color: nodeColor,
+        font: { ...nodeFont, multi: "html" },
+        ...colorRest
       });
 
       for (const [depName, depVersion] of Object.entries(usedBy)) {
@@ -339,11 +330,15 @@ export default class NodeSecureDataSet extends EventTarget {
     return { nodes, edges };
   }
 
-  isHighlighted(
+  isHighlightedContact(
     contact: { name?: string; email?: string; }
   ): boolean {
     return this.#highligthedContacts.names.has(contact.name ?? "") ||
       this.#highligthedContacts.emails.has(contact.email ?? "");
+  }
+
+  #isHighlightedPackage(name: string, version: string): boolean {
+    return this.#highlightedPackages.has(name) || this.#highlightedPackages.has(`${name}@${version}`);
   }
 
   findPackagesByName(

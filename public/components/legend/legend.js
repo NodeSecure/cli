@@ -90,6 +90,7 @@ class Legend extends LitElement {
        ${this.#createLegendBoxElement(colors.WARN, legend.warn)}
        ${this.#createLegendBoxElement(colors.FRIENDLY, legend.friendly)}
        ${this.#createLegendBoxElement(colors.DEFAULT, legend.default)}
+       ${this.#createLegendBoxElement(colors.HIGHLIGHTED, legend.highlighted)}
     </div>
     `;
   }
@@ -98,7 +99,7 @@ class Legend extends LitElement {
     theme,
     text
   ) {
-    const style = `background-color: ${theme.color}; color: ${theme.font.color};`;
+    const style = `background-color: ${theme.color}; color: ${(theme.font ?? COLORS.LIGHT.DEFAULT.font).color};`;
 
     return html`
     <div class="legend-box" style=${style}>

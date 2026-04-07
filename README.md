@@ -151,6 +151,7 @@ Type a package name directly to search, or prefix with a filter name followed by
 - `ext` — file extension present in the package (e.g. `.js`, `.ts`).
 - `builtin` — Node.js core module used by the package (e.g. `fs`, `path`).
 - `size` — size range (see [size-satisfies](https://github.com/NodeSecure/size-satisfies#usage-example), e.g. `>50kb`, `10kb..200kb`).
+- `highlighted` — all highlighted packages by default.
 
 ## FAQ
 

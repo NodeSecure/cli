@@ -315,13 +315,15 @@ const ui = {
       author: "name or email",
       ext: "file extension",
       builtin: "node.js module",
-      size: "e.g. >50kb"
+      size: "e.g. >50kb",
+      highlighted: "all"
     }
   },
   legend: {
     default: "The package is fine.",
     warn: "The package has warnings.",
-    friendly: "The package is maintained by the same authors as the root package."
+    friendly: "The package is maintained by the same authors as the root package.",
+    highlighted: "The package is part of highlighted packages"
   },
   lockedNavigation: {
     next: "Next",

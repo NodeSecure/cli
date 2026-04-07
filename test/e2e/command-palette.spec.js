@@ -15,7 +15,7 @@ test.describe("[command-palette] presets and actions", () => {
       return window.i18n[activeLang].search_command;
     });
 
-    await page.locator("body").click();
+    await page.locator(`[data-menu="network--view"].active`).click();
     await page.keyboard.press("Control+k");
 
     await expect(page.locator(".backdrop")).toBeVisible();
@@ -105,7 +105,7 @@ test.describe("[command-palette] ignore flags and warnings", () => {
       return window.i18n[activeLang].search_command;
     });
 
-    await page.locator("body").click();
+    await page.locator(`[data-menu="network--view"].active`).click();
     await page.keyboard.press("Control+k");
 
     await expect(page.locator(".backdrop")).toBeVisible();

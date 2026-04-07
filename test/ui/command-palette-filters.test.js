@@ -18,7 +18,8 @@ const kLinker = new Map([
     uniqueLicenseIds: ["MIT"],
     composition: { extensions: [".js", ".ts"], required_nodejs: ["fs", "path"] },
     author: { name: "TJ Holowaychuk" },
-    size: 102_400
+    size: 102_400,
+    isHighlighted: true
   }],
   [1, {
     name: "lodash",
@@ -27,7 +28,8 @@ const kLinker = new Map([
     uniqueLicenseIds: ["MIT", "ISC"],
     composition: { extensions: [".js", ""], required_nodejs: ["path"] },
     author: "John-David Dalton",
-    size: 5_000
+    size: 5_000,
+    isHighlighted: true
   }],
   [2, {
     name: "semver",
@@ -230,6 +232,20 @@ describe("computeMatches", () => {
       const result = computeMatches(kLinker, "author", "[invalid");
 
       assert.deepEqual(result, new Set());
+    });
+  });
+
+  describe("filter: highlighted", () => {
+    it("should match only highlighted packages when value is 'all'", () => {
+      const result = computeMatches(kLinker, "highlighted", "all");
+
+      assert.deepEqual(result, new Set(["0", "1"]));
+    });
+
+    it("should match non-highlighted packages when value is not 'all'", () => {
+      const result = computeMatches(kLinker, "highlighted", "none");
+
+      assert.deepEqual(result, new Set(["2"]));
     });
   });
 });

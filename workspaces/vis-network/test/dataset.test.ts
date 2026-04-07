@@ -60,16 +60,48 @@ test("NodeSecureDataSet.prettySize", () => {
 test("NodeSecureDataSet.isHighlighted", async() => {
   const nsDataSet = new NodeSecureDataSet();
   await nsDataSet.init(dataSetPayload);
-  assert.equal(nsDataSet.isHighlighted({ name: "Unknown" }), false, "should not be hightlighted");
-  assert.equal(nsDataSet.isHighlighted({ name: "Sindre Sorhus" }), true, "name: Sindre Sorhus should be hightlighted");
-  assert.equal(nsDataSet.isHighlighted({ name: "Rich Harris" }), true, "name: Rich Harris should be hightlighted");
-  assert.equal(nsDataSet.isHighlighted({ email: "rich.harris@gmail.com" }),
+  assert.equal(nsDataSet.isHighlightedContact({ name: "Unknown" }), false, "should not be hightlighted");
+  assert.equal(nsDataSet.isHighlightedContact({ name: "Sindre Sorhus" }), true, "name: Sindre Sorhus should be hightlighted");
+  assert.equal(nsDataSet.isHighlightedContact({ name: "Rich Harris" }), true, "name: Rich Harris should be hightlighted");
+  assert.equal(nsDataSet.isHighlightedContact({ email: "rich.harris@gmail.com" }),
     true,
     "email: rich.harris@gmail.com should be hightlighted");
 
-  assert.equal(nsDataSet.isHighlighted({ email: "gentilhomme.thomas@gmail.com" }),
+  assert.equal(nsDataSet.isHighlightedContact({ email: "gentilhomme.thomas@gmail.com" }),
     true,
     "email: gentilhomme.thomas@gmail.com should be hightlighted");
+});
+
+test("NodeSecureDataSet.init should mark highlighted packages by name", async() => {
+  const nsDataSet = new NodeSecureDataSet();
+  await nsDataSet.init(dataSetPayload);
+
+  const pkg3Packages = nsDataSet.findPackagesByName("pkg3");
+  assert.ok(pkg3Packages.length > 0, "should have pkg3 packages");
+  assert.ok(pkg3Packages.every((pkg) => pkg.isHighlighted), "all pkg3 versions should be highlighted (matched by name)");
+});
+
+test("NodeSecureDataSet.init should mark highlighted packages by name@version", async() => {
+  const nsDataSet = new NodeSecureDataSet();
+  await nsDataSet.init(dataSetPayload);
+
+  const pkg2Packages = nsDataSet.findPackagesByName("pkg2");
+  const highlighted = pkg2Packages.find((pkg) => pkg.version === "1.0.4");
+  const notHighlighted = pkg2Packages.find((pkg) => pkg.version === "1.0.3");
+
+  assert.ok(highlighted, "should find pkg2@1.0.4");
+  assert.ok(notHighlighted, "should find pkg2@1.0.3");
+  assert.equal(highlighted.isHighlighted, true, "pkg2@1.0.4 should be highlighted (matched by name@version)");
+  assert.equal(notHighlighted.isHighlighted, false, "pkg2@1.0.3 should not be highlighted");
+});
+
+test("NodeSecureDataSet.init should not highlight packages absent from highlighted list", async() => {
+  const nsDataSet = new NodeSecureDataSet();
+  await nsDataSet.init(dataSetPayload);
+
+  const pkg1Packages = nsDataSet.findPackagesByName("pkg1");
+  assert.ok(pkg1Packages.length > 0, "should have pkg1 packages");
+  assert.ok(pkg1Packages.every((pkg) => !pkg.isHighlighted), "pkg1 should not be highlighted");
 });
 
 test("NodeSecureDataSet.computeAuthors", () => {
@@ -156,7 +188,8 @@ test("NodeSecureDataSet.findPackagesByName should have packages when name matche
       hasWarnings: false,
       flags: "",
       links: undefined,
-      isFriendly: 0
+      isFriendly: 0,
+      isHighlighted: false
     },
     {
       id: undefined,
@@ -165,7 +198,9 @@ test("NodeSecureDataSet.findPackagesByName should have packages when name matche
       hasWarnings: false,
       flags: "",
       links: undefined,
-      isFriendly: 0
+      isFriendly: 0,
+      isHighlighted: true
+
     }
   ];
 
