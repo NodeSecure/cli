@@ -1,14 +1,22 @@
+/**
+ * @typedef {string | object} Spec
+ */
 
 export class WebSocketClient extends EventTarget {
   /** @type {WebSocket} */
   client;
 
   constructor(
+    /** @type {String} */
     url
   ) {
     super();
     this.client = new WebSocket(url);
     this.client.addEventListener("message", this.#messageHandler.bind(this));
+
+    /**
+     * @type {{ search: (spec: Spec) => void, remove: (spec: Spec) => void }}
+     */
     this.commands = {
       search: (spec) => this.send({ commandName: "SEARCH", spec }),
       remove: (spec) => this.send({ commandName: "REMOVE", spec })
@@ -20,11 +28,16 @@ export class WebSocketClient extends EventTarget {
     };
   }
 
+  /** @type {(data: Record<string, any>) => void} */
   send(data) {
     this.client.send(JSON.stringify(data));
   }
 
+  /**
+   * @param {MessageEvent} event
+   */
   #messageHandler(event) {
+    /** @type {{ status: string, [key: string]: any }} */
     const data = JSON.parse(event.data);
     if (!data.status) {
       console.warn(
