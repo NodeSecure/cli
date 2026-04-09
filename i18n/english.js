@@ -10,7 +10,11 @@ const cli = {
   successfully_written_json: tS`Successfully written results file at: ${0}`,
   http_server_started: "HTTP Server started on:",
   missingEnv: tS`Environment variable ${0} is missing!`,
-  stat: tS`${0}${1} in ${2}`,
+  stat: tS`${0}${1} in ${2}${3}${4}`,
+  tarballStats: {
+    path: tS`Path: ${0}`,
+    filesCount: tS`Files count: ${0}`
+  },
   error: {
     name: tS`${0} name: ${1}`,
     message: tS`Message: ${0}`,

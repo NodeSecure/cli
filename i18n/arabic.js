@@ -9,6 +9,10 @@ const cli = {
   http_server_started: "تم تشغيل خادم HTTP على:",
   missingEnv: tS`متغير البيئة ${0} مفقود!`,
   stat: tS`${0}${1} في ${2}`,
+  tarballStats: {
+    path: tS`المسار: ${0}`,
+    filesCount: tS`عدد الملفات: ${0}`
+  },
   error: {
     name: tS`اسم ${0}: ${1}`,
     message: tS`الرسالة: ${0}`,
