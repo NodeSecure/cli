@@ -40,13 +40,18 @@ export class WebSocketClient extends EventTarget {
     /** @type {{ status: string, [key: string]: any }} */
     const data = JSON.parse(event.data);
     if (!data.status) {
-      console.warn("[WEBSOCKET] Received data without status:", data);
+      console.warn(
+        "[WEBSOCKET] Received data without status:",
+        data
+      );
 
       return;
     }
 
     console.log(`[WEBSOCKET] data status = '${data.status}'`);
-    this.dispatchEvent(new CustomEvent(data.status, { detail: data }));
+    this.dispatchEvent(
+      new CustomEvent(data.status, { detail: data })
+    );
   }
 
   close() {
