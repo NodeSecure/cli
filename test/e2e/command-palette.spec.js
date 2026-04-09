@@ -30,9 +30,9 @@ test.describe("[command-palette] presets and actions", () => {
     await expect(presetsSection.locator(".range-preset")).toHaveCount(5);
   });
 
-  test("renders the theme toggle action button", async({ page }) => {
+  test("renders all four action buttons", async({ page }) => {
     const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
-    await expect(actionsSection.locator(".range-preset")).toHaveCount(1);
+    await expect(actionsSection.locator(".range-preset")).toHaveCount(4);
   });
 
   test("clicking a preset adds a chip and hides the presets section", async({ page }) => {
@@ -66,7 +66,8 @@ test.describe("[command-palette] presets and actions", () => {
     const expectedTheme = initialTheme === "dark" ? "light" : "dark";
 
     const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
-    await actionsSection.locator(".range-preset").click();
+    const toggleLabel = i18n[`action_toggle_theme_to_${expectedTheme}`];
+    await actionsSection.locator(".range-preset").filter({ hasText: toggleLabel }).click();
 
     await expect(page.locator(".backdrop")).not.toBeVisible();
     const newTheme = await page.evaluate(() => window.settings.config.theme);
@@ -88,6 +89,66 @@ test.describe("[command-palette] presets and actions", () => {
     await page.keyboard.press("Escape");
 
     await expect(page.locator(".backdrop")).not.toBeVisible();
+  });
+
+  test("actions section remains visible after a filter chip is applied", async({ page }) => {
+    await page.locator(".range-preset").filter({ hasText: i18n.preset_deprecated }).click();
+
+    await expect(page.locator(".section").filter({ hasText: i18n.section_actions })).toBeVisible();
+  });
+
+  test("clicking reset view closes the palette", async({ page }) => {
+    const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
+    await actionsSection.locator(".range-preset").filter({ hasText: i18n.action_reset_view }).click();
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+  });
+
+  test("Alt+R triggers reset view and closes the palette", async({ page }) => {
+    await page.keyboard.press("Alt+r");
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+  });
+
+  test("clicking copy packages closes the palette and writes specs to clipboard", async({ page }) => {
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+
+    const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
+    await actionsSection.locator(".range-preset").filter({ hasText: i18n.action_copy_packages }).click();
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+
+    const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clipboardText.length).toBeGreaterThan(0);
+    expect(clipboardText).toContain("@");
+  });
+
+  test("Alt+C triggers copy packages and closes the palette", async({ page }) => {
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.keyboard.press("Alt+c");
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+  });
+
+  test("clicking export payload closes the palette and triggers a download", async({ page }) => {
+    const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
+    const [download] = await Promise.all([
+      page.waitForEvent("download"),
+      actionsSection.locator(".range-preset").filter({ hasText: i18n.action_export_payload }).click()
+    ]);
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+    expect(download.suggestedFilename()).toBe("nsecure-result.json");
+  });
+
+  test("Alt+E triggers export payload and closes the palette", async({ page }) => {
+    const [download] = await Promise.all([
+      page.waitForEvent("download"),
+      page.keyboard.press("Alt+e")
+    ]);
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+    expect(download.suggestedFilename()).toBe("nsecure-result.json");
   });
 });
 
