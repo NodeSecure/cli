@@ -11,6 +11,10 @@ const cli = {
   http_server_started: "HTTP Sunucusu başlatıldı:",
   missingEnv: tS`${0} ortam değişkeni eksik!`,
   stat: tS`${0}${1} içinde ${2}`,
+  tarballStats: {
+    path: tS`Yol: ${0}`,
+    filesCount: tS`Dosya sayısı: ${0}`
+  },
   error: {
     name: tS`${0} adı: ${1}`,
     message: tS`Mesaj: ${0}`,

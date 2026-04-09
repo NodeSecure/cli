@@ -11,6 +11,10 @@ const cli = {
   http_server_started: "Serveur HTTP démarré sur :",
   missingEnv: tS`La variable d'environnement ${0} est manquante!`,
   stat: tS`${0}${1} en ${2}`,
+  tarballStats: {
+    path: tS`Chemin: ${0}`,
+    filesCount: tS`Nombre de fichiers: ${0}`
+  },
   error: {
     name: tS`Nom ${0}: ${1}`,
     message: tS`Message: ${0}`,

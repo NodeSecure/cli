@@ -18,7 +18,9 @@ export function logScannerStat(stat, isVerbose = true) {
     i18n.getTokenSync("cli.stat",
       isVerbose ? kleur.blue().bold("verbose ") : "",
       stat.name,
-      colorExecutionTime(stat.executionTime)
+      colorExecutionTime(stat.executionTime),
+      stat.tarball?.path ? ` ${i18n.getTokenSync("cli.tarballStats.path", stat.tarball.path)}` : "",
+      stat.tarball?.filesCount ? ` ${i18n.getTokenSync("cli.tarballStats.filesCount", stat.tarball.filesCount)}` : ""
     )));
 }
 
