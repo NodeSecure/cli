@@ -20,7 +20,18 @@ export const VERSION_PRESETS = [
   { label: "≥ 1.0", value: ">=1.0.0" },
   { label: "< 1.0", value: "<1.0.0" }
 ];
-export const FILTERS_NAME = new Set(["package", "version", "flag", "license", "author", "ext", "builtin", "size", "highlighted"]);
+export const FILTERS_NAME = new Set([
+  "package",
+  "version",
+  "flag",
+  "license",
+  "author",
+  "ext",
+  "builtin",
+  "size",
+  "highlighted",
+  "dep"
+]);
 export const PRESETS = [
   { id: "has_vulnerabilities", filter: "flag", value: "hasVulnerabilities" },
   { id: "has_scripts", filter: "flag", value: "hasScript" },
@@ -29,7 +40,7 @@ export const PRESETS = [
   { id: "large", filter: "size", value: ">100kb" }
 ];
 // Filters that use a searchable text-based list (not a rich visual panel)
-export const FILTER_HAS_HELPERS = new Set(["license", "ext", "builtin", "author"]);
+export const FILTER_HAS_HELPERS = new Set(["license", "ext", "builtin", "author", "dep"]);
 // Filters where the mode persists after selection (multi-select)
 export const FILTER_MULTI_SELECT = new Set(["flag"]);
 // Filters that auto-confirm immediately on selection (no text input needed)
@@ -60,6 +71,18 @@ export function getFlagCounts(linker) {
  * @returns {Map<string, number>}
  */
 export function getFilterValueCounts(linker, filterName) {
+  if (filterName === "dep") {
+    const counts = new Map();
+    for (const opt of linker.values()) {
+      const dependentCount = Object.keys(opt.usedBy).length;
+      if (dependentCount > 0) {
+        counts.set(opt.name, (counts.get(opt.name) ?? 0) + dependentCount);
+      }
+    }
+
+    return counts;
+  }
+
   const counts = new Map();
   for (const opt of linker.values()) {
     for (const value of getValuesForCount(opt, filterName)) {
@@ -155,6 +178,16 @@ export function getHelperValues(linker, filterName) {
         return { display: name, value: name };
       });
     }
+    case "dep": {
+      const items = new Set();
+      for (const { name } of linker.values()) {
+        items.add(name);
+      }
+
+      return [...items].sort().map((name) => {
+        return { display: name, value: name };
+      });
+    }
     default:
       return [];
   }
@@ -169,12 +202,51 @@ export function getHelperValues(linker, filterName) {
  * @returns {Set<string>}
  */
 export function computeMatches(linker, filterName, inputValue) {
+  if (filterName === "dep") {
+    return computeDepMatches(linker, inputValue);
+  }
+
   const matchingIds = new Set();
 
   for (const [id, opt] of linker) {
     if (matchesFilter(opt, filterName, inputValue)) {
       matchingIds.add(String(id));
     }
+  }
+
+  return matchingIds;
+}
+
+/**
+ * Collect packages that depend on package matching inputValue
+ *
+ * @param {Map<number, object>} linker
+ * @param {string} inputValue
+ * @returns {Set<string>}
+ */
+function computeDepMatches(linker, inputValue) {
+  const matchingIds = new Set();
+
+  try {
+    const regex = new RegExp(inputValue, "i");
+
+    const dependentNames = new Set();
+    for (const opt of linker.values()) {
+      if (regex.test(opt.name)) {
+        for (const dependency of Object.keys(opt.usedBy)) {
+          dependentNames.add(dependency);
+        }
+      }
+    }
+
+    for (const [id, opt] of linker) {
+      if (dependentNames.has(opt.name)) {
+        matchingIds.add(String(id));
+      }
+    }
+  }
+  catch {
+    // invalid regex
   }
 
   return matchingIds;

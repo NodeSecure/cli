@@ -299,6 +299,7 @@ const ui = {
     section_extensions: "File extensions",
     section_builtins: "Node.js core modules",
     section_authors: "Authors",
+    section_dep: "Packages depending on",
     hint_size: "e.g. >50kb, 10kb..200kb",
     hint_version: "e.g. ^1.0.0, >=2.0.0",
     empty: "No results found",
@@ -323,7 +324,8 @@ const ui = {
       ext: "file extension",
       builtin: "node.js module",
       size: "e.g. >50kb",
-      highlighted: "all"
+      highlighted: "all",
+      dep: "package name"
     }
   },
   legend: {

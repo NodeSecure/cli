@@ -19,7 +19,8 @@ const kLinker = new Map([
     composition: { extensions: [".js", ".ts"], required_nodejs: ["fs", "path"] },
     author: { name: "TJ Holowaychuk" },
     size: 102_400,
-    isHighlighted: true
+    isHighlighted: true,
+    usedBy: {}
   }],
   [1, {
     name: "lodash",
@@ -29,7 +30,8 @@ const kLinker = new Map([
     composition: { extensions: [".js", ""], required_nodejs: ["path"] },
     author: "John-David Dalton",
     size: 5_000,
-    isHighlighted: true
+    isHighlighted: true,
+    usedBy: { express: "4.18.2" }
   }],
   [2, {
     name: "semver",
@@ -38,7 +40,8 @@ const kLinker = new Map([
     uniqueLicenseIds: ["ISC"],
     composition: { extensions: [".js"], required_nodejs: [] },
     author: null,
-    size: 20_000
+    size: 20_000,
+    usedBy: { express: "4.18.2" }
   }]
 ]);
 
@@ -209,6 +212,44 @@ describe("computeMatches", () => {
     });
   });
 
+  describe("filter: dep", () => {
+    it("should return packages that depend on the given package", () => {
+      const result = computeMatches(kLinker, "dep", "lodash");
+
+      assert.deepEqual(result, new Set(["0"]));
+    });
+
+    it("should match against multiple packages when regex hits several names", () => {
+      const result = computeMatches(kLinker, "dep", "lodash|semver");
+
+      assert.deepEqual(result, new Set(["0"]));
+    });
+
+    it("should return empty set when no package depends on the target", () => {
+      const result = computeMatches(kLinker, "dep", "express");
+
+      assert.deepEqual(result, new Set());
+    });
+
+    it("should return empty set when the target package does not exist", () => {
+      const result = computeMatches(kLinker, "dep", "unknown-package");
+
+      assert.deepEqual(result, new Set());
+    });
+
+    it("should support partial regex matching", () => {
+      const result = computeMatches(kLinker, "dep", "sem");
+
+      assert.deepEqual(result, new Set(["0"]));
+    });
+
+    it("should return empty set on invalid regex", () => {
+      const result = computeMatches(kLinker, "dep", "[invalid");
+
+      assert.deepEqual(result, new Set());
+    });
+  });
+
   describe("filter: author", () => {
     it("should match packages whose author is an object with a matching name", () => {
       const result = computeMatches(kLinker, "author", "TJ");
@@ -310,6 +351,15 @@ describe("getFilterValueCounts", () => {
     ]));
   });
 
+  it("should count dependent packages per dependency name", () => {
+    const result = getFilterValueCounts(kLinker, "dep");
+
+    assert.deepEqual(result, new Map([
+      ["lodash", 1],
+      ["semver", 1]
+    ]));
+  });
+
   it("should return empty map for unknown filter name", () => {
     const result = getFilterValueCounts(kLinker, "unknown");
 
@@ -351,6 +401,16 @@ describe("getHelperValues", () => {
     assert.deepEqual(result, [
       { display: "TJ Holowaychuk", value: "TJ Holowaychuk" },
       { display: "John-David Dalton", value: "John-David Dalton" }
+    ]);
+  });
+
+  it("should return all package names sorted alphabetically for dep filter", () => {
+    const result = getHelperValues(kLinker, "dep");
+
+    assert.deepEqual(result, [
+      { display: "express", value: "express" },
+      { display: "lodash", value: "lodash" },
+      { display: "semver", value: "semver" }
     ]);
   });
 

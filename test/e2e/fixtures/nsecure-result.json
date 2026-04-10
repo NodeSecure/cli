@@ -1,9 +1,9 @@
 {
   "id": "j6vlz7",
   "rootDependency": {
-    "name": "ms",
-    "version": "2.1.3",
-    "integrity": "sha512-EY5JVSmS/ZEMr9kLaphuJfQMLLbK87KibiJPcp3GB4YQHlFK6Ynk9mr3WRVyYqKw8akoxIoZfzLWnBTREgvbmw=="
+    "name": "debug",
+    "version": "4.3.4",
+    "integrity": "sha512-PRWFHuSU/p2NUD9BubleR5hiIMBEcMsE+M7BxsqWBf2a0L2PjRaRBQzBGJm9nz5M2Yw02bUBvwDBzn8eDLYiQ=="
   },
   "scannerVersion": "10.8.0",
   "vulnerabilityStrategy": "none",
@@ -14,12 +14,124 @@
     "identifiers": []
   },
   "dependencies": {
-    "ms": {
+    "debug": {
       "versions": {
-        "2.1.3": {
+        "4.3.4": {
           "id": 0,
           "type": "cjs",
           "usedBy": {},
+          "isDevDependency": false,
+          "existOnRemoteRegistry": true,
+          "flags": [],
+          "warnings": [],
+          "dependencyCount": 1,
+          "gitUrl": null,
+          "alias": {},
+          "description": "small debugging utility",
+          "size": 14823,
+          "author": {
+            "name": "TJ Holowaychuk",
+            "email": "tj@vision-media.ca"
+          },
+          "scripts": {
+            "test": "xo && npm run unit && npm run lint-readme",
+            "lint-readme": "node ./scripts/support-list.js readme.md"
+          },
+          "licenses": [
+            {
+              "licenses": {
+                "MIT": "https://spdx.org/licenses/MIT.html#licenseText"
+              },
+              "spdx": {
+                "osi": true,
+                "fsf": true,
+                "fsfAndOsi": true,
+                "includesDeprecated": false
+              },
+              "fileName": "package.json"
+            }
+          ],
+          "uniqueLicenseIds": [
+            "MIT"
+          ],
+          "composition": {
+            "extensions": [
+              ".js",
+              ".json",
+              ".md"
+            ],
+            "files": [
+              "src/browser.js",
+              "src/common.js",
+              "src/index.js",
+              "src/node.js",
+              "package.json",
+              "README.md",
+              "LICENSE"
+            ],
+            "minified": [],
+            "unused": [],
+            "missing": [],
+            "required_files": [],
+            "required_nodejs": [],
+            "required_thirdparty": [
+              "ms"
+            ],
+            "required_subpath": {}
+          },
+          "repository": "debug-js/debug",
+          "integrity": "a1e82ce6e7e9742e0a3a62ebb22fe83f47b9d5fb",
+          "links": {
+            "npm": "https://www.npmjs.com/package/debug/v/4.3.4",
+            "homepage": "https://github.com/debug-js/debug#readme",
+            "repository": "https://github.com/debug-js/debug"
+          }
+        }
+      },
+      "vulnerabilities": [],
+      "metadata": {
+        "homepage": "https://github.com/debug-js/debug#readme",
+        "publishedCount": 54,
+        "lastVersion": "4.3.4",
+        "lastUpdateAt": "2022-02-22T12:00:00.000Z",
+        "hasReceivedUpdateInOneYear": false,
+        "hasChangedAuthor": false,
+        "integrity": {
+          "4.3.4": "a1e82ce6e7e9742e0a3a62ebb22fe83f47b9d5fb"
+        },
+        "author": {
+          "name": "TJ Holowaychuk",
+          "email": "tj@vision-media.ca"
+        },
+        "publishers": [
+          {
+            "name": "tootallnate",
+            "email": "nathan@tootallnate.net",
+            "version": "4.3.4",
+            "at": "2022-02-22T12:00:00.000Z"
+          }
+        ],
+        "maintainers": [
+          {
+            "email": "tj@vision-media.ca",
+            "name": "tjholowaychuk"
+          },
+          {
+            "email": "nathan@tootallnate.net",
+            "name": "tootallnate"
+          }
+        ],
+        "hasManyPublishers": false
+      }
+    },
+    "ms": {
+      "versions": {
+        "2.1.3": {
+          "id": 1,
+          "type": "cjs",
+          "usedBy": {
+            "debug": "4.3.4"
+          },
           "isDevDependency": false,
           "existOnRemoteRegistry": true,
           "flags": [
@@ -203,22 +315,37 @@
     "executionTime": 1250,
     "apiCalls": [
       {
-        "name": "pacote.manifest ms@2.1.3",
+        "name": "pacote.manifest debug@4.3.4",
         "startedAt": 1774800760809,
         "executionTime": 7
       },
       {
-        "name": "pacote.extract ms@2.1.3",
+        "name": "pacote.extract debug@4.3.4",
         "startedAt": 1774800760821,
         "executionTime": 114
       },
       {
-        "name": "tarball.scanDirOrArchive ms@2.1.3",
+        "name": "tarball.scanDirOrArchive debug@4.3.4",
         "startedAt": 1774800760938,
         "executionTime": 330
+      },
+      {
+        "name": "pacote.manifest ms@2.1.3",
+        "startedAt": 1774800761270,
+        "executionTime": 6
+      },
+      {
+        "name": "pacote.extract ms@2.1.3",
+        "startedAt": 1774800761280,
+        "executionTime": 89
+      },
+      {
+        "name": "tarball.scanDirOrArchive ms@2.1.3",
+        "startedAt": 1774800761370,
+        "executionTime": 265
       }
     ],
-    "apiCallsCount": 3,
+    "apiCallsCount": 6,
     "errorCount": 0,
     "errors": []
   }
