@@ -30,7 +30,10 @@ import "./search-chip.js";
 
 // CONSTANTS
 const kActions = [
-  { id: "toggle_theme", shortcut: "t" }
+  { id: "toggle_theme", shortcut: "t" },
+  { id: "reset_view", shortcut: "r" },
+  { id: "copy_packages", shortcut: "c" },
+  { id: "export_payload", shortcut: "e" }
 ];
 const kWarningItems = Object.keys(warnings)
   .map((id) => {
@@ -364,12 +367,50 @@ class CommandPalette extends LitElement {
     this.#close();
   }
 
-  #executeAction(action) {
-    if (action.id === "toggle_theme") {
-      const nextTheme = window.settings.config.theme === "dark" ? "light" : "dark";
-      window.dispatchEvent(new CustomEvent(EVENTS.SETTINGS_SAVED, {
-        detail: { ...window.settings.config, theme: nextTheme }
-      }));
+  async #executeAction(action) {
+    switch (action.id) {
+      case "toggle_theme": {
+        const nextTheme = window.settings.config.theme === "dark" ? "light" : "dark";
+        window.dispatchEvent(new CustomEvent(EVENTS.SETTINGS_SAVED, {
+          detail: { ...window.settings.config, theme: nextTheme }
+        }));
+        break;
+      }
+      case "reset_view":
+        this.#network.network.emit("click", { nodes: [], edges: [] });
+        this.#network.network.focus(0, {
+          animation: true,
+          scale: 0.35,
+          offset: { x: 150, y: 0 }
+        });
+        break;
+      case "copy_packages": {
+        const packages = this.results.length > 0 ? this.results : this.#packages;
+        const text = packages.map((pkg) => `${pkg.name}@${pkg.version}`).join("\n");
+        try {
+          await navigator.clipboard.writeText(text);
+        }
+        catch (error) {
+          console.error(error);
+        }
+        break;
+      }
+      case "export_payload": {
+        try {
+          const res = await fetch("/data");
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement("a");
+          anchor.href = url;
+          anchor.download = "nsecure-result.json";
+          anchor.click();
+          URL.revokeObjectURL(url);
+        }
+        catch (error) {
+          console.error(error);
+        }
+        break;
+      }
     }
 
     this.#close();
@@ -498,13 +539,28 @@ class CommandPalette extends LitElement {
     const i18n = window.i18n[currentLang()].search_command;
     const currentTheme = window.settings?.config?.theme ?? "light";
     const targetTheme = currentTheme === "dark" ? "light" : "dark";
+    const copyCount = this.results.length > 0 ? this.results.length : this.#packages.length;
 
     return kActions.map((action) => {
-      return {
-        ...action,
-        label: i18n[`action_${action.id}_to_${targetTheme}`],
-        kbd: resolveKbd(action.shortcut)
-      };
+      let label;
+      switch (action.id) {
+        case "toggle_theme":
+          label = i18n[`action_toggle_theme_to_${targetTheme}`];
+          break;
+        case "reset_view":
+          label = i18n.action_reset_view;
+          break;
+        case "copy_packages":
+          label = `${i18n.action_copy_packages} (${copyCount})`;
+          break;
+        case "export_payload":
+          label = i18n.action_export_payload;
+          break;
+        default:
+          label = action.id;
+      }
+
+      return { ...action, label, kbd: resolveKbd(action.shortcut) };
     });
   }
 
@@ -584,7 +640,7 @@ class CommandPalette extends LitElement {
               presets: PRESETS,
               onApply: (preset) => this.#addQuery(preset.filter, preset.value)
             }) : nothing}
-            ${showRichPlaceholder ? renderActions({
+            ${(showRichPlaceholder || showRefinePlaceholder) ? renderActions({
               actions: this.#resolveActions(),
               onExecute: (action) => this.#executeAction(action)
             }) : nothing}

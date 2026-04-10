@@ -77,3 +77,7 @@ reports
 
 # playwright test results
 test-results
+
+# IDEs
+.vscode
+.idea
