@@ -194,9 +194,9 @@ export function createItemsList(node, items = [], options = {}) {
   }
 
   if (hideItems && items.length > hideItemsLength) {
-    /** @type {import("../components/expandable/expandable.js").ExpandableType} */
-    // @ts-expect-error createElement return HTMLElement and we can't cast directly from line (Unexpected comment inline with code.)
-    const expandableSpan = document.createElement("expandable-span");
+   const expandableSpan = 
+     /** @type {import("../components/expandable/expandable.js").ExpandableType} */
+     (document.createElement("expandable-span"));
     expandableSpan.onToggle = () => toggle(expandableSpan, node, hideItemsLength);
     fragment.appendChild(expandableSpan);
   }
