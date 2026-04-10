@@ -60,8 +60,8 @@ span.expandable nsecure-icon {
   render() {
     const lang = currentLang();
     const i18n =
-       /** @type I18nLanguage */
-       (window.i18n);
+      /** @type I18nLanguage */
+      (window.i18n);
     const translations = i18n[lang].home;
 
     return html`
