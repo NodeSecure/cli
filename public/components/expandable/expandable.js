@@ -59,9 +59,9 @@ span.expandable nsecure-icon {
 
   render() {
     const lang = currentLang();
-    /** @type I18nLanguage */
-    // @ts-expect-error window.i18n is Record<string, unknow> and we can't cast in line (Unexpected comment inline with code.)
-    const i18n = window.i18n;
+    const i18n =
+       /** @type I18nLanguage */
+       (window.i18n);
     const translations = i18n[lang].home;
 
     return html`
