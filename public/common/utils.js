@@ -81,7 +81,11 @@ export function createLink(href, text = null) {
     rel: "noopener", target: "_blank", href
   };
 
-  return createDOMElement("a", { text, attributes });
+  const htmlAnchor =
+  /** @type {HTMLAnchorElement} */
+    (createDOMElement("a", { text, attributes }));
+
+  return htmlAnchor;
 }
 
 /**
@@ -90,7 +94,7 @@ export function createLink(href, text = null) {
  */
 export function parseNpmSpec(spec) {
   const parts = spec.split("@");
-  const version = parts.at(-1);
+  const version = parts.at(-1) ?? "";
 
   return spec.startsWith("@") ?
     { name: `@${parts[1]}`, version } :
@@ -194,9 +198,9 @@ export function createItemsList(node, items = [], options = {}) {
   }
 
   if (hideItems && items.length > hideItemsLength) {
-   const expandableSpan = 
-     /** @type {import("../components/expandable/expandable.js").ExpandableType} */
-     (document.createElement("expandable-span"));
+    const expandableSpan =
+    /** @type {import("../components/expandable/expandable.js").ExpandableType} */
+      (document.createElement("expandable-span"));
     expandableSpan.onToggle = () => toggle(expandableSpan, node, hideItemsLength);
     fragment.appendChild(expandableSpan);
   }
