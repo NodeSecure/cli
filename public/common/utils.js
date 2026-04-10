@@ -74,7 +74,7 @@ export function createDOMElement(kind = "div", options = {}) {
 /**
  * @param {string} href
  * @param {string|null} text
- * @returns {HTMLElement}
+ * @returns {HTMLAnchorElement}
  */
 export function createLink(href, text = null) {
   const attributes = {
