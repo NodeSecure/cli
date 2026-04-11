@@ -3,6 +3,16 @@ import { test, expect } from "@playwright/test";
 
 test.describe("[command-palette] presets and actions", () => {
   let i18n;
+  let initialConfig;
+
+  test.beforeAll(async({ request }) => {
+    const response = await request.get("/config");
+    initialConfig = await response.json();
+  });
+
+  test.afterAll(async({ request }) => {
+    await request.put("/config", { data: initialConfig });
+  });
 
   test.beforeEach(async({ page }) => {
     await page.goto("/");
@@ -83,6 +93,25 @@ test.describe("[command-palette] presets and actions", () => {
     await expect(page.locator(".backdrop")).not.toBeVisible();
     const newTheme = await page.evaluate(() => window.settings.config.theme);
     expect(newTheme).toBe(expectedTheme);
+  });
+
+  test("theme toggle from command palette persists after page reload", async({ page }) => {
+    const initialTheme = await page.evaluate(() => window.settings.config.theme);
+    const expectedTheme = initialTheme === "dark" ? "light" : "dark";
+
+    const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
+    const toggleLabel = i18n[`action_toggle_theme_to_${expectedTheme}`];
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) => resp.url().includes("/config") && resp.request().method() === "PUT"),
+      actionsSection.locator(".range-preset").filter({ hasText: toggleLabel }).click()
+    ]);
+    expect(response.status()).toBe(204);
+
+    await page.reload();
+    await page.waitForSelector(`[data-menu="network--view"].active`);
+
+    const themeAfterReload = await page.evaluate(() => window.settings.config.theme);
+    expect(themeAfterReload).toBe(expectedTheme);
   });
 
   test("pressing Escape closes the palette", async({ page }) => {
