@@ -378,8 +378,22 @@ class CommandPalette extends LitElement {
     switch (action.id) {
       case "toggle_theme": {
         const nextTheme = window.settings.config.theme === "dark" ? "light" : "dark";
+        const config = window.settings.config;
+        fetch("/config", {
+          method: "put",
+          body: JSON.stringify({
+            ...config,
+            theme: nextTheme,
+            ignore: {
+              warnings: [...config.ignore.warnings],
+              flags: [...config.ignore.flags]
+            }
+          }),
+          headers: { "content-type": "application/json" }
+        }).catch(console.error);
+
         window.dispatchEvent(new CustomEvent(EVENTS.SETTINGS_SAVED, {
-          detail: { ...window.settings.config, theme: nextTheme }
+          detail: { ...config, theme: nextTheme }
         }));
         break;
       }
