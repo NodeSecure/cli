@@ -18,7 +18,8 @@ const kListTitleKeys = {
   license: "section_licenses",
   ext: "section_extensions",
   builtin: "section_builtins",
-  author: "section_authors"
+  author: "section_authors",
+  dep: "section_dep"
 };
 
 /**

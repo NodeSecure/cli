@@ -152,6 +152,88 @@ test.describe("[command-palette] presets and actions", () => {
   });
 });
 
+test.describe("[command-palette] dep filter", () => {
+  let i18n;
+
+  test.beforeEach(async({ page }) => {
+    await page.goto("/");
+    await page.waitForSelector(`[data-menu="network--view"].active`);
+
+    i18n = await page.evaluate(() => {
+      const lang = document.getElementById("lang").dataset.lang;
+      const activeLang = lang in window.i18n ? lang : "english";
+
+      return window.i18n[activeLang].search_command;
+    });
+
+    await page.locator("body").click();
+    await page.keyboard.press("Control+k");
+
+    await expect(page.locator(".backdrop")).toBeVisible();
+  });
+
+  test("dep appears in the filter hint list", async({ page }) => {
+    const filterRow = page
+      .locator(".helper-item")
+      .filter({ hasText: "dep:" });
+
+    await expect(filterRow).toBeVisible();
+    await expect(filterRow).toContainText(i18n.filter_hints.dep);
+  });
+
+  test("typing dep: activates the filter and shows the dep panel", async({ page }) => {
+    await page.locator("#cmd-input").fill("dep:");
+
+    await expect(
+      page
+        .locator(".section-title").filter({ hasText: i18n.section_dep })).toBeVisible();
+  });
+
+  test("dep list panel shows all package names as helpers", async({ page }) => {
+    await page.locator("#cmd-input").fill("dep:");
+
+    await expect(page.locator(".list-item").filter({ hasText: "debug" })).toBeVisible();
+    await expect(page.locator(".list-item").filter({ hasText: "ms" })).toBeVisible();
+  });
+
+  test("typing dep:ms and pressing Enter adds a chip and shows debug as result", async({ page }) => {
+    await page.locator("#cmd-input").fill("dep:ms");
+    await page.keyboard.press("Enter");
+
+    await expect(page.locator("search-chip")).toBeVisible();
+    await expect(page.locator(".result-item")).toHaveCount(1);
+    await expect(page.locator(".result-item")).toContainText("debug");
+  });
+
+  test("typing dep:debug and pressing Enter shows empty results", async({ page }) => {
+    await page.locator("#cmd-input").fill("dep:debug");
+    await page.keyboard.press("Enter");
+
+    await expect(page.locator("search-chip")).toBeVisible();
+    await expect(page.locator(".dialog .empty-state")).toHaveText(i18n.empty_after_filter);
+  });
+
+  test("dep chip label shows filter and value", async({ page }) => {
+    await page.locator("#cmd-input").fill("dep:ms");
+    await page.keyboard.press("Enter");
+
+    const chip = page.locator("search-chip");
+    await expect(chip).toHaveAttribute("filter", "dep");
+    await expect(chip).toHaveAttribute("value", "ms");
+  });
+
+  test("removing the dep chip clears the results", async({ page }) => {
+    await page.locator("#cmd-input").fill("dep:ms");
+    await page.keyboard.press("Enter");
+
+    await expect(page.locator("search-chip")).toBeVisible();
+
+    await page.keyboard.press("Backspace");
+
+    await expect(page.locator("search-chip")).not.toBeVisible();
+  });
+});
+
 test.describe("[command-palette] ignore flags and warnings", () => {
   let i18n;
 

@@ -299,6 +299,7 @@ const ui = {
     section_extensions: "Extensions de fichiers",
     section_builtins: "Modules Node.js natifs",
     section_authors: "Auteurs",
+    section_dep: "Packages dépendant de",
     hint_size: "ex. >50kb, 10kb..200kb",
     hint_version: "ex. ^1.0.0, >=2.0.0",
     empty: "Aucun résultat trouvé",
@@ -323,7 +324,8 @@ const ui = {
       ext: "extension de fichier",
       builtin: "module node.js",
       size: "ex. >50kb",
-      highlighted: "all"
+      highlighted: "all",
+      dep: "nom du package"
     }
   },
   legend: {
