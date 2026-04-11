@@ -80,7 +80,7 @@
 }
 
 #pan-scorecard .check:hover {
-  background: #3722af;
+  background: var(--primary);
 }
 
 #pan-scorecard .check .info {

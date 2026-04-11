@@ -44,7 +44,7 @@
 
 .home--header--scorecard .score {
   width: 73px;
-  color: #FFF;
+  color: var(--primary-theme-color);
   display: flex;
   font-size: 20px;
   flex-direction: column;
@@ -154,7 +154,7 @@ body.dark .home--header--title .bottom #project-description {
 }
 
 body.dark .home--header--title .bottom>ul li {
-  color: white;
+  color: var(--primary-theme-color);
 }
 
 .home--header--title .bottom>ul li:hover {
@@ -320,7 +320,7 @@ body.dark .home--warnings>p {
 }
 
 body.dark .home--overview>div {
-  color: white;
+  color: var(--primary-theme-color);
 }
 
 .home--overview>div>.title {

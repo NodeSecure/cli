@@ -52,7 +52,7 @@ body {
   border-radius: 5px;
   border-top-right-radius: 9px 5px;
   border-bottom-right-radius: 9px 5px;
-  box-shadow: inset 0 0 0 1px #3722AF,
+  box-shadow: inset 0 0 0 1px var(--primary),
     inset 0 0 0 6px #3f27c7;
 }
 

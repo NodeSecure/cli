@@ -248,7 +248,7 @@ section#package-info .list-item>span {
 
 section#package-info .list-item>span:not(.expandable).clickable:hover {
   background: var(--secondary-darker);
-  color: #FFF;
+  color: var(--primary-theme-color);
   cursor: pointer;
 }
 
@@ -291,7 +291,7 @@ section#package-info ul li.clickable i {
 
 section#package-info ul li.clickable:hover {
   background-color: var(--primary-lighter);
-  color: #FFF;
+  color: var(--primary-theme-color);
   cursor: pointer;
 }
 

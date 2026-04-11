@@ -8,7 +8,7 @@
   left: calc(50% + 500px);
   top: 50%;
   transform: translate(-50%, -50%);
-  color: #FFF;
+  color: var(--primary-theme-color);
   border-radius: 4px;
   text-align: left;
   font-size: 14px;
@@ -18,7 +18,7 @@
 }
 
 .package-code pre {
-  background: white;
+  background: var(--primary-theme-color);
   margin: 0;
   padding: 0;
   box-shadow:  0 5px 3px rgb(0 0 0 / 20%);
@@ -69,7 +69,7 @@
 
 .package-code table, .package-code table tr {
   width: auto;
-  background: white;
+  background: var(--primary-theme-color);
   height: auto;
   line-height: normal;
 }

@@ -92,8 +92,7 @@ body.dark #settings--view>form .line p, body.dark #settings--view>form .line lab
 
 body.dark #settings--view .shortcuts .note {
   background: var(--dark-theme-accent-darker);
-  color: white;
-
+  color: var(--primary-theme-color);
 }
 
 #settings--view .shortcuts label {
@@ -171,7 +170,7 @@ button.save {
   height: 30px;
   width: 100px;
   background: #27a845;
-  color: #FFF;
+  color: var(--primary-theme-color);
   border-radius: 4px;
   margin-top: 30px;
   border: none;

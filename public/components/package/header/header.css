@@ -11,7 +11,7 @@ div.package-header>.package-name {
 }
 
 div.package-header>.package-name>.name {
-  color: #FFF;
+  color: var(--primary-theme-color);
   font-size: 22px;
 }
 
@@ -79,7 +79,7 @@ div.package-header>.package-description {
 
 div.package-header>.description {
   width: 100%;
-  color: #FFF;
+  color: var(--primary-theme-color);
   text-align: left;
   font-size: 15px;
   margin-top: 7px;
@@ -119,7 +119,7 @@ div.package-header>ul.flags {
   visibility: hidden;
   width: 300px;
   background-color: #000;
-  color: #FFF;
+  color: var(--primary-theme-color);
   text-align: center;
   border-radius: 3px;
   padding: 10px;
@@ -177,7 +177,7 @@ div.package-header>.links div>i {
 
 div.package-header>.links div>a {
   margin-left: 6px;
-  color: #FFF;
+  color: var(--primary-theme-color);
   font-size: 14px;
   text-decoration: none;
 }
