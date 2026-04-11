@@ -6,7 +6,17 @@ import { when } from "lit/directives/when.js";
 import { currentLang } from "../../common/utils";
 import "../icon/icon.js";
 
-class Expandable extends LitElement {
+/**
+ * @typedef {Record<string, { home: { showMore: string, showLess: string } }>} I18nLanguage
+ */
+
+/**
+ * "Expandable" web component displaying a toggle button with an icon.
+ * @element expandable-span
+ * @prop {Function} onToggle - Function called during the interaction (default: () => void 0).
+ * @prop {boolean} isClosed - Specifies whether the associated content is hidden (true) or visible (false).
+ */
+export class Expandable extends LitElement {
   static styles = css`
 span.expandable {
   display: flex;
@@ -43,19 +53,24 @@ span.expandable nsecure-icon {
   constructor() {
     super();
     this.isClosed = true;
-    this.onToggle = () => void 0;
+    /** @type {(instance: Expandable) => void} */
+    this.onToggle = () => void {};
   }
 
   render() {
     const lang = currentLang();
+    const i18n =
+      /** @type I18nLanguage */
+      (window.i18n);
+    const translations = i18n[lang].home;
 
     return html`
       <span data-value=${this.isClosed ? "closed" : "opened"}  @click=${this.#handleClick} class="expandable">
         ${when(this.isClosed,
           () => html`<nsecure-icon name="plus"></nsecure-icon>
-        <p>${window.i18n[lang].home.showMore}</p>`,
+        <p>${translations.showMore}</p>`,
           () => html`<nsecure-icon name="minus"></nsecure-icon>
-        <p>${window.i18n[lang].home.showLess}</p>`
+        <p>${translations.showLess}</p>`
         )}
       </span>
 `;
@@ -67,3 +82,6 @@ span.expandable nsecure-icon {
 }
 
 customElements.define("expandable-span", Expandable);
+/**
+* @typedef {import('./expandable.js').Expandable} ExpandableType
+*/
