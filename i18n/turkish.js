@@ -249,7 +249,8 @@ const ui = {
   legend: {
     default: "Paket sorunsuz.",
     warn: "Pakette uyarılar var.",
-    friendly: "Paket, kök paketin yazarlarıyla aynı kişiler tarafından bakılmaktadır."
+    friendly: "Paket, kök paketin yazarlarıyla aynı kişiler tarafından bakılmaktadır.",
+    highlighted: "Paket, vurgulanan paketlerin bir parçasıdır"
   },
   lockedNavigation: {
     next: "Sonraki",

@@ -20,7 +20,7 @@ export const VERSION_PRESETS = [
   { label: "≥ 1.0", value: ">=1.0.0" },
   { label: "< 1.0", value: "<1.0.0" }
 ];
-export const FILTERS_NAME = new Set(["package", "version", "flag", "license", "author", "ext", "builtin", "size"]);
+export const FILTERS_NAME = new Set(["package", "version", "flag", "license", "author", "ext", "builtin", "size", "highlighted"]);
 export const PRESETS = [
   { id: "has_vulnerabilities", filter: "flag", value: "hasVulnerabilities" },
   { id: "has_scripts", filter: "flag", value: "hasScript" },
@@ -32,6 +32,8 @@ export const PRESETS = [
 export const FILTER_HAS_HELPERS = new Set(["license", "ext", "builtin", "author"]);
 // Filters where the mode persists after selection (multi-select)
 export const FILTER_MULTI_SELECT = new Set(["flag"]);
+// Filters that auto-confirm immediately on selection (no text input needed)
+export const FILTER_INSTANT_CONFIRM = new Set(["highlighted"]);
 
 /**
  * Returns per-flag package counts across the full linker.
@@ -243,6 +245,8 @@ function matchesFilter(opt, filterName, inputValue) {
     }
     case "flag":
       return opt.flags.includes(inputValue);
+    case "highlighted":
+      return inputValue === "all" ? opt.isHighlighted === true : opt.isHighlighted !== true;
     default:
       return false;
   }

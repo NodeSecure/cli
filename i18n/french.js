@@ -322,13 +322,15 @@ const ui = {
       author: "nom ou email",
       ext: "extension de fichier",
       builtin: "module node.js",
-      size: "ex. >50kb"
+      size: "ex. >50kb",
+      highlighted: "all"
     }
   },
   legend: {
     default: "Rien à signaler.",
     warn: "La dépendance contient des menaces.",
-    friendly: "La dépendance est maintenu par des auteurs du package principal."
+    friendly: "La dépendance est maintenu par des auteurs du package principal.",
+    highlighted: "Le package fait partie des packages mis en évidence"
   },
   lockedNavigation: {
     next: "Suivant",
