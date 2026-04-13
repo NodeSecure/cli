@@ -82,10 +82,10 @@
     "@openally/httpie": "1.1.2",
     "@playwright/test": "^1.50.0",
     "@stylistic/stylelint-plugin": "5.1.0",
-    "@types/node": "25.5.0",
+    "@types/node": "25.5.2",
     "c8": "11.0.0",
     "cross-env": "^10.1.0",
-    "esbuild": "0.27.5",
+    "esbuild": "0.28.0",
     "eslint-plugin-jsdoc": "62.9.0",
     "pkg-ok": "^3.0.0",
     "postcss-lit": "1.4.1",
@@ -94,8 +94,8 @@
     "stylelint": "17.6.0",
     "stylelint-config-standard": "40.0.0",
     "typescript": "^6.0.2",
-    "undici": "7.24.7",
-    "vite": "8.0.5"
+    "undici": "8.0.2",
+    "vite": "8.0.7"
   },
   "dependencies": {
     "@lit/task": "^1.0.3",
