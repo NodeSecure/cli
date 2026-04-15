@@ -105,7 +105,7 @@
     "@nodesecure/i18n": "4.1.0",
     "@nodesecure/js-x-ray": "15.1.0",
     "@nodesecure/licenses-conformance": "2.1.0",
-    "@nodesecure/mama": "2.3.0",
+    "@nodesecure/mama": "2.3.1",
     "@nodesecure/npm-registry-sdk": "4.5.2",
     "@nodesecure/ossf-scorecard-sdk": "4.0.1",
     "@nodesecure/rc": "5.6.0",

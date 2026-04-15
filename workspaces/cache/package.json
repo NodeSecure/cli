@@ -28,7 +28,7 @@
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@nodesecure/scanner": "10.10.0",
+    "@nodesecure/scanner": "10.11.0",
     "cacache": "20.0.4"
   },
   "devDependencies": {
