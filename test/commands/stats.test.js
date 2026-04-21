@@ -152,10 +152,14 @@ describe("stats", () => {
     }, false]);
   });
 
-  test("should not disply the ceiling log if api calls count and api calls count above min are the same", async(t) => {
+  test("should not display the ceiling log if api calls count and api calls count above min are the same", async(t) => {
     const scanResult = JSON.parse(await readFile(path.join(import.meta.dirname, "..", "fixtures", "result-test3.json"), "utf8"));
 
-    async function getScanResult() {
+    let expectedOuput;
+
+    async function getScanResult(output) {
+      expectedOuput = output;
+
       return Promise.resolve(scanResult);
     }
 
@@ -169,12 +173,14 @@ describe("stats", () => {
     await main({
       getScanResult,
       logger,
-      min: 10
+      min: 10,
+      output: "some-file"
     });
 
     assert.deepEqual(logger.log.mock.calls[0].arguments, ["cli.commands.stats.elapsed", "771ms"]);
     assert.deepEqual(logger.log.mock.calls[1].arguments, ["cli.commands.stats.stats", 3]);
     assert.deepEqual(logger.log.mock.calls[2].arguments, ["cli.commands.stats.errors", 2]);
+    assert.deepEqual(expectedOuput, "some-file");
   });
 
   test("should log error when min parameter is not a number", async(t) => {

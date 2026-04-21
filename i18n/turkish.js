@@ -105,6 +105,9 @@ const cli = {
       option_min: "Belirtilen tavan değerinin (ms cinsinden) üzerinde yürütme süresine sahip API çağrılarını filtrele",
       minNotANumber: "Hata: --min bir sayı olmalıdır.",
       statsCeiling: tS`${0} üzerindeki API çağrıları sayısı: ${1}`
+    },
+    reHighlight: {
+      error: "Kişileri ve paketleri yeniden vurgulamadan önce bir tarama yapılmalıdır."
     }
   },
   startHttp: {

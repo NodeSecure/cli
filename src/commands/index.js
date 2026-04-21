@@ -9,3 +9,4 @@ export * as report from "./report.js";
 export * as cache from "./cache.js";
 export * as extractIntegrity from "./extract-integrity.js";
 export * as stats from "./stats.js";
+export * as reHighlight from "./re-highlight.js";

@@ -1,12 +1,9 @@
-// Import Node.js Dependencies
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 // Import Internal Dependencies
 import { logScannerStat, logScannerError, log, logError, formatMs } from "./loggers/logger.js";
+import { getScanFromFile } from "../utils/getScanFromFile.js";
 
 export async function main(options) {
-  const { getScanResult = getScanFromFile, min, logger = {
+  const { getScanResult = getScanFromFile, min, output, logger = {
     logScannerStat,
     logScannerError,
     log,
@@ -20,7 +17,7 @@ export async function main(options) {
   }
 
   try {
-    const scanResult = await getScanResult();
+    const scanResult = await getScanResult(output);
     const { metadata } = scanResult;
 
     logger.log("cli.commands.stats.elapsed", formatMs(metadata.executionTime));
@@ -47,11 +44,4 @@ export async function main(options) {
   catch {
     logger.logError("cli.commands.stats.error");
   }
-}
-
-async function getScanFromFile() {
-  const projectRootDir = path.join(import.meta.dirname, "..", "..");
-  const filePath = path.join(projectRootDir, "nsecure-result.json");
-
-  return JSON.parse(await readFile(filePath, "utf8"));
 }

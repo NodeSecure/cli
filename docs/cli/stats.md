@@ -23,3 +23,4 @@ $ nsecure stats
 | Name  | Shortcut | Default Value | Description                                              |
 | ----- | -------- | ------------- | -------------------------------------------------------- |
 | `--min` | `-m`     | `undefined`    | Filter API calls with execution time above ceiling (ms)  |
+| `--output`                | `-o`     | `nsecure-result` | Specify the output file to read from.
