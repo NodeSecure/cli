@@ -7,6 +7,7 @@ import type { PayloadCache } from "@nodesecure/cache";
 // Import Internal Dependencies
 import { search } from "./commands/search.ts";
 import { remove } from "./commands/remove.ts";
+import { clear } from "./commands/clear.ts";
 import { context } from "./websocket.als.ts";
 import type {
   WebSocketResponse,
@@ -56,13 +57,15 @@ export class WebSocketServerInstanciator {
     };
 
     const commandName = message.commandName;
-    this.#logger.info(`[ws|command.${commandName.toLowerCase()}] ${message.spec}`);
+    const specLog = "spec" in message ? ` ${message.spec}` : "";
+    this.#logger.info(`[ws|command.${commandName.toLowerCase()}]${specLog}`);
 
     context.run(ctx, async() => {
       try {
         const socketMessages = match(message)
           .with({ commandName: "SEARCH" }, (command) => search(command.spec))
           .with({ commandName: "REMOVE" }, (command) => remove(command.spec))
+          .with({ commandName: "CLEAR" }, () => clear())
           .exhaustive();
 
         for await (const message of socketMessages) {

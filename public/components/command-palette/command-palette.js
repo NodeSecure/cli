@@ -34,7 +34,8 @@ const kActions = [
   { id: "toggle_theme", shortcut: "t" },
   { id: "reset_view", shortcut: "r" },
   { id: "copy_packages", shortcut: "c" },
-  { id: "export_payload", shortcut: "e" }
+  { id: "export_payload", shortcut: "e" },
+  { id: "clear_cache", shortcut: "x" }
 ];
 const kWarningItems = Object.keys(warnings)
   .map((id) => {
@@ -432,6 +433,9 @@ class CommandPalette extends LitElement {
         }
         break;
       }
+      case "clear_cache":
+        window.socket.commands.clear();
+        break;
     }
 
     this.#close();
@@ -576,6 +580,9 @@ class CommandPalette extends LitElement {
           break;
         case "export_payload":
           label = i18n.action_export_payload;
+          break;
+        case "clear_cache":
+          label = i18n.action_clear_cache;
           break;
         default:
           label = action.id;

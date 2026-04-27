@@ -284,6 +284,7 @@ const ui = {
     action_reset_view: "Réinitialiser la vue",
     action_copy_packages: "Copier les packages",
     action_export_payload: "Exporter le payload",
+    action_clear_cache: "Vider tous les packages en cache",
     section_presets: "Filtres rapides",
     preset_has_vulnerabilities: "Contient des vulnérabilités",
     preset_has_scripts: "Scripts d'installation",

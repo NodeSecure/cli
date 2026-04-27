@@ -16,7 +16,7 @@ test.describe("[command-palette] presets and actions", () => {
 
   test.beforeEach(async({ page }) => {
     await page.goto("/");
-    await page.waitForSelector(`[data-menu="network--view"].active`);
+    await page.waitForFunction(() => window.cachedSpecs?.length > 0);
 
     i18n = await page.evaluate(() => {
       const lang = document.getElementById("lang").dataset.lang;
@@ -40,9 +40,9 @@ test.describe("[command-palette] presets and actions", () => {
     await expect(presetsSection.locator(".range-preset")).toHaveCount(5);
   });
 
-  test("renders all four action buttons", async({ page }) => {
+  test("renders all five action buttons", async({ page }) => {
     const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
-    await expect(actionsSection.locator(".range-preset")).toHaveCount(4);
+    await expect(actionsSection.locator(".range-preset")).toHaveCount(5);
   });
 
   test("clicking a preset adds a chip and hides the presets section", async({ page }) => {
@@ -186,7 +186,7 @@ test.describe("[command-palette] dep filter", () => {
 
   test.beforeEach(async({ page }) => {
     await page.goto("/");
-    await page.waitForSelector(`[data-menu="network--view"].active`);
+    await page.waitForFunction(() => window.cachedSpecs?.length > 0);
 
     i18n = await page.evaluate(() => {
       const lang = document.getElementById("lang").dataset.lang;
@@ -268,7 +268,7 @@ test.describe("[command-palette] ignore flags and warnings", () => {
 
   test.beforeEach(async({ page }) => {
     await page.goto("/");
-    await page.waitForSelector(`[data-menu="network--view"].active`);
+    await page.waitForFunction(() => window.cachedSpecs?.length > 0);
 
     i18n = await page.evaluate(() => {
       const lang = document.getElementById("lang").dataset.lang;
@@ -367,5 +367,102 @@ test.describe("[command-palette] ignore flags and warnings", () => {
 
     await expect(page.locator(".section").filter({ hasText: i18n.section_ignore_flags })).not.toBeVisible();
     await expect(page.locator(".section").filter({ hasText: i18n.section_ignore_warnings })).not.toBeVisible();
+  });
+});
+
+test.describe("[command-palette] clear cache action", () => {
+  async function loadI18n(page) {
+    return page.evaluate(() => {
+      const lang = document.getElementById("lang").dataset.lang;
+      const activeLang = lang in window.i18n ? lang : "english";
+
+      return window.i18n[activeLang].search_command;
+    });
+  }
+
+  async function openPalette(page) {
+    await page.goto("/");
+    await page.waitForFunction(() => window.cachedSpecs?.length > 0);
+    await page.locator(`[data-menu="network--view"].active`).click();
+    await page.keyboard.press("Control+k");
+    await expect(page.locator(".backdrop")).toBeVisible();
+  }
+
+  test("renders the clear cache action button", async({ page }) => {
+    await openPalette(page);
+    const i18n = await loadI18n(page);
+
+    const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
+    await expect(actionsSection.locator(".range-preset").filter({ hasText: i18n.action_clear_cache })).toBeVisible();
+  });
+
+  // Alt+X is tested via WebSocket interception so the server cache is not actually
+  // cleared, keeping network--view available for the next test.
+  test("Alt+X sends the CLEAR command and closes the palette", async({ page }) => {
+    let clearSent = false;
+
+    await page.routeWebSocket("ws://localhost:1339", (ws) => {
+      const server = ws.connectToServer();
+
+      ws.onMessage((msg) => {
+        const data = JSON.parse(msg);
+        if (data.commandName === "CLEAR") {
+          clearSent = true;
+          ws.send(JSON.stringify({ status: "RELOAD", cache: [] }));
+        }
+        else {
+          server.send(msg);
+        }
+      });
+
+      server.onMessage((msg) => {
+        ws.send(msg);
+      });
+    });
+
+    await openPalette(page);
+
+    await page.keyboard.press("Alt+x");
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+    await page.waitForSelector(`[data-menu="search--view"].active`);
+    expect(clearSent).toBe(true);
+  });
+
+  test("clicking clear cache closes the palette and hides data views", async({ page }) => {
+    let clearSent = false;
+
+    await page.routeWebSocket("ws://localhost:1339", (ws) => {
+      const server = ws.connectToServer();
+
+      ws.onMessage((msg) => {
+        const data = JSON.parse(msg);
+        if (data.commandName === "CLEAR") {
+          clearSent = true;
+          ws.send(JSON.stringify({ status: "RELOAD", cache: [] }));
+        }
+        else {
+          server.send(msg);
+        }
+      });
+
+      server.onMessage((msg) => {
+        ws.send(msg);
+      });
+    });
+
+    await openPalette(page);
+    const i18n = await loadI18n(page);
+
+    const actionsSection = page.locator(".section").filter({ hasText: i18n.section_actions });
+    await actionsSection.locator(".range-preset").filter({ hasText: i18n.action_clear_cache }).click();
+
+    await expect(page.locator(".backdrop")).not.toBeVisible();
+    await page.waitForSelector(`[data-menu="search--view"].active`);
+    expect(clearSent).toBe(true);
+
+    for (const menu of ["network--view", "home--view", "tree--view", "warnings--view"]) {
+      await expect(page.locator(`[data-menu="${menu}"]`)).toContainClass("hidden");
+    }
   });
 });
