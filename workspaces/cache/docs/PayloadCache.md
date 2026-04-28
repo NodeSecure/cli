@@ -44,7 +44,7 @@ export interface PayloadCacheOptions {
 
 The base directory where payloads are stored.
 
-**Default**: `~/.nsecure/payloads`
+**Default**: `NODESECURE_PAYLOADS_PATH` environment variable or `~/.nsecure/payloads` if not set.
 
 ### `static getPathBySpec(spec: string): string`
 

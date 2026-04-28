@@ -19,7 +19,8 @@ export class WebSocketClient extends EventTarget {
      */
     this.commands = {
       search: (spec) => this.send({ commandName: "SEARCH", spec }),
-      remove: (spec) => this.send({ commandName: "REMOVE", spec })
+      remove: (spec) => this.send({ commandName: "REMOVE", spec }),
+      clear: () => this.send({ commandName: "CLEAR" })
     };
 
     window.socket = this;

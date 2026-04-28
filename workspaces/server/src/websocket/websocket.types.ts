@@ -38,10 +38,10 @@ export type WebSocketResponse =
   | ScanResponse
   | ErrorResponse;
 
-export type WebSocketMessage = {
-  commandName: "SEARCH" | "REMOVE";
-  spec: string;
-};
+export type WebSocketMessage =
+  | { commandName: "SEARCH"; spec: string; }
+  | { commandName: "REMOVE"; spec: string; }
+  | { commandName: "CLEAR"; };
 
 export interface WebSocketContext {
   socket: WebSocket;

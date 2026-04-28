@@ -773,5 +773,22 @@ describe("PayloadManifestCache", () => {
 
       assert.equal(storage.size, 0);
     });
+
+    it("should reset currentSpec when manifest read fails", async() => {
+      const mockFs = createMockFs();
+
+      mockFs.readFile.mock.mockImplementation(
+        () => Promise.reject(new Error("ENOENT"))
+      );
+
+      const manifest = new PayloadManifestCache({
+        fsProvider: mockFs as unknown as typeof fs
+      });
+      manifest.currentSpec = "express@4.18.2";
+
+      await manifest.load();
+
+      assert.equal(manifest.currentSpec, null);
+    });
   });
 });

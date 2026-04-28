@@ -224,9 +224,10 @@ async function onSocketInitOrReload(event) {
   searchview.cachedSpecs = cache;
   searchview.reset();
 
-  if (data.status === "RELOAD" && cache.length === 0) {
+  if (cache.length === 0) {
     window.navigation.hideMenu("network--view");
     window.navigation.hideMenu("home--view");
+    window.navigation.hideMenu("tree--view");
     window.navigation.hideMenu("warnings--view");
     window.navigation.setNavByName("search--view");
   }

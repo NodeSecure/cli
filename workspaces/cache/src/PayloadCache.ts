@@ -51,7 +51,7 @@ export interface PayloadCacheOptions {
 }
 
 export class PayloadCache {
-  static PATH = path.join(os.homedir(), ".nsecure", "payloads");
+  static PATH = process.env.NODESECURE_PAYLOADS_PATH ?? path.join(os.homedir(), ".nsecure", "payloads");
 
   static getPathBySpec(
     spec: string
@@ -308,6 +308,7 @@ export class PayloadManifestCache {
 
   async load() {
     const storage = new Map<string, PayloadMetadata>();
+    this.currentSpec = null;
 
     try {
       const manifestContent = await this.#fsProvider.readFile(
