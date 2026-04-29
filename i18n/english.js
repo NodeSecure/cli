@@ -109,6 +109,9 @@ const cli = {
       option_min: "Filter API calls with execution time above the specified ceiling (in ms)",
       minNotANumber: "Error: --min must be a number.",
       statsCeiling: tS`API calls count above ${0}: ${1}`
+    },
+    reHighlight: {
+      error: "A scan must be performed before re-highlighting contacts and packages."
     }
   },
   startHttp: {

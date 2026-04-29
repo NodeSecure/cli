@@ -9,7 +9,20 @@
   "vulnerabilityStrategy": "none",
   "warnings": [],
   "highlighted": {
-    "contacts": []
+    "contacts": [
+      {
+        "name": "Alex Gorbatchev",
+        "dependencies": [
+          "crc"
+        ]
+      }
+    ],
+    "packages": [
+      "cookie@0.0.4"
+    ],
+    "identifiers": [
+      "example@gmail.com"
+    ]
   },
   "dependencies": {
     "crc": {

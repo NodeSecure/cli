@@ -140,8 +140,17 @@ prog
   .command("stats")
   .describe(i18n.getTokenSync("cli.commands.stats.desc"))
   .option("-m, --min", i18n.getTokenSync("cli.commands.stats.option_min"), undefined)
+  .option("-o, --output", i18n.getTokenSync("cli.commands.option_output"), "nsecure-result")
   .example("nsecure stats")
   .action(commands.stats.main);
+
+prog
+  .command("re-highlight")
+  .option("-o, --output", i18n.getTokenSync("cli.commands.option_output"), "nsecure-result")
+  .option("-c, --contacts", i18n.getTokenSync("cli.commands.option_contacts"), [])
+  .option("-p, --packages", i18n.getTokenSync("cli.commands.option_packages"), [])
+  .example("nsecure re-highlight -c sindre sindre@gmail.com -c matteo -p lodash@^4.0.0 -p express@^4.18.0")
+  .action(commands.reHighlight.main);
 
 prog.parse(process.argv);
 

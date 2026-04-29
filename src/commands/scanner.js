@@ -1,11 +1,8 @@
 // Import Node.js Dependencies
 import fs from "node:fs";
-import path from "node:path";
 import events from "node:events";
 
 // Import Third-party Dependencies
-import semver from "semver";
-import filenamify from "filenamify";
 import { Spinner } from "@topcli/spinner";
 import * as i18n from "@nodesecure/i18n";
 import * as scanner from "@nodesecure/scanner";
@@ -17,6 +14,7 @@ import * as http from "./http.js";
 import {
   logScannerStat,
   logScannerError,
+  logAndWrite,
   formatMs
 } from "./loggers/logger.js";
 import { parseContacts } from "./parsers/contacts.js";
@@ -274,70 +272,4 @@ function startSpinners() {
       spinner.start();
     }
   });
-}
-
-async function logAndWrite(
-  /** @type {import("@nodesecure/scanner").Payload} */
-  payload,
-  output = "nsecure-result",
-  options = {}
-) {
-  const { local = false } = options;
-
-  if (payload === null) {
-    console.log(i18n.getTokenSync("cli.no_dep_to_proceed"));
-
-    return null;
-  }
-
-  if (payload.warnings.length > 0) {
-    console.log(`\n ${kleur.yellow().bold("Global Warning:")}\n`);
-    const logFn = semver.satisfies(payload.scannerVersion, ">=7.0.0") ?
-      logGlobalWarningsV7 :
-      logGlobalWarningsV6;
-    logFn(payload.warnings);
-    console.log("");
-  }
-
-  const ret = JSON.stringify(payload, null, 2);
-
-  if (local) {
-    // FIXME: would it make more sense to manage this directly within Scanner?
-    Object.assign(ret, { local });
-  }
-
-  const fileName = path.extname(output) === ".json" ?
-    filenamify(output) :
-    `${filenamify(output)}.json`;
-  const filePath = path.join(process.cwd(), fileName);
-  fs.writeFileSync(filePath, ret);
-
-  console.log("");
-  console.log(
-    kleur.white().bold(i18n.getTokenSync("cli.successfully_written_json", kleur.green().bold(filePath)))
-  );
-  console.log("");
-
-  return filePath;
-}
-
-function logGlobalWarningsV7(
-  /** @type {import("@nodesecure/scanner").GlobalWarning[]} */
-  warnings
-) {
-  for (const warning of warnings) {
-    const isTypoSquatting = warning.type === "typo-squatting";
-
-    const type = kleur[isTypoSquatting ? "cyan" : "yellow"]().bold(`${warning.type}`);
-    console.log(kleur.gray().bold(`[${type}] ${warning.message}`));
-  }
-}
-
-function logGlobalWarningsV6(
-  /** @type {string[]} */
-  warnings
-) {
-  for (const warning of warnings) {
-    console.log(kleur.yellow().bold(warning));
-  }
 }
