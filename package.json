@@ -121,7 +121,7 @@
     "@topcli/spinner": "4.2.1",
     "filenamify": "^7.0.0",
     "highlightjs-line-numbers.js": "^2.8.0",
-    "ini": "^6.0.0",
+    "ini": "^7.0.0",
     "json-diff-ts": "4.10.4",
     "lit": "^3.3.1",
     "ms": "^2.1.3",
