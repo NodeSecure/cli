@@ -36,7 +36,7 @@ jobs:
         run: npm run build
 
       - name: Update and publish versions
-        uses: changesets/action@6a0a831ff30acef54f2c6aa1cbbc1096b066edaf # v1.7.0
+        uses: changesets/action@63a615b9cd06ba9a3e6d13796c7fbcb080a60a0b # v1.8.0
         with:
           version: npm run ci:version
           commit: "chore: update versions"
