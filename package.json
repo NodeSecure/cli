@@ -4,8 +4,8 @@
   "description": "Node.js security CLI",
   "main": "./bin/index.js",
   "bin": {
-    "node-secure": "./bin/index.js",
-    "nsecure": "./bin/index.js"
+    "node-secure": "./bin/check-and-run.cjs",
+    "nsecure": "./bin/check-and-run.cjs"
   },
   "type": "module",
   "engines": {
