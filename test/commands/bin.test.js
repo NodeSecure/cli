@@ -29,7 +29,7 @@ describe("bin/check-and-run.cjs", () => {
       { message: "process.exit(1) called" },
       "should halt execution and exit with code 1"
     );
-    
+
     const allLogs = logs.join("");
     assert.ok(allLogs.includes("@nodesecure/cli requires Node.js"), "should print required Node.js version message");
   });
