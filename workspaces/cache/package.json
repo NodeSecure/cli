@@ -29,7 +29,7 @@
   "license": "MIT",
   "dependencies": {
     "@nodesecure/scanner": "10.11.0",
-    "cacache": "20.0.4"
+    "cacache": "21.0.0"
   },
   "devDependencies": {
     "@types/cacache": "20.0.1"

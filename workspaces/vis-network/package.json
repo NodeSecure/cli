@@ -38,8 +38,8 @@
   "license": "MIT",
   "dependencies": {
     "pretty-bytes": "7.1.0",
-    "vis-data": "8.0.3",
-    "vis-network": "10.0.2"
+    "vis-data": "8.0.4",
+    "vis-network": "10.1.0"
   },
   "devDependencies": {
     "@nodesecure/flags": "3.0.3",
