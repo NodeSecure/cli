@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+// Import Third-party Dependencies
 import semver from "semver";
 
 const { default: packageJSON } = await import("../package.json", {
