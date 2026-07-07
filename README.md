@@ -1,185 +1,75 @@
-<p align="center"><h1 align="center">
-  🐢 Node-Secure CLI 🚀
-</h1>
-
 <p align="center">
-  a Node.js CLI to deeply analyze the dependency tree of a given NPM package or Node.js local app
+  <img src="./workspaces/cli/docs/ui-preview.PNG">
 </p>
 
 <p align="center">
-    <a href="https://www.npmjs.com/package/@nodesecure/cli">
-      <img src="https://img.shields.io/github/package-json/v/NodeSecure/cli?style=for-the-badge" alt="npm version">
-    </a>
-    <a href="https://github.com/NodeSecure/cli/blob/master/LICENSE">
-      <img src="https://img.shields.io/github/license/NodeSecure/cli?style=for-the-badge" alt="license">
-    </a>
-    <a href="https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli">
-      <img src="https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli/badge?style=for-the-badge" alt="ossf scorecard">
-    </a>
-    <a href="https://slsa.dev/spec/v1.0/levels#build-l3">
-      <img src="https://img.shields.io/badge/SLSA-level%203-green?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABMlBMVEXvMQDvMADwMQDwMADwMADvMADvMADwMADwMQDvMQDvMQDwMADwMADvMADwMADwMADwMQDvMQDvMQDwMQDvMQDwMQDwMADwMADwMQDwMADwMADvMADvMQDvMQDwMADwMQDwMADvMQDwMADwMQDwMADwMADwMADwMADwMADwMADvMQDvMQDwMADwMQDwMADvMQDvMQDwMADvMQDvMQDwMADwMQDwMQDwMQDvMQDwMADvMADwMADwMQDvMQDwMADwMQDwMQDwMQDwMQDvMQDvMQDvMADwMADvMADvMADvMADwMQDwMQDvMADvMQDvMQDvMADvMADvMQDwMQDvMQDvMADvMADvMADvMQDwMQDvMQDvMQDvMADvMADwMADvMQDvMQDvMQDvMADwMADwMQDwMAAAAAA/HoSwAAAAY3RSTlMpsvneQlQrU/LQSWzvM5DzmzeF9Pi+N6vvrk9HuP3asTaPgkVFmO3rUrMjqvL6d0LLTVjI/PuMQNSGOWa/6YU8zNuDLihJ0e6aMGzl8s2IT7b6lIFkRj1mtvQ0eJW95rG0+Sid59x/AAAAAWJLR0Rltd2InwAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAAd0SU1FB+YHGg0tGLrTaD4AAACqSURBVAjXY2BgZEqGAGYWVjYGdg4oj5OLm4eRgZcvBcThFxAUEk4WYRAVE09OlpCUkpaRTU6WY0iWV1BUUlZRVQMqUddgSE7W1NLS1gFp0NXTB3KTDQyNjE2Sk03NzC1A3GR1SytrG1s7e4dkBogtjk7OLq5uyTCuu4enl3cyhOvj66fvHxAIEmYICg4JDQuPiAQrEmGIio6JjZOFOjSegSHBBMpOToxPAgCJfDZC/m2KHgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wNy0yNlQxMzo0NToyNCswMDowMC8AywoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDctMjZUMTM6NDU6MjQrMDA6MDBeXXO2AAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==" alt="slsa level3">
-    </a>
-    <a href="https://github.com/NodeSecure/cli/actions?query=workflow%3A%22Node.js+CI%22">
-      <img src="https://img.shields.io/github/actions/workflow/status/NodeSecure/cli/nodejs.yml?style=for-the-badge" alt="github ci workflow">
-    </a>
-    <a href="https://codecov.io/github/NodeSecure/cli">
-      <img src="https://img.shields.io/codecov/c/github/NodeSecure/cli?style=for-the-badge" alt="codecov">
-    </a>
+  <a href="https://www.npmjs.com/package/@nodesecure/cli">
+    <img src="https://img.shields.io/github/package-json/v/NodeSecure/cli?style=for-the-badge" alt="npm version">
+  </a>
+  <a href="https://github.com/NodeSecure/cli/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/NodeSecure/cli?style=for-the-badge" alt="license">
+  </a>
+  <a href="https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli">
+    <img src="https://api.securityscorecards.dev/projects/github.com/NodeSecure/cli/badge?style=for-the-badge" alt="ossf scorecard">
+  </a>
+  <a href="https://slsa.dev/spec/v1.0/levels#build-l3">
+    <img src="https://img.shields.io/badge/SLSA-level%203-green?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABMlBMVEXvMQDvMADwMQDwMADwMADvMADvMADwMADwMQDvMQDvMQDwMADwMADvMADwMADwMADwMQDvMQDvMQDwMQDvMQDwMQDwMADwMADwMQDwMADwMADvMADvMQDvMQDwMADwMQDwMADvMQDwMADwMQDwMADwMADwMADwMADwMADwMADvMQDvMQDwMADwMQDwMADvMQDvMQDwMADvMQDvMQDwMADwMQDwMQDwMQDvMQDwMADvMADwMADwMQDvMQDwMADwMQDwMQDwMQDwMQDvMQDvMQDvMADwMADvMADvMADvMADwMQDwMQDvMADvMQDvMQDvMADvMADvMQDwMQDvMQDvMADvMADvMADvMQDwMQDvMQDvMQDvMADvMADwMADvMQDvMQDvMQDvMADwMADwMQDwMAAAAAA/HoSwAAAAY3RSTlMpsvneQlQrU/LQSWzvM5DzmzeF9Pi+N6vvrk9HuP3asTaPgkVFmO3rUrMjqvL6d0LLTVjI/PuMQNSGOWa/6YU8zNuDLihJ0e6aMGzl8s2IT7b6lIFkRj1mtvQ0eJW95rG0+Sid59x/AAAAAWJLR0Rltd2InwAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAAd0SU1FB+YHGg0tGLrTaD4AAACqSURBVAjXY2BgZEqGAGYWVjYGdg4oj5OLm4eRgZcvBcThFxAUEk4WYRAVE09OlpCUkpaRTU6WY0iWV1BUUlZRVQMqUddgSE7W1NLS1gFp0NXTB3KTDQyNjE2Sk03NzC1A3GR1SytrG1s7e4dkBogtjk7OLq5uyTCuu4enl3cyhOvj66fvHxAIEmYICg4JDQuPiAQrEmGIio6JjZOFOjSegSHBBMpOToxPAgCJfDZC/m2KHgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wNy0yNlQxMzo0NToyNCswMDowMC8AywoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDctMjZUMTM6NDU6MjQrMDA6MDBeXXO2AAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==" alt="slsa level3">
+  </a>
+  <a href="https://github.com/NodeSecure/cli/actions?query=workflow%3A%22Node.js+CI%22">
+    <img src="https://img.shields.io/github/actions/workflow/status/NodeSecure/cli/nodejs.yml?style=for-the-badge" alt="github ci workflow">
+  </a>
+  <a href="https://codecov.io/github/NodeSecure/cli">
+    <img src="https://img.shields.io/codecov/c/github/NodeSecure/cli?style=for-the-badge" alt="codecov">
+  </a>
 </p>
 
-<p align="center">
-<img src="./docs/ui-preview.PNG">
-</p>
-
-## 📜 Features
-
-- Run a static scan on every JavaScript files and sort out warnings (unsafe-regex, unsafe-import etc) and the complete list of required expr and statements (files, node.js module, etc.).
-- Return complete composition for each packages (extensions, files, tarball size, etc).
-- Packages metadata from the npm registry API (number of releases, last publish date, maintainers etc).
-- Search for licenses files in the tarball and return the [SPDX](https://spdx.org/licenses/) expression conformance of each detected licenses.
-- Link vulnerabilities from the multiple sources like GitHub Advisory, Sonatype or Snyk using [Vulnera](https://github.com/NodeSecure/vulnera). 
-- Add flags (emojis) to each packages versions to identify well known patterns and potential security threats easily.
-- First-class support of open source security initiatives like [OpenSSF Scorecard](https://github.com/ossf/scorecard).
-- Generate security report (PDF).
-
-## 🚧 Requirements
-
-- [Node.js](https://nodejs.org/en/) v24 or higher
+**NodeSecure** is a Node.js CLI (`nsecure`) that performs a static and deep analysis of a package's dependency tree: AST-based scanning for malicious or unsafe patterns, npm registry metadata, license conformance, vulnerability aggregation (GitHub Advisory, Sonatype, Snyk) and [OpenSSF Scorecard](https://github.com/ossf/scorecard), all rendered through an interactive dependency graph with a PDF report generator.
 
 ## 💃 Getting Started
 
 ```bash
 $ npm install @nodesecure/cli -g
+$ nsecure auto express
 ```
 
-or
+This repository is a monorepo. The `@nodesecure/cli` package, along with its full feature list, command documentation, configuration and FAQ, lives in the [workspaces/cli](./workspaces/cli) workspace — head there for everything about installing and using the CLI.
+
+## 📦 Workspaces
+
+| name | package and link |
+| --- | --- |
+| cli | [@nodesecure/cli](./workspaces/cli) |
+| documentation-ui | [@nodesecure/documentation-ui](./workspaces/documentation-ui) |
+| vis-network | [@nodesecure/vis-network](./workspaces/vis-network) |
+| size-satisfies | [@nodesecure/size-satisfies](./workspaces/size-satisfies) |
+| server | [@nodesecure/server](./workspaces/server) |
+| cache | [@nodesecure/cache](./workspaces/cache) |
+
+These packages are available in the Node Package Repository and can be easily installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or [yarn](https://yarnpkg.com), for example:
+
+```bash
+$ npm i @nodesecure/documentation-ui
+# or
+$ yarn add @nodesecure/documentation-ui
+```
+
+## 🙏 Contributing
+
+If you are a developer **looking to contribute** to the project, please first read our [CONTRIBUTING](./CONTRIBUTING.md) guide (Code of Conduct, first-contributor guide, Developer's Certificate of Origin, Discord).
+
+### Local Setup
 
 ```bash
 $ git clone https://github.com/NodeSecure/cli.git
 $ cd cli
 
 $ npm install
-# bundle/compile front-end assets
-$ npm run build
-$ npm link
-```
-
-Then the **nsecure** binary will be available in your terminal. Give a try with the popular [express](http://expressjs.com/) package. This will automatically open the webpage in your default system browser.
-```bash
-$ nsecure auto express
-```
-
-> [!TIP]
-> Setup an [npm token](https://github.com/NodeSecure/cli#private-packages--registry) to avoid hiting the maximum request limit of the npm registry API.
-
-## 👀 Usage example
-
-```bash
-# Run a scan on the current working dir
-# Note: must have a package.json or node_modules directory
-$ nsecure cwd
-
-# Run a scan on a remote 'npm' package
-$ nsecure from mocha
-```
-
-Then a `nsecure-result.json` will be writted at the current CLI location. To open it on a web page just run
-
-```bash
-$ nsecure open
-```
-
-### Command Documentation
-
-The CLI includes built-in documentation accessible with the --help option:
-```bash
-$ nsecure --help
-$ nsecure <command> --help
-```
-
-For complete details on each command, refer to the following documents:
-
-- [`cwd`](./docs/cli/cwd.md)
-- [`from`](./docs/cli/from.md)
-- [`auto`](./docs/cli/auto.md)
-- [`open`](./docs/cli/open.md)
-- [`verify`](./docs/cli/verify.md)
-- [`summary`](./docs/cli/summary.md)
-- [`scorecard`](./docs/cli/scorecard.md)
-- [`report`](./docs/cli/report.md)
-- [`lang`](./docs/cli/lang.md)
-- [`config create`](./docs/cli/config.md)
-- [`config`](./docs/cli/config.md)
-- [`cache`](./docs/cli/cache.md)
-- [`extract integrity`](./docs/cli/extract-integrity.md)
-- [`stats`](./docs/cli/stats.md)
-- [re-highlight](./docs/cli/re-highlight.md)
-
-Each link provides access to the full documentation for the command, including additional details, options, and usage examples.
-
-## Private registry / Verdaccio
-
-NodeSecure allow you to fetch stats on private npm packages by setting up a `NODE_SECURE_TOKEN` env variable (which must contains an [npm token](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)).
-
-> [!TIP]
-> If you `npm link` the package by yourself you can create a `.env` file at the root of the project too.
-
-NodeSecure is capable to work behind a custom private npm registry too by searching the default registry URL in your local npm configuration.
-
-```bash
-$ npm config get registry
-$ npm config set registry "http://your-registry/"
-```
-
-## API
-Our back-end scanner package is available [here](https://github.com/NodeSecure/scanner).
-
-## Flags legends
-
-Flags and emojis legends are documented [here](https://github.com/NodeSecure/flags/blob/main/FLAGS.md).
-
-## Search command
-
-Press `Cmd+K` (macOS) or `Ctrl+K` (Windows/Linux) from the network view to open the search command. It lets you filter the dependency graph using one or more criteria simultaneously.
-
-Type a package name directly to search, or prefix with a filter name followed by `:` to use a specific filter:
-
-- `package` — **default when no prefix is given**, matches by name.
-- `version` — semver range (e.g. `>=1.2.0`, `^2.0.0`).
-- `flag` — select from the list of flags present in the current tree.
-- `license` — SPDX identifier (e.g. `MIT`, `Apache-2.0`).
-- `author` — author name or email.
-- `ext` — file extension present in the package (e.g. `.js`, `.ts`).
-- `builtin` — Node.js core module used by the package (e.g. `fs`, `path`).
-- `size` — size range (see [size-satisfies](https://github.com/NodeSecure/size-satisfies#usage-example), e.g. `>50kb`, `10kb..200kb`).
-- `highlighted` — all highlighted packages by default.
-
-## FAQ
-
-### Why some nodes are red in the UI ?
-Nodes are highlighted in red when the project/package is flagged with 🔬 `hasMinifiedCode` or ⚠️ `hasWarnings`. You can deactivate specific warnings in the options if desired.
-
-### Why the package size is so different from Bundlephobia ?
-The back-end scanner will analyze the complete size of the npm tarball without any filters or specific optimizations. In contrast, Bundlephobia will bundle the package and remove most of the unnecessary files from the tarball, such as documentation and other non-essential items.
-
-### Why some packages don't have OSSF Scorecard ?
-See [Scorecard Public Data](https://github.com/ossf/scorecard#public-data):
-
-> [!NOTE]
-> We run a weekly Scorecard scan of the 1 million most critical open source projects judged by their direct dependencies and publish the results in a BigQuery public dataset.
-
-## Contributors guide
-
-If you are a developer **looking to contribute** to the project, you must first read the [CONTRIBUTING](./CONTRIBUTING.md) guide.
-
-If you have already cloned and installed the project locally with npm, you still need to build and bundle front-end assets using the npm `build` script:
-
-```bash
+# bundle/compile front-end assets for every workspace
 $ npm run build
 ```
 
 > [!IMPORTANT]
-> Restart this command when modifying files in the public root folder
+> Restart `npm run build` when modifying files under a workspace's public/front-end assets folder.
 
 Once you have finished your development, check that the tests (and linter) are still good by running the following script:
 
@@ -192,7 +82,7 @@ $ npm test
 
 ### Publishing package and SLSA
 
-The package is published on [NPM with provenance](https://docs.npmjs.com/generating-provenance-statements), ensuring that this project is compliant with [SLSA Level 3](https://slsa.dev/spec/v0.1/levels?ref=fossa.com) standards. The build and publication process is managed through the GitHub [npm-provenance.yml](https://github.com/NodeSecure/cli/blob/master/.github/workflows/npm-provenance.yml) workflow, which is automatically triggered upon the creation of a new release.
+The `@nodesecure/cli` package is published on [NPM with provenance](https://docs.npmjs.com/generating-provenance-statements), ensuring that this project is compliant with [SLSA Level 3](https://slsa.dev/spec/v0.1/levels?ref=fossa.com) standards. The build and publication process is managed through the GitHub [npm-provenance.yml](https://github.com/NodeSecure/cli/blob/master/.github/workflows/npm-provenance.yml) workflow, which is automatically triggered upon the creation of a new release.
 
 To create a local version of the package using npm and Git, follow these commands:
 
@@ -202,26 +92,7 @@ $ git commit -am "chore: x.x.x"
 $ git push origin master --tags
 ```
 
-These commands will increment the package version, commit the changes, and push them along with the tags to the repository
-
-## Workspaces
-
-Click on one of the links to access the documentation of the workspace:
-
-| name | package and link |
-| --- | --- |
-| documentation-ui | [@nodesecure/documentation-ui](./workspaces/documentation-ui) |
-| vis-network | [@nodesecure/vis-network](./workspaces/vis-network) |
-| size-satisfies | [@nodesecure/size-satisfies](./workspaces/size-satisfies) |
-| server | [@nodesecure/server](./workspaces/server) |
-| cache | [@nodesecure/cache](./workspaces/cache) |
-
-These packages are available in the Node Package Repository and can be easily installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) or [yarn](https://yarnpkg.com).
-```bash
-$ npm i @nodesecure/documentation-ui
-# or
-$ yarn add @nodesecure/documentation-ui
-```
+These commands will increment the package version, commit the changes, and push them along with the tags to the repository.
 
 ## Contributors ✨
 

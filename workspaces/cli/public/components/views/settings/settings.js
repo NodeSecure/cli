@@ -78,7 +78,7 @@ export class SettingsView extends LitElement {
     }
 
     :host .icon-keyboard {
-      background: url("../../../img/keyboard-solid.svg");
+      background: url("keyboard-solid.svg");
       background-position: 10% center;
       background-repeat: no-repeat;
       width: 34px;

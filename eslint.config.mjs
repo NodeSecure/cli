@@ -5,7 +5,7 @@ import jsdoc from "eslint-plugin-jsdoc";
 export default [
   ...ESLintConfig,
   {
-    files: ["public/**/*.js"],
+    files: ["workspaces/cli/public/**/*.js"],
     plugins: {
       jsdoc
     },

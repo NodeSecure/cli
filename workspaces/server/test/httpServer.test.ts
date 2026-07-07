@@ -7,7 +7,13 @@ import assert from "node:assert";
 import stream from "node:stream";
 
 // Import Third-party Dependencies
-import { get, post, MockAgent, getGlobalDispatcher, setGlobalDispatcher } from "@openally/httpie";
+import {
+  get,
+  post,
+  MockAgent,
+  getGlobalDispatcher,
+  setGlobalDispatcher
+} from "@openally/httpie";
 import * as i18n from "@nodesecure/i18n";
 import * as flags from "@nodesecure/flags";
 import enableDestroy from "server-destroy";
@@ -26,8 +32,8 @@ const JSON_PATH = path.join(import.meta.dirname, "fixtures", "httpServer.json");
 const kGlobalDispatcher = getGlobalDispatcher();
 const kMockAgent = new MockAgent();
 const kBundlephobiaPool = kMockAgent.get("https://bundlephobia.com");
-const kProjectRootDir = path.join(import.meta.dirname, "..", "..", "..");
-const kComponentsDir = path.join(kProjectRootDir, "public", "components");
+const kCLIWorkspaceRootDir = path.join(import.meta.dirname, "..", "..", "cli");
+const kComponentsDir = path.join(kCLIWorkspaceRootDir, "public", "components");
 
 describe("httpServer", () => {
   let httpServer: Server;
@@ -35,11 +41,11 @@ describe("httpServer", () => {
   before(async() => {
     setGlobalDispatcher(kMockAgent);
     await i18n.extendFromSystemPath(
-      path.join(import.meta.dirname, "..", "..", "..", "i18n")
+      path.join(kCLIWorkspaceRootDir, "i18n")
     );
 
     ({ httpServer } = await buildServer(JSON_PATH, {
-      projectRootDir: kProjectRootDir,
+      projectRootDir: kCLIWorkspaceRootDir,
       componentsDir: kComponentsDir,
       reporter: async() => Buffer.from("fake-pdf-data"),
       i18n: {
@@ -314,7 +320,7 @@ describe("httpServer without options", () => {
 
   before(async() => {
     ({ httpServer } = await buildServer(JSON_PATH, {
-      projectRootDir: kProjectRootDir,
+      projectRootDir: kCLIWorkspaceRootDir,
       componentsDir: kComponentsDir,
       i18n: {
         english: {
@@ -346,11 +352,11 @@ describe("httpServer wsPort option", () => {
 
   before(async() => {
     await i18n.extendFromSystemPath(
-      path.join(import.meta.dirname, "..", "..", "..", "i18n")
+      path.join(kCLIWorkspaceRootDir, "i18n")
     );
 
     ({ httpServer } = await buildServer(JSON_PATH, {
-      projectRootDir: kProjectRootDir,
+      projectRootDir: kCLIWorkspaceRootDir,
       componentsDir: kComponentsDir,
       reporter: async() => Buffer.from("fake-pdf-data"),
       i18n: {

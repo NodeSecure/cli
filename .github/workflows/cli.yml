@@ -2,8 +2,13 @@ name: Node.js CI
 
 on:
   push:
-    branches: ["master"]
+    branches:
+     - master
+    paths:
+      - workspaces/cli/**
   pull_request:
+    paths:
+      - workspaces/cli/**
 
 permissions:
   contents: read
@@ -35,9 +40,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: npx playwright install --with-deps
       - name: Run tests
-        run: npm run coverage
+        run: npm run coverage -w workspaces/cli
       - name: Run e2e tests
         if: matrix.os == 'ubuntu-latest'
-        run: npm run test:e2e
+        run: npm run test:e2e -w workspaces/cli
       - name: Send coverage report to Codecov
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
