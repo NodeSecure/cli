@@ -27,10 +27,7 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./node": {
-      "types": "./dist/nodejs/esm.d.ts",
-      "default": "./dist/nodejs/esm.js"
-    }
+    "./styles/*": "./dist/css/*"
   },
   "keywords": [
     "nodesecure",
