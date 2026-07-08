@@ -1,8 +1,8 @@
 // Import Third-party Dependencies
 import { LitElement, html, css, nothing } from "lit";
+import { COLORS } from "@nodesecure/vis-network";
 
 // Import Internal Dependencies
-import { COLORS } from "../../../workspaces/vis-network/src/constants.js";
 import { currentLang } from "../../common/utils.js";
 
 class Legend extends LitElement {

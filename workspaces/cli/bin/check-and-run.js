@@ -8,7 +8,10 @@ const { default: packageJSON } = await import("../package.json", {
 });
 
 const currentVersion = process.versions.node;
-const requiredRange = packageJSON.engines.node;
+const requiredRange = packageJSON.engines?.node ?? null;
+if (requiredRange === null) {
+  throw new Error("Missing 'engines.node' field in package.json");
+}
 
 if (!semver.satisfies(currentVersion, requiredRange)) {
   console.error(
@@ -18,4 +21,6 @@ if (!semver.satisfies(currentVersion, requiredRange)) {
   process.exit(1);
 }
 
-await import("./index.js");
+await import(
+  "./index.js"
+);

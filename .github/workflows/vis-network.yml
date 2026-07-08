@@ -34,6 +34,6 @@ jobs:
       - name: Install dependencies
         run: npm install --ignore-scripts
       - name: Build
-        run: npm run build:workspaces
+        run: npm run build
       - name: Run tests
-        run: npm run test
+        run: npm run test -w workspaces/vis-network

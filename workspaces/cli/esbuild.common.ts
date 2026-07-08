@@ -11,7 +11,6 @@ import {
 // CONSTANTS
 export const PUBLIC_DIR = path.join(import.meta.dirname, "public");
 export const OUTPUT_DIR = path.join(import.meta.dirname, "dist");
-export const NODE_MODULES_DIR = path.join(import.meta.dirname, "node_modules");
 export const IMAGES_DIR = path.join(PUBLIC_DIR, "img");
 
 export function getSharedBuildOptions(): esbuild.BuildOptions {
@@ -19,7 +18,6 @@ export function getSharedBuildOptions(): esbuild.BuildOptions {
     entryPoints: [
       path.join(PUBLIC_DIR, "main.js"),
       path.join(PUBLIC_DIR, "main.css"),
-      path.join(NODE_MODULES_DIR, "highlight.js", "styles", "github.css"),
       ...getBuildConfiguration().entryPoints
     ],
     loader: {

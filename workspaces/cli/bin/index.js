@@ -9,13 +9,13 @@ catch {
 }
 
 // Import Node.js Dependencies
-import { createRequire } from "node:module";
 import path from "node:path";
 
 // Import Third-party Dependencies
 import * as i18n from "@nodesecure/i18n";
 import { loadRegistryURLFromLocalSystem } from "@nodesecure/npm-registry-sdk";
 import * as vulnera from "@nodesecure/vulnera";
+import { PayloadCache } from "@nodesecure/cache";
 import sade from "sade";
 import semver from "semver";
 
@@ -23,9 +23,9 @@ import semver from "semver";
 import * as commands from "../src/commands/index.js";
 import kleur from "../src/utils/styleText.js";
 
-// TODO: replace with await import() when available
-const require = createRequire(import.meta.url);
-const manifest = require("../package.json");
+const { default: manifest } = await import("../package.json", {
+  with: { type: "json" }
+});
 
 await i18n.getLocalLang();
 await i18n.extendFromSystemPath(
@@ -50,14 +50,16 @@ defaultScannerCommand("cwd", { strategy: vulnera.strategies.GITHUB_ADVISORY })
   .option("-f, --full", i18n.getTokenSync("cli.commands.cwd.option_full"), false)
   .action(async(options) => {
     checkNodeSecureToken();
-    await commands.scanner.cwd(options);
+    const cache = await loadCache();
+    await commands.scanner.cwd(options, cache);
   });
 
 defaultScannerCommand("from <spec>")
   .describe(i18n.getTokenSync("cli.commands.from.desc"))
   .action(async(spec, options) => {
     checkNodeSecureToken();
-    await commands.scanner.from(spec, options);
+    const cache = await loadCache();
+    await commands.scanner.from(spec, options, cache);
   });
 
 defaultScannerCommand("auto [spec]", { includeOutput: false, strategy: vulnera.strategies.GITHUB_ADVISORY })
@@ -172,6 +174,13 @@ function defaultScannerCommand(name, options = {}) {
   }
 
   return cmd;
+}
+
+async function loadCache() {
+  const cache = new PayloadCache();
+  await cache.load();
+
+  return cache;
 }
 
 function checkNodeSecureToken() {

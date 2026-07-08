@@ -16,7 +16,7 @@ import {
 } from "./tree-layout.js";
 import { renderCardContent } from "./tree-card.js";
 import { drawConnectors } from "./tree-connectors.js";
-import "../../../components/root-selector/root-selector.js";
+import "../../root-selector/root-selector.js";
 
 class TreeView extends LitElement {
   static styles = treeStyles;

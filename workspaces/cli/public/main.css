@@ -1,6 +1,7 @@
 @import url("./css/reset.css");
 @import url("./css/light.css");
 @import url("./css/animation.css");
+@import url("highlight.js/styles/github.css");
 @import url("./font/fontello/fontello.css");
 @import url("./font/roboto/roboto.css");
 @import url("./font/mononoki/mononoki.css");
