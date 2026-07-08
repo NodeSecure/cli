@@ -4,9 +4,6 @@ import fs from "node:fs/promises";
 
 // Import Third-party Dependencies
 import esbuild from "esbuild";
-import {
-  getBuildConfiguration
-} from "@nodesecure/documentation-ui/node";
 
 // CONSTANTS
 export const PUBLIC_DIR = path.join(import.meta.dirname, "public");
@@ -17,8 +14,7 @@ export function getSharedBuildOptions(): esbuild.BuildOptions {
   return {
     entryPoints: [
       path.join(PUBLIC_DIR, "main.js"),
-      path.join(PUBLIC_DIR, "main.css"),
-      ...getBuildConfiguration().entryPoints
+      path.join(PUBLIC_DIR, "main.css")
     ],
     loader: {
       ".jpg": "file",
