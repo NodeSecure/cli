@@ -61,6 +61,7 @@ describe("re-hightlight", () => {
         contacts: [
           {
             name: "TJ Holowaychuk",
+            flags: [],
             dependencies: [
               "fresh",
               "range-parser",
