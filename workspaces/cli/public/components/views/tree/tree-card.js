@@ -5,7 +5,7 @@ import prettyBytes from "pretty-bytes";
 
 // Import Internal Dependencies
 import { EVENTS } from "../../../core/events.js";
-import { currentLang } from "../../../common/utils.js";
+import * as utils from "../../../common/utils.js";
 
 // CONSTANTS
 const kWarningCriticalThreshold = 10;
@@ -25,11 +25,15 @@ const kModuleTypeColors = {
   faux: "#6b7280"
 };
 
+/**
+ * @param {string | Date} isoDate
+ */
 function formatTimeAgo(isoDate) {
   const ageMs = Date.now() - new Date(isoDate).getTime();
-  const rtf = new Intl.RelativeTimeFormat(kLangToLocale[currentLang()] ?? "en", {
-    numeric: "auto"
-  });
+  const rtf = new Intl.RelativeTimeFormat(
+    /** @type {Record<string, string>} */ (kLangToLocale)[utils.currentLang()] ?? "en",
+    { numeric: "auto" }
+  );
 
   if (ageMs < kOneWeek) {
     return rtf.format(-Math.floor(ageMs / kOneDay), "day");
@@ -44,8 +48,11 @@ function formatTimeAgo(isoDate) {
   return rtf.format(-Math.floor(ageMs / kOneYear), "year");
 }
 
+/**
+ * @param {string} flag
+ */
 function renderFlag(flag) {
-  const ignoredFlags = window.settings.config.ignore.flags ?? [];
+  const ignoredFlags = utils.getSettingsConfig().ignore.flags ?? [];
   const ignoredSet = new Set(ignoredFlags);
   if (ignoredSet.has(flag)) {
     return nothing;
@@ -59,10 +66,21 @@ function renderFlag(flag) {
   return html`<span class="flag" title="${flag}">${emoji}</span>`;
 }
 
+/**
+ * @param {import("@nodesecure/vis-network").NodeSecureDataSet} secureDataSet
+ * @param {string} name
+ * @param {string} version
+ */
 function getVersionData(secureDataSet, name, version) {
-  return secureDataSet.data.dependencies[name]?.versions[version];
+  return /** @type {NonNullable<import("@nodesecure/vis-network").NodeSecureDataSet["data"]>} */ (
+    secureDataSet.data
+  ).dependencies[name]?.versions[version];
 }
 
+/**
+ * @param {import("@nodesecure/vis-network").NodeSecureDataSet} secureDataSet
+ * @param {{ nodeId: number, parentId?: number | null, isRoot?: boolean, publishedAt?: string | Date | null, publishedColor?: string | null }} options
+ */
 export function renderCardContent(secureDataSet, options) {
   const {
     nodeId,
@@ -71,7 +89,7 @@ export function renderCardContent(secureDataSet, options) {
     publishedAt = null,
     publishedColor = null
   } = options;
-  const entry = secureDataSet.linker.get(nodeId);
+  const entry = /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (secureDataSet.linker.get(nodeId));
   const versionData = getVersionData(secureDataSet, entry.name, entry.version);
   if (!versionData) {
     return nothing;
@@ -89,7 +107,7 @@ export function renderCardContent(secureDataSet, options) {
 
   const hasProvenance = Boolean(versionData.attestations?.provenance);
   const moduleType = versionData.type ?? "cjs";
-  const typeColor = kModuleTypeColors[moduleType] ?? "#6b7280";
+  const typeColor = /** @type {Record<string, string>} */ (kModuleTypeColors)[moduleType] ?? "#6b7280";
   const size = prettyBytes(versionData.size ?? 0);
   const licenses = versionData.uniqueLicenseIds?.join(", ") ?? "—";
   const depCount = versionData.dependencyCount ?? 0;

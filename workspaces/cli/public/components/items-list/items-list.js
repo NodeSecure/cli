@@ -63,9 +63,11 @@ justify-content: start;
 
   constructor() {
     super();
+    /** @type {string[]} */
     this.items = [];
     this.isClosed = true;
     this.itemsToShowLength = 5;
+    /** @type {((item: string) => void) | null} */
     this.onClickItem = null;
     this.variant = "column";
     this.shouldShowEveryItems = false;
@@ -85,7 +87,7 @@ justify-content: start;
       (item) => item,
       (item) => (typeof this.onClickItem === "function"
         ? html`<li class="clickable"  @click=${() => {
-          this.onClickItem(item);
+          /** @type {(item: string) => void} */ (this.onClickItem)(item);
         }}>${item}</li>`
         : html`<li>${item}</li>`))
     }

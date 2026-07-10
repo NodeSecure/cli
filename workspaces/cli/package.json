@@ -69,6 +69,7 @@
     "@openally/httpie": "1.1.2",
     "@playwright/test": "1.61.1",
     "@stylistic/stylelint-plugin": "5.1.0",
+    "@types/semver": "7.7.1",
     "esbuild": "0.28.1",
     "highlight.js": "11.11.1",
     "postcss-lit": "1.4.1",

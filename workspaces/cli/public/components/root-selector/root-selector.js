@@ -121,6 +121,17 @@ export class RootSelector extends LitElement {
     }
   `;
 
+  constructor() {
+    super();
+    /** @type {import("@nodesecure/vis-network").NodeSecureDataSet | null} */
+    this.secureDataSet = null;
+    this._open = false;
+    /** @type {(event: MouseEvent) => void} */
+    this._handleOutsideClick = () => {
+      // Placeholder function, will be replaced in connectedCallback
+    };
+  }
+
   connectedCallback() {
     super.connectedCallback();
     this._handleOutsideClick = (event) => {
@@ -137,6 +148,9 @@ export class RootSelector extends LitElement {
     document.removeEventListener("click", this._handleOutsideClick);
   }
 
+  /**
+   * @param {string} spec
+   */
   #switchTo(spec) {
     window.dispatchEvent(new CustomEvent(EVENTS.ROOT_SWITCH, {
       detail: { spec }
@@ -161,7 +175,7 @@ export class RootSelector extends LitElement {
     return html`
       <button
         class="selector-btn"
-        @click=${(event) => {
+        @click=${(/** @type {Event} */ event) => {
           event.stopPropagation();
           if (others.length > 0) {
             this._open = !this._open;

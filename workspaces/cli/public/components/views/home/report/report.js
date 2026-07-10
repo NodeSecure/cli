@@ -4,9 +4,9 @@ import { when } from "lit/directives/when.js";
 
 // Import Internal Dependencies
 import { EVENTS } from "../../../../core/events.js";
-import { currentLang } from "../../../../common/utils.js";
+import { getI18n } from "../../../../common/utils.js";
 
-class PopupReport extends LitElement {
+export class PopupReport extends LitElement {
   static styles = css`
 .report--popup {
   min-width: 400px;
@@ -165,7 +165,12 @@ class PopupReport extends LitElement {
   constructor() {
     super();
     this.isLoading = false;
-    this.settingsChanged = ({ detail: { theme } }) => {
+    /** @type {string} */
+    this.theme = "";
+    /** @type {string} */
+    this.dependencyName = "";
+    this.settingsChanged = (/** @type {Event} */ event) => {
+      const { theme } = /** @type {CustomEvent<{ theme: string }>} */ (event).detail;
       if (theme !== this.theme) {
         this.theme = theme;
       }
@@ -185,15 +190,16 @@ class PopupReport extends LitElement {
   firstUpdated() {
     const isLightPreference = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
     if (isLightPreference) {
-      this.renderRoot.querySelector("#lightTheme").checked = true;
+      /** @type {HTMLInputElement} */ (this.renderRoot.querySelector("#lightTheme")).checked = true;
     }
     else {
-      this.renderRoot.querySelector("#darkTheme").checked = true;
+      /** @type {HTMLInputElement} */ (this.renderRoot.querySelector("#darkTheme")).checked = true;
     }
   }
 
   render() {
-    const { popup: { report } } = window.i18n[currentLang()];
+    const i18n = /** @type {Record<string, any>} */ (/** @type {unknown} */ (getI18n()));
+    const { popup: { report } } = i18n;
     const defaultTitle = `${this.dependencyName}'s report`;
 
     return html`
@@ -203,7 +209,7 @@ class PopupReport extends LitElement {
     </div>
     <form action="" @submit=${this.handleSubmit}>
       <label for="title">${report.form.title}</label>
-      <input @input=${(e) => {
+      <input @input=${(/** @type {Event} */ e) => {
         e.stopPropagation();
       }}  placeholder=${defaultTitle} type="text" id="title" name="title">
       <div>
@@ -230,13 +236,13 @@ class PopupReport extends LitElement {
   `;
   }
 
-  handleSubmit = (e) => {
+  handleSubmit = (/** @type {SubmitEvent} */ e) => {
     e.preventDefault();
     if (this.isLoading) {
       return;
     }
     this.isLoading = true;
-    const formData = new FormData(e.target);
+    const formData = new FormData(/** @type {HTMLFormElement} */ (e.target));
     const title = formData.get("title") || `${this.dependencyName} 's report`;
     const theme = formData.get("theme");
     const includesAllDeps = formData.get("includesAllDeps") === "includesAllDeps";

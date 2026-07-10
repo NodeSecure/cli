@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "checkJs": false,
+    "checkJs": true,
     "lib": ["dom", "dom.iterable", "ESNext"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ESNext"
   },
-  "include": ["./**/*.js", "./global.d.ts"]
+  "include": ["./**/*.js", "./global.d.ts", "./types.d.ts"]
 }

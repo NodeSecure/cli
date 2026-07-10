@@ -174,8 +174,15 @@ width: 16px;
 
   constructor() {
     super();
+    this.secureDataSet = /** @type {import("@nodesecure/vis-network").NodeSecureDataSet} */ (/** @type {unknown} */ (undefined));
+    this.nsn = /** @type {import("@nodesecure/vis-network").NodeSecureNetwork} */ (/** @type {unknown} */ (undefined));
+    /** @type {{ maximumMaintainers: number }} */
+    this.options = { maximumMaintainers: 5 };
     this.isClosed = true;
-    this.settingsChanged = ({ detail: { theme } }) => {
+    /** @type {string} */
+    this.theme = "";
+    this.settingsChanged = (/** @type {Event} */ event) => {
+      const { theme } = /** @type {CustomEvent<{ theme: string }>} */ (event).detail;
       if (theme !== this.theme) {
         this.theme = theme;
       }
@@ -204,7 +211,7 @@ width: 16px;
 
     const visibleAuthors = hideItems ? authors.slice(0, numOfMaintainers) : authors;
 
-    const i18n = window.i18n[utils.currentLang()];
+    const i18n = utils.getI18n();
 
     return html`
     <div class="module ${this.theme}">
@@ -230,6 +237,9 @@ width: 16px;
     `;
   }
 
+  /**
+   * @param {[string, import("@nodesecure/vis-network").AuthorInfo][]} authors
+   */
   #generateMaintainers(authors) {
     return html`
     ${repeat(authors.filter(([name]) => typeof name != "undefined"),
@@ -287,6 +297,9 @@ width: 16px;
 `;
   }
 
+  /**
+   * @param {[string, import("@nodesecure/vis-network").AuthorInfo][]} authors
+   */
   #highlightContacts(authors) {
     const highlightedAuthors = authors
       .filter(([_, contact]) => this.secureDataSet.isHighlightedContact(contact));
@@ -500,7 +513,14 @@ export class PopupMaintainer extends LitElement {
   constructor() {
     super();
     this.isLoading = false;
-    this.settingsChanged = ({ detail: { theme } }) => {
+    /** @type {string} */
+    this.name = "";
+    this.data = /** @type {import("@nodesecure/vis-network").AuthorInfo} */ (/** @type {unknown} */ (undefined));
+    this.nsn = /** @type {import("@nodesecure/vis-network").NodeSecureNetwork} */ (/** @type {unknown} */ (undefined));
+    /** @type {string} */
+    this.theme = "";
+    this.settingsChanged = (/** @type {Event} */ event) => {
+      const { theme } = /** @type {CustomEvent<{ theme: string }>} */ (event).detail;
       if (theme !== this.theme) {
         this.theme = theme;
       }
@@ -519,7 +539,8 @@ export class PopupMaintainer extends LitElement {
 
   render() {
     const { url = null } = this.data;
-    const { popup: { maintainer } } = window.i18n[utils.currentLang()];
+    const i18n = /** @type {Record<string, any>} */ (/** @type {unknown} */ (utils.getI18n()));
+    const { popup: { maintainer } } = i18n;
     const packagesList = [...this.data.packages]
       .map((spec) => {
         const { name, version } = utils.parseNpmSpec(spec);
@@ -553,17 +574,17 @@ export class PopupMaintainer extends LitElement {
         </a>`,
           () => nothing
         )}
-        <button class"button-icon" @click=${(e) => {
+        <button class"button-icon" @click=${(/** @type {Event} */ e) => {
           e.stopPropagation();
           const nodeIds = [...this.nsn.findNodeIds(new Set(packagesList))];
 
           this.nsn.highlightMultipleNodes(nodeIds);
-          window.locker.lock();
+          /** @type {import("../../../locker/locker.js").Locker} */ (window.locker).lock();
           window.dispatchEvent(new CustomEvent(EVENTS.MODAL_CLOSED));
-          window.navigation.setNavByName("network--view");
+          utils.getNavigation().setNavByName("network--view");
 
-          const currentSelectedNode = window.networkNav.currentNodeParams;
-          const moveTo = currentSelectedNode === null || !nodeIds.includes(currentSelectedNode.nodes[0]);
+          const currentSelectedNode = window.networkNav?.currentNodeParams;
+          const moveTo = !currentSelectedNode || !nodeIds.includes(currentSelectedNode.nodes[0]);
           if (moveTo) {
             const origin = this.nsn.network.getViewPosition();
             const nodes = nodeIds
@@ -600,10 +621,10 @@ export class PopupMaintainer extends LitElement {
           return html`<li>
             <p>${name}</p>
         <span>v${version}</span>
-        <button class"button-icon" @click=${(e) => {
+        <button class"button-icon" @click=${(/** @type {Event} */ e) => {
           e.stopPropagation();
           window.dispatchEvent(new CustomEvent(EVENTS.MODAL_CLOSED));
-          window.navigation.setNavByName("network--view");
+          utils.getNavigation().setNavByName("network--view");
           setTimeout(() => this.nsn.focusNodeByNameAndVersion(name, version), 25);
         }}>
             <nsecure-icon name="right-open-big"></nsecure-icon>

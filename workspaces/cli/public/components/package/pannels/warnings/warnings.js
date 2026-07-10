@@ -7,6 +7,9 @@ import { CodeFetcher } from "./code-fetcher.js";
 import * as utils from "../../../../common/utils.js";
 
 export class Warnings {
+  /**
+   * @param {import("../../package.js").PackageInfo} pkg
+   */
   constructor(pkg) {
     this.package = pkg;
   }
@@ -17,11 +20,11 @@ export class Warnings {
   }
 
   /**
-   * @param {!HTMLTemplateElement} clone
+   * @param {!DocumentFragment} clone
    */
   generate(clone) {
     this.setupSignal(clone);
-    clone.getElementById("pan-warnings")
+    /** @type {HTMLElement} */ (clone.getElementById("pan-warnings"))
       .appendChild(this.renderWarnings());
 
     clone.querySelectorAll(".open-wiki")
@@ -34,13 +37,17 @@ export class Warnings {
   }
 
   /**
-   * @param {!HTMLTemplateElement} clone
+   * @param {!DocumentFragment} clone
    */
   setupSignal(clone) {
     const { warnings } = this.package.dependencyVersion;
     this.package.addNavigationSignal(
-      clone.getElementById("warnings-nav-menu"),
-      warnings.filter((warning) => !window.settings.config.ignore.warnings.has(warning.kind)).length
+      /** @type {HTMLElement} */ (clone.getElementById("warnings-nav-menu")),
+      warnings.filter(
+        (/** @type {import("@nodesecure/js-x-ray").Warning} */ warning) => !utils.getSettingsConfig().ignore.warnings.has(
+          warning.kind
+        )
+      ).length
     );
   }
 
@@ -52,14 +59,15 @@ export class Warnings {
 
     const codeFetcher = new CodeFetcher(unpkgRoot);
 
-    for (const warning of warnings) {
-      if (window.settings.config.ignore.warnings.has(warning.kind)) {
+    for (const warning of /** @type {import("@nodesecure/js-x-ray").Warning[]} */ (warnings)) {
+      if (utils.getSettingsConfig().ignore.warnings.has(warning.kind)) {
         continue;
       }
 
+      const file = /** @type {string} */ (warning.file);
       const id = Math.random().toString(36).slice(2);
       const hasNoInspection =
-        warning.file.includes(".min") ||
+        file.includes(".min") ||
         warning.kind === "short-identifiers" ||
         warning.kind === "obfuscated-code" ||
         warning.kind === "zero-semver";
@@ -75,10 +83,12 @@ export class Warnings {
         viewMoreElement.style.display = "none";
       }
       else {
-        const location = warning.kind === "encoded-literal" ? warning.location[0] : warning.location;
+        const location = /** @type {[[number, number], [number, number]]} */ (warning.kind === "encoded-literal" ?
+          /** @type {[[number, number], [number, number]][]} */ (warning.location)[0] :
+          warning.location);
 
         viewMoreElement.addEventListener("click", (event) => {
-          codeFetcher.fetchCodeLine(event, { file: warning.file, location, id, value: warning.value });
+          codeFetcher.fetchCodeLine(event, { file, location, id, value: warning.value });
         });
       }
 
@@ -112,10 +122,10 @@ export class Warnings {
 
       const box = document.createElement("file-box");
       box.title = warning.kind;
-      box.fileName = warning.file.length > 20 ? `${warning.file.slice(0, 20)}...` : warning.file;
+      box.fileName = file.length > 20 ? `${file.slice(0, 20)}...` : file;
       box.titleHref = warning.kind === "invalid-semver" ?
         null : `https://github.com/NodeSecure/js-x-ray/blob/master/docs/${warning.kind}.md`;
-      box.fileHref = `${unpkgRoot}${warning.file}`;
+      box.fileHref = `${unpkgRoot}${file}`;
       box.severity = warning.severity ?? "Information";
       box.appendChild(boxContainer);
       if (boxPosition) {
@@ -127,9 +137,12 @@ export class Warnings {
     return fragment;
   }
 
+  /**
+   * @param {import("@nodesecure/js-x-ray").Warning} warning
+   */
   getWarningLocation(warning) {
     if (warning.kind === "encoded-literal") {
-      return warning.location
+      return /** @type {[[number, number], [number, number]][]} */ (warning.location)
         .map((loc) => locationToString(loc)).join(" // ");
     }
 
@@ -138,6 +151,6 @@ export class Warnings {
       return Array.isArray(loc) && Array.isArray(loc[0]) ? `${loc[0][0]}:${loc[0][1]}` : "N/A";
     }
 
-    return locationToString(loc);
+    return locationToString(/** @type {number[][]} */ (loc));
   }
 }

@@ -8,7 +8,7 @@ import { EVENTS } from "../../../../core/events.js";
 import "../../../icon/icon.js";
 import { scrollbarStyle } from "../../../../common/scrollbar-style.js";
 
-class Vulnerabilities extends LitElement {
+export class Vulnerabilities extends LitElement {
   static styles = [scrollbarStyle, css`
 :host {
   display: block;
@@ -236,7 +236,13 @@ p {
 
   constructor() {
     super();
-    this.settingsChanged = ({ detail: { theme } }) => {
+    this.package = /** @type {import("../../package.js").PackageInfo} */ (/** @type {unknown} */ (undefined));
+    /** @type {string} */
+    this.vulnerabilityStrategy = "";
+    /** @type {string} */
+    this.theme = "";
+    this.settingsChanged = (/** @type {Event} */ event) => {
+      const { theme } = /** @type {CustomEvent<{ theme: string }>} */ (event).detail;
       if (theme !== this.theme) {
         this.theme = theme;
       }

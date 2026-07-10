@@ -4,18 +4,31 @@ import { getFlagsEmojisInlined, FLAGS_EMOJIS } from "@nodesecure/vis-network";
 // Import Internal Dependencies
 import * as utils from "../../../common/utils.js";
 
+/**
+ * @typedef {Object} HeaderLink
+ * @property {string | null} href
+ * @property {string} [text]
+ * @property {string} [image]
+ * @property {string} [icon]
+ * @property {boolean} showInHeader
+ */
+
 export class PackageHeader {
   static ExternalLinks = {
     socket: "https://socket.dev/npm/package/"
   };
 
+  /**
+   * @param {import("../package.js").PackageInfo} pkg
+   */
   constructor(pkg) {
     this.package = pkg;
     this.nsn = this.package.nsn;
   }
 
   /**
-   * @param {!HTMLTemplateElement} clone
+   * @param {!DocumentFragment} clone
+   * @returns {Record<string, HeaderLink>}
    */
   generate(clone) {
     const {
@@ -26,14 +39,12 @@ export class PackageHeader {
       flags
     } = this.package.dependencyVersion;
 
-    const [nameDomElement, versionDomElement, menuDomElement, descriptionDomElement, linksDomElement, flagsDomElement] = [
-      clone.querySelector(".name"),
-      clone.querySelector(".version"),
-      clone.querySelector(".info"),
-      clone.querySelector(".description"),
-      clone.querySelector(".links"),
-      clone.querySelector(".flags")
-    ];
+    const nameDomElement = /** @type {HTMLElement} */ (clone.querySelector(".name"));
+    const versionDomElement = /** @type {HTMLElement} */ (clone.querySelector(".version"));
+    const menuDomElement = /** @type {HTMLElement} */ (clone.querySelector(".info"));
+    const descriptionDomElement = /** @type {HTMLElement} */ (clone.querySelector(".description"));
+    const linksDomElement = /** @type {HTMLElement} */ (clone.querySelector(".links"));
+    const flagsDomElement = /** @type {HTMLElement} */ (clone.querySelector(".flags"));
 
     // Name and Version
     nameDomElement.textContent = packageName;
@@ -43,7 +54,7 @@ export class PackageHeader {
     const menu = this.renderMenu(packageName);
     menuDomElement.insertAdjacentElement("afterend", menu);
     menuDomElement.addEventListener("click", () => {
-      const menu = menuDomElement.parentNode.querySelector(".info-menu");
+      const menu = /** @type {HTMLElement} */ (/** @type {ParentNode} */ (menuDomElement.parentNode).querySelector(".info-menu"));
       if (menu.classList.contains("hidden")) {
         menu.classList.remove("hidden");
       }
@@ -66,28 +77,29 @@ export class PackageHeader {
     }
 
     // Links
-    const repositoryUrl = this.package.dependency.versions[packageVersion].links.repository;
+    const repositoryUrl = this.package.dependency.versions[packageVersion].links?.repository;
     const repositoryUrlHostname = repositoryUrl ? new URL(repositoryUrl).hostname : null;
 
+    /** @type {Record<string, HeaderLink>} */
     const links = {
       npm: {
-        href: this.package.dependency.versions[packageVersion].links.npm,
+        href: this.package.dependency.versions[packageVersion].links?.npm ?? null,
         text: "NPM",
         image: "npm-icon.svg",
         showInHeader: true
       },
       homepage: {
-        href: this.package.dependency.versions[packageVersion].links.homepage,
+        href: this.package.dependency.versions[packageVersion].links?.homepage ?? null,
         showInHeader: false
       },
       github: {
-        href: repositoryUrl,
+        href: repositoryUrl ?? null,
         text: "GitHub",
         image: "github-mark.png",
         showInHeader: repositoryUrlHostname === "github.com"
       },
       gitlab: {
-        href: repositoryUrl,
+        href: repositoryUrl ?? null,
         text: "GitLab",
         image: "gitlab-logo.png",
         showInHeader: repositoryUrlHostname === "gitlab.com"
@@ -98,7 +110,7 @@ export class PackageHeader {
         icon: "icon-cubes",
         showInHeader: true
       },
-      licenses: this.getLicenses(licenses)
+      licenses: /** @type {any} */ (this.getLicenses(licenses))
     };
     linksDomElement.appendChild(this.renderLinks(links));
 
@@ -116,7 +128,12 @@ export class PackageHeader {
     return links;
   }
 
+  /**
+   * @param {any[]} licenses
+   * @returns {HeaderLink[]}
+   */
   getLicenses(licenses) {
+    /** @type {Record<string, HeaderLink>} */
     const licensesResult = Object.create(null);
 
     for (const license of licenses) {
@@ -125,7 +142,7 @@ export class PackageHeader {
           continue;
         }
         licensesResult[licenseName] = {
-          href: licenseUrl,
+          href: /** @type {string} */ (licenseUrl),
           text: licenseName.toLocaleUpperCase(),
           icon: "icon-vcard",
           showInHeader: true
@@ -136,6 +153,10 @@ export class PackageHeader {
     return Object.values(licensesResult);
   }
 
+  /**
+   * @param {Record<string, HeaderLink>} links
+   * @returns {DocumentFragment}
+   */
   renderLinks(links) {
     const fragment = document.createDocumentFragment();
     for (const [linkName, linkAttributes] of Object.entries(links)) {
@@ -153,7 +174,7 @@ export class PackageHeader {
         childs: [
           linkImageOrIcon,
           utils.createDOMElement("a", {
-            text: linkAttributes.text,
+            text: linkAttributes.text ?? null,
             attributes: {
               href: linkAttributes.href,
               target: "_blank",
@@ -169,17 +190,18 @@ export class PackageHeader {
 
   /**
    * @param {!string} packageName
-   * @returns {HTMLElement[]}
+   * @returns {HTMLElement}
    */
   renderMenu(packageName) {
     const { socket } = PackageHeader.ExternalLinks;
-    const i18n = window.i18n[utils.currentLang()];
+    const i18n = utils.getI18n();
+    const helpers = /** @type {Record<string, string>} */ (/** @type {unknown} */ (i18n.package_info.helpers));
 
     return utils.createDOMElement("div", {
       classList: ["info-menu", "hidden"],
       childs: [
         utils.createDOMElement("div", {
-          text: i18n.package_info.helpers.thirdPartyTools,
+          text: helpers.thirdPartyTools,
           classList: ["info-menu-title"]
         }),
         utils.createDOMElement("a", {
@@ -193,21 +215,28 @@ export class PackageHeader {
     });
   }
 
+  /**
+   * @param {string[]} flags
+   * @returns {DocumentFragment | null}
+   */
   renderFlags(flags) {
     const { warnings, deprecated } = this.package.dependencyVersion;
     const warningsLength = warnings.filter(
-      (warning) => !window.settings.config.ignore.warnings.has(warning.kind)
+      (/** @type {{ kind: string }} */ warning) => !utils.getSettingsConfig().ignore.warnings.has(warning.kind)
     ).length;
 
-    const textContent = getFlagsEmojisInlined(flags, new Set(window.settings.config.ignore.flags));
+    const textContent = getFlagsEmojisInlined(flags, new Set(utils.getSettingsConfig().ignore.flags));
 
     if (textContent === "") {
       return null;
     }
 
+    const FLAGS = /** @type {Record<string, import("@nodesecure/flags").FlagDescriptor>} */ (
+      /** @type {unknown} */ (this.package.nsn.secureDataSet.FLAGS)
+    );
     const flagsMap = new Map(
       Object
-        .entries(this.package.nsn.secureDataSet.FLAGS)
+        .entries(FLAGS)
         .map(([name, row]) => [row.emoji, { ...row, name }])
     );
     const segmenter = new Intl.Segmenter("en", {
@@ -217,21 +246,22 @@ export class PackageHeader {
 
     const fragment = document.createDocumentFragment();
     for (const icon of Array.from(segitr, ({ segment }) => segment)) {
-      if (flagsMap.has(icon)) {
-        const { name } = flagsMap.get(icon);
+      const flagEntry = flagsMap.get(icon);
+      if (flagEntry) {
+        const { name } = flagEntry;
         if (name === "warnings" && warningsLength === 0) {
           continue;
         }
 
         const htmlElement = createFlagInfoBulle(
           icon,
-          name === "isDeprecated" ? deprecated : flagsMap.get(icon).tooltipDescription
+          name === "isDeprecated" ? (deprecated ?? "") : flagEntry.tooltipDescription
         );
         htmlElement.addEventListener("click", () => {
-          const { name } = flagsMap.get(icon);
+          const activeFlagEntry = /** @type {{ name: string }} */ (flagsMap.get(icon));
 
           window.wiki.header.setNewActiveView("flags");
-          window.wiki.navigation.flags.setNewActiveMenu(name);
+          window.wiki.navigation.flags.setNewActiveMenu(activeFlagEntry.name);
           window.wiki.open();
         });
 
@@ -243,29 +273,36 @@ export class PackageHeader {
   }
 
   #hasDuplicate() {
-    return this.package.dependencyVersion.flags.some((title) => title === "hasDuplicate") &&
-      !window.settings.config.ignore.warnings.has("hasDuplicate") &&
+    return this.package.dependencyVersion.flags.some((/** @type {string} */ title) => title === "hasDuplicate") &&
+      !utils.getSettingsConfig().ignore.warnings.has("hasDuplicate") &&
       "isDuplicated" in FLAGS_EMOJIS;
   }
 
+  /**
+   * @param {DocumentFragment} clone
+   */
   #renderHasDuplicateBtn(clone) {
     const hasDuplicateBtn = utils.createDOMElement("button",
       { classList: ["has-duplicate"], text: FLAGS_EMOJIS.isDuplicated });
 
     const packagesList = this.nsn.secureDataSet.findPackagesByName(this.package.dependencyVersion.name)
-      .map(({ name, version }) => `${name}@${version}`);
+      .map((/** @type {{ name: string, version: string }} */ { name, version }) => `${name}@${version}`);
 
     hasDuplicateBtn.addEventListener("click", () => {
       const nodeIds = [...this.nsn.findNodeIds(new Set(packagesList))];
       this.nsn.highlightMultipleNodes(nodeIds);
-      window.locker.lock();
+      /** @type {import("../../locker/locker.js").Locker} */ (window.locker).lock();
     });
 
-    const packageDescDiv = clone.querySelector(".package-description");
+    const packageDescDiv = /** @type {HTMLElement} */ (clone.querySelector(".package-description"));
     packageDescDiv.appendChild(hasDuplicateBtn);
   }
 }
 
+/**
+ * @param {string} text
+ * @param {string} description
+ */
 function createFlagInfoBulle(text, description) {
   const spanElement = utils.createDOMElement("span", { text: description });
 

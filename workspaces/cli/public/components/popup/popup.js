@@ -65,11 +65,14 @@ section#popup--background>.popup {
   constructor() {
     super();
     this.isOpen = false;
+    /** @type {string} */
+    this.theme = "";
 
-    this.open = ({ detail: { content } }) => {
+    this.open = (/** @type {Event} */ event) => {
       if (this.isOpen) {
         return;
       }
+      const { content } = /** @type {CustomEvent<{ content: Node }>} */ (event).detail;
       this.appendChild(content);
       this.isOpen = true;
     };
@@ -82,7 +85,8 @@ section#popup--background>.popup {
       this.isOpen = false;
     };
 
-    this.settingsChanged = ({ detail: { theme } }) => {
+    this.settingsChanged = (/** @type {Event} */ event) => {
+      const { theme } = /** @type {CustomEvent<{ theme: string }>} */ (event).detail;
       if (theme !== this.theme) {
         this.theme = theme;
       }
@@ -108,8 +112,8 @@ section#popup--background>.popup {
 
     return html`
       <section class=${classMap(classes)} @click=${this.close} id="popup--background">
-        <div class="popup" part="popup-container" @click=${(e) => {
-          e.stopPropagation();
+        <div class="popup" part="popup-container" @click=${(/** @type {Event} */ event) => {
+          event.stopPropagation();
         }}>
           <slot></slot>
         </div>

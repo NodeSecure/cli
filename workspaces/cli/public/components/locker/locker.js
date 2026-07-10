@@ -81,6 +81,8 @@ export class Locker extends LitElement {
     this.locked = false;
     this.unlockAuthorized = true;
     this.isNetworkViewHidden = false;
+    /** @type {import("@nodesecure/vis-network").NodeSecureNetwork | undefined} */
+    this.nsn = undefined;
     this.hideNetworkView = () => {
       if (this.isNetworkViewHidden) {
         return;
@@ -95,14 +97,15 @@ export class Locker extends LitElement {
       this.isNetworkViewHidden = false;
     };
 
-    this.onKeyDown = (event) => {
-      const isTargetInput = event.target.tagName === "INPUT";
-      const isTargetPopup = event.target.id === "popup--background";
+    this.onKeyDown = (/** @type {KeyboardEvent} */ event) => {
+      const target = /** @type {HTMLElement} */ (event.target);
+      const isTargetInput = target.tagName === "INPUT";
+      const isTargetPopup = target.id === "popup--background";
       if (this.isNetworkViewHidden || isTargetInput || isTargetPopup) {
         return;
       }
 
-      const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
+      const hotkeys = JSON.parse(/** @type {string} */ (localStorage.getItem("hotkeys")));
       switch (event.key.toUpperCase()) {
         case hotkeys.lock: {
           this.auto();
@@ -126,16 +129,21 @@ export class Locker extends LitElement {
     super.disconnectedCallback();
   }
 
+  /**
+   * @param {import("lit").PropertyValues<this>} changedProperties
+   */
   updated(changedProperties) {
     if (changedProperties.has("nsn")) {
-      const oldNsn = changedProperties.get("nsn");
+      const oldNsn = /** @type {import("@nodesecure/vis-network").NodeSecureNetwork | undefined} */ (
+        changedProperties.get("nsn")
+      );
 
       if (oldNsn) {
-        oldNsn.network.off("highlight_done", this.highlightDone);
+        oldNsn.network.off(/** @type {any} */ ("highlight_done"), this.highlightDone);
       }
 
       if (this.nsn) {
-        this.nsn.network.on("highlight_done", this.highlightDone);
+        this.nsn.network.on(/** @type {any} */ ("highlight_done"), this.highlightDone);
       }
     }
   }
@@ -152,14 +160,14 @@ export class Locker extends LitElement {
         <div class=${iconClasses}>
         <nsecure-icon  name=${this.locked ? "lock" : "unlock"}></nsecure-icon>
         </div>
-        <p>${this.locked ? window.i18n[utils.currentLang()].network.locked
-          : window.i18n[utils.currentLang()].network.unlocked}</p>
+        <p>${this.locked ? utils.getI18n().network.locked
+          : utils.getI18n().network.unlocked}</p>
       </div>`;
   }
 
   auto() {
     // Refuse locking if there is no multi selections
-    if (this.nsn.lastHighlightedIds === null) {
+    if (!this.nsn || this.nsn.lastHighlightedIds === null) {
       return;
     }
 
@@ -198,13 +206,17 @@ export class Locker extends LitElement {
     window.dispatchEvent(new CustomEvent(EVENTS.UNLOCKED, { composed: true }));
 
     // No node selected, so we reset highlight
+    if (!this.nsn) {
+      return;
+    }
+
     const selectedNode = window.networkNav.currentNodeParams;
     if (selectedNode === null) {
       this.nsn.resetHighlight();
     }
     else if (this.nsn.lastHighlightedIds !== null) {
       this.nsn.lastHighlightedIds = null;
-      this.nsn.neighbourHighlight(selectedNode, window.i18n[utils.currentLang()]);
+      this.nsn.neighbourHighlight(/** @type {any} */ (selectedNode), /** @type {any} */ (utils.getI18n()));
     }
   }
 }

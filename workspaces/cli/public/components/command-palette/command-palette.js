@@ -4,7 +4,7 @@ import { repeat } from "lit/directives/repeat.js";
 import { warnings } from "@nodesecure/js-x-ray/warnings";
 
 // Import Internal Dependencies
-import { currentLang, vec2Distance } from "../../common/utils.js";
+import * as utils from "../../common/utils.js";
 import { EVENTS } from "../../core/events.js";
 import {
   FILTERS_NAME,
@@ -42,6 +42,9 @@ const kWarningItems = Object.keys(warnings)
     return { value: id, label: id.replaceAll("-", " ") };
   });
 
+/**
+ * @param {string | undefined} shortcut
+ */
 function resolveKbd(shortcut) {
   if (!shortcut) {
     return null;
@@ -52,9 +55,35 @@ function resolveKbd(shortcut) {
   return navigator.userAgent.includes("Mac") ? `⌥${key}` : `Alt+${key}`;
 }
 
-class CommandPalette extends LitElement {
+/**
+ * @returns {Record<string, any>}
+ */
+function getSearchCommandI18n() {
+  return /** @type {Record<string, any>} */ (/** @type {unknown} */ (utils.getI18n().search_command));
+}
+
+/**
+ * @typedef {Object} CommandPackage
+ * @property {string} id
+ * @property {string} name
+ * @property {string} version
+ * @property {string} flags
+ * @property {boolean} isHighlighted
+ */
+
+/**
+ * @typedef {Object} SearchQuery
+ * @property {string} filter
+ * @property {string} value
+ * @property {Set<string>} [matchingIds]
+ */
+
+export class CommandPalette extends LitElement {
+  /** @type {Map<number, import("@nodesecure/vis-network").LinkerEntry> | null} */
   #linker = null;
+  /** @type {import("@nodesecure/vis-network").NodeSecureNetwork | null} */
   #network = null;
+  /** @type {CommandPackage[]} */
   #packages = [];
 
   static styles = commandPaletteStyles;
@@ -68,7 +97,7 @@ class CommandPalette extends LitElement {
     results: { type: Array }
   };
 
-  #handleKeydown = (event) => {
+  #handleKeydown = (/** @type {KeyboardEvent} */ event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === "k") {
       event.preventDefault();
       if (this.open) {
@@ -96,7 +125,12 @@ class CommandPalette extends LitElement {
     }
   };
 
-  #init = ({ detail: { linker, packages, network } }) => {
+  #init = (/** @type {Event} */ event) => {
+    const { linker, packages, network } = /** @type {CustomEvent<{
+      linker: Map<number, import("@nodesecure/vis-network").LinkerEntry>,
+      packages: import("@nodesecure/vis-network").PackageInfo[],
+      network: import("@nodesecure/vis-network").NodeSecureNetwork
+    }>} */ (event).detail;
     this.#linker = linker;
     this.#network = network;
     this.#packages = packages.map(({ id, name, version, flags, isHighlighted }) => {
@@ -114,9 +148,12 @@ class CommandPalette extends LitElement {
     super();
     this.open = false;
     this.inputValue = "";
+    /** @type {string | null} */
     this.activeFilter = null;
+    /** @type {SearchQuery[]} */
     this.queries = [];
     this.selectedIndex = -1;
+    /** @type {CommandPackage[]} */
     this.results = [];
   }
 
@@ -140,17 +177,20 @@ class CommandPalette extends LitElement {
     super.disconnectedCallback();
   }
 
+  /**
+   * @param {import("lit").PropertyValues<this>} changedProperties
+   */
   updated(changedProperties) {
     if (changedProperties.has("open") && this.open) {
-      this.shadowRoot.querySelector("#cmd-input")?.focus();
+      /** @type {HTMLElement | null} */ (this.shadowRoot?.querySelector("#cmd-input"))?.focus();
     }
     if (changedProperties.has("selectedIndex") && this.selectedIndex >= 0) {
-      this.shadowRoot.querySelector(".selected")?.scrollIntoView({ block: "nearest" });
+      this.shadowRoot?.querySelector(".selected")?.scrollIntoView({ block: "nearest" });
     }
   }
 
   #isNetworkViewActive() {
-    return document.getElementById("network--view").classList.contains("hidden") === false;
+    return /** @type {HTMLElement} */ (document.getElementById("network--view")).classList.contains("hidden") === false;
   }
 
   #openModal() {
@@ -170,22 +210,40 @@ class CommandPalette extends LitElement {
     this.results = [];
   }
 
+  /**
+   * @returns {Map<number, import("@nodesecure/vis-network").LinkerEntry>}
+   */
+  #getLinker() {
+    return /** @type {Map<number, import("@nodesecure/vis-network").LinkerEntry>} */ (this.#linker);
+  }
+
   #getCurrentMatchingIds() {
     if (this.queries.length === 0) {
       return null;
     }
 
+    /** @type {Set<string> | null} */
     let ids = null;
     for (const { filter, value } of this.queries) {
-      const matches = computeMatches(this.#linker, filter, value);
-      ids = ids === null ? matches : new Set([...ids].filter((id) => matches.has(id)));
+      const matches = computeMatches(this.#getLinker(), filter, value);
+      if (ids === null) {
+        ids = matches;
+      }
+      else {
+        const previousIds = /** @type {Set<string>} */ (ids);
+        ids = new Set([...previousIds].filter((id) => matches.has(id)));
+      }
     }
 
     return ids;
   }
 
+  /**
+   * @param {string} filter
+   * @param {string} text
+   */
   #computeLiveResults(filter, text) {
-    const freshMatches = computeMatches(this.#linker, filter, text);
+    const freshMatches = computeMatches(this.#getLinker(), filter, text);
     const constraint = this.#getCurrentMatchingIds();
     const matchingIds = constraint === null
       ? freshMatches
@@ -194,8 +252,12 @@ class CommandPalette extends LitElement {
     this.results = this.#packages.filter((pkg) => matchingIds.has(pkg.id));
   }
 
+  /**
+   * @param {string} filter
+   * @param {string} value
+   */
   #addQuery(filter, value) {
-    const freshMatches = computeMatches(this.#linker, filter, value);
+    const freshMatches = computeMatches(this.#getLinker(), filter, value);
     const constraint = this.#getCurrentMatchingIds();
     const matchingIds = constraint === null
       ? freshMatches
@@ -211,6 +273,9 @@ class CommandPalette extends LitElement {
     }
   }
 
+  /**
+   * @param {SearchQuery} query
+   */
   #removeQuery(query) {
     this.queries = this.queries.filter((existing) => existing !== query);
     const constraint = this.#getCurrentMatchingIds();
@@ -219,6 +284,10 @@ class CommandPalette extends LitElement {
       : this.#packages.filter((pkg) => constraint.has(pkg.id));
   }
 
+  /**
+   * @param {string} filter
+   * @param {string} value
+   */
   #removeQueryByValue(filter, value) {
     this.queries = this.queries.filter((query) => !(query.filter === filter && query.value === value));
     const constraint = this.#getCurrentMatchingIds();
@@ -243,12 +312,15 @@ class CommandPalette extends LitElement {
     }
 
     this.updateComplete.then(() => {
-      this.shadowRoot.querySelector("#cmd-input")?.focus();
+      /** @type {HTMLElement | null} */ (this.shadowRoot?.querySelector("#cmd-input"))?.focus();
     });
   }
 
+  /**
+   * @param {Event} event
+   */
   #onInput(event) {
-    const value = event.target.value;
+    const value = /** @type {HTMLInputElement} */ (event.target).value;
     this.inputValue = value;
     this.selectedIndex = -1;
 
@@ -282,6 +354,9 @@ class CommandPalette extends LitElement {
     }
   }
 
+  /**
+   * @param {KeyboardEvent} event
+   */
   #onKeydown(event) {
     const helpers = this.#visibleHelpers;
     const total = helpers.length + this.results.length;
@@ -316,6 +391,9 @@ class CommandPalette extends LitElement {
     }
   }
 
+  /**
+   * @param {number} index
+   */
   #selectByIndex(index) {
     const helpers = this.#visibleHelpers;
     if (index < helpers.length) {
@@ -327,6 +405,9 @@ class CommandPalette extends LitElement {
     }
   }
 
+  /**
+   * @param {{ value: string, display: string, hint?: string, type: string }} helper
+   */
   #selectHelper(helper) {
     if (helper.type === "filter") {
       if (FILTER_INSTANT_CONFIRM.has(helper.value)) {
@@ -340,11 +421,11 @@ class CommandPalette extends LitElement {
       }
     }
     else {
-      this.#addQuery(this.activeFilter, helper.value);
+      this.#addQuery(/** @type {string} */ (this.activeFilter), helper.value);
     }
 
     this.updateComplete.then(() => {
-      this.shadowRoot.querySelector("#cmd-input")?.focus();
+      /** @type {HTMLElement | null} */ (this.shadowRoot?.querySelector("#cmd-input"))?.focus();
     });
   }
 
@@ -369,17 +450,30 @@ class CommandPalette extends LitElement {
     }
   }
 
+  /**
+   * @param {string} id
+   */
   #focusPackage(id) {
-    this.#network.focusNodeById(id);
-    window.navigation.setNavByName("network--view");
+    this.#getNetwork().focusNodeById(Number(id));
+    utils.getNavigation().setNavByName("network--view");
     this.#close();
   }
 
+  /**
+   * @returns {import("@nodesecure/vis-network").NodeSecureNetwork}
+   */
+  #getNetwork() {
+    return /** @type {import("@nodesecure/vis-network").NodeSecureNetwork} */ (this.#network);
+  }
+
+  /**
+   * @param {{ id: string, shortcut?: string }} action
+   */
   async #executeAction(action) {
     switch (action.id) {
       case "toggle_theme": {
-        const nextTheme = window.settings.config.theme === "dark" ? "light" : "dark";
-        const config = window.settings.config;
+        const nextTheme = utils.getSettingsConfig().theme === "dark" ? "light" : "dark";
+        const config = utils.getSettingsConfig();
         fetch("/config", {
           method: "put",
           body: JSON.stringify({
@@ -399,8 +493,8 @@ class CommandPalette extends LitElement {
         break;
       }
       case "reset_view":
-        this.#network.network.emit("click", { nodes: [], edges: [] });
-        this.#network.network.focus(0, {
+        /** @type {any} */ (this.#getNetwork().network).emit("click", { nodes: [], edges: [] });
+        this.#getNetwork().network.focus(0, {
           animation: true,
           scale: 0.35,
           offset: { x: 150, y: 0 }
@@ -441,8 +535,12 @@ class CommandPalette extends LitElement {
     this.#close();
   }
 
+  /**
+   * @param {"flags" | "warnings"} type
+   * @param {string} value
+   */
   #toggleIgnore(type, value) {
-    const ignoreSet = window.settings.config.ignore[type];
+    const ignoreSet = utils.getSettingsConfig().ignore[type];
     if (ignoreSet.has(value)) {
       ignoreSet.delete(value);
     }
@@ -450,7 +548,7 @@ class CommandPalette extends LitElement {
       ignoreSet.add(value);
     }
 
-    const config = window.settings.config;
+    const config = utils.getSettingsConfig();
     fetch("/config", {
       method: "put",
       body: JSON.stringify({
@@ -477,7 +575,7 @@ class CommandPalette extends LitElement {
   }
 
   #getEmptyQueryMessage() {
-    const i18n = window.i18n[currentLang()].search_command;
+    const i18n = getSearchCommandI18n();
     if (this.queries.length === 1) {
       const { filter, value } = this.queries[0];
       const preset = PRESETS.find((preset) => preset.filter === filter && preset.value === value);
@@ -489,33 +587,41 @@ class CommandPalette extends LitElement {
     return i18n.empty_after_filter;
   }
 
+  /**
+   * @param {number[]} nodeIds
+   */
   #focusMultiplePackages(nodeIds) {
-    window.navigation.setNavByName("network--view");
-    this.#network.highlightMultipleNodes(nodeIds);
-    window.locker.lock();
+    utils.getNavigation().setNavByName("network--view");
+    this.#getNetwork().highlightMultipleNodes(nodeIds);
+    /** @type {import("../locker/locker.js").Locker} */ (window.locker).lock();
 
-    const currentSelectedNode = window.networkNav.currentNodeParams;
+    const currentSelectedNode = window.networkNav?.currentNodeParams;
     const shouldMove = !currentSelectedNode || !nodeIds.includes(currentSelectedNode.nodes[0]);
     if (shouldMove) {
-      const origin = this.#network.network.getViewPosition();
+      const origin = this.#getNetwork().network.getViewPosition();
       const closestNode = nodeIds
         .map((id) => {
-          return { id, pos: this.#network.network.getPosition(id) };
+          return { id, pos: this.#getNetwork().network.getPosition(id) };
         })
-        .reduce((nodeA, nodeB) => (vec2Distance(origin, nodeA.pos) < vec2Distance(origin, nodeB.pos) ? nodeA : nodeB));
+        .reduce((nodeA, nodeB) => (
+          utils.vec2Distance(origin, nodeA.pos) < utils.vec2Distance(origin, nodeB.pos) ? nodeA : nodeB
+        ));
 
       const scale = nodeIds.length > 3 ? 0.25 : 0.35;
-      this.#network.network.focus(closestNode.id, { animation: true, scale });
+      this.#getNetwork().network.focus(closestNode.id, { animation: true, scale });
     }
 
     this.#close();
   }
 
+  /**
+   * @returns {{ value: string, display: string, hint?: string, type: string }[]}
+   */
   get #visibleHelpers() {
     if (this.activeFilter === null) {
       const text = this.inputValue.toLowerCase();
 
-      const filterHints = window.i18n[currentLang()].search_command.filter_hints;
+      const filterHints = getSearchCommandI18n().filter_hints;
 
       return [...FILTERS_NAME]
         .filter((filterName) => text === "" || filterName.startsWith(text))
@@ -529,7 +635,7 @@ class CommandPalette extends LitElement {
     }
 
     const searchText = this.inputValue.slice(this.activeFilter.length + 1).toLowerCase();
-    const allValues = getHelperValues(this.#linker, this.activeFilter);
+    const allValues = getHelperValues(this.#getLinker(), this.activeFilter);
 
     return allValues
       .filter((helper) => searchText === "" || helper.display.toLowerCase().includes(searchText))
@@ -538,15 +644,18 @@ class CommandPalette extends LitElement {
       });
   }
 
+  /**
+   * @param {{ value: string, display: string, hint?: string, type: string }[]} helpers
+   */
   #renderActiveFilterPanel(helpers) {
     const panelProps = {
-      linker: this.#linker,
+      linker: this.#getLinker(),
       queries: this.queries,
       inputValue: this.inputValue,
-      activeFilter: this.activeFilter,
+      activeFilter: /** @type {string} */ (this.activeFilter),
       selectedIndex: this.selectedIndex,
-      onAdd: (filter, value) => this.#addQuery(filter, value),
-      onRemove: (filter, value) => this.#removeQueryByValue(filter, value)
+      onAdd: (/** @type {string} */ filter, /** @type {string} */ value) => this.#addQuery(filter, value),
+      onRemove: (/** @type {string} */ filter, /** @type {string} */ value) => this.#removeQueryByValue(filter, value)
     };
 
     switch (this.activeFilter) {
@@ -561,8 +670,10 @@ class CommandPalette extends LitElement {
   }
 
   #resolveActions() {
-    const i18n = window.i18n[currentLang()].search_command;
-    const currentTheme = window.settings?.config?.theme ?? "light";
+    const i18n = getSearchCommandI18n();
+    const currentTheme = /** @type {import("../../types.js").AppConfig | undefined} */ (
+      /** @type {unknown} */ (window.settings?.config)
+    )?.theme ?? "light";
     const targetTheme = currentTheme === "dark" ? "light" : "dark";
     const copyCount = this.results.length > 0 ? this.results.length : this.#packages.length;
 
@@ -597,7 +708,7 @@ class CommandPalette extends LitElement {
       return nothing;
     }
 
-    const i18n = window.i18n[currentLang()].search_command;
+    const i18n = getSearchCommandI18n();
     const helpers = this.#visibleHelpers;
     const isPanelMode = this.activeFilter !== null;
     const isEmpty = helpers.length === 0 && this.results.length === 0 && this.inputValue.length > 0;
@@ -608,7 +719,9 @@ class CommandPalette extends LitElement {
       ? renderFilterList({
         helpers,
         selectedIndex: this.selectedIndex,
-        onSelect: (helper) => this.#selectHelper(helper)
+        onSelect: (helper) => this.#selectHelper(/** @type {{ value: string, display: string, hint?: string, type: string }} */ (
+          helper
+        ))
       })
       : nothing;
 
@@ -619,7 +732,7 @@ class CommandPalette extends LitElement {
           role="dialog"
           aria-modal="true"
           aria-label="Package search"
-          @click=${(event) => event.stopPropagation()}
+          @click=${(/** @type {Event} */ event) => event.stopPropagation()}
         >
           <div class="search-header">
             <div class="search-input-row">
@@ -675,14 +788,14 @@ class CommandPalette extends LitElement {
             ${showRichPlaceholder ? renderIgnorePanel({
               title: i18n.section_ignore_flags,
               items: FLAG_IGNORE_ITEMS,
-              ignored: window.settings?.config?.ignore?.flags ?? new Set(),
-              onToggle: (value) => this.#toggleIgnore("flags", value)
+              ignored: utils.getSettingsConfig()?.ignore?.flags ?? new Set(),
+              onToggle: (/** @type {string} */ value) => this.#toggleIgnore("flags", value)
             }) : nothing}
             ${showRichPlaceholder ? renderIgnorePanel({
               title: i18n.section_ignore_warnings,
               items: kWarningItems,
-              ignored: window.settings?.config?.ignore?.warnings ?? new Set(),
-              onToggle: (value) => this.#toggleIgnore("warnings", value)
+              ignored: utils.getSettingsConfig()?.ignore?.warnings ?? new Set(),
+              onToggle: (/** @type {string} */ value) => this.#toggleIgnore("warnings", value)
             }) : nothing}
             ${renderResults({
               results: this.results,

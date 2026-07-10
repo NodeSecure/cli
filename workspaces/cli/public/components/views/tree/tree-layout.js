@@ -3,7 +3,8 @@ export const CARD_WIDTH = 250;
 export const CONNECTOR_GAP = 16;
 export const GAP_ROW_HEIGHT = 16;
 
-const kEpochFallback = kEpochFallback;
+// Fallback sort date for entries missing `lastUpdateAt`; epoch sorts them as "oldest".
+const kEpochFallback = 0;
 const kOneDay = 1_000 * 60 * 60 * 24;
 const kOneWeek = kOneDay * 7;
 const kOneMonth = kOneDay * 30;
@@ -20,12 +21,29 @@ export const ACTIVITY_GROUPS = [
   { key: "stale", color: "#6b7280", threshold: Infinity }
 ];
 
+/**
+ * @typedef {import("@nodesecure/vis-network").LinkerEntry} LinkerEntry
+ * @typedef {import("@nodesecure/vis-network").VisEdge} VisEdge
+ * @typedef {Record<string, import("@nodesecure/scanner").Dependency>} Dependencies
+ */
+
+/**
+ * @param {number} nodeId
+ * @param {Map<number, number[]>} childrenByParent
+ * @param {Map<number, LinkerEntry>} linker
+ */
 export function getSortedChildren(nodeId, childrenByParent, linker) {
   return (childrenByParent.get(nodeId) ?? [])
-    .sort((idA, idB) => linker.get(idA).name.localeCompare(linker.get(idB).name));
+    .sort((idA, idB) => /** @type {LinkerEntry} */ (linker.get(idA)).name.localeCompare(
+      /** @type {LinkerEntry} */ (linker.get(idB)).name
+    ));
 }
 
+/**
+ * @param {VisEdge[]} rawEdgesData
+ */
 export function buildChildrenMap(rawEdgesData) {
+  /** @type {Map<number, number[]>} */
   const childrenByParent = new Map();
   for (const edge of rawEdgesData) {
     const children = childrenByParent.get(edge.to) ?? [];
@@ -36,9 +54,15 @@ export function buildChildrenMap(rawEdgesData) {
   return childrenByParent;
 }
 
+/**
+ * @param {Map<number, LinkerEntry>} linker
+ * @param {Dependencies} dependencies
+ */
 export function computeActivityGroups(linker, dependencies) {
   const now = Date.now();
+  /** @type {Map<string, number[]>} */
   const groups = new Map(ACTIVITY_GROUPS.map(({ key }) => [key, []]));
+  /** @type {Set<string>} */
   const seen = new Set();
 
   for (const [nodeId, entry] of linker) {
@@ -51,14 +75,18 @@ export function computeActivityGroups(linker, dependencies) {
     const lastUpdateAt = dependencies[entry.name]?.metadata?.lastUpdateAt;
     const ageMs = lastUpdateAt ? now - new Date(lastUpdateAt).getTime() : Infinity;
 
-    const bucket = ACTIVITY_GROUPS.find(({ threshold }) => ageMs < threshold) ?? ACTIVITY_GROUPS.at(-1);
-    groups.get(bucket.key).push(nodeId);
+    const bucket = ACTIVITY_GROUPS.find(
+      ({ threshold }) => ageMs < threshold) ?? /** @type {typeof ACTIVITY_GROUPS[number]} */ (ACTIVITY_GROUPS.at(-1)
+    );
+    /** @type {number[]} */ (groups.get(bucket.key)).push(nodeId);
   }
 
   for (const [, nodeIds] of groups) {
     nodeIds.sort((idA, idB) => {
-      const dateA = dependencies[linker.get(idA).name]?.metadata?.lastUpdateAt ?? kEpochFallback;
-      const dateB = dependencies[linker.get(idB).name]?.metadata?.lastUpdateAt ?? kEpochFallback;
+      const entryA = /** @type {LinkerEntry} */ (linker.get(idA));
+      const entryB = /** @type {LinkerEntry} */ (linker.get(idB));
+      const dateA = dependencies[entryA.name]?.metadata?.lastUpdateAt ?? kEpochFallback;
+      const dateB = dependencies[entryB.name]?.metadata?.lastUpdateAt ?? kEpochFallback;
 
       return new Date(dateB).getTime() - new Date(dateA).getTime();
     });
@@ -67,6 +95,9 @@ export function computeActivityGroups(linker, dependencies) {
   return groups;
 }
 
+/**
+ * @param {VisEdge[]} rawEdgesData
+ */
 export function computeDepthGroups(rawEdgesData) {
   const childrenByParent = buildChildrenMap(rawEdgesData);
 
@@ -75,7 +106,7 @@ export function computeDepthGroups(rawEdgesData) {
   const queue = [0];
 
   while (queue.length > 0) {
-    const current = queue.shift();
+    const current = /** @type {number} */ (queue.shift());
     const currentDepth = depthMap.get(current);
 
     for (const childId of (childrenByParent.get(current) ?? [])) {
@@ -97,9 +128,27 @@ export function computeDepthGroups(rawEdgesData) {
 }
 
 /**
+ * @typedef {Object} TreeCell
+ * @property {number} [nodeId]
+ * @property {number} [col]
+ * @property {number} [row]
+ * @property {number} [rowSpan]
+ * @property {number | null} [parentId]
+ * @property {boolean} [isCyclic]
+ * @property {boolean} [isRoot]
+ * @property {boolean} [isGap]
+ */
+
+/**
  * Recursively builds grid cells for a subtree.
  * Returns the total number of rows used.
  * Appends cells to the `cells` array (children before parent).
+ *
+ * @param {{
+ *   nodeId: number, col: number, startRow: number, parentId: number,
+ *   ancestors: Set<number>, childrenByParent: Map<number, number[]>,
+ *   linker: Map<number, LinkerEntry>, cells: TreeCell[]
+ * }} params
  */
 function buildSubtree({ nodeId, col, startRow, parentId, ancestors, childrenByParent, linker, cells }) {
   if (ancestors.has(nodeId)) {
@@ -144,9 +193,13 @@ function buildSubtree({ nodeId, col, startRow, parentId, ancestors, childrenByPa
 /**
  * Builds the full tree layout as a unified CSS grid.
  * Returns cells[] and the total row count (including gap rows).
+ *
+ * @param {VisEdge[]} rawEdgesData
+ * @param {Map<number, LinkerEntry>} linker
  */
 export function computeTreeLayout(rawEdgesData, linker) {
   const childrenByParent = buildChildrenMap(rawEdgesData);
+  /** @type {TreeCell[]} */
   const cells = [];
   let currentRow = 1;
 

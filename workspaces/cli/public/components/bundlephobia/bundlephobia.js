@@ -84,11 +84,21 @@ class Bundlephobia extends LitElement {
     version: { type: String }
   };
 
+  constructor() {
+    super();
+    /** @type {string} */
+    this.name = "";
+    /** @type {string} */
+    this.version = "";
+  }
+
   #bunldeTask = new Task(this, {
     task: async([name, version]) => {
       const {
         gzip, size, dependencySizes
-      } = await getJSON(`/bundle/${this.#httpName(name)}/${version}`);
+      } = /** @type {{ gzip: number, size: number, dependencySizes: { approximateSize: number }[] }} */ (
+        await getJSON(`/bundle/${this.#httpName(name)}/${version}`)
+      );
       const fullSize = dependencySizes.reduce((prev, curr) => prev + curr.approximateSize, 0);
 
       return {
@@ -100,6 +110,9 @@ class Bundlephobia extends LitElement {
     args: () => [this.name, this.version]
   });
 
+  /**
+   * @param {string} name
+   */
   #httpName(name) {
     return name.replaceAll("/", "%2F");
   }

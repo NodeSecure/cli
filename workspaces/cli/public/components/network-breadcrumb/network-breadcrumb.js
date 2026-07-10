@@ -3,9 +3,22 @@ import { LitElement, html, css, nothing } from "lit";
 
 // Import Internal Dependencies
 import { EVENTS } from "../../core/events.js";
-import { currentLang } from "../../common/utils.js";
+import { getI18n } from "../../common/utils.js";
 
-class NetworkBreadcrumb extends LitElement {
+/**
+ * @typedef {Object} BreadcrumbEntry
+ * @property {string} name
+ * @property {string} version
+ */
+
+/**
+ * @typedef {Object} BreadcrumbSibling
+ * @property {number} nodeId
+ * @property {string} name
+ * @property {string} version
+ */
+
+export class NetworkBreadcrumb extends LitElement {
   static styles = css`
     :host {
       --breadcrumb-bg: var(--primary);
@@ -185,10 +198,15 @@ class NetworkBreadcrumb extends LitElement {
 
   constructor() {
     super();
+    /** @type {BreadcrumbEntry | null} */
     this.root = null;
+    /** @type {BreadcrumbEntry[]} */
     this.stack = [];
+    /** @type {BreadcrumbSibling[][]} */
     this.siblings = [];
+    /** @type {import("../../types.js").CachedSpec[]} */
     this.packages = [];
+    /** @type {number | null} */
     this._openDropdown = null;
     this._rootSwitcherOpen = false;
   }
@@ -224,6 +242,9 @@ class NetworkBreadcrumb extends LitElement {
     }));
   }
 
+  /**
+   * @param {number} index
+   */
   #handleBack(index) {
     this.dispatchEvent(new CustomEvent(EVENTS.DRILL_BACK, {
       detail: { index },
@@ -232,12 +253,21 @@ class NetworkBreadcrumb extends LitElement {
     }));
   }
 
+  /**
+   * @param {number} index
+   * @param {MouseEvent} event
+   */
   #toggleDropdown(index, event) {
     event.stopPropagation();
 
     this._openDropdown = this._openDropdown === index ? null : index;
   }
 
+  /**
+   * @param {number} stackIndex
+   * @param {number} nodeId
+   * @param {MouseEvent} event
+   */
   #handleSiblingClick(stackIndex, nodeId, event) {
     event.stopPropagation();
 
@@ -249,12 +279,19 @@ class NetworkBreadcrumb extends LitElement {
     }));
   }
 
+  /**
+   * @param {MouseEvent} event
+   */
   #toggleRootSwitcher(event) {
     event.stopPropagation();
 
     this._rootSwitcherOpen = !this._rootSwitcherOpen;
   }
 
+  /**
+   * @param {string} spec
+   * @param {MouseEvent} event
+   */
   #handleRootSwitch(spec, event) {
     event.stopPropagation();
 
@@ -266,6 +303,9 @@ class NetworkBreadcrumb extends LitElement {
     }));
   }
 
+  /**
+   * @param {MouseEvent} event
+   */
   #handleRootRemove(event) {
     event.stopPropagation();
 
@@ -282,7 +322,7 @@ class NetworkBreadcrumb extends LitElement {
 
     const otherPackages = this.packages ?? [];
     const isInDrill = this.stack.length > 0;
-    const i18n = window.i18n[currentLang()];
+    const i18n = getI18n();
 
     return html`
       ${otherPackages.length > 0 ? html`
@@ -296,7 +336,7 @@ class NetworkBreadcrumb extends LitElement {
               <span class="dropdown-header">${i18n.network.switchPayload}</span>
               <div class="dropdown-separator"></div>
               ${otherPackages.map((pkg) => html`
-                <button @click="${(event) => this.#handleRootSwitch(pkg.spec, event)}">
+                <button @click="${(/** @type {MouseEvent} */ event) => this.#handleRootSwitch(pkg.spec, event)}">
                   ${pkg.spec}
                 </button>
               `)}
@@ -321,12 +361,14 @@ class NetworkBreadcrumb extends LitElement {
                 ? html`
                 <button
                   class="separator has-siblings"
-                  @click="${(event) => this.#toggleDropdown(stackIndex, event)}"
+                  @click="${(/** @type {MouseEvent} */ event) => this.#toggleDropdown(stackIndex, event)}"
                 >›</button>
                 ${this._openDropdown === stackIndex ? html`
                   <div class="dropdown">
                     ${siblingList.map((sibling) => html`
-                      <button @click="${(event) => this.#handleSiblingClick(stackIndex, sibling.nodeId, event)}">
+                      <button @click="${(/** @type {MouseEvent} */ event) => this.#handleSiblingClick(
+                        stackIndex, sibling.nodeId, event
+                      )}">
                         ${sibling.name}@${sibling.version}
                       </button>
                     `)}

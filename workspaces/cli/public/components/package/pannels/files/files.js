@@ -3,12 +3,12 @@ import { LitElement, html, css, nothing } from "lit";
 import { when } from "lit/directives/when.js";
 
 // Import Internal Dependencies
-import { currentLang } from "../../../../common/utils.js";
+import { getI18n, getSettingsConfig } from "../../../../common/utils.js";
 import "../../../bundlephobia/bundlephobia.js";
 import "../../../items-list/items-list.js";
 import { scrollbarStyle } from "../../../../common/scrollbar-style.js";
 
-class Files extends LitElement {
+export class Files extends LitElement {
   static styles = [scrollbarStyle, css`
   :host {
     display: block;
@@ -49,8 +49,14 @@ class Files extends LitElement {
     package: { type: Object }
   };
 
+  constructor() {
+    super();
+    this.package = /** @type {import("../../package.js").PackageInfo} */ (/** @type {unknown} */ (undefined));
+  }
+
   render() {
-    const { package_info: { title } } = window.i18n[currentLang()];
+    const { package_info } = getI18n();
+    const title = /** @type {Record<string, string>} */ (/** @type {unknown} */ (package_info.title));
     const { name, version, composition } = this.package.dependencyVersion;
 
     return html`
@@ -110,13 +116,16 @@ class Files extends LitElement {
   )}
 
   ${when(
-    window.settings.config.disableExternalRequests === false,
+    getSettingsConfig().disableExternalRequests === false,
     () => html`<bundle-phobia name=${name} version=${version}></bundle-phobia>`,
     () => nothing
   )}
     `;
   }
 
+  /**
+   * @param {string} fileName
+   */
   openFile = (fileName) => {
     const { name, version } = this.package.dependencyVersion;
     if (fileName === "../" || fileName === "./") {
@@ -126,7 +135,7 @@ class Files extends LitElement {
     const cleanedFile = fileName.startsWith("./") ? fileName.slice(2) : fileName;
     window
       .open(`https://unpkg.com/${name}@${version}/${cleanedFile}`, "_blank")
-      .focus();
+      ?.focus();
   };
 }
 

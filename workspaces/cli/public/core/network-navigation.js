@@ -2,6 +2,20 @@
 import { PackageInfo } from "../components/package/package.js";
 import { EVENTS } from "./events.js";
 
+/**
+ * @typedef {Object} NavNode
+ * @property {number} id
+ * @property {string} name
+ * @property {Record<string, string>} usedBy
+ * @property {import("vis-network/standalone").Position} position
+ */
+
+/**
+ * @typedef {Object} LevelParams
+ * @property {number[]} nodes
+ * @property {import("vis-network/standalone").IdType[]} [edges]
+ */
+
 export class NetworkNavigation {
   /**
    * @type {import("@nodesecure/vis-network").NodeSecureDataSet}
@@ -16,6 +30,8 @@ export class NetworkNavigation {
    *
    * When the user navigate to a new level, the previous level is stored in this Map.
    * It is used to navigate back to the previous dependency when navigating to the previous level.
+   *
+   * @type {Map<number, LevelParams>}
    */
   #dependenciesMapByLevel = new Map();
   /**
@@ -29,37 +45,37 @@ export class NetworkNavigation {
   /**
    * Represents all nodes of the graph.
    *
-   * @type {import("@nodesecure/vis-network").NodeSecureDataSet["linker"]}
+   * @type {[number, NavNode][]}
    */
   #nodes;
   /**
    * Represents the current node params.
    *
-   * @type {{nodes: number[], edges: string[]}}
+   * @type {LevelParams | null | undefined}
    */
   #currentNodeParams;
   /**
    * Represents the current node.
    *
-   * @type {[number, import("@nodesecure/vis-network").NodeSecureDataSet["linker"][number]]}
+   * @type {[number, NavNode] | undefined}
    */
   #currentNode;
   /**
    * Represents the current node dependencies.
    *
-   * @type {[number, import("@nodesecure/vis-network").NodeSecureDataSet["linker"][number]][]}
+   * @type {[number, NavNode][] | undefined}
    */
   #currentNodeUsedBy;
   /**
    * Represents the dependencies that depends on the current node.
    *
-   * @type {[number, import("@nodesecure/vis-network").NodeSecureDataSet["linker"][number]][]}
+   * @type {[number, NavNode][] | undefined}
    */
   #usedByCurrentNode;
   /**
    * Represents the locked nodes.
    *
-   *  @type {[number, import("@nodesecure/vis-network").NodeSecureDataSet["linker"][number]][]}
+   * @type {[number, import("@nodesecure/vis-network").LinkerEntry & { position: import("vis-network/standalone").Position }][]}
    */
   #lockedNodes = [];
   /**
@@ -91,6 +107,10 @@ export class NetworkNavigation {
     };
   }
 
+  /**
+   * @param {import("vis-network/standalone").Position} position1
+   * @param {import("vis-network/standalone").Position} position2
+   */
   calculateAngle(position1, position2) {
     const dx = position2.x - position1.x;
     const dy = position2.y - position1.y;
@@ -98,16 +118,23 @@ export class NetworkNavigation {
     return Math.atan2(dy, dx);
   }
 
+  /**
+   * @param {number} level
+   */
   setLevel(level) {
     this.#currentLevel = level;
   }
 
+  /**
+   * @param {import("@nodesecure/vis-network").NodeSecureDataSet} secureDataSet
+   * @param {import("@nodesecure/vis-network").NodeSecureNetwork} nsn
+   */
   constructor(secureDataSet, nsn) {
     this.#secureDataSet = secureDataSet;
     this.#nsn = nsn;
 
     this.#nodes = [...this.#secureDataSet.linker]
-      .map(([nodeId, { id, name, usedBy }]) => [
+      .map(([nodeId, { id, name, usedBy }]) => /** @type {[number, NavNode]} */ ([
         nodeId,
         {
           id,
@@ -115,7 +142,7 @@ export class NetworkNavigation {
           usedBy,
           position: nsn.network.getPosition(id)
         }
-      ]);
+      ]));
 
     this.#dependenciesMapByLevel.set(0, this.rootNodeParams);
 
@@ -127,11 +154,15 @@ export class NetworkNavigation {
     });
 
     document.addEventListener("keydown", (event) => {
-      const isNetworkViewHidden = document.getElementById("network--view").classList.contains("hidden");
-      const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
-      const isTargetPopup = event.target.id === "popup--background";
-      const isTargetInput = event.target.tagName === "INPUT";
-      const isSearchCommandOpen = Boolean(document.querySelector("command-palette")?.open);
+      const networkView = /** @type {HTMLElement} */ (document.getElementById("network--view"));
+      const wikiRoot = /** @type {HTMLElement} */ (document.getElementById("documentation-root-element"));
+      const isNetworkViewHidden = networkView.classList.contains("hidden");
+      const isWikiOpen = wikiRoot.classList.contains("slide-in");
+      const eventTarget = /** @type {HTMLElement} */ (event.target);
+      const isTargetPopup = eventTarget.id === "popup--background";
+      const isTargetInput = eventTarget.tagName === "INPUT";
+      const commandPalette = /** @type {(HTMLElement & { open: boolean }) | null} */ (document.querySelector("command-palette"));
+      const isSearchCommandOpen = Boolean(commandPalette?.open);
       if (isNetworkViewHidden || isWikiOpen || isTargetPopup || isTargetInput || isSearchCommandOpen) {
         return;
       }
@@ -164,10 +195,10 @@ export class NetworkNavigation {
         return;
       }
 
-      const nodeDependencyName = this.#secureDataSet.linker.get(Number(nodeParam.nodes[0])).name;
+      const nodeDependencyName = this.#getLinkerEntry(Number(nodeParam.nodes[0])).name;
 
       this.#currentNodeUsedBy = this.#nodes
-        .filter(([_, opt]) => Object.keys(this.#secureDataSet.linker.get(Number(nodeParam.nodes[0])).usedBy).includes(opt.name));
+        .filter(([_, opt]) => Object.keys(this.#getLinkerEntry(Number(nodeParam.nodes[0])).usedBy).includes(opt.name));
       this.#usedByCurrentNode = this.#nodes.filter(([_, opt]) => Reflect.has(opt.usedBy, nodeDependencyName));
 
       this.#currentNode = this.#nodes.find(([id]) => id === Number(nodeParam.nodes[0]));
@@ -195,6 +226,17 @@ export class NetworkNavigation {
     });
   }
 
+  /**
+   * @param {number} id
+   * @returns {import("@nodesecure/vis-network").LinkerEntry}
+   */
+  #getLinkerEntry(id) {
+    return /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (this.#secureDataSet.linker.get(id));
+  }
+
+  /**
+   * @param {[number, NavNode]} node
+   */
   #navigateTreeLevel(node) {
     const activeNode = node[0];
     this.#nsn.focusNodeById(activeNode);
@@ -206,21 +248,33 @@ export class NetworkNavigation {
     this.#dependenciesMapByLevel.set(this.#currentLevel, this.#currentNodeParams);
   }
 
+  /**
+   * @param {[number, NavNode][]} nodes
+   * @returns {[number, NavNode][]}
+   */
   #sortByDistance(nodes) {
+    const currentNode = /** @type {[number, NavNode]} */ (this.#currentNode);
+
     return nodes.slice(0).sort((node1, node2) => {
       const distance1 = Math.sqrt(
-        Math.pow(node1[1].position.x - this.#currentNode[1].position.x, 2) +
-        Math.pow(node1[1].position.y - this.#currentNode[1].position.y, 2)
+        Math.pow(node1[1].position.x - currentNode[1].position.x, 2) +
+        Math.pow(node1[1].position.y - currentNode[1].position.y, 2)
       );
       const distance2 = Math.sqrt(
-        Math.pow(node2[1].position.x - this.#currentNode[1].position.x, 2) +
-        Math.pow(node2[1].position.y - this.#currentNode[1].position.y, 2)
+        Math.pow(node2[1].position.x - currentNode[1].position.x, 2) +
+        Math.pow(node2[1].position.y - currentNode[1].position.y, 2)
       );
 
       return distance1 - distance2;
     });
   }
 
+  /**
+   * @template {{ position: import("vis-network/standalone").Position }} T
+   * @param {[number, T][]} nodes
+   * @param {import("vis-network/standalone").Position} from
+   * @returns {[number, T][]}
+   */
   #sortByAngle(nodes, from) {
     return nodes.slice(0).sort((node1, node2) => {
       const angle1 = this.calculateAngle(from, node1[1].position);
@@ -231,15 +285,16 @@ export class NetworkNavigation {
   }
 
   #moveToNextLevel() {
-    if (this.#usedByCurrentNode.length === 0) {
+    const usedByCurrentNode = /** @type {[number, NavNode][]} */ (this.#usedByCurrentNode);
+    if (usedByCurrentNode.length === 0) {
       return;
     }
 
     this.#currentLevelDependenciesIndex = 0;
 
-    const sortedNodes = this.#sortByDistance(this.#usedByCurrentNode);
+    const sortedNodes = this.#sortByDistance(usedByCurrentNode);
 
-    const nextLevelNodeMatchingUseDependencies = this.#usedByCurrentNode
+    const nextLevelNodeMatchingUseDependencies = usedByCurrentNode
       .find(([id]) => id === this.#dependenciesMapByLevel.get(this.#currentLevel + 1)?.nodes[0]);
 
     this.#currentLevel++;
@@ -259,14 +314,15 @@ export class NetworkNavigation {
     this.#currentLevelDependenciesIndex = 0;
 
     const previousLevelId = this.#dependenciesMapByLevel.get(this.#currentLevel - 1)?.nodes[0];
-    const previousLevelNodeMatchingUsedByDependencies = this.#currentNodeUsedBy.find(([id]) => id === previousLevelId);
+    const currentNodeUsedBy = /** @type {[number, NavNode][]} */ (this.#currentNodeUsedBy);
+    const previousLevelNodeMatchingUsedByDependencies = currentNodeUsedBy.find(([id]) => id === previousLevelId);
 
     this.#currentLevel--;
     if (previousLevelNodeMatchingUsedByDependencies) {
       this.#navigateTreeLevel(previousLevelNodeMatchingUsedByDependencies);
     }
     else {
-      this.#navigateTreeLevel(this.#currentNodeUsedBy[0]);
+      this.#navigateTreeLevel(currentNodeUsedBy[0]);
     }
   }
 
@@ -275,18 +331,16 @@ export class NetworkNavigation {
       return;
     }
 
-    const previousNodeDependencyName = this.#secureDataSet.linker.get(
-      this.#dependenciesMapByLevel.get(this.#currentLevel - 1).nodes[0]
-    ).name;
+    const previousLevelParams = /** @type {LevelParams} */ (this.#dependenciesMapByLevel.get(this.#currentLevel - 1));
+    const currentLevelParams = /** @type {LevelParams} */ (this.#dependenciesMapByLevel.get(this.#currentLevel));
+    const previousNodeDependencyName = this.#getLinkerEntry(previousLevelParams.nodes[0]).name;
     const useByPrevious = this.#nodes
       .filter(([_, opt]) => Reflect.has(opt.usedBy, previousNodeDependencyName) &&
-        opt.id !== this.#dependenciesMapByLevel.get(this.#currentLevel - 1).nodes[0]
+        opt.id !== previousLevelParams.nodes[0]
       );
 
-    const curr = this.#nodes.find((node) => node[0] === this.#dependenciesMapByLevel.get(this.#currentLevel).nodes[0]);
-    const prev = this.#nodes.find((node) => node[0] ===
-      this.#dependenciesMapByLevel.get(this.#currentLevel - 1).nodes[0]
-    );
+    const curr = /** @type {[number, NavNode]} */ (this.#nodes.find((node) => node[0] === currentLevelParams.nodes[0]));
+    const prev = /** @type {[number, NavNode]} */ (this.#nodes.find((node) => node[0] === previousLevelParams.nodes[0]));
 
     const sortedNodes = this.#sortByAngle(useByPrevious, prev[1].position);
 
@@ -319,18 +373,16 @@ export class NetworkNavigation {
       return;
     }
 
-    const previousNodeDependencyName = this.#secureDataSet.linker.get(
-      this.#dependenciesMapByLevel.get(this.#currentLevel - 1).nodes[0]
-    ).name;
+    const previousLevelParams = /** @type {LevelParams} */ (this.#dependenciesMapByLevel.get(this.#currentLevel - 1));
+    const currentLevelParams = /** @type {LevelParams} */ (this.#dependenciesMapByLevel.get(this.#currentLevel));
+    const previousNodeDependencyName = this.#getLinkerEntry(previousLevelParams.nodes[0]).name;
     const useByPrevious = this.#nodes
       .filter(([_, opt]) => Reflect.has(opt.usedBy, previousNodeDependencyName) &&
-        opt.id !== this.#dependenciesMapByLevel.get(this.#currentLevel - 1).nodes[0]
+        opt.id !== previousLevelParams.nodes[0]
       );
 
-    const curr = this.#nodes.find((node) => node[0] === this.#dependenciesMapByLevel.get(this.#currentLevel).nodes[0]);
-    const prev = this.#nodes.find((node) => node[0] ===
-      this.#dependenciesMapByLevel.get(this.#currentLevel - 1).nodes[0]
-    );
+    const curr = /** @type {[number, NavNode]} */ (this.#nodes.find((node) => node[0] === currentLevelParams.nodes[0]));
+    const prev = /** @type {[number, NavNode]} */ (this.#nodes.find((node) => node[0] === previousLevelParams.nodes[0]));
     const sortedNodes = this.#sortByAngle(useByPrevious, prev[1].position);
 
     if (useByPrevious.length <= 1) {
@@ -364,10 +416,18 @@ export class NetworkNavigation {
     else {
       this.#lockedNodes = this.#sortByAngle(
         [...this.#nsn.lastHighlightedIds].map(
-          (id) => [id, {
-            ...this.#secureDataSet.linker.get(id),
-            position: this.#nsn.network.getPosition(id)
-          }]
+          (id) => {
+            const numericId = Number(id);
+
+            /** @type {[number, import("@nodesecure/vis-network").LinkerEntry & { position: import("vis-network/standalone").Position }]} */
+            return [
+              numericId,
+              {
+                ...this.#getLinkerEntry(numericId),
+                position: this.#nsn.network.getPosition(id)
+              }
+            ];
+          }
         ),
         { ...this.#nsn.network.getPosition(this.rootNodeParams.nodes[0]) }
       );
@@ -390,6 +450,9 @@ export class NetworkNavigation {
     }
   }
 
+  /**
+   * @param {KeyboardEvent} event
+   */
   #navigateBetweenLockedNodes(event) {
     switch (event.code) {
       case "ArrowLeft":

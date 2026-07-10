@@ -4,7 +4,7 @@ import { repeat } from "lit/directives/repeat.js";
 import { classMap } from "lit/directives/class-map.js";
 
 // Import Internal Dependencies
-import { currentLang } from "../../common/utils.js";
+import * as utils from "../../common/utils.js";
 import {
   FLAG_LIST,
   SIZE_PRESETS,
@@ -23,10 +23,29 @@ const kListTitleKeys = {
 };
 
 /**
- * @param {{ linker: Map, queries: Array, inputValue: string, onAdd: Function, onRemove: Function }} props
+ * @returns {Record<string, string>}
+ */
+function getSearchCommandI18n() {
+  return /** @type {Record<string, string>} */ (/** @type {unknown} */ (utils.getI18n().search_command));
+}
+
+/**
+ * @typedef {import("@nodesecure/vis-network").LinkerEntry} LinkerEntry
+ * @typedef {{ filter: string, value: string }} SearchQuery
+ * @typedef {{ display: string, value: string, hint?: string }} HelperValue
+ */
+
+/**
+ * @param {{
+ * linker: Map<number, LinkerEntry>,
+ * queries: SearchQuery[],
+ * inputValue: string,
+ * onAdd: (filter: string, value: string) => void,
+ * onRemove: (filter: string, value: string) => void
+ * }} props
  */
 export function renderFlagPanel({ linker, queries, inputValue, onAdd, onRemove }) {
-  const i18n = window.i18n[currentLang()].search_command;
+  const i18n = getSearchCommandI18n();
   const flagCounts = getFlagCounts(linker);
   const activeFlags = new Set(
     queries
@@ -65,10 +84,10 @@ export function renderFlagPanel({ linker, queries, inputValue, onAdd, onRemove }
 }
 
 /**
- * @param {{ activeFilter: string, onAdd: Function }} props
+ * @param {{ activeFilter: string, onAdd: (filter: string, value: string) => void }} props
  */
 export function renderRangePanel({ activeFilter, onAdd }) {
-  const i18n = window.i18n[currentLang()].search_command;
+  const i18n = getSearchCommandI18n();
   const isSizeFilter = activeFilter === "size";
   const presets = isSizeFilter ? SIZE_PRESETS : VERSION_PRESETS;
   const title = isSizeFilter ? i18n.section_size : i18n.section_version;
@@ -93,12 +112,19 @@ export function renderRangePanel({ activeFilter, onAdd }) {
 }
 
 /**
- * @param {{ linker: Map, activeFilter: string, helpers: Array, selectedIndex: number, onAdd: Function }} props
+ * @param {{
+ * linker: Map<number, LinkerEntry>,
+ * activeFilter: string,
+ * helpers: HelperValue[],
+ * selectedIndex: number,
+ * onAdd: (filter: string, value: string) => void
+ * }} props
  */
 export function renderListPanel({ linker, activeFilter, helpers, selectedIndex, onAdd }) {
-  const i18n = window.i18n[currentLang()].search_command;
+  const i18n = getSearchCommandI18n();
   const counts = getFilterValueCounts(linker, activeFilter);
-  const title = i18n[kListTitleKeys[activeFilter]] ?? activeFilter;
+  const titleI18nKey = /** @type {Record<string, string>} */ (kListTitleKeys)[activeFilter];
+  const title = i18n[titleI18nKey] ?? activeFilter;
 
   return html`
     <div class="section">
@@ -117,10 +143,10 @@ export function renderListPanel({ linker, activeFilter, helpers, selectedIndex, 
 }
 
 /**
- * @param {{ helpers: Array, selectedIndex: number, onSelect: Function }} props
+ * @param {{ helpers: HelperValue[], selectedIndex: number, onSelect: (helper: HelperValue) => void }} props
  */
 export function renderFilterList({ helpers, selectedIndex, onSelect }) {
-  const i18n = window.i18n[currentLang()].search_command;
+  const i18n = getSearchCommandI18n();
 
   return html`
     <div class="section">
@@ -138,10 +164,13 @@ export function renderFilterList({ helpers, selectedIndex, onSelect }) {
 }
 
 /**
- * @param {{ presets: Array, onApply: Function }} props
+ * @param {{
+ * presets: { id: string, filter: string, value: string }[],
+ * onApply: (preset: { id: string, filter: string, value: string }) => void
+ * }} props
  */
 export function renderPresets({ presets, onApply }) {
-  const i18n = window.i18n[currentLang()].search_command;
+  const i18n = getSearchCommandI18n();
 
   return html`
     <div class="section">
@@ -161,10 +190,13 @@ export function renderPresets({ presets, onApply }) {
 }
 
 /**
- * @param {{ actions: Array<{ id: string, label: string, kbd: string|null }>, onExecute: Function }} props
+ * @param {{
+ * actions: { id: string, label: string, kbd: string|null }[],
+ * onExecute: (action: { id: string, label: string, kbd: string|null }) => void
+ * }} props
  */
 export function renderActions({ actions, onExecute }) {
-  const i18n = window.i18n[currentLang()].search_command;
+  const i18n = getSearchCommandI18n();
 
   return html`
     <div class="section">
@@ -214,14 +246,19 @@ export function renderIgnorePanel({ title, items, ignored, onToggle }) {
 }
 
 /**
- * @param {{ results: Array, selectedIndex: number, helperCount: number, onFocus: Function }} props
+ * @param {{
+ * results: { id: string, flags: string, name: string, version: string }[],
+ * selectedIndex: number,
+ * helperCount: number,
+ * onFocus: (id: string) => void
+ * }} props
  */
 export function renderResults({ results, selectedIndex, helperCount, onFocus }) {
   if (results.length === 0) {
     return nothing;
   }
 
-  const i18n = window.i18n[currentLang()].search_command;
+  const i18n = getSearchCommandI18n();
 
   return html`
     <div class="section">

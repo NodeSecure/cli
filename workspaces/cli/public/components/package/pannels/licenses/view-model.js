@@ -1,3 +1,7 @@
+/**
+ * @param {any[]} licenses
+ * @param {string | null} unpkgRoot
+ */
 export function selectLicenses(licenses, unpkgRoot) {
   const processedLicenses = new Set();
 

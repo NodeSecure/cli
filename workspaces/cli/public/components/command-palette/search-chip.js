@@ -58,6 +58,14 @@ class SearchChip extends LitElement {
     value: { type: String }
   };
 
+  constructor() {
+    super();
+    /** @type {string} */
+    this.filter = "";
+    /** @type {string} */
+    this.value = "";
+  }
+
   #onRemove = () => {
     this.dispatchEvent(new CustomEvent("remove", { bubbles: true, composed: true }));
   };

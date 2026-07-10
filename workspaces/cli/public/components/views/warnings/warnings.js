@@ -3,7 +3,7 @@ import { LitElement, html, css, nothing } from "lit";
 
 // Import Internal Dependencies
 import { EVENTS } from "../../../core/events.js";
-import { currentLang } from "../../../common/utils.js";
+import * as utils from "../../../common/utils.js";
 import "../../root-selector/root-selector.js";
 
 // CONSTANTS
@@ -15,7 +15,30 @@ const kSeverityColors = {
 };
 const kDocsBaseUrl = "https://github.com/NodeSecure/js-x-ray/blob/master/docs";
 
+/**
+ * @typedef {Object} KindPackage
+ * @property {string} name
+ * @property {string} version
+ * @property {number} nodeId
+ * @property {number} count
+ */
+
+/**
+ * @typedef {Object} KindData
+ * @property {string} kind
+ * @property {string} severity
+ * @property {Map<string, KindPackage>} packages
+ */
+
+/**
+ * @typedef {Record<string, KindData[]>} GroupedWarnings
+ */
+
+/**
+ * @param {import("@nodesecure/vis-network").NodeSecureDataSet} secureDataSet
+ */
 function buildWarningsData(secureDataSet) {
+  /** @type {Map<string, number>} */
   const nodeIdBySpec = new Map();
   for (const [nodeId, entry] of secureDataSet.linker) {
     const spec = `${entry.name}@${entry.version}`;
@@ -24,11 +47,15 @@ function buildWarningsData(secureDataSet) {
     }
   }
 
+  /** @type {Map<string, KindData>} */
   const byKind = new Map();
-  for (const [packageName, dependency] of Object.entries(secureDataSet.data.dependencies)) {
+  const dsData = /** @type {NonNullable<import("@nodesecure/vis-network").NodeSecureDataSet["data"]>} */ (secureDataSet.data);
+  for (const [packageName, dependency] of Object.entries(dsData.dependencies)) {
     for (const [version, versionData] of Object.entries(dependency.versions)) {
       const filteredWarnings = versionData.warnings.filter(
-        (warning) => !window.settings.config.ignore.warnings.has(warning.kind)
+        (/** @type {import("@nodesecure/js-x-ray").Warning} */ warning) => !utils.getSettingsConfig().ignore.warnings.has(
+          warning.kind
+        )
       );
 
       for (const warning of filteredWarnings) {
@@ -37,12 +64,12 @@ function buildWarningsData(secureDataSet) {
           byKind.set(kind, { kind, severity, packages: new Map() });
         }
 
-        const kindData = byKind.get(kind);
+        const kindData = /** @type {KindData} */ (byKind.get(kind));
         const spec = `${packageName}@${version}`;
         const existing = kindData.packages.get(spec) ?? {
           name: packageName,
           version,
-          nodeId: nodeIdBySpec.get(spec),
+          nodeId: /** @type {number} */ (nodeIdBySpec.get(spec)),
           count: 0
         };
         existing.count++;
@@ -51,6 +78,7 @@ function buildWarningsData(secureDataSet) {
     }
   }
 
+  /** @type {GroupedWarnings} */
   const grouped = Object.fromEntries(kSeverityOrder.map((severity) => [severity, []]));
   for (const kindData of byKind.values()) {
     const list = grouped[kindData.severity];
@@ -69,6 +97,7 @@ function buildWarningsData(secureDataSet) {
   }
 
   let totalWarnings = 0;
+  /** @type {Set<string>} */
   const affectedSpecs = new Set();
   for (const kindData of byKind.values()) {
     for (const [spec, pkg] of kindData.packages) {
@@ -80,8 +109,11 @@ function buildWarningsData(secureDataSet) {
   return { grouped, totalWarnings, totalPackages: affectedSpecs.size };
 }
 
+/**
+ * @param {GroupedWarnings} grouped
+ */
 function countBySeverity(grouped) {
-  return Object.fromEntries(
+  return /** @type {Record<string, number>} */ (Object.fromEntries(
     kSeverityOrder.map((severity) => [
       severity,
       grouped[severity].reduce(
@@ -89,7 +121,7 @@ function countBySeverity(grouped) {
         0
       )
     ])
-  );
+  ));
 }
 
 export class WarningsView extends LitElement {
@@ -365,6 +397,15 @@ export class WarningsView extends LitElement {
     }
   `;
 
+  constructor() {
+    super();
+    /** @type {import("@nodesecure/vis-network").NodeSecureDataSet | null} */
+    this.secureDataSet = null;
+  }
+
+  /**
+   * @param {number} [nodeId]
+   */
   #onPackageClick(nodeId) {
     if (nodeId === undefined) {
       return;
@@ -375,11 +416,14 @@ export class WarningsView extends LitElement {
     }));
   }
 
+  /**
+   * @param {KindData} kindData
+   */
   #renderKindCard(kindData) {
-    const i18n = window.i18n[currentLang()];
+    const i18n = /** @type {Record<string, any>} */ (/** @type {unknown} */ (utils.getI18n()));
     const packages = [...kindData.packages.values()];
     const totalCount = packages.reduce((sum, pkg) => sum + pkg.count, 0);
-    const color = kSeverityColors[kindData.severity] ?? "#6b7280";
+    const color = /** @type {Record<string, string>} */ (kSeverityColors)[kindData.severity] ?? "#6b7280";
     const severityLabel = i18n.warnings[kindData.severity.toLowerCase()];
     const docsLabel = i18n.warnings.docs;
 
@@ -393,7 +437,7 @@ export class WarningsView extends LitElement {
             href="${kDocsBaseUrl}/${kindData.kind}.md"
             target="_blank"
             rel="noopener noreferrer"
-            @click=${(event) => event.stopPropagation()}
+            @click=${(/** @type {Event} */ event) => event.stopPropagation()}
           >${docsLabel} ↗</a>
         </div>
         <div class="kind-card--meta">
@@ -411,12 +455,17 @@ export class WarningsView extends LitElement {
     `;
   }
 
+  /**
+   * @param {string} severity
+   * @param {KindData[]} kindList
+   * @param {Record<string, any>} i18n
+   */
   #renderSeveritySection(severity, kindList, i18n) {
     if (kindList.length === 0) {
       return nothing;
     }
 
-    const color = kSeverityColors[severity];
+    const color = /** @type {Record<string, string>} */ (kSeverityColors)[severity];
     const label = i18n.warnings[severity.toLowerCase()];
 
     return html`
@@ -437,7 +486,7 @@ export class WarningsView extends LitElement {
       return nothing;
     }
 
-    const i18n = window.i18n[currentLang()];
+    const i18n = /** @type {Record<string, any>} */ (/** @type {unknown} */ (utils.getI18n()));
     const { grouped, totalWarnings, totalPackages } = buildWarningsData(this.secureDataSet);
     const bySeverity = countBySeverity(grouped);
     const hasWarnings = totalWarnings > 0;

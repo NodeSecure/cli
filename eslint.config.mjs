@@ -10,10 +10,13 @@ export default [
       jsdoc
     },
     rules: {
-      "jsdoc/no-undefined-types": ["warn", {
-        disableReporting: true,
-        markVariablesAsUsed: true
-      }]
+      "jsdoc/no-undefined-types": [
+        "warn", {
+          disableReporting: true,
+          markVariablesAsUsed: true
+        }
+      ],
+      "no-inline-comments": "off"
     }
   },
   {
