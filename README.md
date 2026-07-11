@@ -16,14 +16,14 @@
     <img src="https://img.shields.io/badge/SLSA-level%203-green?style=for-the-badge&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABMlBMVEXvMQDvMADwMQDwMADwMADvMADvMADwMADwMQDvMQDvMQDwMADwMADvMADwMADwMADwMQDvMQDvMQDwMQDvMQDwMQDwMADwMADwMQDwMADwMADvMADvMQDvMQDwMADwMQDwMADvMQDwMADwMQDwMADwMADwMADwMADwMADwMADvMQDvMQDwMADwMQDwMADvMQDvMQDwMADvMQDvMQDwMADwMQDwMQDwMQDvMQDwMADvMADwMADwMQDvMQDwMADwMQDwMQDwMQDwMQDvMQDvMQDvMADwMADvMADvMADvMADwMQDwMQDvMADvMQDvMQDvMADvMADvMQDwMQDvMQDvMADvMADvMADvMQDwMQDvMQDvMQDvMADvMADwMADvMQDvMQDvMQDvMADwMADwMQDwMAAAAAA/HoSwAAAAY3RSTlMpsvneQlQrU/LQSWzvM5DzmzeF9Pi+N6vvrk9HuP3asTaPgkVFmO3rUrMjqvL6d0LLTVjI/PuMQNSGOWa/6YU8zNuDLihJ0e6aMGzl8s2IT7b6lIFkRj1mtvQ0eJW95rG0+Sid59x/AAAAAWJLR0Rltd2InwAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAAd0SU1FB+YHGg0tGLrTaD4AAACqSURBVAjXY2BgZEqGAGYWVjYGdg4oj5OLm4eRgZcvBcThFxAUEk4WYRAVE09OlpCUkpaRTU6WY0iWV1BUUlZRVQMqUddgSE7W1NLS1gFp0NXTB3KTDQyNjE2Sk03NzC1A3GR1SytrG1s7e4dkBogtjk7OLq5uyTCuu4enl3cyhOvj66fvHxAIEmYICg4JDQuPiAQrEmGIio6JjZOFOjSegSHBBMpOToxPAgCJfDZC/m2KHgAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMi0wNy0yNlQxMzo0NToyNCswMDowMC8AywoAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjItMDctMjZUMTM6NDU6MjQrMDA6MDBeXXO2AAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAABJRU5ErkJggg==" alt="slsa level3">
   </a>
   <a href="https://github.com/NodeSecure/cli/actions?query=workflow%3A%22Node.js+CI%22">
-    <img src="https://img.shields.io/github/actions/workflow/status/NodeSecure/cli/nodejs.yml?style=for-the-badge" alt="github ci workflow">
+    <img src="https://img.shields.io/github/actions/workflow/status/NodeSecure/cli/cli.yml?style=for-the-badge" alt="github ci workflow">
   </a>
   <a href="https://codecov.io/github/NodeSecure/cli">
     <img src="https://img.shields.io/codecov/c/github/NodeSecure/cli?style=for-the-badge" alt="codecov">
   </a>
 </p>
 
-**NodeSecure** is a Node.js CLI (`nsecure`) that performs a static and deep analysis of a package's dependency tree: AST-based scanning for malicious or unsafe patterns, npm registry metadata, license conformance, vulnerability aggregation (GitHub Advisory, Sonatype, Snyk) and [OpenSSF Scorecard](https://github.com/ossf/scorecard), all rendered through an interactive dependency graph with a PDF report generator.
+A Node.js tool that performs a static and deep analysis of a package's dependency tree: AST-based scanning for malicious or unsafe patterns, npm registry metadata, license conformance, vulnerability aggregation (GitHub Advisory, Sonatype, Snyk) and [OpenSSF Scorecard](https://github.com/ossf/scorecard), all rendered through an interactive dependency graph.
 
 ## 💃 Getting Started
 
