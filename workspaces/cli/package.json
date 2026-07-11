@@ -1,6 +1,6 @@
 {
   "name": "@nodesecure/cli",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "Node.js security CLI",
   "main": "./bin/index.js",
   "bin": {
@@ -65,12 +65,12 @@
   "homepage": "https://github.com/NodeSecure/cli#readme",
   "devDependencies": {
     "@lit/task": "1.0.3",
-    "@nodesecure/documentation-ui": "1.3.0",
+    "@nodesecure/documentation-ui": "2.0.0",
     "@nodesecure/flags": "3.0.3",
     "@nodesecure/js-x-ray": "15.1.0",
     "@nodesecure/licenses-conformance": "2.1.0",
-    "@nodesecure/size-satisfies": "^1.1.0",
-    "@nodesecure/vis-network": "^1.4.0",
+    "@nodesecure/size-satisfies": "^2.0.0",
+    "@nodesecure/vis-network": "^2.0.0",
     "@playwright/test": "1.61.1",
     "@types/semver": "7.7.1",
     "@stylistic/stylelint-plugin": "5.2.1",
@@ -84,7 +84,7 @@
     "undici": "8.0.2"
   },
   "dependencies": {
-    "@nodesecure/cache": "1.0.0",
+    "@nodesecure/cache": "2.0.0",
     "@nodesecure/i18n": "4.1.0",
     "@nodesecure/mama": "2.3.1",
     "@nodesecure/npm-registry-sdk": "4.5.2",
@@ -92,7 +92,7 @@
     "@nodesecure/rc": "5.6.0",
     "@nodesecure/report": "4.2.2",
     "@nodesecure/scanner": "10.13.0",
-    "@nodesecure/server": "1.0.0",
+    "@nodesecure/server": "2.0.0",
     "@nodesecure/utils": "^2.2.0",
     "@nodesecure/vulnera": "3.1.0",
     "@openally/result": "^2.0.0",
