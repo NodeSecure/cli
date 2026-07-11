@@ -81,7 +81,7 @@
     "pretty-bytes": "^7.0.0",
     "stylelint": "17.14.0",
     "stylelint-config-standard": "40.0.0",
-    "undici": "8.0.2"
+    "undici": "8.5.0"
   },
   "dependencies": {
     "@nodesecure/cache": "1.0.0",
