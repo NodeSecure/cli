@@ -4,12 +4,12 @@ import { repeat } from "lit/directives/repeat.js";
 
 // Import Internal Dependencies
 import { selectLicenses } from "./view-model.js";
-import { currentLang } from "../../../../common/utils.js";
+import { getI18n } from "../../../../common/utils.js";
 import "../../../file-box/file-box.js";
 import "../../../icon/icon.js";
 import { scrollbarStyle } from "../../../../common/scrollbar-style.js";
 
-class Licenses extends LitElement {
+export class Licenses extends LitElement {
   static styles = [scrollbarStyle, css`
   :host {
   display: block;
@@ -82,18 +82,24 @@ class Licenses extends LitElement {
     package: { type: Object }
   };
 
+  constructor() {
+    super();
+    this.package = /** @type {import("../../package.js").PackageInfo} */ (/** @type {unknown} */ (undefined));
+  }
+
   render() {
     const { licenses } = this.package.dependencyVersion;
     const unpkgRoot = this.package.links.unpkg.href;
-    const { package_info } = window.i18n[currentLang()];
+    const { package_info } = getI18n();
+    const helpers = /** @type {Record<string, string>} */ (/** @type {unknown} */ (package_info.helpers));
 
     return html`
     <div class="help-dialog">
       <nsecure-icon name="info-circled"></nsecure-icon>
       <p>
-      ${package_info.helpers.spdx}
+      ${helpers.spdx}
       <a href="https://spdx.dev/about/" target="_blank"
-          rel="noopener noreferrer">${package_info.helpers.here}
+          rel="noopener noreferrer">${helpers.here}
       </a>
     </p>
     </div>

@@ -199,12 +199,18 @@ export class Icon extends LitElement {
     name: { type: String }
   };
 
+  constructor() {
+    super();
+    /** @type {string} */
+    this.name = "";
+  }
+
   render() {
     if (!(this.name in kIcons)) {
       return nothing;
     }
 
-    return kIcons[this.name];
+    return kIcons[/** @type {keyof typeof kIcons} */ (this.name)];
   }
 }
 

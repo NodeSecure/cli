@@ -3,12 +3,8 @@ import { LitElement, html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
 // Import Internal Dependencies
-import { currentLang } from "../../common/utils";
+import { getI18n } from "../../common/utils";
 import "../icon/icon.js";
-
-/**
- * @typedef {Record<string, { home: { showMore: string, showLess: string } }>} I18nLanguage
- */
 
 /**
  * "Expandable" web component displaying a toggle button with an icon.
@@ -58,19 +54,15 @@ span.expandable nsecure-icon {
   }
 
   render() {
-    const lang = currentLang();
-    const i18n =
-      /** @type I18nLanguage */
-      (window.i18n);
-    const translations = i18n[lang].home;
+    const i18n = getI18n();
 
     return html`
       <span data-value=${this.isClosed ? "closed" : "opened"}  @click=${this.#handleClick} class="expandable">
         ${when(this.isClosed,
           () => html`<nsecure-icon name="plus"></nsecure-icon>
-        <p>${translations.showMore}</p>`,
+        <p>${i18n.home.showMore}</p>`,
           () => html`<nsecure-icon name="minus"></nsecure-icon>
-        <p>${translations.showLess}</p>`
+        <p>${i18n.home.showLess}</p>`
         )}
       </span>
 `;

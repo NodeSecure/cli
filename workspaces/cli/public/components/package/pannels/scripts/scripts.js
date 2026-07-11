@@ -20,7 +20,7 @@ const kUnsafeNpmScripts = new Set([
   "postuninstall"
 ]);
 
-class Scripts extends LitElement {
+export class Scripts extends LitElement {
   static styles = [
     scrollbarStyle,
     css`
@@ -149,11 +149,15 @@ class Scripts extends LitElement {
     isHidden: { type: Boolean }
   };
 
+  /** @type {ReturnType<typeof setTimeout> | null} */
   static SimulationTimeout = null;
 
   constructor() {
     super();
+    this.package = /** @type {import("../../package.js").PackageInfo} */ (/** @type {unknown} */ (undefined));
     this.isClosed = true;
+    /** @type {boolean} */
+    this.isHidden = false;
   }
 
   render() {
@@ -208,11 +212,17 @@ class Scripts extends LitElement {
    `;
   }
 
+  /**
+   * @param {[string, string][]} scripts
+   */
   #sortScripts(scripts) {
     return [...scripts.filter(([scriptName]) => this.#isSuspicious(scriptName)),
       ...scripts.filter(([scriptName]) => !this.#isSuspicious(scriptName))];
   }
 
+  /**
+   * @param {string} scriptName
+   */
   #isSuspicious(scriptName) {
     return kUnsafeNpmScripts.has(scriptName);
   }
@@ -221,13 +231,14 @@ class Scripts extends LitElement {
     const { composition } = this.package.dependencyVersion;
 
     const lang = utils.currentLang();
-    const i18n = window.i18n[lang];
+    const i18n = utils.getI18n(lang);
+    const title = /** @type {Record<string, string>} */ (/** @type {unknown} */ (i18n.package_info.title));
 
     return html`
     ${when(composition.unused.length > 0,
       () => html`
     <div class="head-title">
-      <p>${i18n.package_info.title.unused_deps}</p>
+      <p>${title.unused_deps}</p>
     </div>
     <div  id="unuseddep">
       <items-list
@@ -241,7 +252,7 @@ class Scripts extends LitElement {
     ${when(composition.missing.length > 0,
       () => html`
       <div class="head-title">
-        <p>${i18n.package_info.title.missing_deps}</p>
+        <p>${title.missing_deps}</p>
       </div>
       <div  id="missingdep">
         <items-list
@@ -256,13 +267,13 @@ class Scripts extends LitElement {
     ${when(composition.required_nodejs.length > 0,
       () => html`
       <div class="head-title">
-        <p>${i18n.package_info.title.node_deps}</p>
+        <p>${title.node_deps}</p>
       </div>
       <div  id="nodedep">
         <items-list
         .items=${composition.required_nodejs}
         .shouldShowEveryItems=${true}
-        .onClickItem=${(coreModuleName) => this.#openNodeDocumentation(coreModuleName)}
+        .onClickItem=${(/** @type {string} */ coreModuleName) => this.#openNodeDocumentation(coreModuleName)}
         ></items-list>
       </div>
     `,
@@ -271,14 +282,14 @@ class Scripts extends LitElement {
     ${when(composition.required_thirdparty.length > 0,
       () => html`
       <div class="head-title">
-        <p>${i18n.package_info.title.third_party_deps}</p>
+        <p>${title.third_party_deps}</p>
         ${this.#showHideDependenciesInTree()}
       </div>
       <div id="requireddep">
         <items-list
          variant="line"
         .items=${composition.required_thirdparty}
-        .onClickItem=${(packageName) => this.package.nsn.focusNodeByName(packageName)}
+        .onClickItem=${(/** @type {string} */ packageName) => this.package.nsn.focusNodeByName(packageName)}
         ></items-list>
       </div>
     `,
@@ -287,13 +298,16 @@ class Scripts extends LitElement {
        `;
   }
 
+  /**
+   * @param {string} coreModuleName
+   */
   #openNodeDocumentation = (coreModuleName) => {
     const name = coreModuleName.startsWith("node:") ?
       coreModuleName.slice(5) : coreModuleName;
 
     window
       .open(`https://nodejs.org/dist/latest/docs/api/${name}.html`, "_blank")
-      .focus();
+      ?.focus();
   };
 
   #showHideDependenciesInTree() {

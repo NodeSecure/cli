@@ -3,15 +3,30 @@ import { LitElement, html, nothing } from "lit";
 import { getJSON } from "@nodesecure/vis-network";
 
 // Import Internal Dependencies
-import { currentLang, debounce, parseNpmSpec } from "../../../common/utils.js";
+import * as utils from "../../../common/utils.js";
 import { searchViewStyles } from "./search-view-styles.js";
 
 // CONSTANTS
 const kMinPackageNameLength = 2;
 const kMaxPackageNameLength = 64;
 
-class SearchView extends LitElement {
+/**
+ * @typedef {Object} SearchResult
+ * @property {string} name
+ * @property {string} version
+ * @property {string} [description]
+ */
+
+/**
+ * @returns {Record<string, any>}
+ */
+function getSearchI18n() {
+  return /** @type {Record<string, any>} */ (/** @type {unknown} */ (utils.getI18n().search));
+}
+
+export class SearchView extends LitElement {
   #searchDebounced;
+  /** @type {Map<string, string>} */
   #selectedVersions = new Map();
   #currentSearch = "";
 
@@ -35,12 +50,18 @@ class SearchView extends LitElement {
     this.loading = false;
     this.hint = "";
     this.notFound = false;
+    /** @type {SearchResult[]} */
     this.results = [];
+    /** @type {import("../../../types.js").CachedSpec[]} */
     this.cachedSpecs = [];
+    /** @type {Map<string, string | string[]>} */
     this._versionsMap = new Map();
-    this.#searchDebounced = debounce(() => this.#handleSearchInput(this.#currentSearch), 500);
+    this.#searchDebounced = utils.debounce(() => this.#handleSearchInput(this.#currentSearch), 500);
   }
 
+  /**
+   * @param {string} spec
+   */
   onScan(spec) {
     this.scanning = true;
     this.scanSpec = spec;
@@ -50,6 +71,9 @@ class SearchView extends LitElement {
     this.loading = false;
   }
 
+  /**
+   * @param {string} message
+   */
   onScanError(message) {
     this.scanning = false;
     this.scanSpec = "";
@@ -67,14 +91,17 @@ class SearchView extends LitElement {
     this.#selectedVersions = new Map();
     this.#currentSearch = "";
 
-    const input = this.renderRoot?.querySelector("input");
+    const input = /** @type {HTMLInputElement | null | undefined} */ (this.renderRoot?.querySelector("input"));
     if (input) {
       input.value = "";
     }
   }
 
+  /**
+   * @param {string} packageName
+   */
   async #handleSearchInput(packageName) {
-    const lang = currentLang();
+    const lang = utils.currentLang();
     this.hint = "";
     this.notFound = false;
     this.results = [];
@@ -84,7 +111,9 @@ class SearchView extends LitElement {
     }
 
     if (packageName.length < kMinPackageNameLength || packageName.length > kMaxPackageNameLength) {
-      this.hint = window.i18n[lang].search.packageLengthErr;
+      this.hint = /** @type {Record<string, string>} */ (
+        /** @type {unknown} */ (utils.getI18n(lang).search)
+      ).packageLengthErr;
 
       return;
     }
@@ -92,7 +121,9 @@ class SearchView extends LitElement {
     this.loading = true;
 
     try {
-      const { result, count } = await getJSON(`/search/${encodeURIComponent(packageName)}`);
+      const { result, count } = /** @type {{ result: SearchResult[], count: number }} */ (
+        await getJSON(`/search/${encodeURIComponent(packageName)}`)
+      );
       if (count === 0) {
         this.notFound = true;
       }
@@ -105,6 +136,9 @@ class SearchView extends LitElement {
     }
   }
 
+  /**
+   * @param {string} name
+   */
   async #loadVersions(name) {
     if (this._versionsMap.has(name)) {
       return;
@@ -114,7 +148,7 @@ class SearchView extends LitElement {
     this._versionsMap.set(name, "loading");
 
     try {
-      const versions = await getJSON(`/search-versions/${encodeURIComponent(name)}`);
+      const versions = /** @type {string[]} */ (await getJSON(`/search-versions/${encodeURIComponent(name)}`));
       this._versionsMap = new Map(this._versionsMap);
       this._versionsMap.set(name, versions.reverse());
     }
@@ -125,7 +159,7 @@ class SearchView extends LitElement {
   }
 
   #renderScanOverlay() {
-    const { scanning } = window.i18n[currentLang()].search;
+    const { scanning } = getSearchI18n();
 
     return html`
       <div class="scan-overlay">
@@ -157,7 +191,7 @@ class SearchView extends LitElement {
   }
 
   #renderHero() {
-    const { heroTitle, emptyHint } = window.i18n[currentLang()].search;
+    const { heroTitle, emptyHint } = getSearchI18n();
 
     return html`
       <div class="hero">
@@ -168,6 +202,10 @@ class SearchView extends LitElement {
     `;
   }
 
+  /**
+   * @param {string} name
+   * @param {string} latestVersion
+   */
   #renderVersionSelect(name, latestVersion) {
     const versionState = this._versionsMap.get(name);
     const selectedVersion = this.#selectedVersions.get(name) ?? latestVersion;
@@ -177,25 +215,34 @@ class SearchView extends LitElement {
         <select
           class="version-select"
           ?disabled=${versionState === "loading"}
-          @change=${(event) => this.#selectedVersions.set(name, event.target.value)}
+          @change=${(/** @type {Event} */ event) => this.#selectedVersions.set(
+            name, /** @type {HTMLSelectElement} */ (event.target).value
+          )}
         >
           <option value=${latestVersion}>${latestVersion}</option>
         </select>
       `;
     }
 
+    const versions = /** @type {string[]} */ (versionState);
+
     return html`
       <select
         class="version-select"
-        @change=${(event) => this.#selectedVersions.set(name, event.target.value)}
+        @change=${(/** @type {Event} */ event) => this.#selectedVersions.set(
+          name, /** @type {HTMLSelectElement} */ (event.target).value
+        )}
       >
-        ${versionState.map((version) => html`
+        ${versions.map((version) => html`
           <option value=${version} ?selected=${version === selectedVersion}>${version}</option>
         `)}
       </select>
     `;
   }
 
+  /**
+   * @param {SearchResult} result
+   */
   #renderResult({ name, version, description }) {
     const isExact = this.#currentSearch === name;
 
@@ -216,6 +263,10 @@ class SearchView extends LitElement {
     `;
   }
 
+  /**
+   * @param {string} title
+   * @param {import("../../../types.js").CachedSpec[]} packages
+   */
   #renderCacheSection(title, packages) {
     if (packages.length === 0) {
       return nothing;
@@ -225,7 +276,7 @@ class SearchView extends LitElement {
       <div class="cache-section">
         <h2 class="cache-title">${title}</h2>
         ${packages.map((metadata) => {
-          const { name, version } = parseNpmSpec(metadata.spec);
+          const { name, version } = utils.parseNpmSpec(metadata.spec);
           const isLocal = metadata.scanType === "cwd";
 
           return html`
@@ -235,7 +286,7 @@ class SearchView extends LitElement {
               </span>
               <button
                 class="cache-remove"
-                @click=${(event) => {
+                @click=${(/** @type {Event} */ event) => {
                   event.stopPropagation();
                   window.socket.commands.remove(metadata.spec);
                 }}
@@ -256,14 +307,14 @@ class SearchView extends LitElement {
       return this.#renderScanOverlay();
     }
 
-    const { search: i18n } = window.i18n[currentLang()];
+    const i18n = getSearchI18n();
     const hasResults = this.results.length > 0;
 
     return html`
       <div class="container">
         ${this.#renderHero()}
 
-        <form @submit=${(event) => event.preventDefault()}>
+        <form @submit=${(/** @type {Event} */ event) => event.preventDefault()}>
           <div class="search-bar">
             <input
               type="text"
@@ -271,14 +322,14 @@ class SearchView extends LitElement {
               name="package"
               placeholder=${i18n.registryPlaceholder}
               autocomplete="off"
-              @keydown=${(event) => {
+              @keydown=${(/** @type {KeyboardEvent} */ event) => {
                 event.stopPropagation();
                 if (event.key === "Enter") {
                   this.#handleScan();
                 }
               }}
-              @input=${(event) => {
-                this.#currentSearch = event.target.value;
+              @input=${(/** @type {Event} */ event) => {
+                this.#currentSearch = /** @type {HTMLInputElement} */ (event.target).value;
                 this.#searchDebounced();
               }}
             >

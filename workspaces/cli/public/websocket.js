@@ -15,7 +15,11 @@ export class WebSocketClient extends EventTarget {
     this.client.addEventListener("message", this.#messageHandler.bind(this));
 
     /**
-     * @type {{ search: (spec: Spec) => void, remove: (spec: Spec) => void }}
+     * @type {{
+     * search: (spec: Spec) => void,
+     * remove: (spec: Spec) => void,
+     * clear: () => void
+     * }}
      */
     this.commands = {
       search: (spec) => this.send({ commandName: "SEARCH", spec }),

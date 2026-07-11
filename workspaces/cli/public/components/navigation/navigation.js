@@ -16,73 +16,87 @@ export class ViewNavigation {
   static DefaultActiveMenu = "network--view";
 
   constructor() {
+    /** @type {HTMLElement | null} */
     this.activeMenu = null;
+    /** @type {Map<string, HTMLElement>} */
     this.menus = new Map();
 
     const defaultMenu = this.getAnchor();
     const navElements = document.querySelectorAll("#view-navigation li");
     for (const navigationMenu of navElements) {
       const menuName = navigationMenu.getAttribute("data-menu");
-      this.menus.set(menuName, navigationMenu);
+      if (!menuName) {
+        continue;
+      }
+      this.menus.set(menuName, /** @type {HTMLElement} */ (navigationMenu));
 
       if (menuName === defaultMenu) {
-        this.setNewActiveMenu(navigationMenu);
+        this.setNewActiveMenu(/** @type {HTMLElement} */ (navigationMenu));
       }
 
-      navigationMenu.addEventListener("click", () => this.onNavigationSelected(navigationMenu));
+      navigationMenu.addEventListener("click", () => this.onNavigationSelected(/** @type {HTMLElement} */ (navigationMenu)));
     }
 
     document.addEventListener("keydown", (event) => {
-      const isWikiOpen = document.getElementById("documentation-root-element").classList.contains("slide-in");
-      const isTargetPopup = event.target.id === "popup--background";
+      const wikiRoot = /** @type {HTMLElement} */ (document.getElementById("documentation-root-element"));
+      const isWikiOpen = wikiRoot.classList.contains("slide-in");
+      const eventTarget = /** @type {HTMLElement} */ (event.target);
+      const isTargetPopup = eventTarget.id === "popup--background";
       const isPopupOpened = document.querySelector("#popup--background.show");
-      const isTargetInput = event.target.tagName === "INPUT";
+      const isTargetInput = eventTarget.tagName === "INPUT";
       const isSearchCommandOpen = Boolean(document.querySelector("command-palette")?.open);
       if (isTargetPopup || isWikiOpen || isTargetInput || isPopupOpened || isSearchCommandOpen) {
         return;
       }
 
-      const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
+      const hotkeys = JSON.parse(/** @type {string} */ (localStorage.getItem("hotkeys")));
       switch (event.key.toUpperCase()) {
         case hotkeys.home: {
-          this.onNavigationSelected(this.menus.get("home--view"));
+          this.onNavigationSelected(/** @type {HTMLElement} */ (this.menus.get("home--view")));
           break;
         }
         case hotkeys.network: {
-          this.onNavigationSelected(this.menus.get("network--view"));
+          this.onNavigationSelected(/** @type {HTMLElement} */ (this.menus.get("network--view")));
           break;
         }
         case hotkeys.settings: {
-          this.onNavigationSelected(this.menus.get("settings--view"));
+          this.onNavigationSelected(/** @type {HTMLElement} */ (this.menus.get("settings--view")));
           break;
         }
         case hotkeys.search: {
-          this.onNavigationSelected(this.menus.get("search--view"));
+          this.onNavigationSelected(/** @type {HTMLElement} */ (this.menus.get("search--view")));
           break;
         }
         case hotkeys.tree: {
-          this.onNavigationSelected(this.menus.get("tree--view"));
+          this.onNavigationSelected(/** @type {HTMLElement} */ (this.menus.get("tree--view")));
           break;
         }
         case hotkeys.warnings: {
-          this.onNavigationSelected(this.menus.get("warnings--view"));
+          this.onNavigationSelected(/** @type {HTMLElement} */ (this.menus.get("warnings--view")));
           break;
         }
       }
     });
   }
 
+  /**
+   * @param {string} navName
+   */
   setNavByName(navName) {
-    this.onNavigationSelected(this.menus.get(navName));
+    const selectedNav = this.menus.get(navName);
+    if (!selectedNav) {
+      return;
+    }
+    this.onNavigationSelected(selectedNav);
   }
 
   /**
    * @param {!HTMLElement} selectedNav
    */
   setNewActiveMenu(selectedNav) {
-    const menuName = selectedNav.getAttribute("data-menu");
+    const menuName = /** @type {string} */ (selectedNav.getAttribute("data-menu"));
 
-    document.getElementById(menuName).classList.remove("hidden");
+    /** @type {HTMLElement} */ (document.getElementById(menuName)).classList.remove("hidden");
     selectedNav.classList.add("active");
     this.setAnchor(menuName);
 
@@ -94,10 +108,11 @@ export class ViewNavigation {
   }
 
   disableActiveMenu() {
-    const menuName = this.activeMenu.getAttribute("data-menu");
-    const view = document.getElementById(menuName);
+    const activeMenu = /** @type {HTMLElement} */ (this.activeMenu);
+    const menuName = /** @type {string} */ (activeMenu.getAttribute("data-menu"));
+    const view = /** @type {HTMLElement} */ (document.getElementById(menuName));
 
-    this.activeMenu.classList.remove("active");
+    activeMenu.classList.remove("active");
     view.classList.add("hidden");
 
     if (menuName === "network--view") {
@@ -105,6 +120,9 @@ export class ViewNavigation {
     }
   }
 
+  /**
+   * @returns {string}
+   */
   getAnchor() {
     const documentURL = new URL(document.URL);
     const anchorName = documentURL.searchParams.get("view") ?? ViewNavigation.DefaultActiveMenu;
@@ -112,11 +130,14 @@ export class ViewNavigation {
     return kAvailableView.has(anchorName) ? anchorName : ViewNavigation.DefaultActiveMenu;
   }
 
+  /**
+   * @param {string} anchorName
+   */
   setAnchor(anchorName) {
     const newDocumentURL = new URL(document.URL);
     newDocumentURL.searchParams.set("view", anchorName);
 
-    window.history.replaceState(void 0, void 0, newDocumentURL);
+    window.history.replaceState(null, "", newDocumentURL);
   }
 
   /**
@@ -131,6 +152,9 @@ export class ViewNavigation {
     }
   }
 
+  /**
+   * @param {string} menuName
+   */
   hideMenu(menuName) {
     const menu = this.menus.get(menuName);
     if (!menu) {
@@ -144,6 +168,9 @@ export class ViewNavigation {
     menu.classList.add("hidden");
   }
 
+  /**
+   * @param {string} menuName
+   */
   showMenu(menuName) {
     const menu = this.menus.get(menuName);
     if (!menu) {

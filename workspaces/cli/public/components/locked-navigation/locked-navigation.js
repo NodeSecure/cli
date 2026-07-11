@@ -56,6 +56,10 @@ export class LockedNavigation extends LitElement {
   constructor() {
     super();
     this.isLocked = false;
+    /** @type {string} */
+    this.nextLabel = "";
+    /** @type {string} */
+    this.prevLabel = "";
 
     this.lock = () => {
       this.isLocked = true;

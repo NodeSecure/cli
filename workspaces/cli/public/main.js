@@ -26,35 +26,60 @@ import { WebSocketClient } from "./websocket.js";
 // CONSTANTS
 const kSearchShortcut = navigator.userAgent.includes("Mac") ? "⌘K" : "Ctrl+K";
 
+/** @type {NodeSecureDataSet | undefined} */
 let secureDataSet;
+/** @type {NodeSecureNetwork | undefined} */
 let nsn;
+/** @type {HomeView | undefined} */
 let homeView;
+/** @type {import("./components/views/search/search.js").SearchView | undefined} */
 let searchview;
+/** @type {import("./components/views/tree/tree.js").TreeView | undefined} */
 let treeView;
+/** @type {import("./components/views/warnings/warnings.js").WarningsView | undefined} */
 let warningsView;
+/** @type {string | null} */
 let viewAfterSwitch = null;
+/** @type {import("./components/network-breadcrumb/network-breadcrumb.js").NetworkBreadcrumb | undefined} */
 let drillBreadcrumb;
 let packageInfoOpened = false;
+/** @type {number[]} */
 const drillStack = [];
 
+/**
+ * @typedef {Object} SocketPayloadDetail
+ * @property {{ rootDependency: { name: string, version: string } }} payload
+ */
+
+/**
+ * @typedef {Object} SocketInitDetail
+ * @property {import("./types.js").CachedSpec[]} cache
+ * @property {string} status
+ */
+
 document.addEventListener("DOMContentLoaded", async() => {
-  searchview = document.querySelector("search-view");
-  treeView = document.querySelector("tree-view");
-  warningsView = document.querySelector("warnings-view");
+  searchview = /** @type {import("./components/views/search/search.js").SearchView} */ (document.querySelector("search-view"));
+  treeView = /** @type {import("./components/views/tree/tree.js").TreeView} */ (document.querySelector("tree-view"));
+  warningsView = /** @type {import("./components/views/warnings/warnings.js").WarningsView} */ (
+    document.querySelector("warnings-view")
+  );
 
   window.cachedSpecs = [];
   window.locker = null;
   window.i18n = await new i18n().fetch();
-  const settingsView = document.querySelector("settings-view");
-  window.settings = settingsView;
+  const settingsView = /** @type {import("./components/views/settings/settings.js").SettingsView} */ (
+    document.querySelector("settings-view")
+  );
+  window.settings = /** @type {any} */ (settingsView);
   await settingsView.fetchUserConfig();
-  window.navigation = new ViewNavigation();
+  window.navigation = /** @type {any} */ (new ViewNavigation());
   window.wiki = new Wiki();
 
   // update searchview after window.i18n is set
   searchview.requestUpdate();
 
-  const isNetworkViewActive = document.getElementById("network--view").classList.contains("hidden") === false;
+  const networkView = /** @type {HTMLElement} */ (document.getElementById("network--view"));
+  const isNetworkViewActive = networkView.classList.contains("hidden") === false;
   const searchShortcutHint = utils.createDOMElement("div", {
     classList: isNetworkViewActive ? ["search-shortcut-hint"] : ["search-shortcut-hint", "hidden"],
     attributes: { id: "search-shortcut-hint" },
@@ -68,41 +93,45 @@ document.addEventListener("DOMContentLoaded", async() => {
     searchShortcutHint.classList.add("hidden");
   });
   window.addEventListener(EVENTS.NETWORK_VIEW_SHOWED, () => {
-    if (!document.getElementById("network--view").classList.contains("hidden")) {
+    if (!networkView.classList.contains("hidden")) {
       searchShortcutHint.classList.remove("hidden");
     }
   });
 
-  drillBreadcrumb = document.querySelector("network-breadcrumb");
+  drillBreadcrumb = /** @type {import("./components/network-breadcrumb/network-breadcrumb.js").NetworkBreadcrumb} */ (
+    document.querySelector("network-breadcrumb")
+  );
   drillBreadcrumb.addEventListener(EVENTS.DRILL_RESET, resetDrill);
-  drillBreadcrumb.addEventListener(EVENTS.DRILL_BACK, function handleDrillBack(event) {
-    drillBackTo(event.detail.index);
+  drillBreadcrumb.addEventListener(EVENTS.DRILL_BACK, function handleDrillBack(/** @type {Event} */ event) {
+    drillBackTo(/** @type {CustomEvent<{ index: number }>} */ (event).detail.index);
   });
-  drillBreadcrumb.addEventListener(EVENTS.DRILL_SWITCH, function handleDrillSwitch(event) {
-    const { stackIndex, nodeId } = event.detail;
+  drillBreadcrumb.addEventListener(EVENTS.DRILL_SWITCH, function handleDrillSwitch(/** @type {Event} */ event) {
+    const { stackIndex, nodeId } = /** @type {CustomEvent<{ stackIndex: number, nodeId: number }>} */ (event).detail;
     drillStack.length = stackIndex;
     drillInto(nodeId);
   });
-  drillBreadcrumb.addEventListener(EVENTS.ROOT_SWITCH, function handleRootSwitch(event) {
-    window.socket.commands.search(event.detail.spec);
+  drillBreadcrumb.addEventListener(EVENTS.ROOT_SWITCH, function handleRootSwitch(/** @type {Event} */ event) {
+    window.socket.commands.search(/** @type {CustomEvent<{ spec: string }>} */ (event).detail.spec);
   });
 
-  window.addEventListener(EVENTS.ROOT_SWITCH, function handleGlobalRootSwitch(event) {
-    viewAfterSwitch = window.navigation.activeMenu?.getAttribute("data-menu") ?? null;
-    window.socket.commands.search(event.detail.spec);
+  window.addEventListener(EVENTS.ROOT_SWITCH, function handleGlobalRootSwitch(/** @type {Event} */ event) {
+    viewAfterSwitch = utils.getNavigation().activeMenu?.getAttribute("data-menu") ?? null;
+    window.socket.commands.search(/** @type {CustomEvent<{ spec: string }>} */ (event).detail.spec);
   });
   drillBreadcrumb.addEventListener(EVENTS.ROOT_REMOVE, function handleRootRemove() {
     const specToRemove = window.activePackage;
-    const nextPackage = drillBreadcrumb.packages[0];
+    const nextPackage = /** @type {import("./components/network-breadcrumb/network-breadcrumb.js").NetworkBreadcrumb} */ (
+      drillBreadcrumb
+    ).packages[0];
     if (nextPackage) {
       window.socket.commands.search(nextPackage.spec);
     }
     else {
-      window.navigation.hideMenu("network--view");
-      window.navigation.hideMenu("home--view");
-      window.navigation.hideMenu("tree--view");
-      window.navigation.hideMenu("warnings--view");
-      window.navigation.setNavByName("search--view");
+      utils.getNavigation().hideMenu("network--view");
+      utils.getNavigation().hideMenu("home--view");
+      utils.getNavigation().hideMenu("tree--view");
+      utils.getNavigation().hideMenu("warnings--view");
+      utils.getNavigation().setNavByName("search--view");
     }
     window.socket.commands.remove(specToRemove);
   });
@@ -125,29 +154,29 @@ document.addEventListener("DOMContentLoaded", async() => {
     }
   });
 
-  window.addEventListener(EVENTS.WARNINGS_PACKAGE_CLICK, (event) => {
-    const { nodeId } = event.detail;
-    const node = secureDataSet.linker.get(nodeId);
+  window.addEventListener(EVENTS.WARNINGS_PACKAGE_CLICK, (/** @type {Event} */ event) => {
+    const { nodeId } = /** @type {CustomEvent<{ nodeId: number }>} */ (event).detail;
+    const node = secureDataSet?.linker.get(nodeId);
     if (!node) {
       return;
     }
 
-    window.navigation.setNavByName("network--view");
+    utils.getNavigation().setNavByName("network--view");
     setTimeout(() => {
       PackageInfo.ForcedPackageMenu = "warnings";
-      nsn.focusNodeByNameAndVersion(node.name, node.version);
+      nsn?.focusNodeByNameAndVersion(node.name, node.version);
     }, 25);
   });
 
-  window.addEventListener(EVENTS.TREE_NODE_CLICK, (event) => {
+  window.addEventListener(EVENTS.TREE_NODE_CLICK, (/** @type {Event} */ event) => {
     console.log(event);
     if (!secureDataSet) {
       return;
     }
 
-    const { nodeId } = event.detail;
+    const { nodeId } = /** @type {CustomEvent<{ nodeId: number }>} */ (event).detail;
     const selectedNode = secureDataSet.linker.get(nodeId);
-    if (!selectedNode) {
+    if (!selectedNode || !secureDataSet.data) {
       return;
     }
 
@@ -157,29 +186,32 @@ document.addEventListener("DOMContentLoaded", async() => {
   await init();
   window.dispatchEvent(
     new CustomEvent(EVENTS.SETTINGS_SAVED, {
-      detail: window.settings.config
+      detail: utils.getSettingsConfig()
     })
   );
-  onSettingsSaved(window.settings.config);
+  onSettingsSaved(utils.getSettingsConfig());
 
   const socket = new WebSocketClient(`ws://${window.location.hostname}:${window.__WS_PORT__}`);
   socket.addEventListener("PAYLOAD", onSocketPayload);
   socket.addEventListener("INIT", onSocketInitOrReload);
   socket.addEventListener("RELOAD", onSocketInitOrReload);
-  socket.addEventListener("SCAN", (event) => {
-    const data = event.detail;
+  socket.addEventListener("SCAN", (/** @type {Event} */ event) => {
+    const data = /** @type {CustomEvent<{ spec: string }>} */ (event).detail;
 
-    searchview.onScan(data.spec);
+    searchview?.onScan(data.spec);
   });
-  socket.addEventListener("ERROR", (event) => {
-    const data = event.detail;
+  socket.addEventListener("ERROR", (/** @type {Event} */ event) => {
+    const data = /** @type {CustomEvent<{ error: string }>} */ (event).detail;
 
-    searchview.onScanError(data.error);
+    searchview?.onScanError(data.error);
   });
 });
 
+/**
+ * @param {Event} event
+ */
 async function onSocketPayload(event) {
-  const data = event.detail;
+  const data = /** @type {CustomEvent<SocketPayloadDetail>} */ (event).detail;
   const { payload } = data;
 
   const { name, version } = payload.rootDependency;
@@ -191,14 +223,17 @@ async function onSocketPayload(event) {
   await init({ navigateToNetworkView: targetView === null });
 
   if (targetView !== null && targetView !== "network--view") {
-    window.navigation.setNavByName(targetView);
+    utils.getNavigation().setNavByName(targetView);
   }
 
   dispatchCommandPaletteInit();
 }
 
+/**
+ * @param {Event} event
+ */
 async function onSocketInitOrReload(event) {
-  const data = event.detail;
+  const data = /** @type {CustomEvent<SocketInitDetail>} */ (event).detail;
   const { cache } = data;
 
   window.cachedSpecs = cache;
@@ -220,16 +255,20 @@ async function onSocketInitOrReload(event) {
     await init();
   }
 
-  drillBreadcrumb.packages = cache.filter((pkg) => pkg.spec !== window.activePackage);
-  searchview.cachedSpecs = cache;
-  searchview.reset();
+  if (drillBreadcrumb) {
+    drillBreadcrumb.packages = cache.filter((pkg) => pkg.spec !== window.activePackage);
+  }
+  if (searchview) {
+    searchview.cachedSpecs = cache;
+    searchview.reset();
+  }
 
   if (cache.length === 0) {
-    window.navigation.hideMenu("network--view");
-    window.navigation.hideMenu("home--view");
-    window.navigation.hideMenu("tree--view");
-    window.navigation.hideMenu("warnings--view");
-    window.navigation.setNavByName("search--view");
+    utils.getNavigation().hideMenu("network--view");
+    utils.getNavigation().hideMenu("home--view");
+    utils.getNavigation().hideMenu("tree--view");
+    utils.getNavigation().hideMenu("warnings--view");
+    utils.getNavigation().setNavByName("search--view");
   }
 
   dispatchCommandPaletteInit();
@@ -250,33 +289,46 @@ function dispatchCommandPaletteInit() {
   window.dispatchEvent(event);
 }
 
+/**
+ * @param {number} parentId
+ * @param {number} excludeId
+ */
 function computeSiblings(parentId, excludeId) {
+  const ds = /** @type {NodeSecureDataSet} */ (secureDataSet);
+  /** @type {Set<number>} */
   const seen = new Set();
+  /** @type {{ nodeId: number, name: string, version: string }[]} */
   const result = [];
 
-  for (const edge of secureDataSet.rawEdgesData) {
+  for (const edge of ds.rawEdgesData) {
     if (edge.to === parentId && edge.from !== excludeId && !seen.has(edge.from)) {
       seen.add(edge.from);
 
-      const entry = secureDataSet.linker.get(edge.from);
-      result.push({
-        nodeId: edge.from,
-        name: entry.name,
-        version: entry.version
-      });
+      const entry = ds.linker.get(edge.from);
+      if (entry) {
+        result.push({
+          nodeId: edge.from,
+          name: entry.name,
+          version: entry.version
+        });
+      }
     }
   }
 
   return result.sort((nodeA, nodeB) => nodeA.name.localeCompare(nodeB.name));
 }
 
+/**
+ * @param {number} rootNodeId
+ */
 function computeDrillSubtree(rootNodeId) {
+  const ds = /** @type {NodeSecureDataSet} */ (secureDataSet);
   const subtreeIds = new Set([rootNodeId]);
   const queue = [rootNodeId];
 
   while (queue.length > 0) {
     const current = queue.shift();
-    for (const edge of secureDataSet.rawEdgesData) {
+    for (const edge of ds.rawEdgesData) {
       if (edge.to === current && !subtreeIds.has(edge.from)) {
         subtreeIds.add(edge.from);
         queue.push(edge.from);
@@ -287,21 +339,29 @@ function computeDrillSubtree(rootNodeId) {
   return subtreeIds;
 }
 
+/**
+ * @param {number} nodeId
+ */
 function applyDrill(nodeId) {
+  const ds = /** @type {NodeSecureDataSet} */ (secureDataSet);
+  const network = /** @type {NodeSecureNetwork} */ (nsn);
   const subtreeIds = computeDrillSubtree(nodeId);
-  const updates = [...secureDataSet.linker.keys()].map((id) => {
+  const updates = [...ds.linker.keys()].map((id) => {
     return {
       id,
       hidden: !subtreeIds.has(id)
     };
   });
-  nsn.nodes.update(updates);
-  nsn.network.unselectAll();
+  network.nodes.update(updates);
+  network.network.unselectAll();
   updateDrillBreadcrumb();
   PackageInfo.close();
-  nsn.neighbourHighlight({ nodes: [nodeId], edges: [] });
+  network.neighbourHighlight({ nodes: [nodeId], edges: [] });
 }
 
+/**
+ * @param {number} nodeId
+ */
 function drillInto(nodeId) {
   const currentRoot = drillStack.length === 0 ? 0 : drillStack.at(-1);
   if (nodeId === currentRoot) {
@@ -312,48 +372,60 @@ function drillInto(nodeId) {
   applyDrill(nodeId);
 }
 
+/**
+ * @param {number} stackIndex
+ */
 function drillBackTo(stackIndex) {
   drillStack.length = stackIndex + 1;
   applyDrill(drillStack[stackIndex]);
 }
 
 function resetDrill() {
+  const ds = /** @type {NodeSecureDataSet} */ (secureDataSet);
+  const network = /** @type {NodeSecureNetwork} */ (nsn);
   drillStack.length = 0;
-  const updates = [...secureDataSet.linker.keys()].map((id) => {
+  const updates = [...ds.linker.keys()].map((id) => {
     return {
       id,
       hidden: false
     };
   });
-  nsn.nodes.update(updates);
+  network.nodes.update(updates);
   updateDrillBreadcrumb();
   PackageInfo.close();
 }
 
 function updateDrillBreadcrumb() {
-  const rootEntry = secureDataSet.linker.get(0);
-  drillBreadcrumb.root = {
+  const ds = /** @type {NodeSecureDataSet} */ (secureDataSet);
+  const breadcrumb = /** @type {import("./components/network-breadcrumb/network-breadcrumb.js").NetworkBreadcrumb} */ (
+    drillBreadcrumb
+  );
+  const rootEntry = /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (ds.linker.get(0));
+  breadcrumb.root = {
     name: rootEntry.name,
     version: rootEntry.version
   };
-  drillBreadcrumb.packages = window.cachedSpecs.filter(
+  breadcrumb.packages = window.cachedSpecs.filter(
     (pkg) => pkg.spec !== window.activePackage
   );
-  drillBreadcrumb.stack = drillStack.map((nodeId) => {
-    const entry = secureDataSet.linker.get(nodeId);
+  breadcrumb.stack = drillStack.map((nodeId) => {
+    const entry = /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (ds.linker.get(nodeId));
 
     return {
       name: entry.name,
       version: entry.version
     };
   });
-  drillBreadcrumb.siblings = drillStack.map((nodeId, index) => {
+  breadcrumb.siblings = drillStack.map((nodeId, index) => {
     const parentId = index === 0 ? 0 : drillStack[index - 1];
 
     return computeSiblings(parentId, nodeId);
   });
 }
 
+/**
+ * @param {{ navigateToNetworkView?: boolean }} options
+ */
 async function init(options = {}) {
   const { navigateToNetworkView = false } = options;
 
@@ -362,35 +434,47 @@ async function init(options = {}) {
     return;
   }
 
-  window.navigation.showMenu("network--view");
-  window.navigation.showMenu("home--view");
-  window.navigation.showMenu("tree--view");
-  window.navigation.showMenu("warnings--view");
-  treeView.secureDataSet = secureDataSet;
-  warningsView.secureDataSet = secureDataSet;
+  const ds = /** @type {NodeSecureDataSet} */ (secureDataSet);
+  const dsData = /** @type {NonNullable<NodeSecureDataSet["data"]>} */ (ds.data);
 
-  window.vulnerabilityStrategy = secureDataSet.data.vulnerabilityStrategy;
+  utils.getNavigation().showMenu("network--view");
+  utils.getNavigation().showMenu("home--view");
+  utils.getNavigation().showMenu("tree--view");
+  utils.getNavigation().showMenu("warnings--view");
+  if (treeView) {
+    treeView.secureDataSet = ds;
+  }
+  if (warningsView) {
+    warningsView.secureDataSet = ds;
+  }
+
+  window.vulnerabilityStrategy = dsData.vulnerabilityStrategy;
 
   // Initialize vis Network
   NodeSecureNetwork.networkElementId = "dependency-graph";
-  nsn = new NodeSecureNetwork(secureDataSet, {
-    i18n: window.i18n[utils.currentLang()],
-    theme: window.settings.config.theme
+  nsn = new NodeSecureNetwork(ds, {
+    i18n: /** @type {any} */ (window.i18n[utils.currentLang()]),
+    theme: utils.getSettingsConfig().theme
   });
-  window.locker = document.createElement("nsecure-locker");
-  window.locker.nsn = nsn;
+  const lockerElement = document.createElement("nsecure-locker");
+  lockerElement.nsn = nsn;
+  window.locker = lockerElement;
   const locker = document.getElementById("network-locker");
   // locker may already have been replaced when reinitializing via the search view
   if (locker) {
-    locker.replaceWith(window.locker);
+    locker.replaceWith(lockerElement);
   }
-  const legend = document.getElementById("legend");
-  legend.isVisible = window.settings.config.showFriendlyDependencies;
+  const legend = /** @type {HTMLElement & { isVisible: boolean, show(): void, hide(): void }} */ (
+    document.getElementById("legend")
+  );
+  legend.isVisible = utils.getSettingsConfig().showFriendlyDependencies;
   window.legend = legend;
-  homeView = new HomeView(secureDataSet, nsn);
+  homeView = new HomeView(ds, nsn);
 
   window.addEventListener(EVENTS.PACKAGE_INFO_CLOSED, () => {
-    window.networkNav.currentNodeParams = null;
+    if (window.networkNav) {
+      window.networkNav.currentNodeParams = null;
+    }
     packageInfoOpened = false;
   });
 
@@ -411,11 +495,11 @@ async function init(options = {}) {
   drillStack.length = 0;
   updateDrillBreadcrumb();
 
-  const networkNavigation = new NetworkNavigation(secureDataSet, nsn);
+  const networkNavigation = new NetworkNavigation(ds, nsn);
   window.networkNav = networkNavigation;
 
   if (navigateToNetworkView) {
-    window.navigation.setNavByName("network--view");
+    utils.getNavigation().setNavByName("network--view");
   }
 
   PackageInfo.close();
@@ -424,21 +508,21 @@ async function init(options = {}) {
 }
 
 async function loadDataSet() {
-  const config = window.settings.config;
+  const config = utils.getSettingsConfig();
 
   secureDataSet = new NodeSecureDataSet({
-    flagsToIgnore: config.ignore.flags,
-    warningsToIgnore: config.ignore.warnings,
+    flagsToIgnore: /** @type {string[]} */ (/** @type {unknown} */ (config.ignore.flags)),
+    warningsToIgnore: /** @type {string[]} */ (/** @type {unknown} */ (config.ignore.warnings)),
     theme: config.theme
   });
   await secureDataSet.init();
 
   if (secureDataSet.data === null) {
-    window.navigation.hideMenu("network--view");
-    window.navigation.hideMenu("home--view");
-    window.navigation.hideMenu("tree--view");
-    window.navigation.hideMenu("warnings--view");
-    window.navigation.setNavByName("search--view");
+    utils.getNavigation().hideMenu("network--view");
+    utils.getNavigation().hideMenu("home--view");
+    utils.getNavigation().hideMenu("tree--view");
+    utils.getNavigation().hideMenu("warnings--view");
+    utils.getNavigation().setNavByName("search--view");
 
     return false;
   }
@@ -446,69 +530,84 @@ async function loadDataSet() {
   return true;
 }
 
+/**
+ * @param {any} params
+ */
 async function updateShowInfoMenu(params) {
+  const networkNav = /** @type {NetworkNavigation} */ (window.networkNav);
+  const ds = /** @type {NodeSecureDataSet} */ (secureDataSet);
+  const dsData = /** @type {NonNullable<NodeSecureDataSet["data"]>} */ (ds.data);
+  const network = /** @type {NodeSecureNetwork} */ (nsn);
+
   if (params.nodes.length === 0) {
-    window.networkNav.currentNodeParams = null;
+    networkNav.currentNodeParams = null;
 
     return PackageInfo.close();
   }
 
-  if (window.networkNav.currentNodeParams?.nodes[0] === params.nodes[0] && packageInfoOpened === true) {
+  if (networkNav.currentNodeParams?.nodes[0] === params.nodes[0] && packageInfoOpened === true) {
     return void 0;
   }
 
   packageInfoOpened = true;
-  window.networkNav.currentNodeParams = params;
-  const currentNode = window.networkNav.currentNodeParams.nodes[0];
-  const selectedNode = secureDataSet.linker.get(
+  networkNav.currentNodeParams = params;
+  const currentNode = /** @type {import("./core/network-navigation.js").LevelParams} */ (networkNav.currentNodeParams).nodes[0];
+  const selectedNode = /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (ds.linker.get(
     Number(currentNode)
-  );
-  const selectedNodeLevel = nsn.getNodeLevel(selectedNode);
+  ));
+  const selectedNodeLevel = network.getNodeLevel(selectedNode);
 
-  window.networkNav.setLevel(selectedNodeLevel);
-  if (window.networkNav.dependenciesMapByLevel.get(selectedNodeLevel) === undefined) {
-    window.networkNav.dependenciesMapByLevel.set(selectedNodeLevel, params);
+  networkNav.setLevel(selectedNodeLevel);
+  if (networkNav.dependenciesMapByLevel.get(selectedNodeLevel) === undefined) {
+    networkNav.dependenciesMapByLevel.set(selectedNodeLevel, params);
   }
 
-  new PackageInfo(selectedNode, currentNode, secureDataSet.data.dependencies[selectedNode.name], nsn);
+  new PackageInfo(selectedNode, currentNode, dsData.dependencies[selectedNode.name], network);
 
   return void 0;
 }
 
+/**
+ * @param {import("./types.js").AppConfig | null} defaultConfig
+ */
 function onSettingsSaved(defaultConfig = null) {
+  /**
+   * @param {import("./types.js").AppConfig} config
+   */
   async function updateSettings(config) {
     console.log("[INFO] Settings saved:", config);
     const warningsToIgnore = new Set(config.ignore.warnings);
     const flagsToIgnore = new Set(config.ignore.flags);
     const theme = config.theme;
-    secureDataSet.warningsToIgnore = warningsToIgnore;
-    secureDataSet.flagsToIgnore = flagsToIgnore;
-    secureDataSet.theme = theme;
-    window.settings.config.ignore.warnings = warningsToIgnore;
-    window.settings.config.ignore.flags = flagsToIgnore;
-    window.settings.config.theme = theme;
-    window.settings.config.disableExternalRequests = config.disableExternalRequests;
+    const ds = /** @type {NodeSecureDataSet} */ (secureDataSet);
+    ds.warningsToIgnore = warningsToIgnore;
+    ds.flagsToIgnore = flagsToIgnore;
+    ds.theme = theme;
+    const settingsConfig = utils.getSettingsConfig();
+    settingsConfig.ignore.warnings = warningsToIgnore;
+    settingsConfig.ignore.flags = flagsToIgnore;
+    settingsConfig.theme = theme;
+    settingsConfig.disableExternalRequests = config.disableExternalRequests;
 
     document.body.classList.toggle("dark", theme === "dark");
 
-    await secureDataSet.init(
-      secureDataSet.data,
-      secureDataSet.FLAGS,
-      secureDataSet.theme
-    );
+    await ds.init(ds.data, ds.FLAGS);
 
     if (!nsn) {
       return;
     }
 
-    const { nodes } = secureDataSet.build();
+    const { nodes } = ds.build();
     nsn.nodes.update(nodes.get());
-    const rootNode = secureDataSet.linker.get(0);
+    const rootNode = /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (ds.linker.get(0));
     window.activePackage = rootNode.name + "@" + rootNode.version;
 
-    if (window.networkNav.currentNodeParams !== null) {
-      window.navigation.setNavByName("network--view");
-      nsn.neighbourHighlight(window.networkNav.currentNodeParams, window.i18n[utils.currentLang()]);
+    if (window.networkNav && window.networkNav.currentNodeParams !== null) {
+      utils.getNavigation().setNavByName("network--view");
+      nsn.neighbourHighlight(
+        /** @type {any} */ (window.networkNav.currentNodeParams),
+        /** @type {any} */ (window.i18n[utils.currentLang()])
+      );
       updateShowInfoMenu(window.networkNav.currentNodeParams);
     }
 
@@ -520,21 +619,21 @@ function onSettingsSaved(defaultConfig = null) {
     }
 
     if (config.disableExternalRequests === false) {
-      homeView.generateDownloads();
+      homeView?.generateDownloads();
     }
 
-    warningsView.requestUpdate();
-    treeView.requestUpdate();
+    warningsView?.requestUpdate();
+    treeView?.requestUpdate();
   }
 
   if (defaultConfig) {
     updateSettings(defaultConfig);
   }
 
-  const networkView = document.getElementById("network--view");
+  const networkView = /** @type {HTMLElement} */ (document.getElementById("network--view"));
 
-  window.addEventListener(EVENTS.SETTINGS_SAVED, async(event) => {
-    updateSettings(event.detail);
+  window.addEventListener(EVENTS.SETTINGS_SAVED, async(/** @type {Event} */ event) => {
+    updateSettings(/** @type {CustomEvent<import("./types.js").AppConfig>} */ (event).detail);
   });
 
   window.addEventListener(EVENTS.LOCKED, () => {

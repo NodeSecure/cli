@@ -5,8 +5,17 @@ import { warnings } from "@nodesecure/js-x-ray/warnings";
 
 // Import Internal Dependencies
 import { EVENTS } from "../../../core/events.js";
-import { currentLang } from "../../../common/utils.js";
+import { getI18n } from "../../../common/utils.js";
 import { FLAG_IGNORE_ITEMS } from "../../../common/flags.js";
+
+/**
+ * @typedef {Object} RawConfig
+ * @property {{ warnings: string[], flags: string[] }} ignore
+ * @property {string} [theme]
+ * @property {string} defaultPackageMenu
+ * @property {boolean} showFriendlyDependencies
+ * @property {boolean} disableExternalRequests
+ */
 
 // CONSTANTS
 const kAllowedHotKeys = new Set([
@@ -278,12 +287,14 @@ export class SettingsView extends LitElement {
 
   constructor() {
     super();
+    /** @type {import("../../../types.js").AppConfig | null} */
     this.config = null;
     this._saveEnabled = false;
 
     const storedHotkeys = localStorage.getItem("hotkeys");
     if (storedHotkeys === null) {
       localStorage.setItem("hotkeys", JSON.stringify(kDefaultHotKeys));
+      /** @type {Record<string, string>} */
       this._hotkeys = { ...kDefaultHotKeys };
     }
     else {
@@ -291,8 +302,8 @@ export class SettingsView extends LitElement {
     }
   }
 
-  #onSettingsSaved = (event) => {
-    this.setNewConfig(event.detail);
+  #onSettingsSaved = (/** @type {Event} */ event) => {
+    this.setNewConfig(/** @type {CustomEvent<RawConfig>} */ (event).detail);
     this._saveEnabled = false;
   };
 
@@ -311,12 +322,15 @@ export class SettingsView extends LitElement {
   }
 
   async fetchUserConfig() {
-    const config = await getJSON("/config");
+    const config = /** @type {RawConfig} */ (await getJSON("/config"));
     this.setNewConfig(config);
 
     return this;
   }
 
+  /**
+   * @param {RawConfig} config
+   */
   setNewConfig(config) {
     this.config = {
       ...config,
@@ -328,6 +342,9 @@ export class SettingsView extends LitElement {
     };
   }
 
+  /**
+   * @param {Record<string, string>} hotkeys
+   */
   updateNavigationHotKey(hotkeys) {
     const navigationElement = document.getElementById("view-navigation");
     if (navigationElement === null) {
@@ -336,7 +353,8 @@ export class SettingsView extends LitElement {
 
     for (const span of navigationElement.querySelectorAll("span")) {
       // network--view -> network
-      const viewName = span.parentElement.getAttribute("data-menu").split("--")[0];
+      const menu = /** @type {HTMLElement} */ (span.parentElement);
+      const viewName = /** @type {string} */ (menu.getAttribute("data-menu")).split("--")[0];
       span.textContent = hotkeys[viewName];
     }
   }
@@ -346,8 +364,9 @@ export class SettingsView extends LitElement {
   }
 
   #updateHotKeys() {
+    /** @type {Record<string, string>} */
     const hotkeys = {};
-    for (const input of this.renderRoot.querySelectorAll(".hotkey")) {
+    for (const input of /** @type {NodeListOf<HTMLInputElement>} */ (this.renderRoot.querySelectorAll(".hotkey"))) {
       hotkeys[input.id] = input.value;
     }
 
@@ -356,8 +375,11 @@ export class SettingsView extends LitElement {
     localStorage.setItem("hotkeys", JSON.stringify(hotkeys));
   }
 
+  /**
+   * @param {Event} event
+   */
   #onHotkeyClick(event) {
-    const input = event.currentTarget;
+    const input = /** @type {HTMLInputElement} */ (event.currentTarget);
     if (!input.readOnly) {
       return;
     }
@@ -366,8 +388,11 @@ export class SettingsView extends LitElement {
     input.readOnly = false;
     input.value = "";
 
+    /**
+     * @param {KeyboardEvent} keyEvent
+     */
     const onKeyDown = (keyEvent) => {
-      if (!kShortcutInputTargetIds.has(keyEvent.target.id)) {
+      if (!kShortcutInputTargetIds.has(/** @type {HTMLElement} */ (keyEvent.target).id)) {
         return;
       }
 
@@ -375,6 +400,9 @@ export class SettingsView extends LitElement {
       keyEvent.preventDefault();
       keyEvent.stopPropagation();
 
+      /**
+       * @param {string} value
+       */
       const setValue = (value) => {
         input.value = value;
         input.readOnly = true;
@@ -391,7 +419,7 @@ export class SettingsView extends LitElement {
 
       if (kAllowedHotKeys.has(keyEvent.key.toLowerCase())) {
         const isHotKeyAlreadyUsed = [...this.renderRoot.querySelectorAll(".hotkey")]
-          .find((existingInput) => existingInput.value === keyEvent.key.toUpperCase());
+          .find((existingInput) => /** @type {HTMLInputElement} */ (existingInput).value === keyEvent.key.toUpperCase());
 
         setValue(isHotKeyAlreadyUsed ? currentValue : keyEvent.key.toUpperCase());
       }
@@ -404,26 +432,32 @@ export class SettingsView extends LitElement {
       return;
     }
 
-    const defaultPackageMenu = this.renderRoot.querySelector("#default_package_menu");
-    const themeSelector = this.renderRoot.querySelector("#theme_selector");
-    const showFriendly = this.renderRoot.querySelector("#show-friendly");
-    const disableExternal = this.renderRoot.querySelector("#disable-external");
+    const defaultPackageMenu = /** @type {HTMLSelectElement} */ (this.renderRoot.querySelector("#default_package_menu"));
+    const themeSelector = /** @type {HTMLSelectElement} */ (this.renderRoot.querySelector("#theme_selector"));
+    const showFriendly = /** @type {HTMLInputElement} */ (this.renderRoot.querySelector("#show-friendly"));
+    const disableExternal = /** @type {HTMLInputElement} */ (this.renderRoot.querySelector("#disable-external"));
 
     const newConfig = {
       defaultPackageMenu: defaultPackageMenu.value || SettingsView.defaultMenuName,
-      ignore: { flags: new Set(), warnings: new Set() },
+      ignore: { flags: /** @type {Set<string>} */ (new Set()), warnings: /** @type {Set<string>} */ (new Set()) },
       showFriendlyDependencies: showFriendly.checked,
       theme: themeSelector.value,
       disableExternalRequests: disableExternal.checked
     };
 
-    for (const checkbox of this.renderRoot.querySelectorAll("input[name='warnings']")) {
+    const warningsCheckboxes = /** @type {NodeListOf<HTMLInputElement>} */ (
+      this.renderRoot.querySelectorAll("input[name='warnings']")
+    );
+    for (const checkbox of warningsCheckboxes) {
       if (checkbox.checked) {
         newConfig.ignore.warnings.add(checkbox.value);
       }
     }
 
-    for (const checkbox of this.renderRoot.querySelectorAll("input[name='flags']")) {
+    const flagsCheckboxes = /** @type {NodeListOf<HTMLInputElement>} */ (
+      this.renderRoot.querySelectorAll("input[name='flags']")
+    );
+    for (const checkbox of flagsCheckboxes) {
       if (checkbox.checked) {
         newConfig.ignore.flags.add(checkbox.value);
       }
@@ -450,6 +484,8 @@ export class SettingsView extends LitElement {
   }
 
   #renderWarningCheckboxes() {
+    const config = /** @type {import("../../../types.js").AppConfig} */ (this.config);
+
     return Object.keys(warnings).map((id) => html`
       <div>
         <input
@@ -457,7 +493,7 @@ export class SettingsView extends LitElement {
           id=${id}
           name="warnings"
           value=${id}
-          ?checked=${this.config.ignore.warnings.has(id)}
+          ?checked=${config.ignore.warnings.has(id)}
           @change=${() => this.#enableSaveButton()}
         />
         <label for=${id}>${id.replaceAll("-", " ")}</label>
@@ -466,6 +502,8 @@ export class SettingsView extends LitElement {
   }
 
   #renderFlagCheckboxes() {
+    const config = /** @type {import("../../../types.js").AppConfig} */ (this.config);
+
     return FLAG_IGNORE_ITEMS.map(({ value, emoji }) => html`
       <div>
         <input
@@ -473,7 +511,7 @@ export class SettingsView extends LitElement {
           id=${value}
           name="flags"
           value=${value}
-          ?checked=${this.config.ignore.flags.has(value)}
+          ?checked=${config.ignore.flags.has(value)}
           @change=${() => this.#enableSaveButton()}
         />
         <label for=${value}>${emoji} ${value}</label>
@@ -481,6 +519,9 @@ export class SettingsView extends LitElement {
     `);
   }
 
+  /**
+   * @param {Record<string, any>} shortcuts
+   */
   #renderShortcuts(shortcuts) {
     return kShortcuts.map(({ id, labelKey, viewKey }) => html`
       <div>
@@ -489,7 +530,7 @@ export class SettingsView extends LitElement {
           id=${id}
           class="hotkey"
           .value=${this._hotkeys[id] ?? ""}
-          @click=${(event) => this.#onHotkeyClick(event)}
+          @click=${(/** @type {Event} */ event) => this.#onHotkeyClick(event)}
         />
         <label for=${id}>${shortcuts[labelKey]}${viewKey ? ` ${shortcuts.views[viewKey]}` : ""}</label>
       </div>
@@ -501,7 +542,7 @@ export class SettingsView extends LitElement {
       return nothing;
     }
 
-    const i18n = window.i18n[currentLang()];
+    const i18n = /** @type {Record<string, any>} */ (/** @type {unknown} */ (getI18n()));
     const general = i18n.settings.general;
     const shortcuts = i18n.settings.shortcuts;
     const packageNav = i18n.package_info.navigation;

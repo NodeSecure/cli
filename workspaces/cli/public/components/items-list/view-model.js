@@ -1,3 +1,10 @@
+/**
+ * @param {Object} params
+ * @param {string[]} params.items
+ * @param {boolean} params.isClosed
+ * @param {number} params.itemsToShowLength
+ * @param {boolean} [params.shouldShowEveryItems]
+ */
 export function selectVisibleItems({
   items, isClosed, itemsToShowLength, shouldShowEveryItems = false
 }) {

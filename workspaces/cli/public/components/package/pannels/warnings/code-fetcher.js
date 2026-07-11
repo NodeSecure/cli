@@ -1,11 +1,26 @@
 // Import Third-party Dependencies
-import hljs from "highlight.js/lib/core";
-window.hljs = hljs;
+import hljsCore from "highlight.js/lib/core";
+// @ts-expect-error - vendor script loaded via require(), the target resolves to a physical
+// non-module file that TS insists on type-checking; there are no type declarations to satisfy.
 require("highlightjs-line-numbers.js/dist/highlightjs-line-numbers.min.js");
+
+// The `highlightjs-line-numbers.js` plugin patches `hljsCore` with `initLineNumbersOnLoad`
+// at runtime (via the `require` above), a shape TS's static `HLJSApi` type doesn't know about.
+const hljs = /** @type {import("highlight.js").HLJSApi & { initLineNumbersOnLoad(): void }} */ (
+  /** @type {unknown} */ (hljsCore)
+);
+window.hljs = hljs;
 
 // CONSTANTS
 const kLoadingMessage = "Loading ...";
 
+/**
+ * @typedef {[[number, number], [number, number]]} CodeLocation
+ */
+
+/**
+ * @param {string | null} str
+ */
 function removeTags(str) {
   if (str === null || str === "") {
     return false;
@@ -17,21 +32,28 @@ function removeTags(str) {
 export class CodeFetcher {
   static setupDocumentClickHandler = true;
 
+  /**
+   * @param {string} code
+   * @param {CodeLocation} location
+   */
   static getLineFromFile(code, location) {
     const [[startLine]] = location;
 
     return code.split("\n").slice(startLine >= 10 ? startLine - 10 : 0, startLine + 10).join("\n");
   }
 
+  /**
+   * @param {MouseEvent} event
+   */
   static hide(event) {
-    const packageCodeElement = document.querySelector(".package-code");
+    const packageCodeElement = /** @type {HTMLElement | null} */ (document.querySelector(".package-code"));
     if (!packageCodeElement) {
       return;
     }
 
     if (
       (packageCodeElement.innerText && packageCodeElement.innerText !== kLoadingMessage) &&
-      !packageCodeElement.contains(event.target)
+      !packageCodeElement.contains(/** @type {Node} */ (event.target))
       && packageCodeElement.style.visibility === "visible"
     ) {
       packageCodeElement.style.visibility = "hidden";
@@ -39,26 +61,36 @@ export class CodeFetcher {
     }
   }
 
+  /**
+   * @param {string | null} unpkgRoot
+   */
   constructor(unpkgRoot) {
     this.unpkgRoot = unpkgRoot;
 
+    /** @type {Map<string, string>} */
     this.cache = new Map();
+    /** @type {HTMLElement} */
+    this.container = /** @type {any} */ (undefined);
     if (CodeFetcher.setupDocumentClickHandler) {
       document.addEventListener("click", CodeFetcher.hide);
       CodeFetcher.setupDocumentClickHandler = false;
     }
   }
 
-  async fetchCodeLine(event, options = {}) {
+  /**
+   * @param {Event} event
+   * @param {{ file: string, location: CodeLocation, id: string, value: string | null }} options
+   */
+  async fetchCodeLine(event, options) {
     const { file, location, id, value } = options;
 
-    this.container = document.querySelector(".package-code");
+    this.container = /** @type {HTMLElement} */ (document.querySelector(".package-code"));
     this.container.style.visibility = "visible";
     const isJS = file.slice(-3) === ".js" || [".cjs", ".mjs"].includes(file.slice(-4));
     const isJSON = file.slice(-5) === ".json";
 
     if (this.cache.has(id)) {
-      this.container.innerHTML = this.cache.get(id);
+      this.container.innerHTML = /** @type {string} */ (this.cache.get(id));
       hljs.initLineNumbersOnLoad();
       event.stopPropagation();
 
@@ -82,7 +114,7 @@ export class CodeFetcher {
       codeElement.textContent = CodeFetcher.getLineFromFile(code, location);
       // eslint-disable-next-line no-nested-ternary
       codeElement.classList.add(`language-${isJS ? "js" : isJSON ? "json" : "text"}`, "hljs");
-      codeElement.setAttribute("data-ln-start-from", location[0][0] >= 10 ? location[0][0] - 9 : 1);
+      codeElement.setAttribute("data-ln-start-from", String(location[0][0] >= 10 ? location[0][0] - 9 : 1));
 
       preElement.appendChild(codeElement);
       this.container.appendChild(preElement);
@@ -97,7 +129,9 @@ export class CodeFetcher {
 
       if (isMultiLine) {
         setTimeout(() => {
-          const tdsElement = codeElement.parentElement.querySelectorAll("table tbody tr td:nth-child(2)");
+          const tdsElement = /** @type {HTMLElement} */ (
+            codeElement.parentElement
+          ).querySelectorAll("table tbody tr td:nth-child(2)");
           for (let i = 0; i < tdsElement.length; i++) {
             const tdElement = tdsElement[i];
 

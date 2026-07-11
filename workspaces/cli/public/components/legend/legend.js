@@ -3,7 +3,7 @@ import { LitElement, html, css, nothing } from "lit";
 import { COLORS } from "@nodesecure/vis-network";
 
 // Import Internal Dependencies
-import { currentLang } from "../../common/utils.js";
+import { getI18n } from "../../common/utils.js";
 
 class Legend extends LitElement {
   static properties = {
@@ -83,7 +83,7 @@ class Legend extends LitElement {
     }
 
     const colors = COLORS.LIGHT;
-    const { legend } = window.i18n[currentLang()];
+    const { legend } = getI18n();
 
     return html`
      <div class="container">
@@ -95,6 +95,10 @@ class Legend extends LitElement {
     `;
   }
 
+  /**
+   * @param {typeof COLORS.LIGHT[keyof typeof COLORS.LIGHT]} theme
+   * @param {string} text
+   */
   #createLegendBoxElement(
     theme,
     text

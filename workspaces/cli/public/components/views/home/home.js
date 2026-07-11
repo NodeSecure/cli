@@ -60,6 +60,7 @@ const kEmojiMetadata = {
 export class HomeView {
   /**
    * @param {!NodeSecureDataSet} secureDataSet
+   * @param {import("@nodesecure/vis-network").NodeSecureNetwork} nsn
    */
   constructor(
     secureDataSet,
@@ -69,11 +70,11 @@ export class HomeView {
     this.nsn = nsn;
     this.lang = utils.currentLang();
 
-    const homeViewHTMLElement = document.getElementById("home--view");
+    const homeViewHTMLElement = /** @type {HTMLElement} */ (document.getElementById("home--view"));
     homeViewHTMLElement.innerHTML = "";
     homeViewHTMLElement.appendChild(this.render());
 
-    if (window.settings.config.disableExternalRequests === false) {
+    if (utils.getSettingsConfig().disableExternalRequests === false) {
       this.generateScorecard();
     }
     this.generateHeader();
@@ -89,35 +90,37 @@ export class HomeView {
 
   render() {
     console.log("[HOME] cloning new template");
-    const template = document.getElementById("home-view-content");
+    const template = /** @type {HTMLTemplateElement | null} */ (document.getElementById("home-view-content"));
     if (!template) {
       throw new Error("Unable to find HTML template with ID 'home-view-content'");
     }
 
-    /** @type {HTMLTemplateElement} */
     const clone = document.importNode(template.content, true);
 
     return clone;
   }
 
   generateScorecard() {
-    const { name, version } = this.secureDataSet.linker.get(0);
-    const pkg = this.secureDataSet.data.dependencies[name];
-    const { repository } = pkg.versions[version].links;
+    const rootEntry = /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (this.secureDataSet.linker.get(0));
+    const { name, version } = rootEntry;
+    const pkg = /** @type {NonNullable<NodeSecureDataSet["data"]>} */ (this.secureDataSet.data).dependencies[name];
+    const { repository } = pkg.versions[version].links ?? {};
 
     if (repository === null || repository === undefined) {
       return;
     }
 
-    const [repoName, platform] = getVCSRepositoryPathAndPlatform(repository) ?? [];
+    const [repoNameRaw, platformRaw] = getVCSRepositoryPathAndPlatform(repository) ?? [];
+    const repoName = /** @type {string} */ (repoNameRaw);
+    const platform = /** @type {string} */ (platformRaw);
 
     fetchScorecardData(repoName, platform).then((data) => {
       if (data !== null) {
-        document
-          .querySelector(".home--header--scorecard .score")
+        /** @type {HTMLElement} */ (document
+          .querySelector(".home--header--scorecard .score"))
           .classList.add(getScoreColor(data.score));
-        document.getElementById("home-scorecard-score").innerHTML = data.score;
-        const scorescardElement = document.querySelector(".home--header--scorecard");
+        /** @type {HTMLElement} */ (document.getElementById("home-scorecard-score")).innerHTML = String(data.score);
+        const scorescardElement = /** @type {HTMLElement} */ (document.querySelector(".home--header--scorecard"));
         scorescardElement.addEventListener("click", () => {
           window.open(getScorecardLink(repoName, platform), "_blank");
         });
@@ -127,11 +130,12 @@ export class HomeView {
   }
 
   generateHeader() {
-    const { name, version, description, repository } = this.secureDataSet.linker.get(0);
+    const rootEntry = /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (this.secureDataSet.linker.get(0));
+    const { name, version, description, repository } = rootEntry;
 
-    document.getElementById("project-name").textContent = name;
-    document.getElementById("project-version").textContent = version;
-    document.getElementById("project-description").textContent = description;
+    /** @type {HTMLElement} */ (document.getElementById("project-name")).textContent = name;
+    /** @type {HTMLElement} */ (document.getElementById("project-version")).textContent = version;
+    /** @type {HTMLElement} */ (document.getElementById("project-description")).textContent = description;
 
     const linksFragment = document.createDocumentFragment();
     const links = {
@@ -141,7 +145,7 @@ export class HomeView {
       },
       Github: {
         src: "github-black.png",
-        href: utils.parseRepositoryUrl(repository)
+        href: utils.parseRepositoryUrl(/** @type {{ url?: string } | undefined} */ (repository))
       }
     };
 
@@ -156,15 +160,21 @@ export class HomeView {
         liElement.style.display = "none";
       }
       else {
-        liElement.addEventListener("click", () => window.open(config.href, "_blank"));
+        const href = config.href;
+        liElement.addEventListener("click", () => window.open(href, "_blank"));
       }
 
       linksFragment.appendChild(liElement);
     }
 
-    document.getElementById("project-links").appendChild(linksFragment);
+    /** @type {HTMLElement} */ (document.getElementById("project-links")).appendChild(linksFragment);
   }
 
+  /**
+   * @param {string} icon
+   * @param {string} title
+   * @param {string | number} value
+   */
   #createOverviewDiv(icon, title, value) {
     const titleDiv = utils.createDOMElement("div", {
       className: "title",
@@ -177,15 +187,19 @@ export class HomeView {
     return utils.createDOMElement("div", {
       childs: [
         titleDiv,
-        utils.createDOMElement("span", { text: value })
+        utils.createDOMElement("span", { text: String(value) })
       ]
     });
   }
 
   async generateOverview() {
     const fragment = document.createDocumentFragment();
+    const overview = /** @type {Record<string, string>} */ (
+      /** @type {unknown} */ (utils.getI18n(this.lang).home.overview)
+    );
 
-    const { name } = this.secureDataSet.linker.get(0);
+    const rootEntry = /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (this.secureDataSet.linker.get(0));
+    const { name } = rootEntry;
     let directDependencies = 0;
     for (const { usedBy } of this.secureDataSet.linker.values()) {
       if (name in usedBy) {
@@ -193,22 +207,22 @@ export class HomeView {
       }
     }
     fragment.appendChild(this.#createOverviewDiv(
-      "icon-cubes", `# ${window.i18n[this.lang].home.overview.dependencies}`, this.secureDataSet.dependenciesCount
+      "icon-cubes", `# ${overview.dependencies}`, this.secureDataSet.dependenciesCount
     ));
     fragment.appendChild(this.#createOverviewDiv(
-      "icon-archive", window.i18n[this.lang].home.overview.totalSize, this.secureDataSet.prettySize
+      "icon-archive", overview.totalSize, this.secureDataSet.prettySize
     ));
     fragment.appendChild(this.#createOverviewDiv(
-      "icon-link", `# ${window.i18n[this.lang].home.overview.directDeps}`, directDependencies
+      "icon-link", `# ${overview.directDeps}`, directDependencies
     ));
     fragment.appendChild(this.#createOverviewDiv(
-      "icon-sitemap", `# ${window.i18n[this.lang].home.overview.transitiveDeps}`, this.secureDataSet.indirectDependencies
+      "icon-sitemap", `# ${overview.transitiveDeps}`, this.secureDataSet.indirectDependencies
     ));
 
-    const homeOverviewElement = document.querySelector(".home--overview");
+    const homeOverviewElement = /** @type {HTMLElement} */ (document.querySelector(".home--overview"));
     homeOverviewElement.appendChild(fragment);
 
-    if (window.settings.config.disableExternalRequests) {
+    if (utils.getSettingsConfig().disableExternalRequests) {
       return;
     }
 
@@ -219,8 +233,11 @@ export class HomeView {
     const maxPackages = 4;
     const fragment = document.createDocumentFragment();
 
+    /** @type {{ name: string, version: string, flags: string[], deprecated?: string }[]} */
     const deps = [];
-    for (const [name, dependency] of Object.entries(this.secureDataSet.data.dependencies)) {
+
+    const nodeSecureDataSetData = /** @type {NonNullable<NodeSecureDataSet["data"]>} */ (this.secureDataSet.data);
+    for (const [name, dependency] of Object.entries(nodeSecureDataSetData.dependencies)) {
       for (const [version, dependencyVer] of Object.entries(dependency.versions)) {
         const { flags } = dependencyVer;
 
@@ -242,7 +259,7 @@ export class HomeView {
 
       const [element, menuToOpen] = this.renderPackage(dependency);
       element.addEventListener("click", () => {
-        window.navigation.setNavByName("network--view");
+        utils.getNavigation().setNavByName("network--view");
         setTimeout(() => {
           PackageInfo.ForcedPackageMenu = menuToOpen;
           this.nsn.focusNodeByNameAndVersion(
@@ -259,22 +276,26 @@ export class HomeView {
     }
 
     if (fragment.children.length === 0) {
-      document.getElementById("homewatch").style.display = "none";
+      /** @type {HTMLElement} */ (document.getElementById("homewatch")).style.display = "none";
     }
     else {
       if (hideItems) {
         const expandableSpan = document.createElement("expandable-span");
-        expandableSpan.onToggle = (expandable) => utils.toggle(expandable,
-          document.querySelector(".home--packages--overview"),
+        expandableSpan.onToggle = () => utils.toggle(expandableSpan,
+          /** @type {HTMLElement} */ (document.querySelector(".home--packages--overview")),
           maxPackages);
         fragment.appendChild(expandableSpan);
       }
 
-      document.querySelector(".home--packages--overview")
+      /** @type {HTMLElement} */ (document.querySelector(".home--packages--overview"))
         .appendChild(fragment);
     }
   }
 
+  /**
+   * @param {{ name: string, version: string, flags: string[], deprecated?: string }} dependencyVer
+   * @returns {[HTMLElement, string]}
+   */
   renderPackage(dependencyVer) {
     const { name, version, flags, deprecated } = dependencyVer;
 
@@ -284,12 +305,18 @@ export class HomeView {
     };
     const inlinedEmojis = getFlagsEmojisInlined(
       flags.filter((name) => kFlagsToWatch.has(name)),
-      new Set(window.settings.config.ignore.flags)
+      new Set(utils.getSettingsConfig().ignore.flags)
     );
 
+    /** @type {HTMLElement[]} */
     const childs = [];
     for (const emoji of utils.extractEmojis(inlinedEmojis)) {
-      const { menu, description } = kEmojiMetadata[emoji];
+      const {
+        menu,
+        description
+      } = /** @type {Record<string, { menu: { name: string, priority: number }, description: string }>} */ (
+        kEmojiMetadata
+      )[emoji];
       if (menu.priority > menuToOpen.priority) {
         menuToOpen.name = menu.name;
         menuToOpen.priority = menu.priority;
@@ -332,7 +359,7 @@ export class HomeView {
   }
 
   generateWarnings() {
-    const warningsModuleElement = document.getElementById("warnings-module");
+    const warningsModuleElement = /** @type {HTMLElement} */ (document.getElementById("warnings-module"));
     if (this.secureDataSet.warnings.length === 0) {
       warningsModuleElement.style.display = "none";
 
@@ -344,8 +371,10 @@ export class HomeView {
       fragment.appendChild(utils.createDOMElement("p", { text }));
     }
 
-    warningsModuleElement.querySelector(".count").textContent = this.secureDataSet.warnings.length;
-    warningsModuleElement.querySelector(".home--warnings").appendChild(fragment);
+    /** @type {HTMLElement} */ (warningsModuleElement.querySelector(".count")).textContent = String(
+      this.secureDataSet.warnings.length
+    );
+    /** @type {HTMLElement} */ (warningsModuleElement.querySelector(".home--warnings")).appendChild(fragment);
   }
 
   generateExtensions() {
@@ -359,7 +388,7 @@ export class HomeView {
     gauge.data = extensions;
     gauge.theme = this.secureDataSet.theme;
 
-    document.getElementById("home-extensions").appendChild(gauge);
+    /** @type {HTMLElement} */ (document.getElementById("home-extensions")).appendChild(gauge);
   }
 
   generateLicenses() {
@@ -376,7 +405,7 @@ export class HomeView {
             name,
             value,
             link: result.value.spdxLicenseLinks?.[0] ?? null,
-            chips: Object.entries(result.value.spdx)
+            chips: Object.entries(/** @type {Record<string, boolean>} */ (result.value.spdx))
               .filter(([key]) => key !== "includesDeprecated")
               .map(([key, value]) => `${value ? "✔️" : "❌"} ${key}`)
           }
@@ -387,7 +416,7 @@ export class HomeView {
     gauge.data = licenses;
     gauge.theme = this.secureDataSet.theme;
 
-    document.getElementById("home-licenses").appendChild(gauge);
+    /** @type {HTMLElement} */ (document.getElementById("home-licenses")).appendChild(gauge);
   }
 
   generateMaintainers() {
@@ -398,13 +427,15 @@ export class HomeView {
     maintainers.options = {
       maximumMaintainers: 5
     };
-    const pannel = document.getElementById("pannel-right");
+    const pannel = /** @type {HTMLElement} */ (document.getElementById("pannel-right"));
     pannel.prepend(maintainers);
   }
 
   generateModuleTypes() {
-    const moduleTypesElement = document.getElementById("home-modules-types");
-    const moduleTypes = Object.values(this.secureDataSet.data.dependencies).reduce((acc, dep) => {
+    const moduleTypesElement = /** @type {HTMLElement} */ (document.getElementById("home-modules-types"));
+    const moduleTypes = Object.values(/** @type {NonNullable<NodeSecureDataSet["data"]>} */ (
+      this.secureDataSet.data
+    ).dependencies).reduce((acc, dep) => {
       const types = Object.values(dep.versions).map((version) => version.type);
       for (const type of types) {
         acc[type] += 1;
@@ -432,19 +463,23 @@ export class HomeView {
   }
 
   async generateDownloads() {
-    const homeOverviewElement = document.querySelector(".home--overview");
-    const { name } = this.secureDataSet.linker.get(0);
+    const homeOverviewElement = /** @type {HTMLElement} */ (document.querySelector(".home--overview"));
+    const rootEntry = /** @type {import("@nodesecure/vis-network").LinkerEntry} */ (this.secureDataSet.linker.get(0));
+    const { name } = rootEntry;
 
     try {
-      const { downloads } = await getJSON(`/downloads/${name.replaceAll("/", "%2F")}`);
+      const { downloads } = /** @type {{ downloads: number }} */ (await getJSON(`/downloads/${name.replaceAll("/", "%2F")}`));
 
       if (downloads) {
         const downloadsElement = document.querySelector(".home--overview div:has(i.icon-chart-bar)");
         downloadsElement?.remove();
         const formattedNumber = new Intl.NumberFormat("de-DE").format(downloads);
+        const overview = /** @type {Record<string, string>} */ (
+          /** @type {unknown} */ (utils.getI18n(this.lang).home.overview)
+        );
         homeOverviewElement.appendChild(this.#createOverviewDiv(
           "icon-chart-bar",
-          window.i18n[this.lang].home.overview.downloadsLastWeek,
+          overview.downloadsLastWeek,
           formattedNumber
         ));
       }
@@ -455,9 +490,11 @@ export class HomeView {
   }
 
   handleReport() {
-    document.querySelector(".home--header--report").addEventListener("click", async() => {
+    /** @type {HTMLElement} */ (document.querySelector(".home--header--report")).addEventListener("click", async() => {
       const popupReport = document.createElement("popup-report");
-      popupReport.dependencyName = this.secureDataSet.data.rootDependency.name;
+      popupReport.dependencyName = /** @type {NonNullable<NodeSecureDataSet["data"]>} */ (
+        this.secureDataSet.data
+      ).rootDependency.name;
       popupReport.theme = this.secureDataSet.theme;
       window.dispatchEvent(new CustomEvent(EVENTS.MODAL_OPENED, {
         detail: {

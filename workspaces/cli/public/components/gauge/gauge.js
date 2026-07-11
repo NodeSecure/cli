@@ -7,7 +7,15 @@ import { when } from "lit/directives/when.js";
 import { EVENTS } from "../../core/events.js";
 import "../expandable/expandable.js";
 
-class Gauge extends LitElement {
+/**
+ * @typedef {Object} GaugeItem
+ * @property {string} name
+ * @property {number} value
+ * @property {string | null} [link]
+ * @property {string[] | null} [chips]
+ */
+
+export class Gauge extends LitElement {
   static styles = css`
 .gauge {
   display: flex;
@@ -110,10 +118,14 @@ class Gauge extends LitElement {
 
   constructor() {
     super();
+    /** @type {GaugeItem[]} */
     this.data = [];
     this.maxLength = 8;
     this.isClosed = true;
-    this.settingsChanged = ({ detail: { theme } }) => {
+    /** @type {string} */
+    this.theme = "";
+    this.settingsChanged = (/** @type {Event} */ event) => {
+      const { theme } = /** @type {CustomEvent<{ theme: string }>} */ (event).detail;
       if (theme !== this.theme) {
         this.theme = theme;
       }
@@ -147,6 +159,9 @@ class Gauge extends LitElement {
     </div>`;
   }
 
+  /**
+   * @param {{ text: string, value: number, chips: string[] | null, link: string | null, length: number }} params
+   */
   #createLine({
     text, value, chips, link, length
   }) {
@@ -157,7 +172,7 @@ class Gauge extends LitElement {
         <span>${value}</span>
     </div>
     ${when(chips,
-      () => html`<div class="line--column border-bottom">${this.#createChips(chips)}</div>`,
+      () => html`<div class="line--column border-bottom">${this.#createChips(/** @type {string[]} */ (chips))}</div>`,
       () => nothing)}
 `;
 
@@ -165,7 +180,7 @@ class Gauge extends LitElement {
     ${when(link !== null,
       () => html`
     <div class="clickable line" @click=${() => {
-      window.open(link, "_blank");
+      window.open(/** @type {string} */ (link), "_blank");
     }}>
       ${lineColumn}
     </div>
@@ -178,6 +193,9 @@ class Gauge extends LitElement {
     `;
   }
 
+  /**
+   * @param {string[]} chips
+   */
   #createChips(chips) {
     return html`
     ${repeat(chips,
@@ -186,6 +204,9 @@ class Gauge extends LitElement {
 `;
   }
 
+  /**
+   * @param {number} percent
+   */
   #createGaugeBar(percent) {
     return html`
     <div class="gauge--bar">
@@ -193,6 +214,10 @@ class Gauge extends LitElement {
     </div>`;
   }
 
+  /**
+   * @param {number} value
+   * @param {number} length
+   */
   #pourcentFromValue(value, length) {
     return Math.round((value / length) * 100);
   }

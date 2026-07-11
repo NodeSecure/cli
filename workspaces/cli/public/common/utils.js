@@ -31,7 +31,7 @@ export function extractEmojis(strWithEmojis) {
  * @param {keyof HTMLElementTagNameMap} kind
  * @param {object} [options]
  * @param {string[]} [options.classList]
- * @param {HTMLElement[]} [options.childs]
+ * @param {(Node | null)[]} [options.childs]
  * @param {Record<string, any>} [options.attributes]
  * @param {Record<string, any>} [options.styles]
  * @param {string | null} [options.text]
@@ -136,7 +136,7 @@ export function parseRepositoryUrl(repository = {}, defaultValue = null) {
 
 /**
  * @param {string} title
- * @param {string} value
+ * @param {string | number} value
  * @param {Record<string, any>} options
  * @returns {HTMLElement}
  */
@@ -148,11 +148,12 @@ export function createLiField(title, value, options = {}) {
   let elementToAppend;
 
   if (isLink) {
-    const textValue = value.length > 26 ? `${value.slice(0, 26)}...` : value;
-    elementToAppend = createLink(value, textValue);
+    const href = /** @type {string} */ (value);
+    const textValue = href.length > 26 ? `${href.slice(0, 26)}...` : href;
+    elementToAppend = createLink(href, textValue);
   }
   else {
-    elementToAppend = createDOMElement("p", { text: value });
+    elementToAppend = createDOMElement("p", { text: String(value) });
   }
   liElement.appendChild(elementToAppend);
 
@@ -163,7 +164,7 @@ export function createLiField(title, value, options = {}) {
  * @param {HTMLElement} node - The parent DOM element.
  * @param {string[]} items - Array of strings to display.
  * @param {Object} [options] - Optional configuration options.
- * @param {Function} [options.onclick] - Callback function (event, item).
+ * @param {(event: Event, item: string) => void} [options.onclick] - Callback function (event, item).
  * @param {boolean} [options.hideItems] - Hide items if needed.
  * @param {number} [options.hideItemsLength] - Number of visible elements before masking.
  * @returns {void}
@@ -305,6 +306,48 @@ export function hideOnClickOutside(
   document.addEventListener("click", outsideClickListener);
 
   return outsideClickListener;
+}
+
+/**
+ * Returns the i18n dictionary for the given language (defaults to the current language).
+ *
+ * Works around `window.i18n`'s declared type being widened to `Record<string, unknown>`
+ * by a third-party ambient declaration (`@nodesecure/vis-network`'s `utils.d.ts`).
+ *
+ * @param {string} [lang]
+ * @returns {Record<string, Record<string, string>>}
+ */
+export function getI18n(lang = currentLang()) {
+  return /** @type {Record<string, Record<string, string>>} */ (
+    window.i18n[lang]
+  );
+}
+
+/**
+ * Returns the application settings config.
+ *
+ * Works around `window.settings`'s declared type being unreliably shadowed by a
+ * conflicting third-party ambient declaration (`@nodesecure/vis-network`'s
+ * `dataset.d.ts` declares `Window.settings: { config: { showFriendlyDependencies } }`).
+ *
+ * @returns {import("../types.js").AppConfig}
+ */
+export function getSettingsConfig() {
+  return /** @type {import("../types.js").AppConfig} */ (/** @type {unknown} */ (
+    window.settings.config
+  ));
+}
+
+/**
+ * `window.navigation` collides with the browser's native, read-only Navigation API.
+ * The app intentionally shadows it with its own `ViewNavigation` controller.
+ *
+ * @returns {import("../components/navigation/navigation.js").ViewNavigation}
+ */
+export function getNavigation() {
+  return /** @type {import("../components/navigation/navigation.js").ViewNavigation} */ (/** @type {unknown} */ (
+    window.navigation
+  ));
 }
 
 /** @returns {string} */

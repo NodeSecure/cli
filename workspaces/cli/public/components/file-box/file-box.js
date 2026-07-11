@@ -5,7 +5,7 @@ import { when } from "lit/directives/when.js";
 // Import Internal Dependencies
 import "../icon/icon.js";
 
-class FileBox extends LitElement {
+export class FileBox extends LitElement {
   static styles = css`
 .box-file-info {
   display: flex;
@@ -103,8 +103,11 @@ class FileBox extends LitElement {
     super();
     this.title = "";
     this.fileName = "";
+    /** @type {string | null} */
     this.titleHref = "#";
+    /** @type {string | null} */
     this.fileHref = null;
+    /** @type {string | null} */
     this.severity = null;
   }
 

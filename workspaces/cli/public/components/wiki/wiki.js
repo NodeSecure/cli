@@ -5,17 +5,25 @@ import * as documentationUI from "@nodesecure/documentation-ui";
 import { PackageInfo } from "../package/package.js";
 
 export class Wiki {
+  /** @type {HTMLElement} */
+  documentationRootElement;
+
   constructor() {
-    this.documentationRootElement = document.querySelector(
+    const documentationRootElement = document.querySelector(
       "#documentation-root-element"
     );
-    this.openButton = this.documentationRootElement.querySelector(
-      ".open-button"
-    );
+    if (!documentationRootElement) {
+      throw new Error("Wiki Documentation root element not found");
+    }
 
-    const documentationRenderContainer = this.documentationRootElement.querySelector(
+    this.documentationRootElement = /** @type {HTMLElement} */ (documentationRootElement);
+    const openButton = /** @type {HTMLElement} */ (this.documentationRootElement.querySelector(
+      ".open-button"
+    ));
+
+    const documentationRenderContainer = /** @type {HTMLElement} */ (this.documentationRootElement.querySelector(
       ".documentation-render-container"
-    );
+    ));
     for (const node of documentationRenderContainer.childNodes) {
       node.remove();
     }
@@ -25,22 +33,22 @@ export class Wiki {
       { prefetch: true }
     );
 
-    /** @type {documentationUI.Header} */
+    /** @type {documentationUI.RenderResult["header"]} */
     this.header = header;
-    /** @type {Record<string, documentationUI.Navigation>} */
+    /** @type {documentationUI.RenderResult["navigation"]} */
     this.navigation = navigation;
 
-    const packageInfoDomElement = document.getElementById(PackageInfo.DOMElementName);
+    const packageInfoDomElement = /** @type {HTMLElement} */ (document.getElementById(PackageInfo.DOMElementName));
     document.addEventListener("click", (event) => {
-      const isInWiki = this.documentationRootElement.contains(event.target);
-      const isInPackageInfo = packageInfoDomElement.contains(event.target);
+      const isInWiki = this.documentationRootElement.contains(/** @type {Node} */ (event.target));
+      const isInPackageInfo = packageInfoDomElement.contains(/** @type {Node} */ (event.target));
 
       if (!isInWiki && !isInPackageInfo && this.isOpen) {
         this.close();
       }
     });
 
-    this.openButton.addEventListener("click", () => {
+    openButton.addEventListener("click", () => {
       this[this.isOpen ? "close" : "open"]();
     });
 
@@ -56,14 +64,15 @@ export class Wiki {
    * @param {KeyboardEvent} event
    */
   #keydownHotkeys(event) {
-    const isTargetInput = event.target.tagName === "INPUT";
-    const isTargetPopup = event.target.id === "popup--background";
+    const target = /** @type {HTMLElement} */ (event.target);
+    const isTargetInput = target.tagName === "INPUT";
+    const isTargetPopup = target.id === "popup--background";
     const isSearchCommandOpen = Boolean(document.querySelector("command-palette")?.open);
     if (isTargetInput || isTargetPopup || isSearchCommandOpen) {
       return;
     }
 
-    const hotkeys = JSON.parse(localStorage.getItem("hotkeys"));
+    const hotkeys = JSON.parse(/** @type {string} */ (localStorage.getItem("hotkeys")));
 
     if (event.key.toUpperCase() === hotkeys.wiki) {
       this[this.isOpen ? "close" : "open"]();
@@ -74,8 +83,9 @@ export class Wiki {
    * @param {KeyboardEvent} event
    */
   #keydownArrows(event) {
-    /** @type {documentationUI.Navigation} */
-    const activeNav = this.navigation[this.header.active.getAttribute("data-menu")];
+    const activeHeader = /** @type {HTMLElement} */ (this.header.active);
+    const menuName = /** @type {string} */ (activeHeader.getAttribute("data-menu"));
+    const activeNav = this.navigation[menuName];
 
     switch (event.key) {
       case "ArrowLeft":

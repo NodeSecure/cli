@@ -49,7 +49,7 @@ export const FILTER_INSTANT_CONFIRM = new Set(["highlighted"]);
 /**
  * Returns per-flag package counts across the full linker.
  *
- * @param {Map<number, object>} linker
+ * @param {Map<number, import("@nodesecure/vis-network").LinkerEntry>} linker
  * @returns {Map<string, number>}
  */
 export function getFlagCounts(linker) {
@@ -66,7 +66,7 @@ export function getFlagCounts(linker) {
 /**
  * Returns per-value package counts for list-type filters.
  *
- * @param {Map<number, object>} linker
+ * @param {Map<number, import("@nodesecure/vis-network").LinkerEntry>} linker
  * @param {string} filterName
  * @returns {Map<string, number>}
  */
@@ -93,12 +93,16 @@ export function getFilterValueCounts(linker, filterName) {
   return counts;
 }
 
+/**
+ * @param {import("@nodesecure/vis-network").LinkerEntry} opt
+ * @param {string} filterName
+ */
 function getValuesForCount(opt, filterName) {
   switch (filterName) {
     case "license":
       return opt.uniqueLicenseIds ?? [];
     case "ext":
-      return opt.composition.extensions.filter((ext) => ext !== "");
+      return opt.composition.extensions.filter((/** @type {string} */ ext) => ext !== "");
     case "builtin":
       return opt.composition.required_nodejs;
     case "author": {
@@ -115,7 +119,7 @@ function getValuesForCount(opt, filterName) {
 }
 
 /**
- * @param {Map<number, object>} linker
+ * @param {Map<number, import("@nodesecure/vis-network").LinkerEntry>} linker
  * @param {string} filterName
  * @returns {{ display: string, value: string }[]}
  */
@@ -196,7 +200,7 @@ export function getHelperValues(linker, filterName) {
 /**
  * Returns the Set of package IDs (as strings) matching the given filter+value.
  *
- * @param {Map<number, object>} linker
+ * @param {Map<number, import("@nodesecure/vis-network").LinkerEntry>} linker
  * @param {string} filterName
  * @param {string} inputValue
  * @returns {Set<string>}
@@ -220,7 +224,7 @@ export function computeMatches(linker, filterName, inputValue) {
 /**
  * Collect packages that depend on package matching inputValue
  *
- * @param {Map<number, object>} linker
+ * @param {Map<number, import("@nodesecure/vis-network").LinkerEntry>} linker
  * @param {string} inputValue
  * @returns {Set<string>}
  */
@@ -252,6 +256,11 @@ function computeDepMatches(linker, inputValue) {
   return matchingIds;
 }
 
+/**
+ * @param {import("@nodesecure/vis-network").LinkerEntry} opt
+ * @param {string} filterName
+ * @param {string} inputValue
+ */
 function matchesFilter(opt, filterName, inputValue) {
   switch (filterName) {
     case "package": {

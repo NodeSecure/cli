@@ -13,6 +13,9 @@ const kEnGBDateFormat = Intl.DateTimeFormat("en-GB", {
 });
 
 export class Overview {
+  /**
+   * @param {import("../../package.js").PackageInfo} pkg
+   */
   constructor(pkg) {
     this.package = pkg;
   }
@@ -27,27 +30,27 @@ export class Overview {
   }
 
   /**
-   * @param {!HTMLTemplateElement} clone
+   * @param {!DocumentFragment} clone
    */
   generate(clone) {
     const { usedBy } = this.package.dependencyVersion;
 
-    clone.querySelector(".fields")
+    /** @type {HTMLElement} */ (clone.querySelector(".fields"))
       .appendChild(this.renderTopFields());
-    if (window.settings.config.disableExternalRequests === false) {
+    if (utils.getSettingsConfig().disableExternalRequests === false) {
       this.renderNPMStats();
     }
     else {
-      const npmStatElement = clone.querySelector("#npm-stats");
-      const npmStatTitleElement = npmStatElement.previousElementSibling;
+      const npmStatElement = /** @type {HTMLElement} */ (clone.querySelector("#npm-stats"));
+      const npmStatTitleElement = /** @type {HTMLElement} */ (npmStatElement.previousElementSibling);
       npmStatElement.classList.add("hidden");
       npmStatTitleElement.classList.add("hidden");
     }
-    clone.querySelector(".fields.releases")
+    /** @type {HTMLElement} */ (clone.querySelector(".fields.releases"))
       .appendChild(this.renderReleases());
 
     utils.createItemsList(
-      clone.getElementById("usedby"),
+      /** @type {HTMLElement} */ (clone.getElementById("usedby")),
       Object.entries(usedBy).map(([name, version]) => `${name}@${version}`),
       {
         onclick: (_, npmSpec) => this.package.nsn.focusNodeByNameAndVersion(...Object.values(utils.parseNpmSpec(npmSpec))),
@@ -57,7 +60,7 @@ export class Overview {
 
     // Fetch Github/Gitlab stats
     const githubLink = this.package.links.github;
-    if (window.settings.config.disableExternalRequests) {
+    if (utils.getSettingsConfig().disableExternalRequests) {
       setTimeout(() => {
         document.querySelector(".gitlab-overview")?.classList.add("hidden");
         document.querySelector(".github-overview")?.classList.add("hidden");
@@ -68,7 +71,7 @@ export class Overview {
         document.querySelector(".gitlab-overview")?.classList.add("hidden");
       });
 
-      this.fetchGithubStats(githubLink.href)
+      this.fetchGithubStats(/** @type {string} */ (githubLink.href))
         .catch(console.error);
     }
     else {
@@ -78,20 +81,23 @@ export class Overview {
 
       const gitlabLink = this.package.links.gitlab;
       if (gitlabLink.showInHeader) {
-        this.fetchGitlabStats(gitlabLink.href)
+        this.fetchGitlabStats(/** @type {string} */ (gitlabLink.href))
           .catch(console.error);
       }
       else {
         setTimeout(() => {
-          document.querySelector(".gitlab-overview").classList.add("hidden");
+          document.querySelector(".gitlab-overview")?.classList.add("hidden");
         });
       }
     }
 
-    clone.querySelector(".package-maintainers")
+    /** @type {HTMLElement} */ (clone.querySelector(".package-maintainers"))
       .appendChild(this.renderMaintainers());
   }
 
+  /**
+   * @param {string} githubLink
+   */
   async fetchGithubStats(githubLink) {
     const github = new URL(githubLink);
     const repoName = github.pathname.slice(
@@ -108,7 +114,7 @@ export class Overview {
 
     const starsEl = document.querySelector(".github-stars");
     const issuesEl = document.querySelector(".github-issues");
-    const forksEl = document.querySelector(".github-forks");
+    const forksEl = /** @type {HTMLElement | null} */ (document.querySelector(".github-forks"));
     if (starsEl === null || issuesEl === null || forksEl === null) {
       return;
     }
@@ -117,6 +123,9 @@ export class Overview {
     forksEl.textContent = forks_count;
   }
 
+  /**
+   * @param {string} gitlabLink
+   */
   async fetchGitlabStats(gitlabLink) {
     const gitlab = new URL(gitlabLink);
     const repoName = gitlab.pathname.slice(
@@ -130,8 +139,8 @@ export class Overview {
     } = await fetch(`https://gitlab.com/api/v4/projects/${encodeURIComponent(repoName)}`)
       .then((value) => value.json());
 
-    document.querySelector(".gitlab-stars").innerHTML = `<i class='icon-star'></i> ${star_count}`;
-    document.querySelector(".gitlab-forks").textContent = forks_count;
+    /** @type {HTMLElement} */ (document.querySelector(".gitlab-stars")).innerHTML = `<i class='icon-star'></i> ${star_count}`;
+    /** @type {HTMLElement} */ (document.querySelector(".gitlab-forks")).textContent = forks_count;
   }
 
   renderTopFields() {
@@ -139,45 +148,50 @@ export class Overview {
     const { metadata } = this.package.dependency;
 
     const fragment = document.createDocumentFragment();
-    const i18n = window.i18n[utils.currentLang()];
+    const overview = /** @type {Record<string, string>} */ (
+      /** @type {unknown} */ (utils.getI18n().package_info.overview)
+    );
 
     const { homepage } = this.package.links;
     if (typeof homepage.href === "string") {
       fragment.appendChild(utils.createLiField(
-        i18n.package_info.overview.homepage, homepage.href, { isLink: true }
+        overview.homepage, homepage.href, { isLink: true }
       ));
     }
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.author, this.author
+      overview.author, this.author
     ));
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.size, prettyBytes(size)
+      overview.size, prettyBytes(size)
     ));
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.dependencies, metadata.dependencyCount
+      overview.dependencies, metadata.dependencyCount
     ));
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.files, composition.files.length
+      overview.files, composition.files.length
     ));
     fragment.appendChild(
-      utils.createLiField("README.md", composition.files.some((file) => /README\.md/gi.test(file)) ? "✔️" : "❌")
+      utils.createLiField(
+        "README.md",
+        composition.files.some((/** @type {string} */ file) => /README\.md/gi.test(file)) ? "✔️" : "❌"
+      )
     );
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.tsTypings, composition.files.some((file) => /d\.ts/gi.test(file)) ? "✔️" : "❌"
+      overview.tsTypings, composition.files.some((/** @type {string} */ file) => /d\.ts/gi.test(file)) ? "✔️" : "❌"
     ));
     if ("node" in engines) {
       fragment.appendChild(utils.createLiField(
-        i18n.package_info.overview.npm, engines.node
+        overview.npm, /** @type {string} */ (engines.node)
       ));
     }
     if ("npm" in engines) {
       fragment.appendChild(utils.createLiField(
-        i18n.package_info.overview.npm, engines.npm
+        overview.npm, /** @type {string} */ (engines.npm)
       ));
     }
 
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.type, type
+      overview.type, type
     ));
 
     return fragment;
@@ -192,8 +206,8 @@ export class Overview {
 
     const numberFormat = new Intl.NumberFormat();
 
-    const weeklyDownloadsEl = document.querySelector("#npm-stats .weekly-downloads");
-    const weeklyTrafficEl = document.querySelector("#npm-stats .weekly-traffic");
+    const weeklyDownloadsEl = /** @type {HTMLElement | null} */ (document.querySelector("#npm-stats .weekly-downloads"));
+    const weeklyTrafficEl = /** @type {HTMLElement | null} */ (document.querySelector("#npm-stats .weekly-traffic"));
     if (weeklyDownloadsEl === null || weeklyTrafficEl === null) {
       return;
     }
@@ -204,23 +218,25 @@ export class Overview {
   renderReleases() {
     const { metadata } = this.package.dependency;
     const fragment = document.createDocumentFragment();
-    const i18n = window.i18n[utils.currentLang()];
+    const overview = /** @type {Record<string, string>} */ (
+      /** @type {unknown} */ (utils.getI18n().package_info.overview)
+    );
 
     const lastUpdatedAt = kEnGBDateFormat.format(
       new Date(this.package.dependency.metadata.lastUpdateAt)
     );
 
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.lastReleaseVersion, metadata.lastVersion
+      overview.lastReleaseVersion, metadata.lastVersion
     ));
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.lastReleaseDate, lastUpdatedAt
+      overview.lastReleaseDate, lastUpdatedAt
     ));
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.publishedReleases, metadata.publishedCount
+      overview.publishedReleases, metadata.publishedCount
     ));
     fragment.appendChild(utils.createLiField(
-      i18n.package_info.overview.numberPublishers, metadata.publishers.length
+      overview.numberPublishers, metadata.publishers.length
     ));
 
     return fragment;
@@ -251,7 +267,7 @@ export class Overview {
       if (result !== null) {
         divElement.addEventListener("click", () => {
           const [name, data] = result;
-          const popupMaintainer = document.createElement("popup-maintainer");
+          const popupMaintainer = /** @type {any} */ (document.createElement("popup-maintainer"));
           popupMaintainer.data = data;
           popupMaintainer.theme = this.package.nsn.secureDataSet.theme;
           popupMaintainer.nsn = this.package.nsn;

@@ -1,6 +1,18 @@
 // Import Internal Dependencies
 import { CONNECTOR_GAP } from "./tree-layout.js";
 
+/**
+ * @typedef {Object} CellRect
+ * @property {number} left
+ * @property {number} right
+ * @property {number} top
+ * @property {number} bottom
+ * @property {number} midY
+ */
+
+/**
+ * @param {HTMLElement | DocumentFragment | ShadowRoot} renderRoot
+ */
 export function drawConnectors(renderRoot) {
   const grid = renderRoot.querySelector(".tree-grid");
   if (!grid) {
@@ -15,11 +27,12 @@ export function drawConnectors(renderRoot) {
     return;
   }
 
-  const cells = grid.querySelectorAll(".tree-cell");
+  const cells = /** @type {NodeListOf<HTMLElement>} */ (grid.querySelectorAll(".tree-cell"));
 
   // Map each wrapper element to its rects:
   // - span bounds (top/bottom) from the stretched wrapper, for parent lookup
   // - midY from the inner card, for line anchoring at the visual card center
+  /** @type {Map<HTMLElement, CellRect>} */
   const elementRects = new Map();
   for (const cell of cells) {
     const wrapperRaw = cell.getBoundingClientRect();
@@ -38,6 +51,7 @@ export function drawConnectors(renderRoot) {
   // Resolve parent element for each child using spatial overlap:
   // among all cells matching data-parent-id, pick the one whose vertical
   // span (stretched to fill its grid rows) contains the child's midY.
+  /** @type {Map<HTMLElement, HTMLElement[]>} */
   const elementChildren = new Map();
   for (const child of cells) {
     const rawParentId = child.dataset.parentId;
@@ -46,15 +60,16 @@ export function drawConnectors(renderRoot) {
     }
 
     const parentId = Number(rawParentId);
-    const childMidY = elementRects.get(child).midY;
+    const childMidY = /** @type {CellRect} */ (elementRects.get(child)).midY;
 
+    /** @type {HTMLElement | null} */
     let bestParent = null;
     for (const candidate of cells) {
       if (Number(candidate.dataset.nodeId) !== parentId) {
         continue;
       }
 
-      const candidateRect = elementRects.get(candidate);
+      const candidateRect = /** @type {CellRect} */ (elementRects.get(candidate));
       if (childMidY >= candidateRect.top && childMidY <= candidateRect.bottom) {
         bestParent = candidate;
         break;
@@ -80,13 +95,13 @@ export function drawConnectors(renderRoot) {
   let hasPath = false;
 
   for (const [parent, children] of elementChildren) {
-    const parentRect = elementRects.get(parent);
-    const childRects = children.map((child) => elementRects.get(child));
+    const parentRect = /** @type {CellRect} */ (elementRects.get(parent));
+    const childRects = /** @type {CellRect[]} */ (children.map((child) => elementRects.get(child)));
 
     const midX = parentRect.right + (CONNECTOR_GAP / 2);
     const childMidYs = childRects.map((rect) => rect.midY).sort((rectA, rectB) => rectA - rectB);
     const firstChildY = childMidYs[0];
-    const lastChildY = childMidYs.at(-1);
+    const lastChildY = /** @type {number} */ (childMidYs.at(-1));
 
     let pathData = `M ${parentRect.right} ${parentRect.midY} H ${midX}`;
 
