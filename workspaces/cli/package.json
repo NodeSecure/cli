@@ -68,15 +68,15 @@
     "@nodesecure/vis-network": "^1.4.0",
     "@openally/httpie": "1.1.2",
     "@playwright/test": "1.61.1",
-    "@stylistic/stylelint-plugin": "5.1.0",
+    "@stylistic/stylelint-plugin": "5.2.1",
     "@types/semver": "7.7.1",
     "esbuild": "0.28.1",
     "highlight.js": "11.11.1",
     "postcss-lit": "1.4.1",
     "pretty-bytes": "^7.0.0",
-    "stylelint": "17.6.0",
+    "stylelint": "17.14.0",
     "stylelint-config-standard": "40.0.0",
-    "undici": "8.0.2"
+    "undici": "8.7.0"
   },
   "dependencies": {
     "@lit/task": "^1.0.3",

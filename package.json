@@ -20,16 +20,16 @@
   "author": "GENTILHOMME Thomas <gentilhomme.thomas@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@changesets/changelog-github": "0.6.0",
-    "@changesets/cli": "2.30.0",
+    "@changesets/changelog-github": "0.7.0",
+    "@changesets/cli": "2.31.0",
     "@openally/config.eslint": "^2.4.2",
     "@openally/config.typescript": "1.3.0",
-    "@types/node": "25.5.2",
+    "@types/node": "26.1.0",
     "c8": "11.0.0",
-    "eslint-plugin-jsdoc": "62.9.0",
-    "pkg-ok": "^3.0.0",
+    "eslint-plugin-jsdoc": "63.0.12",
+    "pkg-ok": "^4.0.0",
     "rimraf": "6.1.3",
     "typescript": "^6.0.2",
-    "vite": "8.0.16"
+    "vite": "8.1.3"
   }
 }
