@@ -40,7 +40,7 @@
     "@nodesecure/flags": "3.0.3",
     "@nodesecure/js-x-ray": "15.1.0",
     "highlight.js": "11.11.1",
-    "markdown-it": "14.2.0"
+    "markdown-it": "14.3.0"
   },
   "devDependencies": {
     "@types/markdown-it": "14.1.2"
