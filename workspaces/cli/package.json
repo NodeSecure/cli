@@ -71,17 +71,17 @@
     "@nodesecure/licenses-conformance": "2.1.0",
     "@nodesecure/size-satisfies": "^1.1.0",
     "@nodesecure/vis-network": "^1.4.0",
-    "@playwright/test": "1.61.1",
-    "@types/semver": "7.7.1",
+    "@playwright/test": "1.62.1",
+    "@types/semver": "7.8.0",
     "@stylistic/stylelint-plugin": "5.2.1",
     "esbuild": "0.28.1",
     "highlight.js": "11.11.1",
     "lit": "3.3.3",
     "postcss-lit": "1.4.1",
     "pretty-bytes": "^7.0.0",
-    "stylelint": "17.14.0",
+    "stylelint": "17.14.1",
     "stylelint-config-standard": "40.0.0",
-    "undici": "8.0.2"
+    "undici": "8.10.0"
   },
   "dependencies": {
     "@nodesecure/cache": "1.0.0",
