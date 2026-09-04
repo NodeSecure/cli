@@ -99,7 +99,7 @@
     "@topcli/cliui": "^1.1.0",
     "@topcli/pretty-json": "^1.0.0",
     "@topcli/prompts": "4.0.0",
-    "@topcli/spinner": "4.2.1",
+    "@topcli/spinner": "5.0.0",
     "filenamify": "^7.0.0",
     "highlightjs-line-numbers.js": "^2.8.0",
     "ini": "7.0.0",
