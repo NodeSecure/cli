@@ -39,8 +39,8 @@
   "dependencies": {
     "@nodesecure/flags": "3.0.3",
     "@nodesecure/scanner": "10.13.0",
-    "pretty-bytes": "7.1.1",
+    "pretty-bytes": "7.1.2",
     "vis-data": "8.0.5",
-    "vis-network": "10.1.1"
+    "vis-network": "10.1.2"
   }
 }
