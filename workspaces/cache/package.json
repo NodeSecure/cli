@@ -30,7 +30,7 @@
   "dependencies": {
     "@nodesecure/scanner": "10.13.0",
     "cacache": "21.0.1",
-    "filenamify": "7.0.2"
+    "filenamify": "7.0.3"
   },
   "devDependencies": {
     "@types/cacache": "20.0.1"
