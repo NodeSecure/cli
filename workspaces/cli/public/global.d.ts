@@ -26,6 +26,7 @@ import type { PopupReport } from "./components/views/home/report/report.js";
 import type { FileBox } from "./components/file-box/file-box.js";
 import type { Gauge } from "./components/gauge/gauge.js";
 import type { Expandable } from "./components/expandable/expandable.js";
+import type { Scorecard } from "./components/package/pannels/scorecard/scorecard.js";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -35,6 +36,7 @@ declare global {
     "settings-view": SettingsView;
     "network-breadcrumb": NetworkBreadcrumb;
     "command-palette": CommandPalette;
+    "package-scorecard": Scorecard;
     "package-files": Files;
     "package-licenses": Licenses;
     "package-vulnerabilities": Vulnerabilities;

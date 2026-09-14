@@ -1,4 +1,3 @@
-/* eslint-disable @openally/imports */
 // Import Third-party Dependencies
 import { LitElement, html } from "lit";
 import { when } from "lit/directives/when.js";

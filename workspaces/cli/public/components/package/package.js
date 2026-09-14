@@ -1,3 +1,6 @@
+// Import Third-party Dependencies
+import { getScoreColor } from "@nodesecure/utils";
+
 // Import Internal Dependencies
 import "../bundlephobia/bundlephobia.js";
 import { PackageHeader } from "./header/header.js";
@@ -211,7 +214,23 @@ export class PackageInfo {
     this.addNavigationSignal(/** @type {HTMLElement} */ (clone.getElementById("vulnerabilities-nav-menu")),
       this.dependency.vulnerabilities.length);
     if (utils.getSettingsConfig().disableExternalRequests === false) {
-      new Pannels.Scorecard(this).generate(clone);
+      const scorecard = new Pannels.Scorecard();
+      scorecard.repository = this.links.github.href ?? "";
+      scorecard.id = "pan-scorecard";
+      scorecard.classList.add("package-container", "hidden");
+      const menu = /** @type {HTMLElement} */ (clone.getElementById("scorecard-menu"));
+      const score = /** @type {HTMLElement} */ (clone.getElementById("ossf-score"));
+
+      scorecard.addEventListener("scorecard-loaded", (event) => {
+        const { detail: data } = /** @type {CustomEvent<import("../../common/scorecard.js").ScorecardData | null>} */ (event);
+        menu.style.display = data ? "flex" : "none";
+        if (data) {
+          menu.classList.add(getScoreColor(data.score));
+          score.textContent = String(data.score);
+        }
+      });
+
+      /** @type {HTMLElement} */ (clone.getElementById("pan-scorecard")).replaceWith(scorecard);
     }
 
     return clone;
