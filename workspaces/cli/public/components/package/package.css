@@ -1,6 +1,5 @@
 @import url("./header/header.css");
 @import url("./pannels/overview/overview.css");
-@import url("./pannels/scorecard/scorecard.css");
 @import url("./pannels/warnings/warnings.css");
 
 section#package-info {
