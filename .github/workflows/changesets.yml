@@ -19,7 +19,7 @@ jobs:
       pull-requests: write # Required for changesets to create PRs
     steps:
       - name: Harden the runner (Audit all outbound calls)
-        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
         with:
           egress-policy: audit
 
@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
@@ -44,7 +44,7 @@ jobs:
         run: npm run build
 
       - name: Update and publish versions
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           version: npm run ci:version
           commit: "chore: update versions"
